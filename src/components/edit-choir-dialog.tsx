@@ -39,6 +39,7 @@ const choirSchema = z.object({
   title: z.string().min(1, 'El título es requerido.'),
   tone: z.string().optional(),
   lyrics: z.string().min(1, 'La letra es requerida.'),
+  speed: z.string().optional(),
 });
 
 type FormData = z.infer<typeof choirSchema>;
@@ -59,6 +60,7 @@ export function EditChoirDialog({ children, choir, onChoirUpdated, onSaveComplet
       title: choir.title,
       tone: choir.tone,
       lyrics: choir.lyrics,
+      speed: choir.speed,
     },
   });
   
@@ -68,6 +70,7 @@ export function EditChoirDialog({ children, choir, onChoirUpdated, onSaveComplet
         title: choir.title,
         tone: choir.tone || '',
         lyrics: choir.lyrics,
+        speed: choir.speed || '',
       });
     }
   }, [choir, form, open]);
@@ -124,6 +127,27 @@ export function EditChoirDialog({ children, choir, onChoirUpdated, onSaveComplet
                       {musicalKeys.map(key => (
                         <SelectItem key={key} value={key}>{key}</SelectItem>
                       ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="speed"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Velocidad</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona una velocidad" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Rapido">Rápido (Avivamiento)</SelectItem>
+                      <SelectItem value="Lento">Lento (Meditación)</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

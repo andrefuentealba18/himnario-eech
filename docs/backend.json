@@ -84,6 +84,14 @@
         "tone": {
           "type": "string",
           "description": "The musical key of the choir song."
+        },
+        "speed": {
+          "type": "string",
+          "description": "The speed or rhythm of the song, for classification.",
+          "enum": [
+            "Rapido",
+            "Lento"
+          ]
         }
       },
       "required": [

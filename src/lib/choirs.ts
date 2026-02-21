@@ -3,6 +3,5 @@ export type Choir = {
   title: string;
   lyrics: string;
   tone?: string;
+  speed?: 'Rapido' | 'Lento';
 };
-
-    

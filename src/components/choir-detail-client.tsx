@@ -12,6 +12,7 @@ import { useCallback, useEffect } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
 import { useFontSize } from '@/hooks/use-font-size';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Badge } from '@/components/ui/badge';
 
 interface ChoirDetailClientProps {
   choirId: string;
@@ -112,11 +113,16 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
         </Button>
         <div className="text-center px-4 overflow-hidden flex-1">
             <h1 className="font-bold font-headline text-lg truncate mb-1">{choir.title}</h1>
-            <EditToneDialog song={choir} onToneUpdated={handleToneUpdate}>
-              <Button variant="outline" size="sm" className="h-auto px-2 py-0.5 text-xs">
-                {choir.tone || 'Tonalidad: Indefinida'}
-              </Button>
-            </EditToneDialog>
+            <div className="flex items-center justify-center gap-2">
+                <EditToneDialog song={choir} onToneUpdated={handleToneUpdate}>
+                  <Button variant="outline" size="sm" className="h-auto px-2 py-0.5 text-xs">
+                    {choir.tone || 'Tonalidad: Indefinida'}
+                  </Button>
+                </EditToneDialog>
+                 {choir.speed && (
+                    <Badge variant="secondary" className="text-xs capitalize">{choir.speed}</Badge>
+                )}
+            </div>
         </div>
         <div className="w-10" />
       </header>
