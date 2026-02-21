@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Music, Book, Users, Mic, Church } from 'lucide-react';
+import { Music, Book, Users, Mic, Church, Plus } from 'lucide-react';
 
 export default function HomePage() {
   return (
@@ -8,10 +8,18 @@ export default function HomePage() {
       <div 
         className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background -z-10"
       />
+      
+      <header className="absolute top-0 left-0 w-full p-4 flex justify-end">
+          <Button variant="outline" disabled>
+            <Plus className="mr-2 h-4 w-4" />
+            Agregar Canción
+          </Button>
+      </header>
+      
       <main className="container mx-auto flex flex-col items-center justify-center min-h-screen p-4">
         <div className="w-full max-w-md text-center space-y-12">
           
-          <header className="space-y-4">
+          <header className="space-y-4 pt-16">
             <div className="inline-block p-3 bg-primary/20 rounded-full mb-4">
               <Church className="h-10 w-10 text-primary" />
             </div>
@@ -24,24 +32,24 @@ export default function HomePage() {
           </header>
           
           <div className="grid grid-cols-1 gap-4 w-full">
-            <Button asChild size="lg" className="h-20 text-xl font-body transition-transform hover:scale-105 shadow-lg">
+            <Button asChild size="lg" className="h-16 text-lg font-body shadow-md transition-all duration-200 ease-in-out hover:shadow-primary/20 hover:shadow-lg hover:-translate-y-1">
               <Link href="/hymns">
-                <Book className="mr-4 h-7 w-7" /> Himnos
+                <Book className="mr-4 h-6 w-6" /> Himnos
               </Link>
             </Button>
-            <Button asChild size="lg" className="h-20 text-xl font-body transition-transform hover:scale-105" variant="secondary" disabled>
+            <Button asChild size="lg" className="h-16 text-lg font-body" variant="secondary" disabled>
               <Link href="#">
-                <Music className="mr-4 h-7 w-7" /> Alabanzas
+                <Music className="mr-4 h-6 w-6" /> Alabanzas
               </Link>
             </Button>
-            <Button asChild size="lg" className="h-20 text-xl font-body transition-transform hover:scale-105" variant="secondary" disabled>
+            <Button asChild size="lg" className="h-16 text-lg font-body" variant="secondary" disabled>
               <Link href="#">
-                <Mic className="mr-4 h-7 w-7" /> Coros
+                <Mic className="mr-4 h-6 w-6" /> Coros
               </Link>
             </Button>
-            <Button asChild size="lg" className="h-20 text-xl font-body transition-transform hover:scale-105" variant="secondary" disabled>
+            <Button asChild size="lg" className="h-16 text-lg font-body" variant="secondary" disabled>
               <Link href="#">
-                <Users className="mr-4 h-7 w-7" /> Alabanza Coro Juventud
+                <Users className="mr-4 h-6 w-6" /> Alabanza Coro Juventud
               </Link>
             </Button>
           </div>
