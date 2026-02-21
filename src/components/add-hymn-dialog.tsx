@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -31,13 +32,60 @@ const bulkHymnsSchema = z.object({
   hymnsText: z.string().min(1, 'El texto de los himnos es requerido.'),
 });
 
+function normalizeTone(input: string): string {
+    if (!input || !input.trim()) {
+        return 'Indefinida';
+    }
+
+    const cleaned = input.replace(/\.$/, '').trim();
+    const parts = cleaned.split(/\s+/);
+
+    if (parts.length < 1 || parts.length > 2) {
+        return cleaned; // Return as is if format is unexpected
+    }
+
+    const notePart = parts[0].toLowerCase();
+    const scalePart = parts.length === 2 ? parts[1] : '';
+
+    const noteMap: { [key: string]: string } = {
+        'do': 'Do',
+        'do#': 'Do# / Reb', 'reb': 'Do# / Reb',
+        're': 'Re',
+        're#': 'Re# / Mib', 'mib': 'Re# / Mib',
+        'mi': 'Mi',
+        'fa': 'Fa',
+        'fa#': 'Fa# / Solb', 'solb': 'Fa# / Solb',
+        'sol': 'Sol',
+        'sol#': 'Sol# / Lab', 'lab': 'Sol# / Lab',
+        'la': 'La',
+        'la#': 'La# / Sib', 'sib': 'La# / Sib',
+        'si': 'Si',
+    };
+
+    const note = noteMap[notePart];
+    if (!note) {
+        return cleaned; // If note part is not recognized, return original
+    }
+
+    if (scalePart === 'M') {
+        return `${note} Mayor`;
+    }
+    if (scalePart === 'm') {
+        return `${note} menor`;
+    }
+    
+    // If no scale part, it might be something else, return as is.
+    return cleaned;
+}
+
+
 function parseHymns(text: string): Hymn[] {
     const hymns: Hymn[] = [];
     if (!text.trim()) {
         return hymns;
     }
     
-    const hymnBlocks = text.split(/^\s*(?=\d+[\s\t]+[A-ZÁÉÍÓÚÑ¡!¿?'’,\. ]{5,})/m).filter(block => block.trim());
+    const hymnBlocks = text.split(/^\s*(?=\d+\s+[A-ZÁÉÍÓÚÑ¿?¡!,'’\s]{5,})/m).filter(block => block.trim());
 
     if (hymnBlocks.length === 0 && text.trim().length > 0) {
         hymnBlocks.push(text.trim());
@@ -47,8 +95,7 @@ function parseHymns(text: string): Hymn[] {
         const lines = block.trim().split('\n');
         if (lines.length === 0) continue;
         
-        const headerLine = lines.shift()!.trim();
-        const headerMatch = headerLine.match(/^(\d+)\.?[\s\t]*(.*)/);
+        const headerMatch = lines.shift()!.trim().match(/^(\d+)\s*(.*)/);
         if (!headerMatch) continue;
         
         const number = parseInt(headerMatch[1], 10);
@@ -57,39 +104,34 @@ function parseHymns(text: string): Hymn[] {
         if (isNaN(number)) continue;
 
         let lyricsStartIndex = 0;
+        
         if (title === '') {
             for (let i = 0; i < lines.length; i++) {
                 const nextLine = lines[i].trim();
-                if (nextLine !== '') {
+                if (nextLine !== '' && nextLine.toUpperCase() === nextLine) {
                     title = nextLine;
                     lyricsStartIndex = i + 1;
                     break;
                 }
             }
-        } else {
-             lyricsStartIndex = 0;
         }
         
         if (!title) continue;
 
-        let tone: string | undefined = "Indefinida";
-        let toneFound = false;
-
+        let tone: string = "Indefinida";
+        
         for (let i = lyricsStartIndex; i < lines.length; i++) {
             const trimmedLine = lines[i].trim();
             if (trimmedLine === '') {
-                continue;
+                continue; 
             }
 
-            const isVerse = /^\d+\.?/.test(trimmedLine);
+            const isVerse = /^\d+\.?\s+/.test(trimmedLine);
             const isChorus = /^coro/i.test(trimmedLine);
-            const hasLetters = /[a-zA-Z]/.test(trimmedLine);
-            const isShort = trimmedLine.length < 25;
-
-            if (!isVerse && !isChorus && hasLetters && isShort) {
-                tone = trimmedLine;
+            
+            if (!isVerse && !isChorus && trimmedLine.length < 25) {
+                tone = normalizeTone(trimmedLine);
                 lyricsStartIndex = i + 1;
-                toneFound = true;
             } else {
                 lyricsStartIndex = i;
             }
@@ -98,19 +140,18 @@ function parseHymns(text: string): Hymn[] {
 
         const lyrics = lines.slice(lyricsStartIndex).join('\n').trim();
 
-        if (lyrics || toneFound) {
+        if (lyrics || tone !== "Indefinida") {
             hymns.push({
                 number,
                 title,
                 lyrics,
-                tone: tone || "Indefinida",
+                tone: tone,
             });
         }
     }
 
     return hymns;
 }
-
 
 export function AddHymnDialog({ children, onHymnsAdded }: { children: React.ReactNode, onHymnsAdded: (hymns: Hymn[]) => { addedCount: number, updatedCount: number } }) {
   const [open, setOpen] = useState(false);
@@ -166,7 +207,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
                   <FormLabel>Texto de los himnos</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="116 TÍTULO DEL HIMNO&#10;Sol Mayor&#10;1. Letra del himno...&#10;...&#10;&#10;CORO&#10;Coro del himno...&#10;&#10;117 OTRO TÍTULO&#10;..." 
+                      placeholder="116 TÍTULO DEL HIMNO&#10;Sol M&#10;1. Letra del himno...&#10;...&#10;&#10;CORO&#10;Coro del himno...&#10;&#10;117 OTRO TÍTULO&#10;..." 
                       className="h-64 min-h-[10rem]" 
                       {...field} />
                   </FormControl>
