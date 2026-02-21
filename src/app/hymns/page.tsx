@@ -1,8 +1,9 @@
 import { hymns } from '@/lib/hymns';
 import { HymnListClient } from '@/components/hymn-list-client';
-import { BookOpen, ChevronLeft, Plus } from 'lucide-react';
+import { BookOpen, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { AddHymnDialog } from '@/components/add-hymn-dialog';
 
 export default function HymnsIndexPage() {
   return (
@@ -21,10 +22,9 @@ export default function HymnsIndexPage() {
               </h1>
               <BookOpen className="h-8 w-8 text-primary" />
             </div>
-            <Button variant="outline" disabled className="absolute right-2 top-1/2 -translate-y-1/2">
-                <Plus className="mr-2 h-4 w-4" />
-                Agregar Himno
-            </Button>
+            <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                <AddHymnDialog />
+            </div>
         </header>
 
         <div className="p-4">

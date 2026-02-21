@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Music, Book, Users, Mic, Church, Plus } from 'lucide-react';
+import { Music, Book, Users, Mic, Church } from 'lucide-react';
+import { AddSongDialog } from '@/components/add-song-dialog';
 
 export default function HomePage() {
   return (
@@ -10,10 +11,7 @@ export default function HomePage() {
       />
       
       <header className="absolute top-0 left-0 w-full p-4 flex justify-end">
-          <Button variant="outline" disabled>
-            <Plus className="mr-2 h-4 w-4" />
-            Agregar Canción
-          </Button>
+          <AddSongDialog />
       </header>
       
       <main className="container mx-auto flex flex-col items-center justify-center min-h-screen p-4">
