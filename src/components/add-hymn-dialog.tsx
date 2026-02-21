@@ -42,6 +42,7 @@ function parseHymns(text: string): Hymn[] {
     let match;
     const hymnHeaders = [];
 
+    // 1. Find all hymn headers (e.g., "116. Título")
     while ((match = regex.exec(text)) !== null) {
         const titleCandidate = match[2].trim();
         if (titleCandidate.length > 0 && titleCandidate.length < 100) {
@@ -56,33 +57,45 @@ function parseHymns(text: string): Hymn[] {
 
     if (hymnHeaders.length === 0) return [];
 
-    const musicalKeysLower = musicalKeys.map(k => k.toLowerCase());
-
+    // 2. Process each hymn block found between headers
     for (let i = 0; i < hymnHeaders.length; i++) {
         const header = hymnHeaders[i];
         const nextHeader = hymnHeaders[i + 1];
+        
         const contentStartIndex = header.startIndex + header.headerLength;
         const contentEndIndex = nextHeader ? nextHeader.startIndex : text.length;
 
         let content = text.substring(contentStartIndex, contentEndIndex).trim();
+        
         let tone: string | undefined = undefined;
         let lyrics: string = content;
 
         if (content) {
             const lines = content.split('\n');
-            const firstLineTrimmed = lines[0]?.trim();
+            let firstContentLineIndex = -1;
+            let firstContentLine = '';
             
-            if(firstLineTrimmed) {
-                const isKeyInList = musicalKeys.find(k => k.toLowerCase() === firstLineTrimmed.toLowerCase());
+            // Find the first non-empty line, which might be the tone
+            for (let j = 0; j < lines.length; j++) {
+                if (lines[j].trim() !== '') {
+                    firstContentLineIndex = j;
+                    firstContentLine = lines[j].trim();
+                    break;
+                }
+            }
 
-                if (isKeyInList) {
-                    tone = isKeyInList;
-                    lines.shift();
-                    lyrics = lines.join('\n').trim();
-                } else if (/^[A-G](s|b)?[mM]?\s*\.?\s*M?\.?$/i.test(firstLineTrimmed)) {
-                    tone = firstLineTrimmed;
-                    lines.shift();
-                    lyrics = lines.join('\n').trim();
+            if (firstContentLine) {
+                const isKeyInList = musicalKeys.find(k => k.toLowerCase() === firstContentLine.toLowerCase());
+                const keyRegex = /^[A-G](s|b)?[mM]?\s*\.?\s*M?\.?$/i;
+
+                // Check if this first line is a musical key
+                if (isKeyInList || (keyRegex.test(firstContentLine) && firstContentLine.length < 15)) {
+                    tone = firstContentLine;
+                    // If it is a tone, the lyrics are everything *after* that line
+                    lyrics = lines.slice(firstContentLineIndex + 1).join('\n').trim();
+                } else {
+                    // Otherwise, the entire block is lyrics
+                    lyrics = content;
                 }
             }
         }
@@ -155,7 +168,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
                   <FormLabel>Texto de los himnos</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="116. Mi nuevo himno...&#10;Letra...&#10;&#10;117. Otro himno...&#10;Letra..." 
+                      placeholder="116. Mi nuevo himno...&#10;Tonalidad: Do Mayor&#10;Letra...&#10;&#10;117. Otro himno...&#10;Letra..." 
                       className="h-64 min-h-[10rem]" 
                       {...field} />
                   </FormControl>
