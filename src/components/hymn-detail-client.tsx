@@ -50,7 +50,7 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8">
-        <div className="container max-w-2xl px-6 text-center">
+        <div className="container max-w-lg px-6 text-center">
             {isFontLoaded ? (
               <div
                 className={`font-body leading-loose transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
