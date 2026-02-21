@@ -6,7 +6,7 @@ export const metadata: Metadata = {
   title: 'Himnario EECH Móvil',
   description: 'Tu cancionero digital del Ejercito Evangélico de Chile',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
-  themeColor: '#A0C4FF',
+  themeColor: '#D6A93D',
 };
 
 export default function RootLayout({
@@ -19,7 +19,7 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
         <div className="relative flex min-h-screen w-full flex-col">

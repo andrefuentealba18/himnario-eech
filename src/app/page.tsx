@@ -1,45 +1,56 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Music, Book, Users, Mic } from 'lucide-react';
+import { Music, Book, Users, Mic, Church } from 'lucide-react';
 
 export default function HomePage() {
   return (
-    <main className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-      <div className="w-full max-w-lg mx-auto space-y-12">
-        <div className="text-center space-y-2">
-          <h1 className="text-5xl font-bold font-headline text-primary tracking-tight">
-            Himnario EECH
-          </h1>
-          <p className="text-xl text-muted-foreground font-body">
-            ¿Qué deseas cantar hoy?
-          </p>
+    <div className="relative min-h-screen w-full bg-background text-foreground">
+      <div 
+        className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background -z-10"
+      />
+      <main className="container mx-auto flex flex-col items-center justify-center min-h-screen p-4">
+        <div className="w-full max-w-md text-center space-y-12">
+          
+          <header className="space-y-4">
+            <div className="inline-block p-3 bg-primary/20 rounded-full mb-4">
+              <Church className="h-10 w-10 text-primary" />
+            </div>
+            <h1 className="text-6xl md:text-7xl font-bold font-headline text-primary tracking-tight">
+              Himnario EECH
+            </h1>
+            <p className="text-xl md:text-2xl text-muted-foreground font-body">
+              ¿Qué deseas cantar hoy?
+            </p>
+          </header>
+          
+          <div className="grid grid-cols-1 gap-4 w-full">
+            <Button asChild size="lg" className="h-20 text-xl font-body transition-transform hover:scale-105 shadow-lg">
+              <Link href="/hymns">
+                <Book className="mr-4 h-7 w-7" /> Himnos
+              </Link>
+            </Button>
+            <Button asChild size="lg" className="h-20 text-xl font-body transition-transform hover:scale-105" variant="secondary" disabled>
+              <Link href="#">
+                <Music className="mr-4 h-7 w-7" /> Alabanzas
+              </Link>
+            </Button>
+            <Button asChild size="lg" className="h-20 text-xl font-body transition-transform hover:scale-105" variant="secondary" disabled>
+              <Link href="#">
+                <Mic className="mr-4 h-7 w-7" /> Coros
+              </Link>
+            </Button>
+            <Button asChild size="lg" className="h-20 text-xl font-body transition-transform hover:scale-105" variant="secondary" disabled>
+              <Link href="#">
+                <Users className="mr-4 h-7 w-7" /> Alabanza Coro Juventud
+              </Link>
+            </Button>
+          </div>
+          
+          <footer className="text-center text-sm text-muted-foreground pt-8">
+            <p>Iglesia Ejército Evangélico de Chile</p>
+          </footer>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Button asChild size="lg" className="h-24 text-lg font-headline">
-            <Link href="/hymns">
-              <Book className="mr-3 h-6 w-6" /> Himnos
-            </Link>
-          </Button>
-          <Button asChild size="lg" className="h-24 text-lg font-headline" disabled>
-            <Link href="#">
-              <Music className="mr-3 h-6 w-6" /> Alabanzas
-            </Link>
-          </Button>
-          <Button asChild size="lg" className="h-24 text-lg font-headline" disabled>
-            <Link href="#">
-              <Mic className="mr-3 h-6 w-6" /> Coros
-            </Link>
-          </Button>
-          <Button asChild size="lg" className="h-24 text-lg font-headline" disabled>
-            <Link href="#">
-              <Users className="mr-3 h-6 w-6" /> Alabanza Coro Juventud
-            </Link>
-          </Button>
-        </div>
-        <footer className="text-center text-sm text-muted-foreground">
-          <p>Iglesia Ejercito Evangélico de Chile</p>
-        </footer>
-      </div>
-    </main>
+      </main>
+    </div>
   );
 }

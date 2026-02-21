@@ -31,7 +31,7 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
     <div className="flex flex-col min-h-screen bg-background">
       <header className="sticky top-0 z-10 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/">
+          <Link href="/hymns">
             <ChevronLeft className="h-6 w-6" />
             <span className="sr-only">Volver</span>
           </Link>
@@ -47,7 +47,7 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
            </Button>
         </div>
         <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number)} disabled={!isLoaded}>
-          <Star className={`h-6 w-6 transition-colors ${isFav ? 'fill-accent text-accent' : 'text-foreground'}`} />
+          <Star className={`h-6 w-6 transition-colors ${isFav ? 'fill-primary text-primary' : 'text-foreground'}`} />
           <span className="sr-only">Marcar como favorito</span>
         </Button>
       </header>
