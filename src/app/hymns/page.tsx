@@ -1,9 +1,17 @@
 import { hymns } from '@/lib/hymns';
 import { HymnListClient } from '@/components/hymn-list-client';
-import { BookOpen, ChevronLeft } from 'lucide-react';
+import { BookOpen, ChevronLeft, Plus, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AddHymnDialog } from '@/components/add-hymn-dialog';
+import { AddSingleHymnDialog } from '@/components/add-single-hymn-dialog';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
 
 export default function HymnsIndexPage() {
   return (
@@ -23,7 +31,27 @@ export default function HymnsIndexPage() {
               <BookOpen className="h-8 w-8 text-primary" />
             </div>
             <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                <AddHymnDialog />
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline">
+                      <Plus className="mr-2 h-4 w-4" />
+                      Agregar
+                      <ChevronDown className="ml-2 h-4 w-4" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent>
+                    <AddSingleHymnDialog>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        Agregar un himno
+                      </DropdownMenuItem>
+                    </AddSingleHymnDialog>
+                     <AddHymnDialog>
+                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        Agregar varios himnos
+                       </DropdownMenuItem>
+                     </AddHymnDialog>
+                  </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         </header>
 

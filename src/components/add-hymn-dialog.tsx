@@ -24,7 +24,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 // New schema for bulk input
@@ -59,7 +58,7 @@ function parseHymns(text: string) {
 }
 
 
-export function AddHymnDialog() {
+export function AddHymnDialog({ children }: { children: React.ReactNode }) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -94,10 +93,7 @@ export function AddHymnDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Plus className="mr-2 h-4 w-4" />
-          Agregar Himnos
-        </Button>
+        {children}
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
