@@ -90,12 +90,12 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
       <main className="flex-1 py-8 flex justify-center px-4">
         <div className="max-w-[20rem] text-center">
           <div
-            className={`font-body leading-loose transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
+            className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
           >
             {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
               const isChorus = paragraph.startsWith('CORO:');
               return (
-                <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-bold leading-snug' : ''}`}>
+                <p key={pIndex} className={`whitespace-pre-wrap mb-4 ${isChorus ? 'font-bold leading-snug' : ''}`}>
                   {paragraph}
                 </p>
               );

@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Praise } from '@/lib/praises';
@@ -77,12 +78,12 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
       <main className="flex-1 py-8 flex justify-center px-4">
         <div className="max-w-[20rem] text-center">
             <div
-                className={`font-body leading-loose text-lg`}
+                className={`font-body leading-relaxed text-lg`}
             >
                 {praise.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const isChorus = paragraph.toUpperCase().startsWith('CORO');
                   return (
-                    <p key={pIndex} className={`whitespace-pre-wrap ${isChorus ? 'font-bold mb-4 leading-snug' : 'mb-6'}`}>
+                    <p key={pIndex} className={`whitespace-pre-wrap mb-4 ${isChorus ? 'font-bold leading-snug' : ''}`}>
                       {paragraph}
                     </p>
                   );
