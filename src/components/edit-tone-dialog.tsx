@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -24,21 +24,15 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const passwordSchema = z.object({
   password: z.string().min(1, 'La contraseña es requerida.'),
 });
 
 const toneSchema = z.object({
-  tone: z.string().min(1, 'Debes seleccionar una tonalidad.'),
+  tone: z.string().min(1, 'Debes escribir o seleccionar una tonalidad.'),
 });
 
 type FormData = z.infer<typeof toneSchema>;
@@ -54,6 +48,8 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
   
+  const [searchTerm, setSearchTerm] = useState('');
+
   const passwordForm = useForm<z.infer<typeof passwordSchema>>({
     resolver: zodResolver(passwordSchema),
     defaultValues: { password: '' },
@@ -66,11 +62,23 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
     },
   });
 
+  const filteredKeys = useMemo(() =>
+    musicalKeys.filter(key =>
+      key.toLowerCase().includes(searchTerm.toLowerCase())
+    ), [searchTerm]);
+  
+  useEffect(() => {
+    if (isAuthenticated) {
+      const initialTone = song.tone || '';
+      toneForm.setValue('tone', initialTone);
+      setSearchTerm(initialTone);
+    }
+  }, [isAuthenticated, song.tone, toneForm]);
+
   function onPasswordSubmit(values: z.infer<typeof passwordSchema>) {
     if (values.password === 'Pablito_4002') {
       toast({ title: 'Acceso concedido' });
       setIsAuthenticated(true);
-      toneForm.reset({ tone: song.tone || '' });
     } else {
       toast({
         variant: 'destructive',
@@ -95,9 +103,16 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
         setIsAuthenticated(false);
         passwordForm.reset();
         toneForm.reset({ tone: song.tone || '' });
+        setSearchTerm('');
       }, 300);
     }
   }
+
+  const handleKeySelection = (key: string) => {
+    toneForm.setValue('tone', key, { shouldValidate: true });
+    setSearchTerm(key);
+  };
+
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
@@ -138,33 +153,54 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
           <>
             <DialogHeader>
               <DialogTitle>Cambiar Tonalidad</DialogTitle>
-              <DialogDescription>Selecciona la nueva tonalidad para "{song.title}".</DialogDescription>
+              <DialogDescription>Escribe o selecciona la nueva tonalidad para "{song.title}".</DialogDescription>
             </DialogHeader>
             <Form {...toneForm}>
-              <form onSubmit={toneForm.handleSubmit(onToneSubmit)} className="space-y-6 pt-4">
+              <form onSubmit={toneForm.handleSubmit(onToneSubmit)} className="space-y-4 pt-4">
                 <FormField
                   control={toneForm.control}
                   name="tone"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Tonalidad</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Selecciona una tonalidad" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {musicalKeys.map(key => (
-                            <SelectItem key={key} value={key}>{key}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormControl>
+                        <Input
+                          placeholder="Escribe o busca una tonalidad..."
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            setSearchTerm(e.target.value);
+                          }}
+                          autoComplete="off"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-                <DialogFooter className="sm:justify-start gap-2">
+
+                <ScrollArea className="h-40 w-full rounded-md border">
+                  <div className="p-1">
+                    {filteredKeys.length > 0 ? (
+                      filteredKeys.map(key => (
+                        <div
+                          key={key}
+                          className="text-sm p-2 cursor-pointer rounded-sm hover:bg-accent"
+                          onMouseDown={(e) => {
+                            e.preventDefault();
+                            handleKeySelection(key);
+                          }}
+                        >
+                          {key}
+                        </div>
+                      ))
+                    ) : (
+                      <p className="p-2 text-sm text-muted-foreground">No se encontraron tonalidades.</p>
+                    )}
+                  </div>
+                </ScrollArea>
+                
+                <DialogFooter className="sm:justify-start gap-2 pt-2">
                     <Button type="submit" className="w-full">Guardar</Button>
                     <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} className="w-full">Cancelar</Button>
                 </DialogFooter>
