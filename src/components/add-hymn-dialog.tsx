@@ -61,38 +61,32 @@ function parseHymns(text: string): Hymn[] {
         
         if (isNaN(number) || !title) continue;
 
-        // 2. Find Tone (Tonalidad) and Lyrics
         let tone: string | undefined = undefined;
-        let lyricsLines: string[] = [];
-        let foundTone = false;
-        let contentStarted = false;
+        let lyricsStartIndex = 0;
 
-        for (const line of lines) {
-            const trimmedLine = line.trim();
-
+        // 2. Look for the tone in the next non-empty lines
+        for (let i = 0; i < lines.length; i++) {
+            const trimmedLine = lines[i].trim();
             if (trimmedLine === '') {
-                if(contentStarted) lyricsLines.push(line); // Keep empty lines within lyrics
-                continue;
+                continue; // Skip empty lines
             }
-            
-            contentStarted = true;
 
-            // The tone is usually a short line right after the title. It's not a verse or a "CORO" line.
-            if (!foundTone && !tone) {
-                const isVerse = /^\d+\./.test(trimmedLine);
-                const isChorus = /^coro/i.test(trimmedLine);
-                if (!isVerse && !isChorus && trimmedLine.length > 0 && trimmedLine.length < 25) {
-                    tone = trimmedLine;
-                    foundTone = true; // Found it, don't check for tone anymore
-                    continue; // Don't add the tone line to the lyrics
-                }
+            // Check if this line is the tone
+            const isVerse = /^\d+\./.test(trimmedLine);
+            const isChorus = /^coro/i.test(trimmedLine);
+
+            if (!isVerse && !isChorus && trimmedLine.length > 0 && trimmedLine.length < 25) {
+                // It looks like a tone.
+                tone = trimmedLine;
+                lyricsStartIndex = i + 1; // Lyrics start on the next line
+            } else {
+                // It doesn't look like a tone, so it must be the start of the lyrics.
+                lyricsStartIndex = i;
             }
-            
-            // If we've passed the tone-search, everything else is lyrics.
-            lyricsLines.push(line);
+            break; // Stop after checking the first non-empty line
         }
 
-        const lyrics = lyricsLines.join('\n').trim();
+        const lyrics = lines.slice(lyricsStartIndex).join('\n').trim();
 
         if (lyrics) {
             hymns.push({
