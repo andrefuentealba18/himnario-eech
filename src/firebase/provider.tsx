@@ -19,8 +19,8 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   useEffect(() => {
     const initialize = async () => {
-      if (instances) return;
       if (!firebaseConfig || !(firebaseConfig as any).apiKey) {
+        console.warn("La configuración de Firebase está ausente. La aplicación no se puede conectar a Firebase.");
         return;
       }
 
@@ -32,9 +32,9 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
         await enableIndexedDbPersistence(firestore);
       } catch (err: any) {
         if (err.code === 'failed-precondition') {
-          console.warn("Firestore persistence failed: can only be enabled in one tab at a time.");
+          console.warn("La persistencia de Firestore falló: solo se puede habilitar en una pestaña a la vez.");
         } else if (err.code === 'unimplemented') {
-          console.warn("Firestore persistence is not supported in this browser.");
+          console.warn("La persistencia de Firestore no es compatible con este navegador.");
         }
       }
       
@@ -42,7 +42,7 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
     };
 
     initialize();
-  }, [instances]);
+  }, []); // El error estaba aquí, la dependencia [instances] creaba un bucle infinito.
 
   return (
     <FirebaseContext.Provider value={instances}>
