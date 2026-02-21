@@ -1,39 +1,39 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { errorEmitter } from '@/firebase/error-emitter';
 import { FirestorePermissionError } from '@/firebase/errors';
-import { useToast } from '@/hooks/use-toast';
 
+/**
+ * An invisible component that listens for globally emitted 'permission-error' events.
+ * It throws any received error to be caught by Next.js's global-error.tsx.
+ */
 export function FirebaseErrorListener() {
-  const { toast } = useToast();
+  // Use the specific error type for the state for type safety.
+  const [error, setError] = useState<FirestorePermissionError | null>(null);
 
   useEffect(() => {
-    const handleError = (error: any) => {
-      if (error instanceof FirestorePermissionError) {
-        console.error("Caught Firestore Permission Error:", error.message);
-        // In a real app, you might throw this to an error boundary
-        // or display it in a more user-friendly way.
-        // For development, we'll use a toast.
-        toast({
-          variant: "destructive",
-          title: "Error de Permisos de Firestore",
-          description: "Revisa las reglas de seguridad. Detalles en la consola.",
-          duration: 10000,
-        });
-      } else {
-        // Handle other types of errors if necessary
-        console.error("An unexpected error occurred:", error);
-      }
+    // The callback now expects a strongly-typed error, matching the event payload.
+    const handleError = (error: FirestorePermissionError) => {
+      // Set error in state to trigger a re-render.
+      setError(error);
     };
 
+    // The typed emitter will enforce that the callback for 'permission-error'
+    // matches the expected payload type (FirestorePermissionError).
     errorEmitter.on('permission-error', handleError);
 
+    // Unsubscribe on unmount to prevent memory leaks.
     return () => {
       errorEmitter.off('permission-error', handleError);
     };
-  }, [toast]);
+  }, []);
 
-  // This component does not render anything
+  // On re-render, if an error exists in state, throw it.
+  if (error) {
+    throw error;
+  }
+
+  // This component renders nothing.
   return null;
 }

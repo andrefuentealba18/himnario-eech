@@ -1,3 +1,8 @@
-// This file is intentionally left blank.
-// The Firebase configuration will be populated automatically by Firebase App Hosting.
-export const firebaseConfig = {};
+export const firebaseConfig = {
+  "projectId": "studio-2357028373-46846",
+  "appId": "1:622069481217:web:ec29c3033f426a8f91e500",
+  "apiKey": "AIzaSyB3HCqxHqzZim4GRvwBS4oui8X2P5g1sZE",
+  "authDomain": "studio-2357028373-46846.firebaseapp.com",
+  "measurementId": "",
+  "messagingSenderId": "622069481217"
+};
