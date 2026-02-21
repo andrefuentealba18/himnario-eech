@@ -37,18 +37,18 @@ function parseHymns(text: string): Hymn[] {
     if (!text.trim()) {
         return hymns;
     }
-    
-    // Split text into blocks. A new hymn starts with a number followed by an uppercase title.
-    // This regex looks for a line that starts with a number, whitespace, and then likely an all-caps title.
-    // It avoids splitting on verse numbers like "1. Es Jesús..."
-    const hymnBlocks = text.split(/^\s*(?=\d+[\s\t]+[A-ZÁÉÍÓÚÑ'’,\. ]{5,})/m).filter(block => block.trim());
+
+    // This regex splits the text into hymn blocks.
+    // It looks for a line that starts with a number, followed by whitespace (like a tab), 
+    // and then a title in uppercase letters. This helps distinguish a hymn title from a numbered verse.
+    const hymnBlocks = text.split(/^\s*(?=\d+[\s\t]+[A-ZÁÉÍÓÚÑ'’,\.¡! ]{5,})/m).filter(block => block.trim());
 
     if (hymnBlocks.length === 0) {
         return [];
     }
 
     for (const block of hymnBlocks) {
-        let lines = block.trim().split('\n');
+        const lines = block.trim().split('\n');
         if (lines.length === 0) continue;
 
         // 1. Parse Number and Title from the first line.
@@ -61,27 +61,38 @@ function parseHymns(text: string): Hymn[] {
         
         if (isNaN(number) || !title) continue;
 
-        // Remove empty lines after the title
-        while(lines.length > 0 && lines[0].trim() === '') lines.shift();
-
-        // 2. Parse Tone (Tonalidad). It's likely the next non-empty line if it's short.
+        // 2. Find Tone (Tonalidad) and Lyrics
         let tone: string | undefined = undefined;
-        if (lines.length > 0) {
-            const potentialTone = lines[0].trim();
-            // A potential tone is a short line, and not something that looks like a verse ("1. ...") or "CORO".
-            const isProbablyVerseOrChorus = /^\d+\.?/i.test(potentialTone) || /^coro/i.test(potentialTone);
-            
-            if (potentialTone.length > 0 && potentialTone.length < 25 && !isProbablyVerseOrChorus) {
-                tone = potentialTone;
-                lines.shift(); // Consume the tone line
-            }
-        }
-        
-        // Remove empty lines before lyrics start
-        while(lines.length > 0 && lines[0].trim() === '') lines.shift();
+        let lyricsLines: string[] = [];
+        let foundTone = false;
+        let contentStarted = false;
 
-        // 3. The rest is lyrics.
-        const lyrics = lines.join('\n').trim();
+        for (const line of lines) {
+            const trimmedLine = line.trim();
+
+            if (trimmedLine === '') {
+                if(contentStarted) lyricsLines.push(line); // Keep empty lines within lyrics
+                continue;
+            }
+            
+            contentStarted = true;
+
+            // The tone is usually a short line right after the title. It's not a verse or a "CORO" line.
+            if (!foundTone && !tone) {
+                const isVerse = /^\d+\./.test(trimmedLine);
+                const isChorus = /^coro/i.test(trimmedLine);
+                if (!isVerse && !isChorus && trimmedLine.length > 0 && trimmedLine.length < 25) {
+                    tone = trimmedLine;
+                    foundTone = true; // Found it, don't check for tone anymore
+                    continue; // Don't add the tone line to the lyrics
+                }
+            }
+            
+            // If we've passed the tone-search, everything else is lyrics.
+            lyricsLines.push(line);
+        }
+
+        const lyrics = lyricsLines.join('\n').trim();
 
         if (lyrics) {
             hymns.push({

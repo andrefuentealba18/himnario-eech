@@ -93,10 +93,22 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
             className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
           >
             {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
-              const isChorus = paragraph.toUpperCase().startsWith('CORO');
+              const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
+              const chorusText = isChorus ? paragraph.trim().substring(4).trim() : paragraph;
+              const textToShow = isChorus ? chorusText : paragraph;
+              
+              if (isChorus && chorusText === '') {
+                 return (
+                    <p key={pIndex} className={`whitespace-pre-wrap mb-4 font-bold leading-snug`}>
+                      CORO
+                    </p>
+                  );
+              }
+              
               return (
-                <p key={pIndex} className={`whitespace-pre-wrap mb-4 ${isChorus ? 'font-bold leading-snug' : ''}`}>
-                  {paragraph}
+                 <p key={pIndex} className={`whitespace-pre-wrap mb-4 ${isChorus ? 'font-bold leading-snug' : ''}`}>
+                  {isChorus && <span className="block">CORO</span>}
+                  {textToShow}
                 </p>
               );
             })}
