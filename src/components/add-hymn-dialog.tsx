@@ -85,7 +85,7 @@ function parseHymns(text: string): Hymn[] {
 }
 
 
-export function AddHymnDialog({ children, onHymnsAdded }: { children: React.ReactNode, onHymnsAdded: (hymns: Hymn[]) => number }) {
+export function AddHymnDialog({ children, onHymnsAdded }: { children: React.ReactNode, onHymnsAdded: (hymns: Hymn[]) => { addedCount: number, duplicates: number } }) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -100,10 +100,10 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
     const parsedHymns = parseHymns(values.hymnsText);
     
     if (parsedHymns.length > 0) {
-        const addedCount = onHymnsAdded(parsedHymns);
+        const { addedCount, duplicates } = onHymnsAdded(parsedHymns);
         toast({
           title: 'Himnos Procesados',
-          description: `Se agregaron ${addedCount} himnos nuevos. Se ignoraron ${parsedHymns.length - addedCount} duplicados.`,
+          description: `Se agregaron ${addedCount} himnos nuevos. Se ignoraron ${duplicates} duplicados.`,
         });
     } else {
         toast({

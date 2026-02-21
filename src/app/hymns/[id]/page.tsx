@@ -1,40 +1,45 @@
-import { getHymnById, hymns } from '@/lib/hymns';
+"use client";
+
+import { useEffect } from 'react';
+import { notFound, useParams } from 'next/navigation';
+import { useHymns } from '@/hooks/use-hymns';
 import { HymnDetailClient } from '@/components/hymn-detail-client';
-import { notFound } from 'next/navigation';
-import type { Metadata } from 'next';
+import { Skeleton } from '@/components/ui/skeleton';
 
-type Props = {
-  params: { id: string };
-};
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const hymnId = parseInt(params.id, 10);
+export default function HymnPage() {
+  const params = useParams();
+  const { getHymnById, isLoaded } = useHymns();
+  
+  const hymnId = parseInt(params.id as string, 10);
   const hymn = getHymnById(hymnId);
 
-  if (!hymn) {
-    return {
-      title: 'Himno no encontrado',
-    };
-  }
+  useEffect(() => {
+    if (isLoaded && !hymn) {
+      notFound();
+    }
+  }, [isLoaded, hymn]);
 
-  return {
-    title: `${hymn.number}. ${hymn.title} | Himnario EECH`,
-    description: `Letra del himno "${hymn.title}"`,
-  };
-}
-
-export function generateStaticParams() {
-  return hymns.map((hymn) => ({
-    id: hymn.number.toString(),
-  }));
-}
-
-export default function HymnPage({ params }: Props) {
-  const hymnId = parseInt(params.id, 10);
-  const hymn = getHymnById(hymnId);
-
-  if (!hymn) {
-    notFound();
+  if (!isLoaded || !hymn) {
+    return (
+        <div className="flex flex-col min-h-screen bg-background">
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                 <div className="flex-1 px-4">
+                    <Skeleton className="h-6 w-3/4 mx-auto" />
+                 </div>
+                <Skeleton className="h-10 w-10 rounded-full" />
+            </header>
+            <main className="flex-1 py-8 container max-w-3xl">
+                <div className="space-y-4 text-center">
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-5/6 mx-auto" />
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-4/6 mx-auto" />
+                </div>
+            </main>
+        </div>
+    );
   }
 
   return <HymnDetailClient hymn={hymn} />;

@@ -74,10 +74,14 @@ export function usePraises() {
     };
   }, [praises]);
 
+  const deletePraise = useCallback((praiseId: string) => {
+    setPraises(prevPraises => prevPraises.filter(p => p.id !== praiseId));
+  }, []);
+
   const getPraiseById = useCallback((id: string): Praise | undefined => {
     if (!isLoaded) return undefined;
     return praises.find(p => p.id === id);
   }, [praises, isLoaded]);
 
-  return { praises, addPraise, addPraises, getPraiseById, isLoaded };
+  return { praises, addPraise, addPraises, deletePraise, getPraiseById, isLoaded };
 }

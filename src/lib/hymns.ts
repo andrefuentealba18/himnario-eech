@@ -4,6 +4,8 @@ export type Hymn = {
   lyrics: string;
 };
 
+// This is now just the initial data for the useHymns hook.
+// The hook will manage the hymns in localStorage.
 export const hymns: Hymn[] = [
   {
     number: 1,
@@ -3503,7 +3505,3 @@ Toca el buen Salvador,
 ¿cuándo será, pecador?.`
   }
 ];
-
-export function getHymnById(id: number): Hymn | undefined {
-  return hymns.find(hymn => hymn.number === id);
-}

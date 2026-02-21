@@ -1,32 +1,19 @@
 "use client";
 
-import { useState } from 'react';
-import { hymns as initialHymns, type Hymn } from '@/lib/hymns';
+import { useHymns } from '@/hooks/use-hymns';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 export function HymnAdminList() {
-  const [hymns, setHymns] = useState<Hymn[]>(initialHymns);
+  const { hymns, deleteHymn, isLoaded } = useHymns();
   const { toast } = useToast();
 
   const handleDelete = (hymnNumber: number) => {
-    // This is a simulation. In a real app, you'd call an API here.
-    setHymns(hymns.filter(h => h.number !== hymnNumber));
+    deleteHymn(hymnNumber);
     toast({
-      title: 'Himno Eliminado (Simulación)',
-      description: 'El himno se ha quitado de la lista. Los cambios no son permanentes.',
+      title: 'Himno Eliminado',
+      description: 'El himno se ha eliminado de la lista.',
     });
   };
 
@@ -36,6 +23,10 @@ export function HymnAdminList() {
       description: 'La función de editar estará disponible pronto.',
     });
   };
+
+  if (!isLoaded) {
+    return <p className="text-muted-foreground">Cargando himnos...</p>;
+  }
 
   if (hymns.length === 0) {
     return <p className="text-muted-foreground">No hay himnos para mostrar. Agrégalos desde el diálogo correspondiente.</p>;
@@ -54,28 +45,10 @@ export function HymnAdminList() {
               <Edit className="h-4 w-4" />
               <span className="sr-only">Editar</span>
             </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="icon">
-                  <Trash2 className="h-4 w-4" />
-                  <span className="sr-only">Eliminar</span>
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>¿Estás realmente seguro?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Esta acción no se puede deshacer. Esto eliminará el himno de la lista (de forma simulada).
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => handleDelete(hymn.number)}>
-                    Sí, eliminar
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <Button variant="destructive" size="icon" onClick={() => handleDelete(hymn.number)}>
+              <Trash2 className="h-4 w-4" />
+              <span className="sr-only">Eliminar</span>
+            </Button>
           </div>
         </div>
       ))}

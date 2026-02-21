@@ -3,27 +3,17 @@
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import { usePraises } from '@/hooks/use-praises';
 
 export function PraiseAdminList() {
-  const { praises, isLoaded } = usePraises();
+  const { praises, deletePraise, isLoaded } = usePraises();
   const { toast } = useToast();
 
   const handleDelete = (praiseId: string) => {
+    deletePraise(praiseId);
     toast({
-      title: 'Función no implementada',
-      description: 'La eliminación de alabanzas se implementará pronto.',
+      title: 'Alabanza Eliminada',
+      description: 'La alabanza se ha eliminado de la lista.',
     });
   };
 
@@ -56,28 +46,10 @@ export function PraiseAdminList() {
               <Edit className="h-4 w-4" />
               <span className="sr-only">Editar</span>
             </Button>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="icon">
-                  <Trash2 className="h-4 w-4" />
-                  <span className="sr-only">Eliminar</span>
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>¿Estás realmente seguro?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Esta acción no se puede deshacer. Esto eliminará la alabanza de la lista (de forma simulada).
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => handleDelete(praise.id)}>
-                    Sí, eliminar
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            <Button variant="destructive" size="icon" onClick={() => handleDelete(praise.id)}>
+              <Trash2 className="h-4 w-4" />
+              <span className="sr-only">Eliminar</span>
+            </Button>
           </div>
         </div>
       ))}

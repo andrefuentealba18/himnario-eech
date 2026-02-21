@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
+import { useHymns } from '@/hooks/use-hymns';
 import type { Hymn } from '@/lib/hymns';
-import { hymns as initialHymns } from '@/lib/hymns';
 import { HymnListClient } from '@/components/hymn-list-client';
 import { BookOpen, ChevronLeft, Plus, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
@@ -15,36 +15,26 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useToast } from '@/hooks/use-toast';
 
 
 export default function HymnsIndexPage() {
-  const [hymns, setHymns] = useState<Hymn[]>(initialHymns);
+  const { hymns, addHymn, addHymns: addMultipleHymns, isLoaded } = useHymns();
   const { toast } = useToast();
 
-  const handleAddHymns = (newHymns: Hymn[]): number => {
-    const existingNumbers = new Set(hymns.map(h => h.number));
-    const uniqueNewHymns = newHymns.filter(h => !existingNumbers.has(h.number));
-    
-    if (uniqueNewHymns.length > 0) {
-      setHymns(prevHymns => [...prevHymns, ...uniqueNewHymns].sort((a, b) => a.number - b.number));
-    }
-    
-    return uniqueNewHymns.length;
+  const handleAddHymns = (newHymns: Hymn[]): { addedCount: number, duplicates: number } => {
+    return addMultipleHymns(newHymns);
   };
   
   const handleAddSingleHymn = (newHymn: Hymn): boolean => {
-    const existingNumbers = new Set(hymns.map(h => h.number));
-    if(existingNumbers.has(newHymn.number)){
+    const success = addHymn(newHymn);
+    if(!success){
         toast({
             variant: 'destructive',
             title: 'Error al agregar',
             description: `El himno número ${newHymn.number} ya existe.`,
         });
-        return false;
     }
-    setHymns(prevHymns => [...prevHymns, newHymn].sort((a,b) => a.number - b.number));
-    return true;
+    return success;
   }
 
 
@@ -90,7 +80,7 @@ export default function HymnsIndexPage() {
         </header>
 
         <div className="p-4">
-          <HymnListClient hymns={hymns} />
+          {isLoaded ? <HymnListClient hymns={hymns} /> : <p>Cargando himnos...</p>}
         </div>
       </div>
     </main>
