@@ -57,27 +57,10 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
               >
                 {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const isChorus = paragraph.startsWith('CORO:');
-                  const paragraphLines = paragraph.split('\n');
-
                   return (
-                    <div key={pIndex} className="mb-6">
-                      {paragraphLines.map((line, lIndex) => {
-                        const lineParts = line.match(/^(\d+\.\s*)(.*)/);
-                        if (lineParts) {
-                          return (
-                            <div key={lIndex} className="relative px-8">
-                                <span className="absolute left-10">{lineParts[1]}</span>
-                                <p>{lineParts[2]}</p>
-                            </div>
-                          );
-                        }
-                        return(
-                          <p key={lIndex} className={isChorus ? 'font-bold' : ''}>
-                            {line}
-                          </p>
-                        )
-                      })}
-                    </div>
+                    <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-bold leading-snug' : ''}`}>
+                      {paragraph}
+                    </p>
                   );
                 })}
               </div>
