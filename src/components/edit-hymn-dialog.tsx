@@ -108,7 +108,7 @@ export function EditHymnDialog({ children, hymn, onHymnUpdated, onSaveComplete }
                 <FormItem>
                   <FormLabel>Número</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} disabled />
+                    <Input type="number" {...field} readOnly />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
