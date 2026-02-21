@@ -8,6 +8,7 @@ import { usePraises } from '@/context/praises-context';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { PraiseAdminActions } from './praise-admin-actions';
+import { Badge } from '@/components/ui/badge';
 
 interface PraiseDetailClientProps {
   praise: Praise;
@@ -56,14 +57,14 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
           </Link>
         </Button>
         <div className="text-center px-4 overflow-hidden flex-1">
-            <h1 className="font-bold font-headline text-lg truncate">{praise.title}</h1>
-            {praise.tone && <p className="text-sm text-muted-foreground">{praise.tone}</p>}
+            <h1 className="font-bold font-headline text-lg truncate mb-1">{praise.title}</h1>
+            {praise.tone && <Badge variant="outline">{praise.tone}</Badge>}
         </div>
         <div className="w-10" />
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="max-w-xs text-center">
+        <div className="max-w-[20rem] text-center">
             <div
                 className={`font-body leading-loose text-lg`}
             >

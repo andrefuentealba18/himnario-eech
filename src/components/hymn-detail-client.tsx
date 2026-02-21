@@ -6,6 +6,7 @@ import { useFavorites } from '@/hooks/use-favorites';
 import { useFontSize } from '@/hooks/use-font-size';
 import { Button } from '@/components/ui/button';
 import { Star, ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 
 interface HymnDetailClientProps {
   hymn: Hymn;
@@ -22,7 +23,7 @@ const fontSizes = [
 
 export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
   // Start with a larger default font size, index 1 ('text-lg')
-  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
+  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isFontLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
   const { isFavorite, toggleFavorite, isLoaded } = useFavorites();
   
   const isFav = isLoaded && isFavorite(hymn.number);
@@ -41,9 +42,12 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
         </Button>
         <div className="text-center px-4 overflow-hidden flex-1">
             <h1 className="font-bold font-headline text-lg truncate">{hymn.title}</h1>
-            <p className="text-sm text-muted-foreground">
-              Himno Nº {hymn.number} {hymn.tone && `• ${hymn.tone}`}
-            </p>
+            <div className="flex items-center justify-center gap-2 mt-1">
+                <p className="text-sm text-muted-foreground">
+                  Himno Nº {hymn.number}
+                </p>
+                {hymn.tone && <Badge variant="outline">{hymn.tone}</Badge>}
+            </div>
         </div>
         <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number)} disabled={!isLoaded}>
           <Star className={`h-6 w-6 transition-all duration-200 ${isFav ? 'fill-primary text-primary scale-110' : 'text-foreground'}`} />
@@ -52,7 +56,7 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="max-w-xs text-center">
+        <div className="max-w-[20rem] text-center">
             {isFontLoaded ? (
               <div
                 className={`font-body leading-loose transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
