@@ -18,9 +18,9 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [instances, setInstances] = useState<FirebaseInstances | null>(null);
 
   useEffect(() => {
-    const initialize = async () => {
+    const initialize = () => {
       if (!firebaseConfig || !(firebaseConfig as any).apiKey) {
-        console.warn("La configuración de Firebase está ausente. La aplicación no se puede conectar a Firebase.");
+        console.warn("La configuración de Firebase está ausente. La aplicación esperará a que esté disponible (esto es normal en el desarrollo local).");
         return;
       }
 
@@ -28,21 +28,20 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
       const auth = getAuth(app);
       const firestore = getFirestore(app);
 
-      try {
-        await enableIndexedDbPersistence(firestore);
-      } catch (err: any) {
-        if (err.code === 'failed-precondition') {
-          console.warn("La persistencia de Firestore falló: solo se puede habilitar en una pestaña a la vez.");
-        } else if (err.code === 'unimplemented') {
-          console.warn("La persistencia de Firestore no es compatible con este navegador.");
-        }
-      }
+      enableIndexedDbPersistence(firestore)
+        .catch((err: any) => {
+          if (err.code === 'failed-precondition') {
+            console.warn("La persistencia de Firestore falló: solo se puede habilitar en una pestaña a la vez.");
+          } else if (err.code === 'unimplemented') {
+            console.warn("La persistencia de Firestore no es compatible con este navegador.");
+          }
+        });
       
       setInstances({ app, auth, firestore });
     };
 
     initialize();
-  }, []); // El error estaba aquí, la dependencia [instances] creaba un bucle infinito.
+  }, []); // El array de dependencias vacío es CRÍTICO para prevenir bucles infinitos.
 
   return (
     <FirebaseContext.Provider value={instances}>

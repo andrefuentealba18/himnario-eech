@@ -27,8 +27,14 @@ const PraisesContext = createContext<PraisesContextType | undefined>(undefined);
 
 export function PraisesProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
-  const praisesCollectionRef = useMemo(() => firestore ? collection(firestore, 'praises') : null, [firestore]);
-  const { data: rawPraises, loading: isLoading } = useCollection<Praise>(praisesCollectionRef);
+  
+  const praisesCollectionRef = useMemo(() => 
+    firestore ? collection(firestore, 'praises') : null
+  , [firestore]);
+  
+  const { data: rawPraises, loading: isLoadingFromHook } = useCollection<Praise>(praisesCollectionRef);
+
+  const isLoaded = !!firestore && !isLoadingFromHook;
 
   const praises = useMemo(() => {
     return rawPraises ? [...rawPraises].sort((a, b) => a.title.localeCompare(b.title)) : [];
@@ -65,7 +71,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         const docRef = doc(firestore, 'praises', id);
         batch.set(docRef, praiseData);
         addedCount++;
-        existingTitles.add(id); // Add to set to avoid duplicates within the same batch
+        existingTitles.add(id);
       }
     }
     
@@ -108,8 +114,6 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   const getPraiseById = useCallback((id: string): Praise | undefined => {
     return praises.find(p => p.id === id);
   }, [praises]);
-
-  const isLoaded = !!firestore && !isLoading;
 
   const value = { praises, addPraise, addPraises, deletePraise, updatePraise, getPraiseById, isLoaded };
 

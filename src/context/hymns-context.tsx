@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useMemo } from 'react';
+import { createContext, useContext, useEffect, useCallback, ReactNode, useMemo } from 'react';
 import type { Hymn } from '@/lib/hymns';
 import { hymns as initialHymnsData } from '@/lib/hymns-initial';
 import { useFirestore, useCollection } from '@/firebase';
@@ -21,9 +21,15 @@ const HymnsContext = createContext<HymnsContextType | undefined>(undefined);
 
 export function HymnsProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
-  const hymnsCollectionRef = useMemo(() => firestore ? collection(firestore, 'hymns') : null, [firestore]);
-  const { data: rawHymns, loading: isLoading } = useCollection<Hymn>(hymnsCollectionRef);
   const { toast } = useToast();
+
+  const hymnsCollectionRef = useMemo(() => 
+    firestore ? collection(firestore, 'hymns') : null
+  , [firestore]);
+
+  const { data: rawHymns, loading: isLoadingFromHook } = useCollection<Hymn>(hymnsCollectionRef);
+  
+  const isLoaded = !!firestore && !isLoadingFromHook;
 
   const hymns = useMemo(() => {
     return rawHymns ? [...rawHymns].sort((a, b) => a.number - b.number) : [];
@@ -31,8 +37,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const migrateData = async () => {
-        // Only migrate if firestore is ready, not loading, and the collection is empty.
-        if (firestore && !isLoading && rawHymns?.length === 0) {
+        if (isLoaded && rawHymns?.length === 0) {
             const migrationFlag = 'hymns_migrated_v1';
             if (localStorage.getItem(migrationFlag)) {
                 return;
@@ -41,25 +46,29 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
             console.log('Migrating initial hymns to Firestore...');
             toast({ title: 'Configurando el himnario por primera vez...', description: 'Importando himnos a la nube. Esto puede tardar un momento.' });
             
-            const hymnsRef = collection(firestore, 'hymns');
-            const batch = writeBatch(firestore);
+            const batch = writeBatch(firestore!);
             initialHymnsData.forEach((hymn) => {
-                const docRef = doc(hymnsRef, hymn.number.toString());
+                const docRef = doc(firestore!, 'hymns', hymn.number.toString());
                 batch.set(docRef, hymn);
             });
-            await batch.commit();
 
-            localStorage.setItem(migrationFlag, 'true');
-            toast({ title: '¡Himnario listo!', description: 'Todos los himnos han sido cargados en la nube.' });
+            try {
+              await batch.commit();
+              localStorage.setItem(migrationFlag, 'true');
+              toast({ title: '¡Himnario listo!', description: 'Todos los himnos han sido cargados en la nube.' });
+            } catch (error) {
+              console.error("Hymn migration failed:", error);
+              toast({ variant: 'destructive', title: 'Error de Migración', description: 'No se pudieron cargar los himnos iniciales.' });
+            }
         }
     };
     migrateData();
-  }, [firestore, isLoading, rawHymns, toast]);
+  }, [isLoaded, rawHymns, firestore, toast]);
 
   const addHymn = useCallback(async (newHymn: Omit<Hymn, 'id'>): Promise<boolean> => {
     if (!firestore) return false;
     if (hymns.some(h => h.number === newHymn.number)) {
-      return false; // Already exists
+      return false;
     }
     const docRef = doc(firestore, 'hymns', newHymn.number.toString());
     await setDoc(docRef, newHymn);
@@ -105,8 +114,6 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
   const getHymnById = useCallback((id: number): Hymn | undefined => {
     return hymns.find(h => h.number === id);
   }, [hymns]);
-
-  const isLoaded = !!firestore && !isLoading;
 
   const value = { hymns, addHymn, addHymns, updateHymn, deleteHymn, getHymnById, isLoaded };
 
