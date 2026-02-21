@@ -7,6 +7,7 @@ import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
 import { YouthChoirAdminList } from '@/components/youth-choir-admin-list';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { MissingHymns } from '@/components/missing-hymns';
 
 export default function AdminPage() {
   return (
@@ -27,11 +28,12 @@ export default function AdminPage() {
 
         <div className="p-4">
           <Tabs defaultValue="hymns" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="hymns">Himnos</TabsTrigger>
               <TabsTrigger value="praises">Alabanzas</TabsTrigger>
               <TabsTrigger value="choirs">Coros</TabsTrigger>
               <TabsTrigger value="youth-choirs">Coro Juventud</TabsTrigger>
+              <TabsTrigger value="missing-hymns">Faltantes</TabsTrigger>
             </TabsList>
             <TabsContent value="hymns">
               <Card>
@@ -73,11 +75,12 @@ export default function AdminPage() {
                   </CardContent>
                 </Card>
             </TabsContent>
+            <TabsContent value="missing-hymns">
+                <MissingHymns />
+            </TabsContent>
           </Tabs>
         </div>
       </div>
     </main>
   );
 }
-
-    
