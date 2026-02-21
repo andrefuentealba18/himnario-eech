@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 
 interface PraiseListClientProps {
   praises: Praise[];
@@ -23,7 +24,8 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
 
     return praises.filter(praise =>
       praise.title.toLowerCase().includes(lowercasedSearchTerm) ||
-      praise.lyrics.toLowerCase().includes(lowercasedSearchTerm)
+      praise.lyrics.toLowerCase().includes(lowercasedSearchTerm) ||
+      (praise.tone && praise.tone.toLowerCase().includes(lowercasedSearchTerm))
     );
   }, [searchTerm, praises]);
 
@@ -33,7 +35,7 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar por título o letra..."
+          placeholder="Buscar por título, letra o nota..."
           className="pl-10 w-full"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -63,7 +65,10 @@ function PraiseRoll({ praises }: { praises: Praise[] }) {
                 key={praise.id}
                 className="flex items-center gap-4 p-4 border-b transition-colors hover:bg-muted/50 rounded-lg"
             >
-                <span className="flex-1 font-medium">{praise.title}</span>
+                <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
+                    <span className="font-medium truncate">{praise.title}</span>
+                    {praise.tone && <Badge variant="outline" className="flex-shrink-0">{praise.tone}</Badge>}
+                </div>
             </Link>
         ))}
         </div>

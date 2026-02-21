@@ -41,7 +41,9 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
         </Button>
         <div className="text-center px-4 overflow-hidden flex-1">
             <h1 className="font-bold font-headline text-lg truncate">{hymn.title}</h1>
-            <p className="text-sm text-muted-foreground">Himno Nº {hymn.number}</p>
+            <p className="text-sm text-muted-foreground">
+              Himno Nº {hymn.number} {hymn.tone && `• ${hymn.tone}`}
+            </p>
         </div>
         <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number)} disabled={!isLoaded}>
           <Star className={`h-6 w-6 transition-all duration-200 ${isFav ? 'fill-primary text-primary scale-110' : 'text-foreground'}`} />
@@ -50,7 +52,7 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="max-w-sm text-center">
+        <div className="max-w-xs text-center">
             {isFontLoaded ? (
               <div
                 className={`font-body leading-loose transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}

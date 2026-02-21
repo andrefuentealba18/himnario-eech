@@ -2,6 +2,7 @@ export type Hymn = {
   number: number;
   title: string;
   lyrics: string;
+  tone?: string;
 };
 
 // This is now just the initial data for the useHymns hook.
@@ -1368,7 +1369,7 @@ quiero para ti vivir.
 por la cual me encaminé.
 mas su tierno amor me trajo
 y contrito me humille.
-Heme, pues aquí a tus plantas,
+Heme, pues, aquí a tus plantas,
 ¡oh, perdona mi maldad!
 No desoigas mi plegaria,
 Sálvame por tu bondad.`
@@ -1524,7 +1525,7 @@ donde más llanto allí no habrá`
     lyrics: `1. Cristo busca limpios corazones
 que le sirvan siempre con fidelidad;
 que a los pecadores insten con fervor
-que se vuelvan al Señor de su maldad
+que se vuelvan al Señor de su maldad;
 
 CORO:
 Id a trabajar allá en los campos del Señor

@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFavorites } from '@/hooks/use-favorites';
 import { Search, Star, List } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 
 interface HymnListClientProps {
   hymns: Hymn[];
@@ -34,7 +35,8 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
     return listToFilter.filter(hymn =>
       hymn.title.toLowerCase().includes(lowercasedSearchTerm) ||
       hymn.number.toString().includes(lowercasedSearchTerm) ||
-      hymn.lyrics.toLowerCase().includes(lowercasedSearchTerm)
+      hymn.lyrics.toLowerCase().includes(lowercasedSearchTerm) ||
+      (hymn.tone && hymn.tone.toLowerCase().includes(lowercasedSearchTerm))
     );
   }, [searchTerm, hymns, activeTab, favorites, isLoaded]);
 
@@ -44,7 +46,7 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar por número, título o letra..."
+          placeholder="Buscar por número, título, letra o nota..."
           className="pl-10 w-full"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -98,8 +100,11 @@ function HymnRoll({ hymns }: { hymns: Hymn[] }) {
                 key={hymn.number}
                 className="flex items-center gap-4 p-3 border-b transition-colors hover:bg-muted/50 rounded-lg"
             >
-                <span className="font-bold text-primary w-8">{hymn.number}</span>
-                <span className="flex-1 font-medium">{hymn.title}</span>
+                <span className="font-bold text-primary w-8 text-center">{hymn.number}</span>
+                <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
+                    <span className="font-medium truncate">{hymn.title}</span>
+                    {hymn.tone && <Badge variant="outline" className="flex-shrink-0">{hymn.tone}</Badge>}
+                </div>
             </Link>
         ))}
         </div>
