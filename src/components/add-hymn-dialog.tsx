@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { Hymn } from '@/lib/hymns';
 
 import { Button } from '@/components/ui/button';
@@ -11,7 +11,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
@@ -75,7 +74,8 @@ function parseHymns(text: string): Omit<Hymn, 'id'>[] {
         return hymns;
     }
     
-    const hymnBlocks = text.split(/^\s*(?=\d+\s+.*)/m).filter(block => block.trim());
+    // Updated regex to handle titles with special characters like '¿' and '¡'
+    const hymnBlocks = text.split(/^\s*(?=\d+\s+.+)/m).filter(block => block.trim());
 
     if (hymnBlocks.length === 0 && text.trim().length > 0) {
         hymnBlocks.push(text.trim());
@@ -122,10 +122,21 @@ function parseHymns(text: string): Omit<Hymn, 'id'>[] {
     return hymns;
 }
 
-export function AddHymnDialog({ children, onHymnsAdded }: { children: React.ReactNode, onHymnsAdded: (hymns: Omit<Hymn, 'id'>[]) => Promise<{ addedCount: number, updatedCount: number }> }) {
-  const [open, setOpen] = useState(false);
+interface AddHymnDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onHymnsAdded: (hymns: Omit<Hymn, 'id'>[]) => Promise<{ addedCount: number, updatedCount: number }>;
+}
+
+export function AddHymnDialog({ open, onOpenChange, onHymnsAdded }: AddHymnDialogProps) {
   const [text, setText] = useState('');
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (open) {
+      setText('');
+    }
+  }, [open]);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -154,15 +165,11 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
         });
     }
     
-    setText('');
-    setOpen(false);
+    onOpenChange(false);
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Agregar Varios Himnos</DialogTitle>

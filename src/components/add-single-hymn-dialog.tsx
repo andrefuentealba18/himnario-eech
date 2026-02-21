@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -16,7 +16,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Form,
@@ -47,8 +46,13 @@ const hymnSchema = z.object({
   lyrics: z.string().min(1, 'La letra es requerida.'),
 });
 
-export function AddSingleHymnDialog({ children, onHymnAdded }: { children: React.ReactNode, onHymnAdded: (hymn: Omit<Hymn, 'id'>) => Promise<boolean> }) {
-  const [open, setOpen] = useState(false);
+interface AddSingleHymnDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onHymnAdded: (hymn: Omit<Hymn, 'id'>) => Promise<boolean>;
+}
+
+export function AddSingleHymnDialog({ open, onOpenChange, onHymnAdded }: AddSingleHymnDialogProps) {
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof hymnSchema>>({
@@ -61,6 +65,12 @@ export function AddSingleHymnDialog({ children, onHymnAdded }: { children: React
     },
   });
 
+  useEffect(() => {
+    if (open) {
+      form.reset();
+    }
+  }, [open, form]);
+
   async function onSubmit(values: z.infer<typeof hymnSchema>) {
     const success = await onHymnAdded(values as Omit<Hymn, 'id'>);
     if (success) {
@@ -68,16 +78,12 @@ export function AddSingleHymnDialog({ children, onHymnAdded }: { children: React
         title: 'Himno Agregado',
         description: `El himno #${values.number} "${values.title}" ha sido guardado.`,
       });
-      form.reset();
-      setOpen(false);
+      onOpenChange(false);
     }
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Agregar Nuevo Himno</DialogTitle>

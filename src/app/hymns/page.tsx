@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { useHymns } from '@/context/hymns-context';
 import type { Hymn } from '@/lib/hymns';
@@ -21,8 +22,10 @@ import { Badge } from '@/components/ui/badge';
 export default function HymnsIndexPage() {
   const { hymns, addHymn, addHymns: addMultipleHymns, isLoaded } = useHymns();
   const { toast } = useToast();
+  const [isSingleHymnDialogOpen, setSingleHymnDialogOpen] = useState(false);
+  const [isMultiHymnDialogOpen, setMultiHymnDialogOpen] = useState(false);
 
-  const handleAddHymns = (newHymns: Omit<Hymn, 'id'>[]): Promise<{ addedCount: number, duplicates: number, updatedCount: number }> => {
+  const handleAddHymns = (newHymns: Omit<Hymn, 'id'>[]): Promise<{ addedCount: number, updatedCount: number }> => {
     // The context now returns added and updated, but the dialog expects duplicates.
     // We can consider updated as duplicates for the message.
     return addMultipleHymns(newHymns).then(result => ({ ...result, duplicates: result.updatedCount }));
@@ -42,54 +45,64 @@ export default function HymnsIndexPage() {
 
 
   return (
-    <main className="flex flex-col items-center bg-background min-h-screen">
-      <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
-        <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm p-2 border-b flex items-center justify-center relative h-14">
-            <Button variant="ghost" size="icon" asChild className="absolute left-2 top-1/2 -translate-y-1/2">
-                <Link href="/">
-                    <ChevronLeft className="h-6 w-6" />
-                    <span className="sr-only">Volver</span>
-                </Link>
-            </Button>
-            <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold font-headline text-foreground">
-                Himnos
-              </h1>
-              <Badge variant="secondary" className="text-base font-semibold px-2">
-                {hymns.length}
-              </Badge>
-              <BookOpen className="h-8 w-8 text-primary" />
-            </div>
-            <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline">
-                      <Plus className="mr-2 h-4 w-4" />
-                      Agregar
-                      <ChevronDown className="ml-2 h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent>
-                    <AddSingleHymnDialog onHymnAdded={handleAddSingleHymn}>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        Agregar un himno
-                      </DropdownMenuItem>
-                    </AddSingleHymnDialog>
-                     <AddHymnDialog onHymnsAdded={addMultipleHymns}>
-                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        Agregar varios himnos
-                       </DropdownMenuItem>
-                     </AddHymnDialog>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-        </header>
+    <>
+      <main className="flex flex-col items-center bg-background min-h-screen">
+        <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
+          <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm p-2 border-b flex items-center justify-center relative h-14">
+              <Button variant="ghost" size="icon" asChild className="absolute left-2 top-1/2 -translate-y-1/2">
+                  <Link href="/">
+                      <ChevronLeft className="h-6 w-6" />
+                      <span className="sr-only">Volver</span>
+                  </Link>
+              </Button>
+              <div className="flex items-center gap-3">
+                <h1 className="text-2xl font-bold font-headline text-foreground">
+                  Himnos
+                </h1>
+                <Badge variant="secondary" className="text-base font-semibold px-2">
+                  {hymns.length}
+                </Badge>
+                <BookOpen className="h-8 w-8 text-primary" />
+              </div>
+              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline">
+                        <Plus className="mr-2 h-4 w-4" />
+                        Agregar
+                        <ChevronDown className="ml-2 h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                        <DropdownMenuItem onSelect={() => setSingleHymnDialogOpen(true)}>
+                          Agregar un himno
+                        </DropdownMenuItem>
+                         <DropdownMenuItem onSelect={() => setMultiHymnDialogOpen(true)}>
+                          Agregar varios himnos
+                         </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+              </div>
+          </header>
 
-        <div className="p-4 flex-1 overflow-auto">
-          {isLoaded ? <HymnListClient hymns={hymns} /> : <p>Cargando himnos...</p>}
+          <div className="p-4 flex-1 overflow-auto">
+            {isLoaded ? <HymnListClient hymns={hymns} /> : <p>Cargando himnos...</p>}
+          </div>
+
         </div>
+      </main>
 
-      </div>
-    </main>
+      <AddSingleHymnDialog 
+        open={isSingleHymnDialogOpen}
+        onOpenChange={setSingleHymnDialogOpen}
+        onHymnAdded={handleAddSingleHymn}
+      />
+      
+      <AddHymnDialog 
+        open={isMultiHymnDialogOpen}
+        onOpenChange={setMultiHymnDialogOpen}
+        onHymnsAdded={addMultipleHymns}
+      />
+    </>
   );
 }
