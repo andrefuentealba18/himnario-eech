@@ -28,7 +28,10 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
   const isFav = isLoaded && isFavorite(hymn.number);
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="relative flex flex-col min-h-screen bg-background">
+      <div 
+        className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background -z-10"
+      />
       <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/hymns">
