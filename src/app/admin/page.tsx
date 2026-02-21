@@ -1,8 +1,8 @@
 import Link from 'next/link';
-import { hymns } from '@/lib/hymns';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, Edit, Trash2 } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
+import { HymnAdminList } from '@/components/hymn-admin-list';
 
 export default function AdminPage() {
   return (
@@ -27,26 +27,7 @@ export default function AdminPage() {
               <CardTitle>Gestionar Himnos</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex flex-col gap-2">
-                {hymns.map((hymn) => (
-                  <div key={hymn.number} className="flex items-center justify-between p-3 border rounded-lg">
-                    <div>
-                      <span className="font-bold text-primary">{hymn.number}.</span>
-                      <span className="ml-2 font-medium">{hymn.title}</span>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="icon" disabled>
-                        <Edit className="h-4 w-4" />
-                        <span className="sr-only">Editar</span>
-                      </Button>
-                      <Button variant="destructive" size="icon" disabled>
-                        <Trash2 className="h-4 w-4" />
-                        <span className="sr-only">Eliminar</span>
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <HymnAdminList />
             </CardContent>
           </Card>
 
