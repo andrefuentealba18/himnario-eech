@@ -33,27 +33,43 @@ const bulkPraisesSchema = z.object({
 
 function parsePraises(text: string): Omit<Praise, 'id'>[] {
     const praises: Omit<Praise, 'id'>[] = [];
-    if (!text) {
+    if (!text || text.trim() === '') {
         return praises;
     }
 
-    // Use a more robust regex to split by one or more blank lines.
-    const praiseBlocks = text.trim().split(/\n\s*\n+/);
+    const lines = text.split('\n');
+    let currentPraise: Omit<Praise, 'id'> | null = null;
+    let currentLyrics: string[] = [];
 
-    for (const block of praiseBlocks) {
-        // Trim each block and filter out any empty lines that might result from extra whitespace.
-        const lines = block.trim().split('\n').filter(line => line.trim() !== '');
+    for (const line of lines) {
+        const trimmedLine = line.trim();
         
-        if (lines.length > 0) {
-            const title = lines.shift()!.trim();
-            const lyrics = lines.join('\n').trim();
+        const isTitle = trimmedLine.length > 0 && trimmedLine === trimmedLine.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(trimmedLine);
 
-            // Only add the praise if both title and lyrics are present.
-            if (title && lyrics) {
-                praises.push({ title, lyrics });
+        if (isTitle) {
+            if (currentPraise) {
+                currentPraise.lyrics = currentLyrics.join('\n').trim();
+                if (currentPraise.title && currentPraise.lyrics) {
+                    praises.push(currentPraise);
+                }
+            }
+
+            currentPraise = { title: trimmedLine, lyrics: '' };
+            currentLyrics = [];
+        } else {
+            if (currentPraise) {
+                currentLyrics.push(line);
             }
         }
     }
+
+    if (currentPraise) {
+        currentPraise.lyrics = currentLyrics.join('\n').trim();
+        if (currentPraise.title && currentPraise.lyrics) {
+            praises.push(currentPraise);
+        }
+    }
+
     return praises;
 }
 
@@ -82,7 +98,7 @@ export function AddPraisesDialog({ children, onPraisesAdded }: { children: React
         toast({
             variant: "destructive",
             title: 'Formato Incorrecto',
-            description: 'No se pudieron procesar las alabanzas. Asegúrate de separar cada alabanza con una línea en blanco, y que la primera línea de cada una sea el título.',
+            description: 'No se pudieron procesar las alabanzas. Asegúrate que el título de cada alabanza esté completamente en mayúsculas.',
         });
     }
     
@@ -99,7 +115,7 @@ export function AddPraisesDialog({ children, onPraisesAdded }: { children: React
         <DialogHeader>
           <DialogTitle>Agregar Varias Alabanzas</DialogTitle>
           <DialogDescription>
-            Pega el texto de varias alabanzas. La primera línea de cada bloque debe ser el título. Separa cada alabanza con al menos una línea en blanco.
+            Pega el texto de varias alabanzas. Cada alabanza debe comenzar con su título escrito completamente en MAYÚSCULAS. El sistema las separará automáticamente.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -112,7 +128,7 @@ export function AddPraisesDialog({ children, onPraisesAdded }: { children: React
                   <FormLabel>Texto de las alabanzas</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="Título de alabanza 1...&#10;Letra...&#10;&#10;Título de alabanza 2...&#10;Letra..." 
+                      placeholder="TÍTULO EN MAYÚSCULAS&#10;Letra de la alabanza...&#10;...&#10;&#10;OTRO TÍTULO EN MAYÚSCULAS&#10;Letra de la otra alabanza..." 
                       className="h-64 min-h-[10rem]" 
                       {...field} />
                   </FormControl>
