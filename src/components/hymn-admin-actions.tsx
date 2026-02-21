@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -85,9 +86,6 @@ export function HymnAdminActions({ hymn, onDelete, onUpdate }: HymnAdminActionsP
 
   const handleUpdate = (data: Omit<Hymn, 'number'>) => {
     const result = onUpdate(data);
-    if(result.success){
-      setDialogOpen(false);
-    }
     return result;
   }
 

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -86,10 +87,6 @@ export function PraiseAdminActions({ praise, onDelete, onUpdate }: PraiseAdminAc
 
   const handleUpdate = (data: Omit<Praise, 'id'>) => {
     const result = onUpdate(data);
-    if(result.success){
-      // Close the admin dialog on successful update
-      setDialogOpen(false);
-    }
     return result;
   }
 
