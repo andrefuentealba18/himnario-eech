@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -48,9 +47,10 @@ interface EditPraiseDialogProps {
   children: React.ReactNode;
   praise: Praise;
   onPraiseUpdated: (updatedData: Omit<Praise, 'id'>) => { success: boolean };
+  onSaveComplete?: () => void;
 }
 
-export function EditPraiseDialog({ children, praise, onPraiseUpdated }: EditPraiseDialogProps) {
+export function EditPraiseDialog({ children, praise, onPraiseUpdated, onSaveComplete }: EditPraiseDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<FormData>({
@@ -63,11 +63,13 @@ export function EditPraiseDialog({ children, praise, onPraiseUpdated }: EditPrai
   });
   
   useEffect(() => {
-    form.reset({
-      title: praise.title,
-      tone: praise.tone || '',
-      lyrics: praise.lyrics,
-    });
+    if (open) {
+      form.reset({
+        title: praise.title,
+        tone: praise.tone || '',
+        lyrics: praise.lyrics,
+      });
+    }
   }, [praise, form, open]);
 
 
@@ -75,6 +77,7 @@ export function EditPraiseDialog({ children, praise, onPraiseUpdated }: EditPrai
     const result = onPraiseUpdated(values);
     if (result.success) {
       setOpen(false);
+      onSaveComplete?.();
     }
   }
 

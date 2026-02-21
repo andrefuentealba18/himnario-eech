@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -89,6 +88,10 @@ export function HymnAdminActions({ hymn, onDelete, onUpdate }: HymnAdminActionsP
     return result;
   }
 
+  const handleSaveComplete = () => {
+    handleOpenChange(false);
+  }
+
   return (
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
@@ -134,7 +137,7 @@ export function HymnAdminActions({ hymn, onDelete, onUpdate }: HymnAdminActionsP
               <DialogDescription>¿Qué deseas hacer con el himno #{hymn.number} "{hymn.title}"?</DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 pt-4">
-                <EditHymnDialog hymn={hymn} onHymnUpdated={handleUpdate}>
+                <EditHymnDialog hymn={hymn} onHymnUpdated={handleUpdate} onSaveComplete={handleSaveComplete}>
                     <Button variant="outline" className="w-full">
                         <Edit className="mr-2 h-4 w-4" /> Editar
                     </Button>

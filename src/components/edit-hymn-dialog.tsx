@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -52,9 +51,10 @@ interface EditHymnDialogProps {
   children: React.ReactNode;
   hymn: Hymn;
   onHymnUpdated: (updatedData: Omit<Hymn, 'number'>) => { success: boolean };
+  onSaveComplete?: () => void;
 }
 
-export function EditHymnDialog({ children, hymn, onHymnUpdated }: EditHymnDialogProps) {
+export function EditHymnDialog({ children, hymn, onHymnUpdated, onSaveComplete }: EditHymnDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<FormData>({
@@ -68,12 +68,14 @@ export function EditHymnDialog({ children, hymn, onHymnUpdated }: EditHymnDialog
   });
 
   useEffect(() => {
-    form.reset({
-      number: hymn.number,
-      title: hymn.title,
-      tone: hymn.tone || '',
-      lyrics: hymn.lyrics,
-    });
+    if (open) {
+      form.reset({
+        number: hymn.number,
+        title: hymn.title,
+        tone: hymn.tone || '',
+        lyrics: hymn.lyrics,
+      });
+    }
   }, [hymn, form, open]);
 
   function onSubmit(values: FormData) {
@@ -81,6 +83,7 @@ export function EditHymnDialog({ children, hymn, onHymnUpdated }: EditHymnDialog
     const result = onHymnUpdated(updateData);
     if (result.success) {
       setOpen(false);
+      onSaveComplete?.();
     }
   }
 

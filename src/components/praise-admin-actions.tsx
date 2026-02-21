@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -89,6 +88,10 @@ export function PraiseAdminActions({ praise, onDelete, onUpdate }: PraiseAdminAc
     const result = onUpdate(data);
     return result;
   }
+  
+  const handleSaveComplete = () => {
+      handleOpenChange(false);
+  }
 
   return (
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
@@ -135,7 +138,7 @@ export function PraiseAdminActions({ praise, onDelete, onUpdate }: PraiseAdminAc
               <DialogDescription>¿Qué deseas hacer con "{praise.title}"?</DialogDescription>
             </DialogHeader>
             <div className="grid grid-cols-2 gap-4 pt-4">
-                <EditPraiseDialog praise={praise} onPraiseUpdated={handleUpdate}>
+                <EditPraiseDialog praise={praise} onPraiseUpdated={handleUpdate} onSaveComplete={handleSaveComplete}>
                     <Button variant="outline" className="w-full">
                         <Edit className="mr-2 h-4 w-4" /> Editar
                     </Button>
