@@ -49,6 +49,34 @@ export default function AdminPage() {
               </div>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Gestionar Alabanzas</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Próximamente...</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Gestionar Coros</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Próximamente...</p>
+            </CardContent>
+          </Card>
+          
+          <Card>
+            <CardHeader>
+              <CardTitle>Gestionar Alabanza Coro Juventud</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-muted-foreground">Próximamente...</p>
+            </CardContent>
+          </Card>
+
         </div>
       </div>
     </main>
