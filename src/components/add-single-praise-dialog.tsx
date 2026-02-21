@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -16,7 +16,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Form,
@@ -45,8 +44,13 @@ const praiseSchema = z.object({
 
 type FormData = z.infer<typeof praiseSchema>;
 
-export function AddSinglePraiseDialog({ children, onPraiseAdded }: { children: React.ReactNode, onPraiseAdded: (praise: Omit<Praise, 'id'>) => Promise<{ success: boolean }> }) {
-  const [open, setOpen] = useState(false);
+interface AddSinglePraiseDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onPraiseAdded: (praise: Omit<Praise, 'id'>) => Promise<{ success: boolean }>;
+}
+
+export function AddSinglePraiseDialog({ open, onOpenChange, onPraiseAdded }: AddSinglePraiseDialogProps) {
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -58,6 +62,12 @@ export function AddSinglePraiseDialog({ children, onPraiseAdded }: { children: R
     },
   });
 
+  useEffect(() => {
+    if (open) {
+      form.reset();
+    }
+  }, [open, form]);
+
   async function onSubmit(values: FormData) {
     const result = await onPraiseAdded(values);
     if (result.success) {
@@ -65,8 +75,7 @@ export function AddSinglePraiseDialog({ children, onPraiseAdded }: { children: R
         title: 'Alabanza Agregada',
         description: `La alabanza "${values.title}" ha sido guardada.`,
       });
-      form.reset();
-      setOpen(false);
+      onOpenChange(false);
     } else {
         toast({
             variant: 'destructive',
@@ -77,10 +86,7 @@ export function AddSinglePraiseDialog({ children, onPraiseAdded }: { children: R
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Agregar Nueva Alabanza</DialogTitle>

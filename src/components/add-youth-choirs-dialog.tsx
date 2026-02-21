@@ -1,9 +1,6 @@
 "use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useState, useEffect } from 'react';
 import type { YouthChoir } from '@/lib/youth-choirs';
 
 import { Button } from '@/components/ui/button';
@@ -14,22 +11,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-
-const bulkSchema = z.object({
-  text: z.string().min(1, 'El texto de las alabanzas es requerido.'),
-});
 
 function parseSongs(text: string): Omit<YouthChoir, 'id'>[] {
     const songs: Omit<YouthChoir, 'id'>[] = [];
@@ -73,20 +58,25 @@ function parseSongs(text: string): Omit<YouthChoir, 'id'>[] {
     return songs;
 }
 
+interface AddYouthChoirsDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onYouthChoirsAdded: (youthChoirs: Omit<YouthChoir, 'id'>[]) => Promise<{ addedCount: number, duplicates: number }>;
+}
 
-export function AddYouthChoirsDialog({ children, onYouthChoirsAdded }: { children: React.ReactNode, onYouthChoirsAdded: (youthChoirs: Omit<YouthChoir, 'id'>[]) => Promise<{ addedCount: number, duplicates: number }> }) {
-  const [open, setOpen] = useState(false);
+export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded }: AddYouthChoirsDialogProps) {
+  const [text, setText] = useState('');
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof bulkSchema>>({
-    resolver: zodResolver(bulkSchema),
-    defaultValues: {
-      text: '',
-    },
-  });
+  useEffect(() => {
+    if (open) {
+      setText('');
+    }
+  }, [open]);
 
-  async function onSubmit(values: z.infer<typeof bulkSchema>) {
-    const parsed = parseSongs(values.text);
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const parsed = parseSongs(text);
     
     if (parsed.length > 0) {
         const { addedCount, duplicates } = await onYouthChoirsAdded(parsed);
@@ -102,15 +92,11 @@ export function AddYouthChoirsDialog({ children, onYouthChoirsAdded }: { childre
         });
     }
     
-    form.reset({text: ''});
-    setOpen(false);
+    onOpenChange(false);
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Agregar Varias Alabanzas (Coro Juventud)</DialogTitle>
@@ -118,32 +104,22 @@ export function AddYouthChoirsDialog({ children, onYouthChoirsAdded }: { childre
             Pega el texto de varias alabanzas. Cada una debe comenzar con su título escrito completamente en MAYÚSCULAS.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
-            <FormField
-              control={form.control}
-              name="text"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Texto de las alabanzas</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="TÍTULO EN MAYÚSCULAS&#10;Letra de la alabanza...&#10;...&#10;&#10;OTRO TÍTULO EN MAYÚSCULAS&#10;Letra de la otra alabanza..." 
-                      className="h-64 min-h-[10rem]" 
-                      {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+            <div className="space-y-2">
+                <Label htmlFor="youth-choir-bulk-text">Texto de las alabanzas</Label>
+                <Textarea 
+                  id="youth-choir-bulk-text"
+                  placeholder="TÍTULO EN MAYÚSCULAS&#10;Letra de la alabanza...&#10;...&#10;&#10;OTRO TÍTULO EN MAYÚSCULAS&#10;Letra de la otra alabanza..." 
+                  className="h-64 min-h-[10rem]" 
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                />
+            </div>
             <DialogFooter>
               <Button type="submit">Guardar Alabanzas</Button>
             </DialogFooter>
-          </form>
-        </Form>
+        </form>
       </DialogContent>
     </Dialog>
   );
 }
-
-    

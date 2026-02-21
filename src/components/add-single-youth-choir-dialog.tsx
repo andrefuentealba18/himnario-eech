@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,7 +15,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Form,
@@ -44,8 +43,13 @@ const youthChoirSchema = z.object({
 
 type FormData = z.infer<typeof youthChoirSchema>;
 
-export function AddSingleYouthChoirDialog({ children, onYouthChoirAdded }: { children: React.ReactNode, onYouthChoirAdded: (youthChoir: Omit<YouthChoir, 'id'>) => Promise<{ success: boolean }> }) {
-  const [open, setOpen] = useState(false);
+interface AddSingleYouthChoirDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onYouthChoirAdded: (youthChoir: Omit<YouthChoir, 'id'>) => Promise<{ success: boolean }>;
+}
+
+export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdded }: AddSingleYouthChoirDialogProps) {
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -57,6 +61,12 @@ export function AddSingleYouthChoirDialog({ children, onYouthChoirAdded }: { chi
     },
   });
 
+  useEffect(() => {
+    if (open) {
+      form.reset();
+    }
+  }, [open, form]);
+
   async function onSubmit(values: FormData) {
     const result = await onYouthChoirAdded(values);
     if (result.success) {
@@ -64,8 +74,7 @@ export function AddSingleYouthChoirDialog({ children, onYouthChoirAdded }: { chi
         title: 'Alabanza Agregada',
         description: `La alabanza "${values.title}" ha sido guardada.`,
       });
-      form.reset();
-      setOpen(false);
+      onOpenChange(false);
     } else {
         toast({
             variant: 'destructive',
@@ -76,10 +85,7 @@ export function AddSingleYouthChoirDialog({ children, onYouthChoirAdded }: { chi
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Agregar Nueva Alabanza (Coro Juventud)</DialogTitle>
@@ -146,5 +152,3 @@ export function AddSingleYouthChoirDialog({ children, onYouthChoirAdded }: { chi
     </Dialog>
   );
 }
-
-    
