@@ -16,13 +16,13 @@ export default function HomePage() {
       </header>
       
       <main className="container mx-auto flex flex-col items-center justify-center min-h-screen p-4">
-        <div className="w-full max-w-md text-center space-y-8">
+        <div className="w-full max-w-md text-center space-y-6">
           
-          <header className="space-y-4 pt-16">
+          <header className="space-y-4">
             <div className="inline-block p-3 bg-primary/20 rounded-full mb-4">
               <Church className="h-10 w-10 text-primary" />
             </div>
-            <h1 className="text-6xl md:text-7xl font-bold font-headline text-primary tracking-tight">
+            <h1 className="text-5xl md:text-6xl font-bold font-headline text-primary tracking-tight">
               Himnario EECH
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground font-body">
