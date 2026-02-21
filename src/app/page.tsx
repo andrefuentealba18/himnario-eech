@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Music, Book, Users, Mic, Church } from 'lucide-react';
 import { AddSongDialog } from '@/components/add-song-dialog';
+import { SettingsDialog } from '@/components/settings-dialog';
 
 export default function HomePage() {
   return (
@@ -53,7 +54,8 @@ export default function HomePage() {
           </div>
           
           <footer className="text-center text-sm text-muted-foreground pt-8">
-            <p>Iglesia Ejército Evangélico de Chile</p>
+            <SettingsDialog />
+            <p className="mt-2">Iglesia Ejército Evangélico de Chile</p>
           </footer>
         </div>
       </main>
