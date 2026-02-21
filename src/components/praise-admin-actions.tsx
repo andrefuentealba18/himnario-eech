@@ -96,9 +96,9 @@ export function PraiseAdminActions({ praise, onDelete, onUpdate }: PraiseAdminAc
   return (
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="ghost">
-          <Settings className="mr-2 h-4 w-4" />
-          Configuración
+        <Button variant="outline" size="icon" className="rounded-full h-14 w-14">
+          <Settings className="h-7 w-7" />
+          <span className="sr-only">Configuración</span>
         </Button>
       </DialogTrigger>
       <DialogContent>

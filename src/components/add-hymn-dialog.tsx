@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import type { Hymn } from '@/lib/hymns';
+import { musicalKeys } from '@/lib/musical-keys';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -37,15 +38,13 @@ function parseHymns(text: string): Hymn[] {
         return hymns;
     }
 
-    // This regex finds all lines that look like hymn titles: number, dot, and then the title text.
     const regex = /^\s*(\d+)\.\s*([^\r\n]+)/gm;
     let match;
     const hymnHeaders = [];
 
     while ((match = regex.exec(text)) !== null) {
         const titleCandidate = match[2].trim();
-        // Basic heuristic: a title is not a super long line of text.
-        if (titleCandidate.length > 0 && titleCandidate.length < 80) {
+        if (titleCandidate.length > 0 && titleCandidate.length < 100) {
              hymnHeaders.push({
                 number: parseInt(match[1], 10),
                 title: titleCandidate,
@@ -57,19 +56,35 @@ function parseHymns(text: string): Hymn[] {
 
     if (hymnHeaders.length === 0) return [];
 
+    const musicalKeysLower = musicalKeys.map(k => k.toLowerCase());
+
     for (let i = 0; i < hymnHeaders.length; i++) {
         const header = hymnHeaders[i];
         const nextHeader = hymnHeaders[i + 1];
         const contentStartIndex = header.startIndex + header.headerLength;
         const contentEndIndex = nextHeader ? nextHeader.startIndex : text.length;
 
-        let lyrics = text.substring(contentStartIndex, contentEndIndex).trim();
-        
-        const lines = lyrics.split('\n');
-        const firstLineTrimmed = lines[0]?.trim();
-        if(firstLineTrimmed && /^[A-G](s|b)?[mM]?\s*\.?\s*M?\.?$/i.test(firstLineTrimmed)){
-            lines.shift();
-            lyrics = lines.join('\n').trim();
+        let content = text.substring(contentStartIndex, contentEndIndex).trim();
+        let tone: string | undefined = undefined;
+        let lyrics: string = content;
+
+        if (content) {
+            const lines = content.split('\n');
+            const firstLineTrimmed = lines[0]?.trim();
+            
+            if(firstLineTrimmed) {
+                const isKeyInList = musicalKeys.find(k => k.toLowerCase() === firstLineTrimmed.toLowerCase());
+
+                if (isKeyInList) {
+                    tone = isKeyInList;
+                    lines.shift();
+                    lyrics = lines.join('\n').trim();
+                } else if (/^[A-G](s|b)?[mM]?\s*\.?\s*M?\.?$/i.test(firstLineTrimmed)) {
+                    tone = firstLineTrimmed;
+                    lines.shift();
+                    lyrics = lines.join('\n').trim();
+                }
+            }
         }
 
         if (!isNaN(header.number) && header.title && lyrics) {
@@ -77,6 +92,7 @@ function parseHymns(text: string): Hymn[] {
                 number: header.number,
                 title: header.title,
                 lyrics: lyrics,
+                tone: tone,
             });
         }
     }
@@ -126,7 +142,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
         <DialogHeader>
           <DialogTitle>Agregar Varios Himnos</DialogTitle>
           <DialogDescription>
-            Pega el texto de varios himnos. El sistema los separará automáticamente siempre que cada himno comience con su número seguido de un punto.
+            Pega el texto de varios himnos. Cada himno DEBE comenzar en una nueva línea con su número y un punto (ej: "116. Título"). Opcionalmente, puedes añadir la tonalidad en la línea siguiente al título.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>

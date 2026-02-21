@@ -4,22 +4,33 @@
 import type { Praise } from '@/lib/praises';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { usePraises } from '@/context/praises-context';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { PraiseAdminActions } from './praise-admin-actions';
 import { useCallback } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
+import { useFontSize } from '@/hooks/use-font-size';
 
 interface PraiseDetailClientProps {
   praise: Praise;
 }
 
+const fontSizes = [
+  'text-base',   // 16px
+  'text-lg',   // 18px
+  'text-xl',   // 20px
+  'text-2xl',  // 24px
+  'text-3xl',  // 30px
+  'text-4xl',  // 36px
+];
+
 export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { deletePraise, updatePraise } = usePraises();
+  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isFontLoaded } = useFontSize(fontSizes.length, 1);
 
   const handleDelete = useCallback(() => {
     deletePraise(praise.id);
@@ -27,7 +38,7 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
     router.push('/praises');
   }, [deletePraise, praise.id, praise.title, router, toast]);
 
-  const handleUpdate = useCallback((updatedData: Omit<Praise, 'id'>): { success: boolean } => {
+  const handleUpdate = useCallback((updatedData: Omit<Praise, 'id'>): { success: boolean, newId?: string } => {
     const result = updatePraise(praise.id, updatedData);
     if (result.success && result.newId) {
       toast({ title: "Alabanza Actualizada" });
@@ -78,7 +89,7 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
       <main className="flex-1 py-8 flex justify-center px-4">
         <div className="max-w-[20rem] text-center">
             <div
-                className={`font-body leading-relaxed text-lg`}
+                className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
             >
                 {praise.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const isChorus = paragraph.toUpperCase().startsWith('CORO');
@@ -92,8 +103,16 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
         </div>
       </main>
 
-      <footer className="container mx-auto text-center pb-8">
-        <PraiseAdminActions praise={praise} onDelete={handleDelete} onUpdate={handleUpdate} />
+      <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-background/80 backdrop-blur-sm p-4 border-t">
+           <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-14 w-14">
+             <ZoomOut className="h-7 w-7" />
+             <span className="sr-only">Reducir texto</span>
+           </Button>
+           <PraiseAdminActions praise={praise} onDelete={handleDelete} onUpdate={handleUpdate} />
+           <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
+             <ZoomIn className="h-7 w-7" />
+             <span className="sr-only">Aumentar texto</span>
+           </Button>
       </footer>
     </div>
   );
