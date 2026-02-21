@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AddSinglePraiseDialog } from '@/components/add-single-praise-dialog';
 import { AddPraisesDialog } from '@/components/add-praises-dialog';
-import { usePraises } from '@/hooks/use-praises';
+import { usePraises } from '@/context/praises-context';
 import {
   DropdownMenu,
   DropdownMenuContent,

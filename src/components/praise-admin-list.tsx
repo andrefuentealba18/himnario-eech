@@ -3,7 +3,7 @@
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { usePraises } from '@/hooks/use-praises';
+import { usePraises } from '@/context/praises-context';
 
 export function PraiseAdminList() {
   const { praises, deletePraise, isLoaded } = usePraises();

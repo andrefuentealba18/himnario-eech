@@ -1,6 +1,6 @@
 "use client";
 
-import { useHymns } from '@/hooks/use-hymns';
+import { useHymns } from '@/context/hymns-context';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';

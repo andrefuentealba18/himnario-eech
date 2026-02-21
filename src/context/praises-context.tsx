@@ -1,0 +1,125 @@
+"use client";
+
+import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
+import type { Praise } from '@/lib/praises';
+
+const PRAISES_KEY = 'himnario_praises';
+
+function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+}
+
+interface PraisesContextType {
+  praises: Praise[];
+  addPraise: (newPraiseData: Omit<Praise, 'id'>) => { success: boolean; praise?: Praise };
+  addPraises: (newPraisesData: Omit<Praise, 'id'>[]) => { addedCount: number, duplicates: number };
+  deletePraise: (praiseId: string) => void;
+  updatePraise: (praiseId: string, newPraiseData: Omit<Praise, 'id'>) => { success: boolean, newId?: string, error?: string };
+  getPraiseById: (id: string) => Praise | undefined;
+  isLoaded: boolean;
+}
+
+const PraisesContext = createContext<PraisesContextType | undefined>(undefined);
+
+export function PraisesProvider({ children }: { children: ReactNode }) {
+  const [praises, setPraises] = useState<Praise[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    try {
+      const storedPraises = localStorage.getItem(PRAISES_KEY);
+      if (storedPraises) {
+        setPraises(JSON.parse(storedPraises));
+      }
+    } catch (error) {
+      console.error("Failed to load praises from localStorage", error);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  useEffect(() => {
+    if (isLoaded) {
+      try {
+        localStorage.setItem(PRAISES_KEY, JSON.stringify(praises));
+      } catch (error) {
+        console.error("Failed to save praises to localStorage", error);
+      }
+    }
+  }, [praises, isLoaded]);
+
+  const addPraise = useCallback((newPraiseData: Omit<Praise, 'id'>): { success: boolean; praise?: Praise } => {
+    const id = slugify(newPraiseData.title);
+    if (praises.some(p => p.id === id)) {
+      return { success: false };
+    }
+    const newPraise = { ...newPraiseData, id };
+    setPraises(prevPraises => [...prevPraises, newPraise].sort((a, b) => a.title.localeCompare(b.title)));
+    return { success: true, praise: newPraise };
+  }, [praises]);
+
+  const addPraises = useCallback((newPraisesData: Omit<Praise, 'id'>[]): { addedCount: number, duplicates: number } => {
+    const existingTitles = new Set(praises.map(p => p.title.toUpperCase()));
+    const uniqueNewPraises: Praise[] = [];
+
+    newPraisesData.forEach(praiseData => {
+        const upperCaseTitle = praiseData.title.toUpperCase();
+        if (!existingTitles.has(upperCaseTitle)) {
+            const id = slugify(praiseData.title);
+            uniqueNewPraises.push({ ...praiseData, id });
+            existingTitles.add(upperCaseTitle);
+        }
+    });
+    
+    if (uniqueNewPraises.length > 0) {
+        setPraises(prevPraises => [...prevPraises, ...uniqueNewPraises].sort((a, b) => a.title.localeCompare(b.title)));
+    }
+
+    return {
+        addedCount: uniqueNewPraises.length,
+        duplicates: newPraisesData.length - uniqueNewPraises.length
+    };
+  }, [praises]);
+
+  const deletePraise = useCallback((praiseId: string) => {
+    setPraises(prevPraises => prevPraises.filter(p => p.id !== praiseId));
+  }, []);
+  
+  const updatePraise = useCallback((praiseId: string, newPraiseData: Omit<Praise, 'id'>): { success: boolean, newId?: string, error?: string } => {
+    const newId = slugify(newPraiseData.title);
+    if (praises.some(p => p.id === newId && newId !== praiseId)) {
+      return { success: false, error: 'duplicate' };
+    }
+
+    setPraises(prevPraises => {
+        const updatedPraises = prevPraises.map(p => 
+            p.id === praiseId ? { ...newPraiseData, id: newId } : p
+        );
+        return updatedPraises.sort((a, b) => a.title.localeCompare(b.title));
+    });
+    return { success: true, newId: newId };
+  }, [praises]);
+
+  const getPraiseById = useCallback((id: string): Praise | undefined => {
+    if (!isLoaded) return undefined;
+    return praises.find(p => p.id === id);
+  }, [praises, isLoaded]);
+
+  const value = { praises, addPraise, addPraises, deletePraise, updatePraise, getPraiseById, isLoaded };
+
+  return <PraisesContext.Provider value={value}>{children}</PraisesContext.Provider>;
+}
+
+export function usePraises() {
+  const context = useContext(PraisesContext);
+  if (context === undefined) {
+    throw new Error('usePraises must be used within a PraisesProvider');
+  }
+  return context;
+}

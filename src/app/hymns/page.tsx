@@ -1,7 +1,7 @@
 "use client";
 
 import { useToast } from '@/hooks/use-toast';
-import { useHymns } from '@/hooks/use-hymns';
+import { useHymns } from '@/context/hymns-context';
 import type { Hymn } from '@/lib/hymns';
 import { HymnListClient } from '@/components/hymn-list-client';
 import { BookOpen, ChevronLeft, Plus, ChevronDown } from 'lucide-react';

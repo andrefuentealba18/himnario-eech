@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { notFound, useParams } from 'next/navigation';
-import { usePraises } from '@/hooks/use-praises';
+import { usePraises } from '@/context/praises-context';
 import { PraiseDetailClient } from '@/components/praise-detail-client';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -29,7 +29,7 @@ export default function PraisePage() {
                  </div>
                 <Skeleton className="h-10 w-10 rounded-full" />
             </header>
-            <main className="flex-1 py-8 container max-w-3xl">
+            <main className="flex-1 py-8 container max-w-sm">
                 <div className="space-y-4 text-center">
                     <Skeleton className="h-8 w-full" />
                     <Skeleton className="h-8 w-5/6 mx-auto" />

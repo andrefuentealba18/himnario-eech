@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { notFound, useParams } from 'next/navigation';
-import { useHymns } from '@/hooks/use-hymns';
+import { useHymns } from '@/context/hymns-context';
 import { HymnDetailClient } from '@/components/hymn-detail-client';
 import { Skeleton } from '@/components/ui/skeleton';
 
@@ -30,7 +30,7 @@ export default function HymnPage() {
                  </div>
                 <Skeleton className="h-10 w-10 rounded-full" />
             </header>
-            <main className="flex-1 py-8 container max-w-3xl">
+            <main className="flex-1 py-8 container max-w-sm">
                 <div className="space-y-4 text-center">
                     <Skeleton className="h-8 w-full" />
                     <Skeleton className="h-8 w-5/6 mx-auto" />
