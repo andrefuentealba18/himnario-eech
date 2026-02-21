@@ -1,3 +1,5 @@
+"use client";
+
 import { hymns } from '@/lib/hymns';
 import { HymnListClient } from '@/components/hymn-list-client';
 import { BookOpen, ChevronLeft, Plus, ChevronDown } from 'lucide-react';
