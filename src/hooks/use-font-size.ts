@@ -3,10 +3,10 @@
 import { useState, useEffect, useCallback } from 'react';
 
 const FONT_SIZE_KEY = 'himnario_font_size_index';
-const DEFAULT_FONT_SIZE_INDEX = 1; // 'text-base'
+const DEFAULT_FONT_SIZE_INDEX = 1; // Corresponds to the second element in the fontSizes array
 
-export function useFontSize(maxIndex: number) {
-  const [fontSizeIndex, setFontSizeIndex] = useState(DEFAULT_FONT_SIZE_INDEX);
+export function useFontSize(maxIndex: number, defaultIndex: number = DEFAULT_FONT_SIZE_INDEX) {
+  const [fontSizeIndex, setFontSizeIndex] = useState(defaultIndex);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
@@ -17,12 +17,15 @@ export function useFontSize(maxIndex: number) {
         if (parsedIndex >= 0 && parsedIndex < maxIndex) {
           setFontSizeIndex(parsedIndex);
         }
+      } else {
+        // If nothing is stored, use the default passed to the hook
+        setFontSizeIndex(defaultIndex);
       }
     } catch (error) {
       console.error("Failed to load font size from localStorage", error);
     }
     setIsLoaded(true);
-  }, [maxIndex]);
+  }, [maxIndex, defaultIndex]);
 
   useEffect(() => {
     if (isLoaded) {

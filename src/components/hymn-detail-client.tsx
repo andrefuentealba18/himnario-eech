@@ -4,73 +4,80 @@ import type { Hymn } from '@/lib/hymns';
 import Link from 'next/link';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useFontSize } from '@/hooks/use-font-size';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Star, ChevronLeft, Plus, Minus } from 'lucide-react';
+import { Star, ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 
 interface HymnDetailClientProps {
   hymn: Hymn;
 }
 
 const fontSizes = [
-  'text-sm',
-  'text-base',
-  'text-lg',
-  'text-xl',
-  'text-2xl',
-  'text-3xl',
+  'text-base',   // 16px
+  'text-lg',   // 18px
+  'text-xl',   // 20px
+  'text-2xl',  // 24px
+  'text-3xl',  // 30px
+  'text-4xl',  // 36px
 ];
 
 export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
+  // Start with a larger default font size, index 1 ('text-lg')
+  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
   const { isFavorite, toggleFavorite, isLoaded } = useFavorites();
-  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length);
   
   const isFav = isLoaded && isFavorite(hymn.number);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="sticky top-0 z-10 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/hymns">
-            <ChevronLeft className="h-6 w-6" />
+            <ChevronLeft className="h-7 w-7" />
             <span className="sr-only">Volver</span>
           </Link>
         </Button>
-        <div className="flex items-center gap-2">
-           <Button variant="ghost" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0}>
-             <Minus className="h-5 w-5" />
-             <span className="sr-only">Reducir texto</span>
-           </Button>
-           <Button variant="ghost" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1}>
-             <Plus className="h-5 w-5" />
-             <span className="sr-only">Aumentar texto</span>
-           </Button>
+        <div className="text-center px-4 overflow-hidden flex-1">
+            <h1 className="font-bold font-headline text-lg truncate">{hymn.title}</h1>
+            <p className="text-sm text-muted-foreground">Himno Nº {hymn.number}</p>
         </div>
         <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number)} disabled={!isLoaded}>
-          <Star className={`h-6 w-6 transition-colors ${isFav ? 'fill-primary text-primary' : 'text-foreground'}`} />
+          <Star className={`h-6 w-6 transition-all duration-200 ${isFav ? 'fill-primary text-primary scale-110' : 'text-foreground'}`} />
           <span className="sr-only">Marcar como favorito</span>
         </Button>
       </header>
 
-      <main className="flex-1 p-4">
-        <Card className="border-0 shadow-none">
-          <CardHeader>
-            <CardTitle className="text-center font-headline">
-              <span className="text-primary font-bold">{hymn.number}</span>. {hymn.title}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isFontLoaded && (
+      <main className="flex-1 py-8">
+        <div className="container max-w-3xl px-6">
+            {isFontLoaded ? (
               <pre
-                className={`whitespace-pre-wrap font-body leading-relaxed ${fontSizes[fontSizeIndex]}`}
-                style={{ transition: 'font-size 0.2s ease-in-out' }}
+                className={`whitespace-pre-wrap font-body leading-loose transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
               >
                 {hymn.lyrics}
               </pre>
+            ) : (
+                <div className="space-y-6">
+                    <div className="h-6 w-3/4 bg-muted rounded animate-pulse" />
+                    <div className="h-6 w-full bg-muted rounded animate-pulse" />
+                    <div className="h-6 w-5/6 bg-muted rounded animate-pulse" />
+                    <div className="h-6 w-full bg-muted rounded animate-pulse" />
+                     <div className="h-6 w-3/4 bg-muted rounded animate-pulse pt-4" />
+                    <div className="h-6 w-full bg-muted rounded animate-pulse" />
+                    <div className="h-6 w-5/6 bg-muted rounded animate-pulse" />
+                </div>
             )}
-          </CardContent>
-        </Card>
+        </div>
       </main>
+      
+      <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-background/80 backdrop-blur-sm p-4 border-t">
+           <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-14 w-14">
+             <ZoomOut className="h-7 w-7" />
+             <span className="sr-only">Reducir texto</span>
+           </Button>
+           <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
+             <ZoomIn className="h-7 w-7" />
+             <span className="sr-only">Aumentar texto</span>
+           </Button>
+      </footer>
     </div>
   );
 }
