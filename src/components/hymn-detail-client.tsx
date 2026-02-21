@@ -40,7 +40,7 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
           </Link>
         </Button>
         <div className="text-center px-4 overflow-hidden flex-1">
-            <h1 className="font-bold font-headline text-lg truncate">{hymn.title}</h1>
+            <h1 className="font-bold font-headline text-lg truncate">{hymn.number}. {hymn.title}</h1>
             <p className="text-sm text-muted-foreground">Himno Nº {hymn.number}</p>
         </div>
         <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number)} disabled={!isLoaded}>
@@ -57,13 +57,26 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
               >
                 {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const isChorus = paragraph.startsWith('CORO:');
+                  const paragraphLines = paragraph.split('\n');
+
                   return (
                     <div key={pIndex} className="mb-6">
-                      {paragraph.split('\n').map((line, lIndex) => (
-                        <p key={lIndex} className={isChorus ? 'font-bold' : ''}>
-                          {line}
-                        </p>
-                      ))}
+                      {paragraphLines.map((line, lIndex) => {
+                        const lineParts = line.match(/^(\d+\.\s*)(.*)/);
+                        if (lineParts) {
+                          return (
+                            <div key={lIndex} className="flex items-start text-left">
+                                <span className="w-8 flex-shrink-0">{lineParts[1]}</span>
+                                <span>{lineParts[2]}</span>
+                            </div>
+                          )
+                        }
+                        return(
+                          <p key={lIndex} className={isChorus ? 'font-bold' : ''}>
+                            {line}
+                          </p>
+                        )
+                      })}
                     </div>
                   );
                 })}
