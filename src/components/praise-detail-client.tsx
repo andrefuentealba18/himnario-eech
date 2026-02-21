@@ -36,7 +36,7 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
                 {praise.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const isChorus = paragraph.toUpperCase().startsWith('CORO');
                   return (
-                    <p key={pIndex} className={`mb-6 whitespace-pre-wrap ${isChorus ? 'font-bold' : ''}`}>
+                    <p key={pIndex} className={`whitespace-pre-wrap ${isChorus ? 'font-bold mb-4 leading-snug' : 'mb-6'}`}>
                       {paragraph}
                     </p>
                   );
