@@ -91,7 +91,7 @@ function parseHymns(text: string): Omit<Hymn, 'id'>[] {
         return hymns;
     }
     
-    const hymnBlocks = text.split(/^\s*(?=\d+\s+[A-ZÁÉÍÓÚÑ¿?¡!,'’\s]{5,})/m).filter(block => block.trim());
+    const hymnBlocks = text.split(/^\s*(?=\d+\s+.{3,})/m).filter(block => block.trim());
 
     if (hymnBlocks.length === 0 && text.trim().length > 0) {
         hymnBlocks.push(text.trim());
@@ -101,7 +101,7 @@ function parseHymns(text: string): Omit<Hymn, 'id'>[] {
         const lines = block.trim().split('\n');
         if (lines.length === 0) return;
 
-        const headerMatch = lines.shift()!.trim().match(/^(\d+)\s+([A-ZÁÉÍÓÚÑ¿?¡!,\s'’]+)/);
+        const headerMatch = lines.shift()!.trim().match(/^(\d+)\s+(.+)/);
         if (!headerMatch) return;
         
         const number = parseInt(headerMatch[1], 10);
