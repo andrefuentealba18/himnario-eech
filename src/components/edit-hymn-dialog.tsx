@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import type { Praise } from '@/lib/praises';
+import type { Hymn } from '@/lib/hymns';
 import { musicalKeys } from '@/lib/musical-keys';
 
 import { Button } from '@/components/ui/button';
@@ -36,43 +36,49 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const praiseSchema = z.object({
+const hymnSchema = z.object({
+  number: z.preprocess(
+    (a) => parseInt(z.string().parse(a), 10),
+    z.number().positive('El número debe ser mayor que cero.')
+  ),
   title: z.string().min(1, 'El título es requerido.'),
   tone: z.string().optional(),
   lyrics: z.string().min(1, 'La letra es requerida.'),
 });
 
-type FormData = z.infer<typeof praiseSchema>;
+type FormData = z.infer<typeof hymnSchema>;
 
-interface EditPraiseDialogProps {
+interface EditHymnDialogProps {
   children: React.ReactNode;
-  praise: Praise;
-  onPraiseUpdated: (updatedData: Omit<Praise, 'id'>) => { success: boolean };
+  hymn: Hymn;
+  onHymnUpdated: (updatedData: Omit<Hymn, 'number'>) => { success: boolean };
 }
 
-export function EditPraiseDialog({ children, praise, onPraiseUpdated }: EditPraiseDialogProps) {
+export function EditHymnDialog({ children, hymn, onHymnUpdated }: EditHymnDialogProps) {
   const [open, setOpen] = useState(false);
 
   const form = useForm<FormData>({
-    resolver: zodResolver(praiseSchema),
+    resolver: zodResolver(hymnSchema),
     defaultValues: {
-      title: praise.title,
-      tone: praise.tone,
-      lyrics: praise.lyrics,
+      number: hymn.number,
+      title: hymn.title,
+      tone: hymn.tone,
+      lyrics: hymn.lyrics,
     },
   });
-  
+
   useEffect(() => {
     form.reset({
-      title: praise.title,
-      tone: praise.tone || '',
-      lyrics: praise.lyrics,
+      number: hymn.number,
+      title: hymn.title,
+      tone: hymn.tone || '',
+      lyrics: hymn.lyrics,
     });
-  }, [praise, form, open]);
-
+  }, [hymn, form, open]);
 
   function onSubmit(values: FormData) {
-    const result = onPraiseUpdated(values);
+    const { number, ...updateData } = values;
+    const result = onHymnUpdated(updateData);
     if (result.success) {
       setOpen(false);
     }
@@ -85,13 +91,26 @@ export function EditPraiseDialog({ children, praise, onPraiseUpdated }: EditPrai
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Editar Alabanza</DialogTitle>
+          <DialogTitle>Editar Himno #{hymn.number}</DialogTitle>
           <DialogDescription>
-            Modifica los detalles de la alabanza.
+            Modifica los detalles del himno.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+            <FormField
+              control={form.control}
+              name="number"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Número</FormLabel>
+                  <FormControl>
+                    <Input type="number" {...field} disabled />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="title"
@@ -99,13 +118,13 @@ export function EditPraiseDialog({ children, praise, onPraiseUpdated }: EditPrai
                 <FormItem>
                   <FormLabel>Título</FormLabel>
                   <FormControl>
-                    <Input placeholder="Título de la alabanza" {...field} />
+                    <Input placeholder="Título del himno" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
+             <FormField
               control={form.control}
               name="tone"
               render={({ field }) => (
@@ -134,7 +153,7 @@ export function EditPraiseDialog({ children, praise, onPraiseUpdated }: EditPrai
                 <FormItem>
                   <FormLabel>Letra</FormLabel>
                   <FormControl>
-                    <Textarea placeholder="Letra de la alabanza..." className="h-32" {...field} />
+                    <Textarea placeholder="Letra del himno..." className="h-32" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -5,6 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import type { Hymn } from '@/lib/hymns';
+import { musicalKeys } from '@/lib/musical-keys';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -27,6 +29,13 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 const hymnSchema = z.object({
   number: z.preprocess(
@@ -34,6 +43,7 @@ const hymnSchema = z.object({
     z.number().positive('El número debe ser mayor que cero.')
   ),
   title: z.string().min(1, 'El título es requerido.'),
+  tone: z.string().optional(),
   lyrics: z.string().min(1, 'La letra es requerida.'),
 });
 
@@ -46,12 +56,13 @@ export function AddSingleHymnDialog({ children, onHymnAdded }: { children: React
     defaultValues: {
       number: undefined,
       title: '',
+      tone: '',
       lyrics: '',
     },
   });
 
   function onSubmit(values: z.infer<typeof hymnSchema>) {
-    const success = onHymnAdded(values);
+    const success = onHymnAdded(values as Hymn);
     if (success) {
       toast({
         title: 'Himno Agregado',
@@ -99,6 +110,28 @@ export function AddSingleHymnDialog({ children, onHymnAdded }: { children: React
                   <FormControl>
                     <Input placeholder="Título del himno" {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="tone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notas (Tonalidad)</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona una tonalidad" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {musicalKeys.map(key => (
+                        <SelectItem key={key} value={key}>{key}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
