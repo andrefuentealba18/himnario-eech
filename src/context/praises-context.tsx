@@ -3,7 +3,7 @@
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { Praise } from '@/lib/praises';
 import { useFirestore, useCollection } from '@/firebase';
-import { collection, doc, setDoc, deleteDoc, writeBatch, getDoc, getDocs } from 'firebase/firestore';
+import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 
 const slugify = (text: string): string =>
   text.toString().toLowerCase()
@@ -38,16 +38,15 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     if (!firestore) return { success: false };
     const id = slugify(newPraiseData.title);
     
-    const docRef = doc(firestore, 'praises', id);
-    const docSnap = await getDoc(docRef);
-    if (docSnap.exists()) {
+    if (praises.some(p => p.id === id)) {
       return { success: false };
     }
 
+    const docRef = doc(firestore, 'praises', id);
     const newPraise = { ...newPraiseData, id };
     await setDoc(docRef, newPraiseData);
     return { success: true, praise: newPraise };
-  }, [firestore]);
+  }, [firestore, praises]);
 
   const addPraises = useCallback(async (newPraisesData: Omit<Praise, 'id'>[]): Promise<{ addedCount: number, duplicates: number }> => {
     if (!firestore) return { addedCount: 0, duplicates: 0 };
@@ -56,8 +55,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     let addedCount = 0;
     let duplicates = 0;
     
-    const praisesSnapshot = await getDocs(collection(firestore, 'praises'));
-    const existingTitles = new Set(praisesSnapshot.docs.map(doc => doc.id));
+    const existingTitles = new Set(praises.map(p => p.id));
 
     for (const praiseData of newPraisesData) {
       const id = slugify(praiseData.title);
@@ -76,7 +74,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     }
 
     return { addedCount, duplicates };
-  }, [firestore]);
+  }, [firestore, praises]);
 
   const deletePraise = useCallback(async (praiseId: string) => {
     if (!firestore) return;
@@ -88,12 +86,8 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     if (!firestore) return { success: false, error: 'firestore_not_ready' };
     const newId = slugify(newPraiseData.title);
 
-    if (newId !== praiseId) {
-        const newDocRef = doc(firestore, 'praises', newId);
-        const docSnap = await getDoc(newDocRef);
-        if (docSnap.exists()) {
-            return { success: false, error: 'duplicate' };
-        }
+    if (newId !== praiseId && praises.some(p => p.id === newId)) {
+        return { success: false, error: 'duplicate' };
     }
 
     const oldDocRef = doc(firestore, 'praises', praiseId);
@@ -109,7 +103,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     }
     
     return { success: true, newId: newId };
-  }, [firestore]);
+  }, [firestore, praises]);
 
   const getPraiseById = useCallback((id: string): Praise | undefined => {
     return praises.find(p => p.id === id);

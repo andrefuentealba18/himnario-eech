@@ -18,29 +18,30 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [instances, setInstances] = useState<FirebaseInstances | null>(null);
 
   useEffect(() => {
-    if (instances) return; // Already initialized
+    const initialize = async () => {
+      if (instances) return;
+      if (!firebaseConfig || !(firebaseConfig as any).apiKey) {
+        return;
+      }
 
-    // The firebaseConfig object is populated by App Hosting.
-    // In local dev, if it's missing, we just wait.
-    if (!firebaseConfig || !(firebaseConfig as any).apiKey) {
-      return;
-    }
+      const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+      const auth = getAuth(app);
+      const firestore = getFirestore(app);
 
-    const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-    const auth = getAuth(app);
-    const firestore = getFirestore(app);
-
-    enableIndexedDbPersistence(firestore)
-      .catch((err) => {
+      try {
+        await enableIndexedDbPersistence(firestore);
+      } catch (err: any) {
         if (err.code === 'failed-precondition') {
           console.warn("Firestore persistence failed: can only be enabled in one tab at a time.");
         } else if (err.code === 'unimplemented') {
           console.warn("Firestore persistence is not supported in this browser.");
         }
-      });
+      }
       
-    setInstances({ app, auth, firestore });
+      setInstances({ app, auth, firestore });
+    };
 
+    initialize();
   }, [instances]);
 
   return (
