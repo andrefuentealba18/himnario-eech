@@ -23,37 +23,71 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
-const hymnSchema = z.object({
-  number: z.coerce.number({invalid_type_error: "Debe ser un número."}).min(1, 'El número es requerido.'),
-  title: z.string().min(1, 'El título es requerido.'),
-  lyrics: z.string().min(1, 'La letra es requerida.'),
+// New schema for bulk input
+const bulkHymnsSchema = z.object({
+  hymnsText: z.string().min(1, 'El texto de los himnos es requerido.'),
 });
+
+// Simple parser function
+function parseHymns(text: string) {
+  const hymns = [];
+  const hymnBlocks = text.trim().split(/[\r\n]*-{3,}[\r\n]*/);
+
+  for (const block of hymnBlocks) {
+    if (block.trim() === '') continue;
+    
+    const lines = block.trim().split('\n');
+    const firstLine = lines.shift()?.trim() || '';
+    
+    const match = firstLine.match(/^(\d+)\s*\.\s*(.*)/);
+    
+    if (match) {
+      const number = parseInt(match[1], 10);
+      const title = match[2].trim();
+      const lyrics = lines.join('\n').trim();
+      
+      if (!isNaN(number) && title && lyrics) {
+        hymns.push({ number, title, lyrics });
+      }
+    }
+  }
+  return hymns;
+}
+
 
 export function AddHymnDialog() {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof hymnSchema>>({
-    resolver: zodResolver(hymnSchema),
+  const form = useForm<z.infer<typeof bulkHymnsSchema>>({
+    resolver: zodResolver(bulkHymnsSchema),
     defaultValues: {
-      number: undefined,
-      title: '',
-      lyrics: '',
+      hymnsText: '',
     },
   });
 
-  function onSubmit(values: z.infer<typeof hymnSchema>) {
-    console.log(values);
-    toast({
-      title: 'Formulario Enviado (Simulación)',
-      description: `En una aplicación real, el himno "${values.title}" se guardaría.`,
-    });
-    form.reset({number: undefined, title: '', lyrics: ''});
+  function onSubmit(values: z.infer<typeof bulkHymnsSchema>) {
+    const parsedHymns = parseHymns(values.hymnsText);
+    
+    if (parsedHymns.length > 0) {
+        console.log("Himnos procesados:", parsedHymns);
+        toast({
+          title: 'Himnos Procesados (Simulación)',
+          description: `Se procesaron ${parsedHymns.length} himnos. En una app real, estos se guardarían.`,
+        });
+    } else {
+        toast({
+            variant: "destructive",
+            title: 'Formato Incorrecto',
+            description: 'No se pudieron procesar los himnos. Revisa el formato y el separador "---".',
+        });
+    }
+    
+    form.reset({hymnsText: ''});
     setOpen(false);
   }
 
@@ -62,59 +96,42 @@ export function AddHymnDialog() {
       <DialogTrigger asChild>
         <Button variant="outline">
           <Plus className="mr-2 h-4 w-4" />
-          Agregar Himno
+          Agregar Himnos
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Agregar Nuevo Himno</DialogTitle>
+          <DialogTitle>Agregar Varios Himnos</DialogTitle>
           <DialogDescription>
-            Completa los detalles para añadir un nuevo himno al cancionero.
+            Pega el texto de varios himnos. Separa cada himno con una línea que contenga tres guiones (---).
+            <br />
+            <strong className="text-foreground">Formato por himno:</strong>
+            <br />
+            [Número]. [Título]
+            <br />
+            [Letra del himno...]
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
             <FormField
               control={form.control}
-              name="number"
+              name="hymnsText"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Número</FormLabel>
+                  <FormLabel>Texto de los himnos</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="Ej: 501" {...field} value={field.value ?? ''} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="title"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Título</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Título del himno" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="lyrics"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Letra</FormLabel>
-                  <FormControl>
-                    <Textarea placeholder="Escribe la letra del himno aquí..." className="h-32" {...field} />
+                    <Textarea 
+                      placeholder="1. Título del primer himno...&#10;Letra...&#10;---&#10;2. Título del segundo himno...&#10;Letra..." 
+                      className="h-64 min-h-[10rem]" 
+                      {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <DialogFooter>
-              <Button type="submit">Guardar Himno</Button>
+              <Button type="submit">Guardar Himnos</Button>
             </DialogFooter>
           </form>
         </Form>
