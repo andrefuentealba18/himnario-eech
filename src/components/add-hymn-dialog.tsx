@@ -39,55 +39,54 @@ function parseHymns(text: string): Hymn[] {
         return hymns;
     }
 
-    // Split text into potential hymn blocks. Each block should start with a number.
     const hymnBlocks = text.split(/^\s*(?=\d+\.?\s*)/m).filter(block => block.trim());
 
     if (hymnBlocks.length === 0) return [];
 
     for (const block of hymnBlocks) {
-        const lines = block.trim().split('\n');
+        let lines = block.trim().split('\n');
         if (lines.length === 0) continue;
 
-        // The first line should be the number and title. e.g., "1. HIMNO" or "1 HIMNO"
-        const headerMatch = lines[0].match(/^(\d+)\.?\s*(.*)/);
+        // 1. Parse Number and Title
+        const headerMatch = lines.shift()!.match(/^(\d+)\.?\s*(.*)/);
         if (!headerMatch) continue;
 
         const number = parseInt(headerMatch[1], 10);
         let title = headerMatch[2].trim();
-        let lyricsLines = lines.slice(1);
         
-        // Handle case where title is on the next line (e.g. "1." on one line, "TITLE" on the next)
-        if (title === '' && lyricsLines.length > 0) {
-            title = lyricsLines[0].trim();
-            lyricsLines = lyricsLines.slice(1);
+        // Handle case where title is on the next line
+        if (title === '') {
+            while(lines.length > 0 && lines[0].trim() === '') lines.shift(); // remove empty lines
+            if (lines.length > 0) {
+                title = lines.shift()!.trim();
+            } else {
+                continue; // no title
+            }
         }
         
         if (!title) continue;
 
+        // 2. Parse Tone (Tonalidad)
         let tone: string | undefined = undefined;
+        while(lines.length > 0 && lines[0].trim() === '') lines.shift(); // remove empty lines
 
-        // Check if the next non-empty line is a tone
-        let firstContentLineIndex = -1;
-        for (let i = 0; i < lyricsLines.length; i++) {
-            if (lyricsLines[i].trim() !== '') {
-                firstContentLineIndex = i;
-                break;
-            }
-        }
+        if(lines.length > 0) {
+            const potentialTone = lines[0].trim();
+            const toneKeywordRegex = /^(tono|tonalidad|notas)\s*:\s*/i;
 
-        if (firstContentLineIndex !== -1) {
-            const potentialTone = lyricsLines[firstContentLineIndex].trim();
             const isKeyInList = musicalKeys.some(k => k.toLowerCase() === potentialTone.toLowerCase());
-            const keyRegex = /^[A-G](s|b)?[mM]?\s*\.?\s*M?\.?$/i;
-            const toneKeywordRegex = /^(tono|tonalidad|notas):/i;
 
-            if (toneKeywordRegex.test(potentialTone) || isKeyInList || (keyRegex.test(potentialTone) && potentialTone.length < 20)) {
+            if (toneKeywordRegex.test(potentialTone)) {
                 tone = potentialTone.replace(toneKeywordRegex, '').trim();
-                lyricsLines = lyricsLines.slice(firstContentLineIndex + 1);
+                lines.shift();
+            } else if (isKeyInList) {
+                tone = potentialTone;
+                lines.shift();
             }
         }
-
-        const lyrics = lyricsLines.join('\n').trim();
+        
+        // 3. The rest is lyrics
+        const lyrics = lines.join('\n').trim();
 
         if (!isNaN(number) && title && lyrics) {
             hymns.push({
