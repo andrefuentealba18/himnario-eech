@@ -4,4 +4,6 @@ export type Praise = {
   lyrics: string;
 };
 
+// The actual data is now managed by the usePraises hook in `src/hooks/use-praises.ts`
+// which uses localStorage.
 export const praises: Praise[] = [];

@@ -1,0 +1,120 @@
+"use client";
+
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+import type { Praise } from '@/lib/praises';
+
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
+import { Plus } from 'lucide-react';
+
+const praiseSchema = z.object({
+  title: z.string().min(1, 'El título es requerido.'),
+  lyrics: z.string().min(1, 'La letra es requerida.'),
+});
+
+type FormData = z.infer<typeof praiseSchema>;
+
+export function AddPraiseDialog({ onPraiseAdded }: { onPraiseAdded: (praise: Omit<Praise, 'id'>) => { success: boolean } }) {
+  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+
+  const form = useForm<FormData>({
+    resolver: zodResolver(praiseSchema),
+    defaultValues: {
+      title: '',
+      lyrics: '',
+    },
+  });
+
+  function onSubmit(values: FormData) {
+    const result = onPraiseAdded(values);
+    if (result.success) {
+      toast({
+        title: 'Alabanza Agregada',
+        description: `La alabanza "${values.title}" ha sido guardada.`,
+      });
+      form.reset();
+      setOpen(false);
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Error al agregar',
+            description: `La alabanza con el título "${values.title}" ya existe.`,
+        });
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">
+          <Plus className="mr-2 h-4 w-4" />
+          Agregar Alabanza
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Agregar Nueva Alabanza</DialogTitle>
+          <DialogDescription>
+            Completa los detalles de la nueva alabanza. Haz clic en guardar cuando termines.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+            <FormField
+              control={form.control}
+              name="title"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Título</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Título de la alabanza" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lyrics"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Letra</FormLabel>
+                  <FormControl>
+                    <Textarea placeholder="Letra de la alabanza..." className="h-32" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <DialogFooter>
+              <Button type="submit">Guardar Alabanza</Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}

@@ -36,8 +36,8 @@ export default function HomePage() {
                 <Book className="mr-4 h-6 w-6" /> Himnos
               </Link>
             </Button>
-            <Button asChild size="lg" className="h-16 text-lg font-body" variant="secondary" disabled>
-              <Link href="#">
+            <Button asChild size="lg" className="h-16 text-lg font-body" variant="secondary">
+              <Link href="/praises">
                 <Music className="mr-4 h-6 w-6" /> Alabanzas
               </Link>
             </Button>

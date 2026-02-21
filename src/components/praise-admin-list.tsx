@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from 'react';
-import { praises as initialPraises, type Praise } from '@/lib/praises';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -16,17 +14,16 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { usePraises } from '@/hooks/use-praises';
 
 export function PraiseAdminList() {
-  const [praises, setPraises] = useState<Praise[]>(initialPraises);
+  const { praises, isLoaded } = usePraises();
   const { toast } = useToast();
 
   const handleDelete = (praiseId: string) => {
-    // This is a simulation. In a real app, you'd call an API here.
-    setPraises(praises.filter(p => p.id !== praiseId));
     toast({
-      title: 'Alabanza Eliminada (Simulación)',
-      description: 'La alabanza se ha quitado de la lista. Los cambios no son permanentes.',
+      title: 'Función no implementada',
+      description: 'La eliminación de alabanzas se implementará pronto.',
     });
   };
 
@@ -37,9 +34,13 @@ export function PraiseAdminList() {
     });
   };
 
+  if (!isLoaded) {
+    return <p className="text-muted-foreground">Cargando alabanzas...</p>;
+  }
+
   if (praises.length === 0) {
     return (
-        <p className="text-muted-foreground">No hay alabanzas para mostrar. Agrégalas desde el diálogo correspondiente.</p>
+        <p className="text-muted-foreground">No hay alabanzas para mostrar. Agrégalas desde la sección de Alabanzas.</p>
     )
   }
 
