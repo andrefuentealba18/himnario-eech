@@ -31,10 +31,10 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { deleteHymn, updateHymn } = useHymns();
-  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
-  const { isFavorite, toggleFavorite, isLoaded } = useFavorites();
+  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded } = useFontSize(fontSizes.length, 1);
+  const { isFavorite, toggleFavorite, isLoaded: isFavoritesLoaded } = useFavorites();
   
-  const isFav = isLoaded && isFavorite(hymn.number);
+  const isFav = isFavoritesLoaded && isFavorite(hymn.number);
 
   const handleDelete = useCallback(() => {
     deleteHymn(hymn.number);
@@ -81,7 +81,7 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
                 </EditToneDialog>
             </div>
         </div>
-        <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number)} disabled={!isLoaded}>
+        <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number)} disabled={!isFavoritesLoaded}>
           <Star className={`h-6 w-6 transition-all duration-200 ${isFav ? 'fill-primary text-primary scale-110' : 'text-foreground'}`} />
           <span className="sr-only">Marcar como favorito</span>
         </Button>
@@ -94,21 +94,9 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
           >
             {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
               const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
-              const chorusText = isChorus ? paragraph.trim().substring(4).trim() : paragraph;
-              const textToShow = isChorus ? chorusText : paragraph;
-              
-              if (isChorus && chorusText === '') {
-                 return (
-                    <p key={pIndex} className={`whitespace-pre-wrap mb-4 font-bold leading-snug`}>
-                      CORO
-                    </p>
-                  );
-              }
-              
               return (
                  <p key={pIndex} className={`whitespace-pre-wrap mb-4 ${isChorus ? 'font-bold leading-snug' : ''}`}>
-                  {isChorus && <span className="block">CORO</span>}
-                  {textToShow}
+                  {paragraph}
                 </p>
               );
             })}
@@ -117,12 +105,12 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
       </main>
       
       <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-background/80 backdrop-blur-sm p-4 border-t">
-           <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-14 w-14">
+           <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isLoaded || fontSizeIndex === 0} className="rounded-full h-14 w-14">
              <ZoomOut className="h-7 w-7" />
              <span className="sr-only">Reducir texto</span>
            </Button>
            <HymnAdminActions hymn={hymn} onDelete={handleDelete} onUpdate={handleUpdate} />
-           <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
+           <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
              <ZoomIn className="h-7 w-7" />
              <span className="sr-only">Aumentar texto</span>
            </Button>
