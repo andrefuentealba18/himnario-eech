@@ -93,7 +93,7 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
             className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
           >
             {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
-              const isChorus = paragraph.startsWith('CORO:');
+              const isChorus = paragraph.toUpperCase().startsWith('CORO');
               return (
                 <p key={pIndex} className={`whitespace-pre-wrap mb-4 ${isChorus ? 'font-bold leading-snug' : ''}`}>
                   {paragraph}

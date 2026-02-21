@@ -6,7 +6,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import type { Hymn } from '@/lib/hymns';
-import { musicalKeys } from '@/lib/musical-keys';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -38,57 +37,53 @@ function parseHymns(text: string): Hymn[] {
     if (!text.trim()) {
         return hymns;
     }
+    
+    // Split text into blocks. A new hymn starts with a number followed by an uppercase title.
+    // This regex looks for a line that starts with a number, whitespace, and then likely an all-caps title.
+    // It avoids splitting on verse numbers like "1. Es Jesús..."
+    const hymnBlocks = text.split(/^\s*(?=\d+[\s\t]+[A-ZÁÉÍÓÚÑ'’,\. ]{5,})/m).filter(block => block.trim());
 
-    const hymnBlocks = text.split(/^\s*(?=\d+\.?\s*)/m).filter(block => block.trim());
-
-    if (hymnBlocks.length === 0) return [];
+    if (hymnBlocks.length === 0) {
+        return [];
+    }
 
     for (const block of hymnBlocks) {
         let lines = block.trim().split('\n');
         if (lines.length === 0) continue;
 
-        // 1. Parse Number and Title
-        const headerMatch = lines.shift()!.match(/^(\d+)\.?\s*(.*)/);
+        // 1. Parse Number and Title from the first line.
+        const headerLine = lines.shift()!.trim();
+        const headerMatch = headerLine.match(/^(\d+)\.?[\s\t]+(.*)/);
         if (!headerMatch) continue;
-
+        
         const number = parseInt(headerMatch[1], 10);
         let title = headerMatch[2].trim();
         
-        // Handle case where title is on the next line
-        if (title === '') {
-            while(lines.length > 0 && lines[0].trim() === '') lines.shift(); // remove empty lines
-            if (lines.length > 0) {
-                title = lines.shift()!.trim();
-            } else {
-                continue; // no title
-            }
-        }
-        
-        if (!title) continue;
+        if (isNaN(number) || !title) continue;
 
-        // 2. Parse Tone (Tonalidad)
+        // Remove empty lines after the title
+        while(lines.length > 0 && lines[0].trim() === '') lines.shift();
+
+        // 2. Parse Tone (Tonalidad). It's likely the next non-empty line if it's short.
         let tone: string | undefined = undefined;
-        while(lines.length > 0 && lines[0].trim() === '') lines.shift(); // remove empty lines
-
-        if(lines.length > 0) {
+        if (lines.length > 0) {
             const potentialTone = lines[0].trim();
-            const toneKeywordRegex = /^(tono|tonalidad|notas)\s*:\s*/i;
-
-            const isKeyInList = musicalKeys.some(k => k.toLowerCase() === potentialTone.toLowerCase());
-
-            if (toneKeywordRegex.test(potentialTone)) {
-                tone = potentialTone.replace(toneKeywordRegex, '').trim();
-                lines.shift();
-            } else if (isKeyInList) {
+            // A potential tone is a short line, and not something that looks like a verse ("1. ...") or "CORO".
+            const isProbablyVerseOrChorus = /^\d+\.?/i.test(potentialTone) || /^coro/i.test(potentialTone);
+            
+            if (potentialTone.length > 0 && potentialTone.length < 25 && !isProbablyVerseOrChorus) {
                 tone = potentialTone;
-                lines.shift();
+                lines.shift(); // Consume the tone line
             }
         }
         
-        // 3. The rest is lyrics
+        // Remove empty lines before lyrics start
+        while(lines.length > 0 && lines[0].trim() === '') lines.shift();
+
+        // 3. The rest is lyrics.
         const lyrics = lines.join('\n').trim();
 
-        if (!isNaN(number) && title && lyrics) {
+        if (lyrics) {
             hymns.push({
                 number,
                 title,
@@ -126,7 +121,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
         toast({
             variant: "destructive",
             title: 'Formato Incorrecto',
-            description: 'No se pudieron procesar los himnos. Asegúrate que cada himno empiece con un número y un título (ej: 116. Título).',
+            description: 'No se pudieron procesar los himnos. Asegúrate que cada himno empiece con un número y un título en mayúsculas (ej: 116 TÍTULO).',
         });
     }
     
@@ -143,7 +138,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
         <DialogHeader>
           <DialogTitle>Agregar Varios Himnos</DialogTitle>
           <DialogDescription>
-            Pega el texto de varios himnos. Cada himno debe comenzar en una nueva línea con su número (ej: "116 Título" o "116. Título"). El punto después del número es opcional. Opcionalmente, puedes añadir la tonalidad en la línea siguiente al título.
+            Pega el texto de varios himnos. Cada himno debe comenzar en una nueva línea con su número seguido por el título en MAYÚSCULAS (ej: "116 TÍTULO DEL HIMNO"). La tonalidad puede ir en la línea siguiente.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -156,7 +151,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
                   <FormLabel>Texto de los himnos</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="116 Mi nuevo himno...&#10;Tonalidad: Do Mayor&#10;Letra...&#10;&#10;117. Otro himno...&#10;Letra..." 
+                      placeholder="116 TÍTULO DEL HIMNO&#10;Sol Mayor&#10;1. Letra del himno...&#10;...&#10;&#10;CORO&#10;Coro del himno...&#10;&#10;117 OTRO TÍTULO&#10;..." 
                       className="h-64 min-h-[10rem]" 
                       {...field} />
                   </FormControl>
