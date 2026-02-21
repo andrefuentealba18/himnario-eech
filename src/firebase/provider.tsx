@@ -19,8 +19,10 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   useEffect(() => {
     try {
+      // The firebaseConfig object is expected to be populated by App Hosting.
+      // If it's not (e.g., in local development), we'll skip initialization
+      // to prevent errors. The app will remain in a loading state.
       if (!firebaseConfig || !(firebaseConfig as any).apiKey) {
-        console.error("Firebase config is missing. App cannot connect to Firebase.");
         return;
       }
 
