@@ -29,7 +29,7 @@ export default function PraisesIndexPage() {
             </Button>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold font-headline text-foreground">
-                Alabanzas
+                Alabanzas ({praises.length})
               </h1>
               <Music className="h-7 w-7 text-primary" />
             </div>
