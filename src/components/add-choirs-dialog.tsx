@@ -23,40 +23,73 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
     }
 
     const lines = text.split('\n');
-    let currentSong: Omit<Choir, 'id'> | null = null;
-    let currentLyrics: string[] = [];
+    let currentSong: Partial<Choir> & { lyricsLines: string[] } | null = null;
+
+    const saveCurrentSong = () => {
+        if (currentSong) {
+            currentSong.lyrics = currentSong.lyricsLines.join('\n').trim();
+            if (currentSong.title && currentSong.lyrics) {
+                const { lyricsLines, ...songData } = currentSong;
+                songs.push(songData as Omit<Choir, 'id'>);
+            }
+        }
+    };
 
     for (const line of lines) {
         const trimmedLine = line.trim();
-        
-        const isTitle = trimmedLine.length > 0 && trimmedLine === trimmedLine.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(trimmedLine);
+        const isAllUpper = trimmedLine.length > 0 && trimmedLine === trimmedLine.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(trimmedLine);
 
-        if (isTitle) {
-            if (currentSong) {
-                currentSong.lyrics = currentLyrics.join('\n').trim();
-                if (currentSong.title && currentSong.lyrics) {
-                    songs.push(currentSong);
+        if (isAllUpper) {
+            let isMetadataLine = false;
+            // Check if it's a metadata line (only if it's right after a title)
+            if (currentSong && currentSong.lyricsLines.length === 0) {
+                const metadataLine = trimmedLine.toUpperCase();
+                let metadataFound = false;
+
+                if (metadataLine.includes('RAPIDO')) {
+                    currentSong.speed = 'Rapido';
+                    metadataFound = true;
+                } else if (metadataLine.includes('LENTO')) {
+                    currentSong.speed = 'Lento';
+                    metadataFound = true;
+                }
+    
+                const tonePart = metadataLine.replace('RAPIDO', '').replace('LENTO', '').trim();
+                if(tonePart) {
+                    currentSong.tone = tonePart.split(' ').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ');
+                    metadataFound = true;
+                }
+                
+                if (metadataFound) {
+                    isMetadataLine = true;
                 }
             }
 
-            currentSong = { title: trimmedLine, lyrics: '' };
-            currentLyrics = [];
-        } else {
+            if (isMetadataLine) {
+                // This was processed as metadata, so skip to next line
+                continue;
+            } else {
+                // This is a new title
+                saveCurrentSong();
+                currentSong = { title: trimmedLine, lyricsLines: [] };
+            }
+        } else if (trimmedLine) {
+            // This is a lyric line
             if (currentSong) {
-                currentLyrics.push(line);
+                currentSong.lyricsLines.push(line);
+            }
+        } else {
+            // If the line is empty, it could be a separator between verses,
+            // or just an empty line. Add it to lyrics if we are in a song.
+            if (currentSong) {
+                currentSong.lyricsLines.push(line);
             }
         }
     }
-
-    if (currentSong) {
-        currentSong.lyrics = currentLyrics.join('\n').trim();
-        if (currentSong.title && currentSong.lyrics) {
-            songs.push(currentSong);
-        }
-    }
-
+    saveCurrentSong(); // Save the last song
     return songs;
 }
+
 
 interface AddChoirsDialogProps {
   open: boolean;
@@ -110,7 +143,7 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
         <DialogHeader>
           <DialogTitle>Agregar Varios Coros</DialogTitle>
           <DialogDescription>
-            Pega el texto de varios coros. Cada uno debe comenzar con su título escrito completamente en MAYÚSCULAS.
+            Pega el texto de varios coros. Cada coro debe comenzar con su título en MAYÚSCULAS. Opcionalmente, en la línea siguiente puedes agregar la tonalidad y velocidad (ej: SOL MAYOR RAPIDO).
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
@@ -118,7 +151,7 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
                 <Label htmlFor="choir-bulk-text">Texto de los coros</Label>
                 <Textarea 
                   id="choir-bulk-text"
-                  placeholder="TÍTULO EN MAYÚSCULAS&#10;Letra del coro...&#10;...&#10;&#10;OTRO TÍTULO EN MAYÚSCULAS&#10;Letra del otro coro..." 
+                  placeholder="TÍTULO EN MAYÚSCULAS&#10;SOL MAYOR RAPIDO&#10;Letra del coro...&#10;...&#10;&#10;OTRO TÍTULO EN MAYÚSCULAS&#10;..." 
                   className="h-64 min-h-[10rem]"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
