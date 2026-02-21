@@ -12,7 +12,11 @@ export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [firebase, setFirebase] = useState<FirebaseInstances | null>(null);
 
   useEffect(() => {
-    setFirebase(initializeFirebase());
+    // This effect runs only on the client
+    const instances = initializeFirebase();
+    if (instances) {
+      setFirebase(instances);
+    }
   }, []);
 
   // The provider will pass null until Firebase is initialized on the client.

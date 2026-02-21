@@ -1,3 +1,5 @@
+'use client';
+
 import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
 import { getFirestore, Firestore } from 'firebase/firestore';
@@ -22,6 +24,7 @@ export function initializeFirebase(): FirebaseInstances | null {
 
   // Prevent initialization if config is not populated
   if (!firebaseConfig || !(firebaseConfig as any).apiKey) {
+    console.warn("Firebase config not found, skipping initialization.");
     return null;
   }
 
