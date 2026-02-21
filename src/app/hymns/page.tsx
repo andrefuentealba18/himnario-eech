@@ -15,6 +15,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Badge } from '@/components/ui/badge';
 
 
 export default function HymnsIndexPage() {
@@ -50,8 +51,11 @@ export default function HymnsIndexPage() {
             </Button>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold font-headline text-foreground">
-                Himnos ({hymns.length})
+                Himnos
               </h1>
+              <Badge variant="secondary" className="text-base font-semibold px-2">
+                {hymns.length}
+              </Badge>
               <BookOpen className="h-8 w-8 text-primary" />
             </div>
             <div className="absolute right-2 top-1/2 -translate-y-1/2">
