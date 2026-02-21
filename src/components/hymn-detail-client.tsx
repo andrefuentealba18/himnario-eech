@@ -40,7 +40,7 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
           </Link>
         </Button>
         <div className="text-center px-4 overflow-hidden flex-1">
-            <h1 className="font-bold font-headline text-lg truncate">{hymn.number}. {hymn.title}</h1>
+            <h1 className="font-bold font-headline text-lg truncate">{hymn.title}</h1>
             <p className="text-sm text-muted-foreground">Himno Nº {hymn.number}</p>
         </div>
         <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number)} disabled={!isLoaded}>
