@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from 'react';
@@ -41,11 +40,13 @@ function parseHymns(text: string): Hymn[] {
     // This regex splits the text into hymn blocks.
     // It looks for a line that starts with a number, followed by whitespace (like a tab), 
     // and then a title in uppercase letters. This helps distinguish a hymn title from a numbered verse.
-    const hymnBlocks = text.split(/^\s*(?=\d+[\s\t]+[A-ZÁÉÍÓÚÑ'’,\.¡! ]{5,})/m).filter(block => block.trim());
+    const hymnBlocks = text.split(/^\s*(?=\d+[\s\t]+[A-ZÁÉÍÓÚÑ'’,\.¡!¿? ]{5,})/m).filter(block => block.trim());
 
-    if (hymnBlocks.length === 0) {
-        return [];
+    if (hymnBlocks.length === 0 && text.trim().length > 0) {
+        // Fallback for single hymn or if the split fails.
+        hymnBlocks.push(text.trim());
     }
+
 
     for (const block of hymnBlocks) {
         const lines = block.trim().split('\n');
@@ -53,34 +54,53 @@ function parseHymns(text: string): Hymn[] {
 
         // 1. Parse Number and Title from the first line.
         const headerLine = lines.shift()!.trim();
-        const headerMatch = headerLine.match(/^(\d+)\.?[\s\t]+(.*)/);
+        // The title can be on the same line as the number or on the next one.
+        const headerMatch = headerLine.match(/^(\d+)\.?[\s\t]*(.*)/);
         if (!headerMatch) continue;
         
         const number = parseInt(headerMatch[1], 10);
         let title = headerMatch[2].trim();
         
-        if (isNaN(number) || !title) continue;
+        if (isNaN(number)) continue;
 
-        let tone: string | undefined = undefined;
+        // If title is empty, it might be on the next line
         let lyricsStartIndex = 0;
+        if (title === '') {
+            for (let i = 0; i < lines.length; i++) {
+                const nextLine = lines[i].trim();
+                if (nextLine !== '') {
+                    title = nextLine;
+                    lyricsStartIndex = i + 1;
+                    break;
+                }
+            }
+        } else {
+             lyricsStartIndex = 0;
+        }
+        
+        if (!title) continue; // Skip if no title is found
 
+        let tone: string | undefined = "Indefinida";
+        
         // 2. Look for the tone in the next non-empty lines
-        for (let i = 0; i < lines.length; i++) {
+        for (let i = lyricsStartIndex; i < lines.length; i++) {
             const trimmedLine = lines[i].trim();
             if (trimmedLine === '') {
                 continue; // Skip empty lines
             }
 
-            // Check if this line is the tone
-            const isVerse = /^\d+\./.test(trimmedLine);
+            // A line is likely a tone if it's short, has letters, and isn't a verse/chorus
+            // The first line of lyrics usually starts with a number or is longer.
+            const isVerse = /^\d+\.?/.test(trimmedLine);
             const isChorus = /^coro/i.test(trimmedLine);
+            const hasLetters = /[a-zA-Z]/.test(trimmedLine);
+            const isShort = trimmedLine.length < 25;
 
-            if (!isVerse && !isChorus && trimmedLine.length > 0 && trimmedLine.length < 25) {
-                // It looks like a tone.
+            if (!isVerse && !isChorus && hasLetters && isShort) {
                 tone = trimmedLine;
                 lyricsStartIndex = i + 1; // Lyrics start on the next line
             } else {
-                // It doesn't look like a tone, so it must be the start of the lyrics.
+                // It's not a tone, so it must be the start of the lyrics.
                 lyricsStartIndex = i;
             }
             break; // Stop after checking the first non-empty line
