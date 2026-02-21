@@ -83,7 +83,7 @@ export function EditPraiseDialog({ children, praise, onPraiseUpdated }: EditPrai
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Editar Alabanza</DialogTitle>
           <DialogDescription>
