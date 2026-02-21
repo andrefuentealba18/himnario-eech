@@ -11,8 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { HymnAdminActions } from '@/components/hymn-admin-actions';
 import { Star, ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import { useCallback } from 'react';
+import { EditToneDialog } from './edit-tone-dialog';
 
 interface HymnDetailClientProps {
   hymn: Hymn;
@@ -50,6 +50,12 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
     return result;
   }, [hymn.number, updateHymn, toast]);
 
+  const handleToneUpdate = useCallback((newTone: string) => {
+    const { number, ...restOfHymn } = hymn;
+    return handleUpdate({ ...restOfHymn, tone: newTone });
+  }, [hymn, handleUpdate]);
+
+
   return (
     <div className="relative flex flex-col min-h-screen bg-background">
       <div 
@@ -68,7 +74,11 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
                 <p className="text-sm text-muted-foreground">
                   Himno Nº {hymn.number}
                 </p>
-                {hymn.tone && <Badge variant="outline">{hymn.tone}</Badge>}
+                <EditToneDialog song={hymn} onToneUpdated={handleToneUpdate}>
+                  <Button variant="outline" size="sm" className="h-auto px-2 py-0.5 text-xs">
+                    {hymn.tone || 'Tonalidad: Indefinida'}
+                  </Button>
+                </EditToneDialog>
             </div>
         </div>
         <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number)} disabled={!isLoaded}>

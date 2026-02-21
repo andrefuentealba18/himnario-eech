@@ -8,7 +8,8 @@ import { usePraises } from '@/context/praises-context';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { PraiseAdminActions } from './praise-admin-actions';
-import { Badge } from '@/components/ui/badge';
+import { useCallback } from 'react';
+import { EditToneDialog } from './edit-tone-dialog';
 
 interface PraiseDetailClientProps {
   praise: Praise;
@@ -19,13 +20,13 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
   const { toast } = useToast();
   const { deletePraise, updatePraise } = usePraises();
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     deletePraise(praise.id);
     toast({ title: "Alabanza Eliminada", description: `"${praise.title}" se ha eliminado.` });
     router.push('/praises');
-  };
+  }, [deletePraise, praise.id, praise.title, router, toast]);
 
-  const handleUpdate = (updatedData: Omit<Praise, 'id'>): { success: boolean } => {
+  const handleUpdate = useCallback((updatedData: Omit<Praise, 'id'>): { success: boolean } => {
     const result = updatePraise(praise.id, updatedData);
     if (result.success && result.newId) {
       toast({ title: "Alabanza Actualizada" });
@@ -42,7 +43,13 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
       });
       return { success: false };
     }
-  };
+  }, [praise.id, updatePraise, router, toast]);
+
+  const handleToneUpdate = useCallback((newTone: string) => {
+    const { id, ...restOfPraise } = praise;
+    return handleUpdate({ ...restOfPraise, tone: newTone });
+  }, [praise, handleUpdate]);
+
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background">
@@ -58,7 +65,11 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
         </Button>
         <div className="text-center px-4 overflow-hidden flex-1">
             <h1 className="font-bold font-headline text-lg truncate mb-1">{praise.title}</h1>
-            {praise.tone && <Badge variant="outline">{praise.tone}</Badge>}
+            <EditToneDialog song={praise} onToneUpdated={handleToneUpdate}>
+              <Button variant="outline" size="sm" className="h-auto px-2 py-0.5 text-xs">
+                {praise.tone || 'Tonalidad: Indefinida'}
+              </Button>
+            </EditToneDialog>
         </div>
         <div className="w-10" />
       </header>
