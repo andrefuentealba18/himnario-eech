@@ -1,7 +1,7 @@
 "use client";
 
 import { PraiseListClient } from '@/components/praise-list-client';
-import { Music, ChevronLeft, Plus, ChevronDown, ZoomOut, ZoomIn } from 'lucide-react';
+import { Music, ChevronLeft, Plus, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AddSinglePraiseDialog } from '@/components/add-single-praise-dialog';
@@ -14,19 +14,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from '@/components/ui/badge';
-import { useFontSize } from '@/hooks/use-font-size';
-
-
-const listFontSizes = [
-  'text-sm',
-  'text-base',
-  'text-lg',
-  'text-xl',
-];
 
 export default function PraisesIndexPage() {
   const { praises, addPraise, addPraises, isLoaded } = usePraises();
-  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(listFontSizes.length, 1);
 
   return (
     <main className="flex flex-col items-center bg-background min-h-screen">
@@ -79,16 +69,6 @@ export default function PraisesIndexPage() {
             <p>Cargando alabanzas...</p>
           )}
         </div>
-        <footer className="sticky bottom-0 z-10 flex items-center justify-center gap-4 bg-background/80 backdrop-blur-sm p-4 border-t">
-           <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-14 w-14">
-             <ZoomOut className="h-7 w-7" />
-             <span className="sr-only">Reducir texto</span>
-           </Button>
-           <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === listFontSizes.length - 1} className="rounded-full h-14 w-14">
-             <ZoomIn className="h-7 w-7" />
-             <span className="sr-only">Aumentar texto</span>
-           </Button>
-        </footer>
       </div>
     </main>
   );
