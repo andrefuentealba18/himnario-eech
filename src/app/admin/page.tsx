@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronLeft } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
+import { PraiseAdminList } from '@/components/praise-admin-list';
 
 export default function AdminPage() {
   return (
@@ -36,7 +37,7 @@ export default function AdminPage() {
               <CardTitle>Gestionar Alabanzas</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-muted-foreground">Próximamente...</p>
+              <PraiseAdminList />
             </CardContent>
           </Card>
 

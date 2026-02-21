@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { hymns as initialHymns, type Hymn } from '@/lib/hymns';
+import { praises as initialPraises, type Praise } from '@/lib/praises';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -17,16 +17,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export function HymnAdminList() {
-  const [hymns, setHymns] = useState<Hymn[]>(initialHymns);
+export function PraiseAdminList() {
+  const [praises, setPraises] = useState<Praise[]>(initialPraises);
   const { toast } = useToast();
 
-  const handleDelete = (hymnNumber: number) => {
+  const handleDelete = (praiseId: string) => {
     // This is a simulation. In a real app, you'd call an API here.
-    setHymns(hymns.filter(h => h.number !== hymnNumber));
+    setPraises(praises.filter(p => p.id !== praiseId));
     toast({
-      title: 'Himno Eliminado (Simulación)',
-      description: 'El himno se ha quitado de la lista. Los cambios no son permanentes.',
+      title: 'Alabanza Eliminada (Simulación)',
+      description: 'La alabanza se ha quitado de la lista. Los cambios no son permanentes.',
     });
   };
 
@@ -37,17 +37,18 @@ export function HymnAdminList() {
     });
   };
 
-  if (hymns.length === 0) {
-    return <p className="text-muted-foreground">No hay himnos para mostrar. Agrégalos desde el diálogo correspondiente.</p>;
+  if (praises.length === 0) {
+    return (
+        <p className="text-muted-foreground">No hay alabanzas para mostrar. Agrégalas desde el diálogo correspondiente.</p>
+    )
   }
 
   return (
     <div className="flex flex-col gap-2">
-      {hymns.map((hymn) => (
-        <div key={hymn.number} className="flex items-center justify-between p-3 border rounded-lg">
+      {praises.map((praise) => (
+        <div key={praise.id} className="flex items-center justify-between p-3 border rounded-lg">
           <div>
-            <span className="font-bold text-primary">{hymn.number}.</span>
-            <span className="ml-2 font-medium">{hymn.title}</span>
+            <span className="font-medium">{praise.title}</span>
           </div>
           <div className="flex gap-2">
             <Button variant="outline" size="icon" onClick={handleEdit}>
@@ -65,12 +66,12 @@ export function HymnAdminList() {
                 <AlertDialogHeader>
                   <AlertDialogTitle>¿Estás realmente seguro?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Esta acción no se puede deshacer. Esto eliminará el himno de la lista (de forma simulada).
+                    Esta acción no se puede deshacer. Esto eliminará la alabanza de la lista (de forma simulada).
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => handleDelete(hymn.number)}>
+                  <AlertDialogAction onClick={() => handleDelete(praise.id)}>
                     Sí, eliminar
                   </AlertDialogAction>
                 </AlertDialogFooter>
