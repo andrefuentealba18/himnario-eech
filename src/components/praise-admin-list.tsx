@@ -1,12 +1,14 @@
 "use client";
 
+import type { Praise } from '@/lib/praises';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { usePraises } from '@/context/praises-context';
+import { EditPraiseDialog } from './edit-praise-dialog';
 
 export function PraiseAdminList() {
-  const { praises, deletePraise, isLoaded } = usePraises();
+  const { praises, deletePraise, updatePraise, isLoaded } = usePraises();
   const { toast } = useToast();
 
   const handleDelete = (praiseId: string) => {
@@ -17,12 +19,23 @@ export function PraiseAdminList() {
     });
   };
 
-  const handleEdit = () => {
-    toast({
-      title: 'Próximamente',
-      description: 'La función de editar estará disponible pronto.',
-    });
+  const handleUpdate = (praiseId: string) => (updatedData: Omit<Praise, 'id'>) => {
+    const result = updatePraise(praiseId, updatedData);
+    if (result.success) {
+      toast({
+        title: 'Alabanza Actualizada',
+        description: `La alabanza "${updatedData.title}" se ha guardado correctamente.`,
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Error al actualizar',
+        description: 'Ya existe una alabanza con ese título.',
+      });
+    }
+    return result;
   };
+
 
   if (!isLoaded) {
     return <p className="text-muted-foreground">Cargando alabanzas...</p>;
@@ -42,10 +55,12 @@ export function PraiseAdminList() {
             <span className="font-medium">{praise.title}</span>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="icon" onClick={handleEdit}>
-              <Edit className="h-4 w-4" />
-              <span className="sr-only">Editar</span>
-            </Button>
+            <EditPraiseDialog praise={praise} onPraiseUpdated={handleUpdate(praise.id)}>
+              <Button variant="outline" size="icon">
+                <Edit className="h-4 w-4" />
+                <span className="sr-only">Editar</span>
+              </Button>
+            </EditPraiseDialog>
             <Button variant="destructive" size="icon" onClick={() => handleDelete(praise.id)}>
               <Trash2 className="h-4 w-4" />
               <span className="sr-only">Eliminar</span>
