@@ -12,6 +12,7 @@ import { Button } from '@/components/ui/button';
 import { HymnAdminActions } from '@/components/hymn-admin-actions';
 import { Star, ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useCallback } from 'react';
 
 interface HymnDetailClientProps {
   hymn: Hymn;
@@ -35,19 +36,19 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
   
   const isFav = isLoaded && isFavorite(hymn.number);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     deleteHymn(hymn.number);
     toast({ title: "Himno Eliminado", description: `El himno #${hymn.number} se ha eliminado.` });
     router.push('/hymns');
-  };
+  }, [deleteHymn, hymn.number, router, toast]);
 
-  const handleUpdate = (updatedData: Omit<Hymn, 'number'>): { success: boolean } => {
+  const handleUpdate = useCallback((updatedData: Omit<Hymn, 'number'>): { success: boolean } => {
     const result = updateHymn(hymn.number, updatedData);
     if (result.success) {
       toast({ title: "Himno Actualizado" });
     }
     return result;
-  };
+  }, [hymn.number, updateHymn, toast]);
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background">
