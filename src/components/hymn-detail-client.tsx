@@ -66,7 +66,7 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
                         if (lineParts) {
                           return (
                             <div key={lIndex} className="relative px-8">
-                                <span className="absolute left-4">{lineParts[1]}</span>
+                                <span className="absolute left-10">{lineParts[1]}</span>
                                 <p>{lineParts[2]}</p>
                             </div>
                           );
