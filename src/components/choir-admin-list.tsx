@@ -1,0 +1,75 @@
+"use client";
+
+import type { Choir } from '@/lib/choirs';
+import { Button } from '@/components/ui/button';
+import { Edit, Trash2 } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
+import { useChoirs } from '@/context/choirs-context';
+import { EditChoirDialog } from './edit-choir-dialog';
+
+export function ChoirAdminList() {
+  const { choirs, deleteChoir, updateChoir, isLoaded } = useChoirs();
+  const { toast } = useToast();
+
+  const handleDelete = async (choirId: string) => {
+    await deleteChoir(choirId);
+    toast({
+      title: 'Coro Eliminado',
+      description: 'El coro se ha eliminado de la lista.',
+    });
+  };
+
+  const handleUpdate = (choirId: string) => async (updatedData: Omit<Choir, 'id'>) => {
+    const result = await updateChoir(choirId, updatedData);
+    if (result.success) {
+      toast({
+        title: 'Coro Actualizado',
+        description: `El coro "${updatedData.title}" se ha guardado correctamente.`,
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Error al actualizar',
+        description: 'Ya existe un coro con ese título.',
+      });
+    }
+    return result;
+  };
+
+
+  if (!isLoaded) {
+    return <p className="text-muted-foreground">Cargando coros...</p>;
+  }
+
+  if (choirs.length === 0) {
+    return (
+        <p className="text-muted-foreground">No hay coros para mostrar. Agrégalos desde la sección de Coros.</p>
+    )
+  }
+
+  return (
+    <div className="flex flex-col gap-2">
+      {choirs.map((choir) => (
+        <div key={choir.id} className="flex items-center justify-between p-3 border rounded-lg">
+          <div>
+            <span className="font-medium">{choir.title}</span>
+          </div>
+          <div className="flex gap-2">
+            <EditChoirDialog choir={choir} onChoirUpdated={handleUpdate(choir.id)}>
+              <Button variant="outline" size="icon">
+                <Edit className="h-4 w-4" />
+                <span className="sr-only">Editar</span>
+              </Button>
+            </EditChoirDialog>
+            <Button variant="destructive" size="icon" onClick={() => handleDelete(choir.id)}>
+              <Trash2 className="h-4 w-4" />
+              <span className="sr-only">Eliminar</span>
+            </Button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+    

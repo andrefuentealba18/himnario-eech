@@ -4,6 +4,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import { usePraises } from '@/context/praises-context';
+import { useChoirs } from '@/context/choirs-context';
+import { useYouthChoirs } from '@/context/youth-choirs-context';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -36,7 +39,7 @@ import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const songSchema = z.object({
-  category: z.string({ required_error: 'Por favor selecciona una categoría.' }),
+  category: z.enum(['Alabanzas', 'Coros', 'Alabanza Coro Juventud'], { required_error: 'Por favor selecciona una categoría.' }),
   title: z.string().min(1, 'El título es requerido.'),
   lyrics: z.string().min(1, 'La letra es requerida.'),
 });
@@ -44,6 +47,9 @@ const songSchema = z.object({
 export function AddSongDialog() {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
+  const { addPraise } = usePraises();
+  const { addChoir } = useChoirs();
+  const { addYouthChoir } = useYouthChoirs();
 
   const form = useForm<z.infer<typeof songSchema>>({
     resolver: zodResolver(songSchema),
@@ -54,14 +60,39 @@ export function AddSongDialog() {
     },
   });
 
-  function onSubmit(values: z.infer<typeof songSchema>) {
-    console.log(values);
-    toast({
-      title: 'Formulario Enviado (Simulación)',
-      description: `En una aplicación real, la canción "${values.title}" se guardaría en "${values.category}".`,
-    });
-    form.reset({category: undefined, title: '', lyrics: ''});
-    setOpen(false);
+  async function onSubmit(values: z.infer<typeof songSchema>) {
+    let result: { success: boolean };
+    const songData = { title: values.title, lyrics: values.lyrics };
+
+    switch (values.category) {
+      case 'Alabanzas':
+        result = await addPraise(songData);
+        break;
+      case 'Coros':
+        result = await addChoir(songData);
+        break;
+      case 'Alabanza Coro Juventud':
+        result = await addYouthChoir(songData);
+        break;
+      default:
+        toast({ variant: 'destructive', title: 'Categoría no válida' });
+        return;
+    }
+
+    if (result.success) {
+      toast({
+        title: 'Canción Guardada',
+        description: `"${values.title}" se guardó en ${values.category}.`,
+      });
+      form.reset();
+      setOpen(false);
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Error al Guardar',
+        description: `Ya existe una canción con el título "${values.title}" en esa categoría.`,
+      });
+    }
   }
 
   return (
@@ -138,3 +169,5 @@ export function AddSongDialog() {
     </Dialog>
   );
 }
+
+    

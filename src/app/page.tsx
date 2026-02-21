@@ -49,15 +49,15 @@ export default function HomePage() {
                 </Button>
               </div>
               <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
-                <Button asChild size="lg" className="h-16 w-full text-lg font-body shadow-lg" variant="secondary" disabled>
-                  <Link href="#">
+                <Button asChild size="lg" className="h-16 w-full text-lg font-body shadow-lg" variant="secondary">
+                  <Link href="/choirs">
                     <Mic className="mr-4 h-6 w-6" /> Coros
                   </Link>
                 </Button>
               </div>
               <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.9s' }}>
-                <Button asChild size="lg" className="h-16 w-full text-lg font-body shadow-lg" variant="secondary" disabled>
-                  <Link href="#">
+                <Button asChild size="lg" className="h-16 w-full text-lg font-body shadow-lg" variant="secondary">
+                  <Link href="/youth-choirs">
                     <Users className="mr-4 h-6 w-6" /> Alabanza Coro Juventud
                   </Link>
                 </Button>
@@ -74,3 +74,5 @@ export default function HomePage() {
     </div>
   );
 }
+
+    

@@ -4,6 +4,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronLeft } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
+import { ChoirAdminList } from '@/components/choir-admin-list';
+import { YouthChoirAdminList } from '@/components/youth-choir-admin-list';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function AdminPage() {
@@ -57,7 +59,7 @@ export default function AdminPage() {
                     <CardTitle>Gestionar Coros</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">Próximamente...</p>
+                    <ChoirAdminList />
                   </CardContent>
                 </Card>
             </TabsContent>
@@ -67,7 +69,7 @@ export default function AdminPage() {
                     <CardTitle>Gestionar Alabanza Coro Juventud</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-muted-foreground">Próximamente...</p>
+                    <YouthChoirAdminList />
                   </CardContent>
                 </Card>
             </TabsContent>
@@ -77,3 +79,5 @@ export default function AdminPage() {
     </main>
   );
 }
+
+    

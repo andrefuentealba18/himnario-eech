@@ -2,7 +2,7 @@ rules_version = '2';
 
 /**
  * Core Philosophy: This ruleset implements a dual security model. It provides public,
- * read-only access to central data collections ('hymns', 'praises') while enforcing a strict
+ * read-only access to central data collections ('hymns', 'praises', 'choirs', 'youth-choirs') while enforcing a strict
  * user-ownership model for all personal data ('users'). This ensures that core
  * application content is widely available, while user-specific information like
  * preferences and favorites is kept private and secure.
@@ -10,12 +10,14 @@ rules_version = '2';
  * Data Structure: The data is organized into three main top-level collections:
  * 1. /hymns/{hymnId}: A public collection containing all hymn data.
  * 2. /praises/{praiseId}: A public collection containing all praise data.
- * 3. /users/{userId}: A collection where each document represents a user's private
+ * 3. /choirs/{choirId}: A public collection containing all choir data.
+ * 4. /youth-choirs/{youthChoirId}: A public collection containing all youth choir data.
+ * 5. /users/{userId}: A collection where each document represents a user's private
  *    data tree. User-specific data, such as favorite hymns, is stored in
  *    subcollections within this tree (e.g., /users/{userId}/favoriteHymns).
  *
  * Key Security Decisions:
- * - Public Data: The `/hymns` and `/praises` collections are publicly readable by anyone, including
+ * - Public Data: The `/hymns`, `/praises`, `/choirs`, and `/youth-choirs` collections are publicly readable by anyone, including
  *   unauthenticated users. Writes (create, update, delete) are restricted to authenticated
  *   users. The client-side application is expected to handle admin-level authorization
  *   before attempting a write. This protects the integrity of the core app data.
@@ -30,7 +32,7 @@ rules_version = '2';
  * to verify ownership without needing to reference the document's path, making them
  * more robust.
  *
- * Structural Segregation: The design separates public data (`/hymns`, `/praises`) from private
+ * Structural Segregation: The design separates public data (`/hymns`, `/praises`, etc.) from private
  * user data (`/users`). This separation is a key security feature, preventing any
  * possibility of private data being accidentally exposed through a misconfigured rule
  * on a mixed-content collection.
@@ -123,6 +125,24 @@ service cloud.firestore {
       allow read: if true;
       allow write: if request.auth != null;
     }
+    
+    /**
+     * @description Publicly accessible choir data. Anyone can read. Writes are restricted to authenticated users.
+     * @path /choirs/{choirId}
+     */
+    match /choirs/{choirId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
+    
+    /**
+     * @description Publicly accessible youth choir data. Anyone can read. Writes are restricted to authenticated users.
+     * @path /youth-choirs/{youthChoirId}
+     */
+    match /youth-choirs/{youthChoirId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
 
     /**
      * @description Stores user-specific settings. Only the owner can read or write their own profile.
@@ -156,3 +176,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
