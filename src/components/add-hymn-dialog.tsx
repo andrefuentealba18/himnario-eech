@@ -28,8 +28,8 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 
-const bulkHymnsSchema = z.object({
-  hymnsText: z.string().min(1, 'El texto de los himnos es requerido.'),
+const bulkSchema = z.object({
+  text: z.string().min(1, 'El texto de los himnos es requerido.'),
 });
 
 function normalizeTone(input: string): string {
@@ -143,15 +143,15 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof bulkHymnsSchema>>({
-    resolver: zodResolver(bulkHymnsSchema),
+  const form = useForm<z.infer<typeof bulkSchema>>({
+    resolver: zodResolver(bulkSchema),
     defaultValues: {
-      hymnsText: '',
+      text: '',
     },
   });
 
-  async function onSubmit(values: z.infer<typeof bulkHymnsSchema>) {
-    const parsedHymns = parseHymns(values.hymnsText);
+  async function onSubmit(values: z.infer<typeof bulkSchema>) {
+    const parsedHymns = parseHymns(values.text);
     
     if (parsedHymns.length > 0) {
         const { addedCount, updatedCount } = await onHymnsAdded(parsedHymns);
@@ -167,7 +167,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
         });
     }
     
-    form.reset({hymnsText: ''});
+    form.reset({text: ''});
     setOpen(false);
   }
 
@@ -187,7 +187,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
             <FormField
               control={form.control}
-              name="hymnsText"
+              name="text"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Texto de los himnos</FormLabel>

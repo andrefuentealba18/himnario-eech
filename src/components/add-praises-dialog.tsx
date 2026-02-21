@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -27,8 +28,8 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 
-const bulkPraisesSchema = z.object({
-  praisesText: z.string().min(1, 'El texto de las alabanzas es requerido.'),
+const bulkSchema = z.object({
+  text: z.string().min(1, 'El texto de las alabanzas es requerido.'),
 });
 
 function parsePraises(text: string): Omit<Praise, 'id'>[] {
@@ -78,15 +79,15 @@ export function AddPraisesDialog({ children, onPraisesAdded }: { children: React
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof bulkPraisesSchema>>({
-    resolver: zodResolver(bulkPraisesSchema),
+  const form = useForm<z.infer<typeof bulkSchema>>({
+    resolver: zodResolver(bulkSchema),
     defaultValues: {
-      praisesText: '',
+      text: '',
     },
   });
 
-  async function onSubmit(values: z.infer<typeof bulkPraisesSchema>) {
-    const parsedPraises = parsePraises(values.praisesText);
+  async function onSubmit(values: z.infer<typeof bulkSchema>) {
+    const parsedPraises = parsePraises(values.text);
     
     if (parsedPraises.length > 0) {
         const { addedCount, duplicates } = await onPraisesAdded(parsedPraises);
@@ -102,7 +103,7 @@ export function AddPraisesDialog({ children, onPraisesAdded }: { children: React
         });
     }
     
-    form.reset({praisesText: ''});
+    form.reset({text: ''});
     setOpen(false);
   }
 
@@ -122,7 +123,7 @@ export function AddPraisesDialog({ children, onPraisesAdded }: { children: React
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
             <FormField
               control={form.control}
-              name="praisesText"
+              name="text"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Texto de las alabanzas</FormLabel>
