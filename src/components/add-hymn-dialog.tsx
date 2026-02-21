@@ -39,8 +39,8 @@ function parseHymns(text: string): Hymn[] {
         return hymns;
     }
 
-    // Split text into potential hymn blocks. Each block should start with a number and a dot.
-    const hymnBlocks = text.split(/^\s*(?=\d+\.\s)/m).filter(block => block.trim() !== "");
+    // Split text into potential hymn blocks. Each block should start with a number.
+    const hymnBlocks = text.split(/^\s*(?=\d+\.?\s*)/m).filter(block => block.trim());
 
     if (hymnBlocks.length === 0) return [];
 
@@ -48,16 +48,23 @@ function parseHymns(text: string): Hymn[] {
         const lines = block.trim().split('\n');
         if (lines.length === 0) continue;
 
-        // The first line should be the number and title. e.g., "1. HIMNO OFICIAL..."
-        const headerMatch = lines[0].match(/^(\d+)\.\s*(.*)/);
+        // The first line should be the number and title. e.g., "1. HIMNO" or "1 HIMNO"
+        const headerMatch = lines[0].match(/^(\d+)\.?\s*(.*)/);
         if (!headerMatch) continue;
 
         const number = parseInt(headerMatch[1], 10);
-        const title = headerMatch[2].trim();
+        let title = headerMatch[2].trim();
+        let lyricsLines = lines.slice(1);
+        
+        // Handle case where title is on the next line (e.g. "1." on one line, "TITLE" on the next)
+        if (title === '' && lyricsLines.length > 0) {
+            title = lyricsLines[0].trim();
+            lyricsLines = lyricsLines.slice(1);
+        }
+        
         if (!title) continue;
 
         let tone: string | undefined = undefined;
-        let lyricsLines = lines.slice(1);
 
         // Check if the next non-empty line is a tone
         let firstContentLineIndex = -1;
@@ -70,9 +77,8 @@ function parseHymns(text: string): Hymn[] {
 
         if (firstContentLineIndex !== -1) {
             const potentialTone = lyricsLines[firstContentLineIndex].trim();
-            const isKeyInList = musicalKeys.find(k => k.toLowerCase() === potentialTone.toLowerCase());
+            const isKeyInList = musicalKeys.some(k => k.toLowerCase() === potentialTone.toLowerCase());
             const keyRegex = /^[A-G](s|b)?[mM]?\s*\.?\s*M?\.?$/i;
-            
             const toneKeywordRegex = /^(tono|tonalidad|notas):/i;
 
             if (toneKeywordRegex.test(potentialTone) || isKeyInList || (keyRegex.test(potentialTone) && potentialTone.length < 20)) {
@@ -121,7 +127,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
         toast({
             variant: "destructive",
             title: 'Formato Incorrecto',
-            description: 'No se pudieron procesar los himnos. Asegúrate que cada himno empiece con un número y un punto (ej: 116. Título).',
+            description: 'No se pudieron procesar los himnos. Asegúrate que cada himno empiece con un número y un título (ej: 116. Título).',
         });
     }
     
@@ -138,7 +144,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
         <DialogHeader>
           <DialogTitle>Agregar Varios Himnos</DialogTitle>
           <DialogDescription>
-            Pega el texto de varios himnos. Cada himno DEBE comenzar en una nueva línea con su número y un punto (ej: "116. Título"). Opcionalmente, puedes añadir la tonalidad en la línea siguiente al título.
+            Pega el texto de varios himnos. Cada himno debe comenzar en una nueva línea con su número (ej: "116 Título" o "116. Título"). El punto después del número es opcional. Opcionalmente, puedes añadir la tonalidad en la línea siguiente al título.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -151,7 +157,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
                   <FormLabel>Texto de los himnos</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="116. Mi nuevo himno...&#10;Tonalidad: Do Mayor&#10;Letra...&#10;&#10;117. Otro himno...&#10;Letra..." 
+                      placeholder="116 Mi nuevo himno...&#10;Tonalidad: Do Mayor&#10;Letra...&#10;&#10;117. Otro himno...&#10;Letra..." 
                       className="h-64 min-h-[10rem]" 
                       {...field} />
                   </FormControl>
