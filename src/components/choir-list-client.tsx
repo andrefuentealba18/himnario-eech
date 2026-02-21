@@ -8,6 +8,12 @@ import { Search } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 interface ChoirListClientProps {
   choirs: Choir[];
@@ -73,6 +79,29 @@ export function ChoirListClient({ choirs }: ChoirListClientProps) {
 }
 
 function ChoirRoll({ choirs }: { choirs: Choir[] }) {
+  const groupedChoirs = useMemo(() => {
+    const groups: Record<string, Choir[]> = {};
+
+    choirs.forEach(choir => {
+      const tone = choir.tone || 'Tonalidad no especificada';
+      if (!groups[tone]) {
+        groups[tone] = [];
+      }
+      groups[tone].push(choir);
+    });
+
+    return Object.keys(groups)
+      .sort((a, b) => {
+        if (a === 'Tonalidad no especificada') return 1;
+        if (b === 'Tonalidad no especificada') return -1;
+        return a.localeCompare(b);
+      })
+      .map(tone => ({
+        tone,
+        choirs: groups[tone],
+      }));
+  }, [choirs]);
+
   if (choirs.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-10">
@@ -83,26 +112,37 @@ function ChoirRoll({ choirs }: { choirs: Choir[] }) {
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-13rem)]">
-        <div className="flex flex-col">
-        {choirs.map((choir) => (
-            <Link
-                href={`/choirs/${choir.id}`}
-                key={choir.id}
-                className="flex items-center gap-4 p-4 border-b transition-colors hover:bg-muted/50 rounded-lg"
-            >
-                <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
-                    <span className="font-medium truncate">{choir.title}</span>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      {choir.speed && <Badge variant="secondary" className="capitalize hidden sm:inline-flex">{choir.speed}</Badge>}
-                      {choir.tone && <Badge variant="outline">{choir.tone}</Badge>}
-                    </div>
-                </div>
-            </Link>
-        ))}
-        </div>
+    <ScrollArea className="h-[calc(100vh-13rem)] pr-4">
+        <Accordion type="multiple" className="w-full">
+            {groupedChoirs.map(({ tone, choirs: choirList }) => (
+                <AccordionItem value={tone} key={tone}>
+                    <AccordionTrigger className="text-base font-semibold hover:no-underline">
+                        <div className="flex items-center gap-3">
+                           {tone}
+                           <Badge variant="secondary">{choirList.length}</Badge>
+                        </div>
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <div className="flex flex-col pt-2">
+                            {choirList.map((choir) => (
+                                <Link
+                                    href={`/choirs/${choir.id}`}
+                                    key={choir.id}
+                                    className="flex items-center gap-4 p-3 -mx-2 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
+                                >
+                                    <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
+                                        <span className="font-medium truncate">{choir.title}</span>
+                                        <div className="flex items-center gap-2 flex-shrink-0">
+                                            {choir.speed && <Badge variant="outline" className="capitalize hidden sm:inline-flex">{choir.speed}</Badge>}
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </AccordionContent>
+                </AccordionItem>
+            ))}
+        </Accordion>
     </ScrollArea>
   );
 }
-
-    
