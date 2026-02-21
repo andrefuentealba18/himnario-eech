@@ -65,11 +65,11 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
                         const lineParts = line.match(/^(\d+\.\s*)(.*)/);
                         if (lineParts) {
                           return (
-                            <div key={lIndex} className="flex items-start text-left">
-                                <span className="w-8 flex-shrink-0">{lineParts[1]}</span>
-                                <span>{lineParts[2]}</span>
+                            <div key={lIndex} className="relative px-8">
+                                <span className="absolute left-0">{lineParts[1]}</span>
+                                <p>{lineParts[2]}</p>
                             </div>
-                          )
+                          );
                         }
                         return(
                           <p key={lIndex} className={isChorus ? 'font-bold' : ''}>
