@@ -27,7 +27,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Plus } from 'lucide-react';
 
 const praiseSchema = z.object({
   title: z.string().min(1, 'El título es requerido.'),
@@ -36,7 +35,7 @@ const praiseSchema = z.object({
 
 type FormData = z.infer<typeof praiseSchema>;
 
-export function AddPraiseDialog({ onPraiseAdded }: { onPraiseAdded: (praise: Omit<Praise, 'id'>) => { success: boolean } }) {
+export function AddSinglePraiseDialog({ children, onPraiseAdded }: { children: React.ReactNode, onPraiseAdded: (praise: Omit<Praise, 'id'>) => { success: boolean } }) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -69,10 +68,7 @@ export function AddPraiseDialog({ onPraiseAdded }: { onPraiseAdded: (praise: Omi
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Plus className="mr-2 h-4 w-4" />
-          Agregar Alabanza
-        </Button>
+        {children}
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>

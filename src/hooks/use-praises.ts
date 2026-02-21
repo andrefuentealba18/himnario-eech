@@ -52,10 +52,32 @@ export function usePraises() {
     return { success: true, praise: newPraise };
   }, [praises]);
 
+  const addPraises = useCallback((newPraisesData: Omit<Praise, 'id'>[]): { addedCount: number, duplicates: number } => {
+    const existingIds = new Set(praises.map(p => p.id));
+    const uniqueNewPraises: Praise[] = [];
+
+    newPraisesData.forEach(praiseData => {
+        const id = slugify(praiseData.title);
+        if (!existingIds.has(id)) {
+            uniqueNewPraises.push({ ...praiseData, id });
+            existingIds.add(id);
+        }
+    });
+
+    if (uniqueNewPraises.length > 0) {
+        setPraises(prevPraises => [...prevPraises, ...uniqueNewPraises].sort((a, b) => a.title.localeCompare(b.title)));
+    }
+
+    return {
+        addedCount: uniqueNewPraises.length,
+        duplicates: newPraisesData.length - uniqueNewPraises.length
+    };
+  }, [praises]);
+
   const getPraiseById = useCallback((id: string): Praise | undefined => {
     if (!isLoaded) return undefined;
     return praises.find(p => p.id === id);
   }, [praises, isLoaded]);
 
-  return { praises, addPraise, getPraiseById, isLoaded };
+  return { praises, addPraise, addPraises, getPraiseById, isLoaded };
 }
