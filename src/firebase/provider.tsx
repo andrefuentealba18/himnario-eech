@@ -18,32 +18,30 @@ export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }
   const [instances, setInstances] = useState<FirebaseInstances | null>(null);
 
   useEffect(() => {
-    try {
-      // The firebaseConfig object is expected to be populated by App Hosting.
-      // If it's not (e.g., in local development), we'll skip initialization
-      // to prevent errors. The app will remain in a loading state.
-      if (!firebaseConfig || !(firebaseConfig as any).apiKey) {
-        return;
-      }
+    if (instances) return; // Already initialized
 
-      const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
-      const auth = getAuth(app);
-      const firestore = getFirestore(app);
-
-      enableIndexedDbPersistence(firestore)
-        .catch((err) => {
-          if (err.code === 'failed-precondition') {
-            console.warn("Firestore persistence failed: can only be enabled in one tab at a time.");
-          } else if (err.code === 'unimplemented') {
-            console.warn("Firestore persistence is not supported in this browser.");
-          }
-        });
-        
-      setInstances({ app, auth, firestore });
-    } catch (error) {
-      console.error("Firebase initialization failed:", error);
+    // The firebaseConfig object is populated by App Hosting.
+    // In local dev, if it's missing, we just wait.
+    if (!firebaseConfig || !(firebaseConfig as any).apiKey) {
+      return;
     }
-  }, []);
+
+    const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+    const auth = getAuth(app);
+    const firestore = getFirestore(app);
+
+    enableIndexedDbPersistence(firestore)
+      .catch((err) => {
+        if (err.code === 'failed-precondition') {
+          console.warn("Firestore persistence failed: can only be enabled in one tab at a time.");
+        } else if (err.code === 'unimplemented') {
+          console.warn("Firestore persistence is not supported in this browser.");
+        }
+      });
+      
+    setInstances({ app, auth, firestore });
+
+  }, [instances]);
 
   return (
     <FirebaseContext.Provider value={instances}>

@@ -1,9 +1,9 @@
 "use client";
 
-import { createContext, useContext, useEffect, useCallback, ReactNode, useMemo } from 'react';
+import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { Praise } from '@/lib/praises';
 import { useFirestore, useCollection } from '@/firebase';
-import { collection, doc, setDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, deleteDoc, writeBatch, getDoc, getDocs } from 'firebase/firestore';
 
 const slugify = (text: string): string =>
   text.toString().toLowerCase()
@@ -28,7 +28,7 @@ const PraisesContext = createContext<PraisesContextType | undefined>(undefined);
 export function PraisesProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
   const praisesCollectionRef = useMemo(() => firestore ? collection(firestore, 'praises') : null, [firestore]);
-  const { data: rawPraises, loading: isLoaded } = useCollection<Praise>(praisesCollectionRef);
+  const { data: rawPraises, loading: isLoading } = useCollection<Praise>(praisesCollectionRef);
 
   const praises = useMemo(() => {
     return rawPraises ? [...rawPraises].sort((a, b) => a.title.localeCompare(b.title)) : [];
@@ -55,20 +55,19 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     const batch = writeBatch(firestore);
     let addedCount = 0;
     let duplicates = 0;
+    
+    const praisesSnapshot = await getDocs(collection(firestore, 'praises'));
+    const existingTitles = new Set(praisesSnapshot.docs.map(doc => doc.id));
 
-    // Firestore doesn't have an efficient "Set" to check against without reading all docs.
-    // A better approach for very large datasets would be a cloud function.
-    // For this client-side approach, we check one by one.
     for (const praiseData of newPraisesData) {
       const id = slugify(praiseData.title);
-      const docRef = doc(firestore, 'praises', id);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
+      if (existingTitles.has(id)) {
         duplicates++;
       } else {
+        const docRef = doc(firestore, 'praises', id);
         batch.set(docRef, praiseData);
         addedCount++;
+        existingTitles.add(id); // Add to set to avoid duplicates within the same batch
       }
     }
     
@@ -113,11 +112,10 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   }, [firestore]);
 
   const getPraiseById = useCallback((id: string): Praise | undefined => {
-    if (!isLoaded) return undefined;
     return praises.find(p => p.id === id);
-  }, [praises, isLoaded]);
+  }, [praises]);
 
-  const value = { praises, addPraise, addPraises, deletePraise, updatePraise, getPraiseById, isLoaded: !isLoaded };
+  const value = { praises, addPraise, addPraises, deletePraise, updatePraise, getPraiseById, isLoaded: !isLoading };
 
   return <PraisesContext.Provider value={value}>{children}</PraisesContext.Provider>;
 }
