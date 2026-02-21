@@ -47,22 +47,33 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8">
-        <div className="container max-w-3xl px-6">
+        <div className="container max-w-3xl px-6 text-center">
             {isFontLoaded ? (
-              <pre
-                className={`whitespace-pre-wrap font-body leading-loose transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
+              <div
+                className={`font-body leading-loose transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
               >
-                {hymn.lyrics}
-              </pre>
+                {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
+                  const isChorus = paragraph.startsWith('CORO:');
+                  return (
+                    <div key={pIndex} className="mb-6">
+                      {paragraph.split('\n').map((line, lIndex) => (
+                        <p key={lIndex} className={isChorus ? 'font-bold' : ''}>
+                          {line}
+                        </p>
+                      ))}
+                    </div>
+                  );
+                })}
+              </div>
             ) : (
                 <div className="space-y-6">
-                    <div className="h-6 w-3/4 bg-muted rounded animate-pulse" />
-                    <div className="h-6 w-full bg-muted rounded animate-pulse" />
-                    <div className="h-6 w-5/6 bg-muted rounded animate-pulse" />
-                    <div className="h-6 w-full bg-muted rounded animate-pulse" />
-                     <div className="h-6 w-3/4 bg-muted rounded animate-pulse pt-4" />
-                    <div className="h-6 w-full bg-muted rounded animate-pulse" />
-                    <div className="h-6 w-5/6 bg-muted rounded animate-pulse" />
+                    <div className="h-6 w-3/4 bg-muted rounded animate-pulse mx-auto" />
+                    <div className="h-6 w-full bg-muted rounded animate-pulse mx-auto" />
+                    <div className="h-6 w-5/6 bg-muted rounded animate-pulse mx-auto" />
+                    <div className="h-6 w-full bg-muted rounded animate-pulse mx-auto" />
+                     <div className="h-6 w-3/4 bg-muted rounded animate-pulse pt-4 mx-auto" />
+                    <div className="h-6 w-full bg-muted rounded animate-pulse mx-auto" />
+                    <div className="h-6 w-5/6 bg-muted rounded animate-pulse mx-auto" />
                 </div>
             )}
         </div>
