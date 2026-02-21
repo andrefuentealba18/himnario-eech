@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChevronLeft } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function AdminPage() {
   return (
@@ -22,43 +23,55 @@ export default function AdminPage() {
           <div className="w-10"></div> {/* Spacer */}
         </header>
 
-        <div className="p-4 space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Gestionar Himnos</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <HymnAdminList />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Gestionar Alabanzas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <PraiseAdminList />
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Gestionar Coros</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Próximamente...</p>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader>
-              <CardTitle>Gestionar Alabanza Coro Juventud</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground">Próximamente...</p>
-            </CardContent>
-          </Card>
-
+        <div className="p-4">
+          <Tabs defaultValue="hymns" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="hymns">Himnos</TabsTrigger>
+              <TabsTrigger value="praises">Alabanzas</TabsTrigger>
+              <TabsTrigger value="choirs">Coros</TabsTrigger>
+              <TabsTrigger value="youth-choirs">Coro Juventud</TabsTrigger>
+            </TabsList>
+            <TabsContent value="hymns">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Gestionar Himnos</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <HymnAdminList />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="praises">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Gestionar Alabanzas</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <PraiseAdminList />
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="choirs">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Gestionar Coros</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">Próximamente...</p>
+                  </CardContent>
+                </Card>
+            </TabsContent>
+            <TabsContent value="youth-choirs">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Gestionar Alabanza Coro Juventud</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground">Próximamente...</p>
+                  </CardContent>
+                </Card>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </main>
