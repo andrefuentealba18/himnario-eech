@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Hymn } from '@/lib/hymns';
@@ -9,7 +10,7 @@ import { useFontSize } from '@/hooks/use-font-size';
 import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { HymnAdminActions } from '@/components/hymn-admin-actions';
-import { Star, ChevronLeft, ZoomIn, ZoomOut, Settings } from 'lucide-react';
+import { Star, ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface HymnDetailClientProps {
@@ -77,30 +78,18 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
 
       <main className="flex-1 py-8 flex justify-center px-4">
         <div className="max-w-[20rem] text-center">
-            {isFontLoaded ? (
-              <div
-                className={`font-body leading-loose transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
-              >
-                {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
-                  const isChorus = paragraph.startsWith('CORO:');
-                  return (
-                    <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-bold leading-snug' : ''}`}>
-                      {paragraph}
-                    </p>
-                  );
-                })}
-              </div>
-            ) : (
-                <div className="space-y-6">
-                    <div className="h-6 w-3/4 bg-muted rounded animate-pulse mx-auto" />
-                    <div className="h-6 w-full bg-muted rounded animate-pulse mx-auto" />
-                    <div className="h-6 w-5/6 bg-muted rounded animate-pulse mx-auto" />
-                    <div className="h-6 w-full bg-muted rounded animate-pulse mx-auto" />
-                     <div className="h-6 w-3/4 bg-muted rounded animate-pulse pt-4 mx-auto" />
-                    <div className="h-6 w-full bg-muted rounded animate-pulse mx-auto" />
-                    <div className="h-6 w-5/6 bg-muted rounded animate-pulse mx-auto" />
-                </div>
-            )}
+          <div
+            className={`font-body leading-loose transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
+          >
+            {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
+              const isChorus = paragraph.startsWith('CORO:');
+              return (
+                <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-bold leading-snug' : ''}`}>
+                  {paragraph}
+                </p>
+              );
+            })}
+          </div>
         </div>
       </main>
       
