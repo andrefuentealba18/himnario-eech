@@ -98,7 +98,7 @@ function HymnRoll({ hymns }: { hymns: Hymn[] }) {
                 key={hymn.number}
                 className="flex items-center gap-4 p-3 border-b transition-colors hover:bg-muted/50 rounded-lg"
             >
-                <span className="font-bold text-primary w-8 text-center">{hymn.number}</span>
+                <span className="font-bold text-primary w-8">{hymn.number}</span>
                 <span className="flex-1 font-medium">{hymn.title}</span>
             </Link>
         ))}
