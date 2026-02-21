@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,7 +15,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import {
   Form,
@@ -45,8 +44,13 @@ const choirSchema = z.object({
 
 type FormData = z.infer<typeof choirSchema>;
 
-export function AddSingleChoirDialog({ children, onChoirAdded }: { children: React.ReactNode, onChoirAdded: (choir: Omit<Choir, 'id'>) => Promise<{ success: boolean }> }) {
-  const [open, setOpen] = useState(false);
+interface AddSingleChoirDialogProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onChoirAdded: (choir: Omit<Choir, 'id'>) => Promise<{ success: boolean; choir?: Choir }>;
+}
+
+export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSingleChoirDialogProps) {
   const { toast } = useToast();
 
   const form = useForm<FormData>({
@@ -58,6 +62,12 @@ export function AddSingleChoirDialog({ children, onChoirAdded }: { children: Rea
       speed: '',
     },
   });
+  
+  useEffect(() => {
+    if(open) {
+        form.reset();
+    }
+  }, [open, form]);
 
   async function onSubmit(values: FormData) {
     const result = await onChoirAdded(values);
@@ -66,8 +76,7 @@ export function AddSingleChoirDialog({ children, onChoirAdded }: { children: Rea
         title: 'Coro Agregado',
         description: `El coro "${values.title}" ha sido guardado.`,
       });
-      form.reset();
-      setOpen(false);
+      onOpenChange(false);
     } else {
         toast({
             variant: 'destructive',
@@ -78,10 +87,7 @@ export function AddSingleChoirDialog({ children, onChoirAdded }: { children: Rea
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Agregar Nuevo Coro</DialogTitle>
@@ -169,5 +175,3 @@ export function AddSingleChoirDialog({ children, onChoirAdded }: { children: Rea
     </Dialog>
   );
 }
-
-    

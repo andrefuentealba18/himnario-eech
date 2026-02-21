@@ -1,9 +1,6 @@
 "use client";
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useState, useEffect } from 'react';
 import type { Choir } from '@/lib/choirs';
 
 import { Button } from '@/components/ui/button';
@@ -14,22 +11,10 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-
-const bulkSchema = z.object({
-  text: z.string().min(1, 'El texto de los coros es requerido.'),
-});
 
 function parseSongs(text: string): Omit<Choir, 'id'>[] {
     const songs: Omit<Choir, 'id'>[] = [];
@@ -73,20 +58,34 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
     return songs;
 }
 
+interface AddChoirsDialogProps {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  onChoirsAdded: (choirs: Omit<Choir, 'id'>[]) => Promise<{ addedCount: number, duplicates: number }>;
+}
 
-export function AddChoirsDialog({ children, onChoirsAdded }: { children: React.ReactNode, onChoirsAdded: (choirs: Omit<Choir, 'id'>[]) => Promise<{ addedCount: number, duplicates: number }> }) {
-  const [open, setOpen] = useState(false);
+export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirsDialogProps) {
+  const [text, setText] = useState('');
   const { toast } = useToast();
 
-  const form = useForm<z.infer<typeof bulkSchema>>({
-    resolver: zodResolver(bulkSchema),
-    defaultValues: {
-      text: '',
-    },
-  });
+  useEffect(() => {
+    if (open) {
+      setText('');
+    }
+  }, [open]);
 
-  async function onSubmit(values: z.infer<typeof bulkSchema>) {
-    const parsed = parseSongs(values.text);
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (text.trim() === '') {
+        toast({
+            variant: "destructive",
+            title: 'Campo vacío',
+            description: 'El texto de los coros es requerido.',
+        });
+        return;
+    }
+    
+    const parsed = parseSongs(text);
     
     if (parsed.length > 0) {
         const { addedCount, duplicates } = await onChoirsAdded(parsed);
@@ -102,15 +101,11 @@ export function AddChoirsDialog({ children, onChoirsAdded }: { children: React.R
         });
     }
     
-    form.reset({text: ''});
-    setOpen(false);
+    onOpenChange(false);
   }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        {children}
-      </DialogTrigger>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Agregar Varios Coros</DialogTitle>
@@ -118,32 +113,22 @@ export function AddChoirsDialog({ children, onChoirsAdded }: { children: React.R
             Pega el texto de varios coros. Cada uno debe comenzar con su título escrito completamente en MAYÚSCULAS.
           </DialogDescription>
         </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
-            <FormField
-              control={form.control}
-              name="text"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Texto de los coros</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="TÍTULO EN MAYÚSCULAS&#10;Letra del coro...&#10;...&#10;&#10;OTRO TÍTULO EN MAYÚSCULAS&#10;Letra del otro coro..." 
-                      className="h-64 min-h-[10rem]" 
-                      {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+        <form onSubmit={handleSubmit} className="space-y-4 py-4">
+            <div className="space-y-2">
+                <Label htmlFor="choir-bulk-text">Texto de los coros</Label>
+                <Textarea 
+                  id="choir-bulk-text"
+                  placeholder="TÍTULO EN MAYÚSCULAS&#10;Letra del coro...&#10;...&#10;&#10;OTRO TÍTULO EN MAYÚSCULAS&#10;Letra del otro coro..." 
+                  className="h-64 min-h-[10rem]"
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                />
+            </div>
             <DialogFooter>
               <Button type="submit">Guardar Coros</Button>
             </DialogFooter>
-          </form>
-        </Form>
+        </form>
       </DialogContent>
     </Dialog>
   );
 }
-
-    
