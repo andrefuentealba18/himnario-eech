@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useCallback, ReactNode, useMemo } from 'react';
 import type { Hymn } from '@/lib/hymns';
 import { hymns as initialHymnsData } from '@/lib/hymns-initial';
-import { useFirestore, useCollection } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
@@ -23,11 +23,11 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const hymnsCollectionRef = useMemo(() => 
+  const hymnsCollectionRef = useMemoFirebase(() => 
     firestore ? collection(firestore, 'hymns') : null
   , [firestore]);
 
-  const { data: rawHymns, loading: isLoadingFromHook } = useCollection<Hymn>(hymnsCollectionRef);
+  const { data: rawHymns, isLoading: isLoadingFromHook } = useCollection<Hymn>(hymnsCollectionRef);
   
   const isLoaded = !!firestore && !isLoadingFromHook;
 
@@ -37,8 +37,9 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const migrateData = async () => {
+        if (!firestore) return;
         if (isLoaded && rawHymns?.length === 0) {
-            const migrationFlag = 'hymns_migrated_v1';
+            const migrationFlag = 'hymns_migrated_v2';
             if (localStorage.getItem(migrationFlag)) {
                 return;
             }
@@ -46,9 +47,9 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
             console.log('Migrating initial hymns to Firestore...');
             toast({ title: 'Configurando el himnario por primera vez...', description: 'Importando himnos a la nube. Esto puede tardar un momento.' });
             
-            const batch = writeBatch(firestore!);
+            const batch = writeBatch(firestore);
             initialHymnsData.forEach((hymn) => {
-                const docRef = doc(firestore!, 'hymns', hymn.number.toString());
+                const docRef = doc(firestore, 'hymns', hymn.number.toString());
                 batch.set(docRef, hymn);
             });
 

@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { Praise } from '@/lib/praises';
-import { useFirestore, useCollection } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 
 const slugify = (text: string): string =>
@@ -28,11 +28,11 @@ const PraisesContext = createContext<PraisesContextType | undefined>(undefined);
 export function PraisesProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
   
-  const praisesCollectionRef = useMemo(() => 
+  const praisesCollectionRef = useMemoFirebase(() => 
     firestore ? collection(firestore, 'praises') : null
   , [firestore]);
   
-  const { data: rawPraises, loading: isLoadingFromHook } = useCollection<Praise>(praisesCollectionRef);
+  const { data: rawPraises, isLoading: isLoadingFromHook } = useCollection<Praise>(praisesCollectionRef);
 
   const isLoaded = !!firestore && !isLoadingFromHook;
 
