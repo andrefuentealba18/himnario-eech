@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { doc, onSnapshot, DocumentReference, DocumentData } from 'firebase/firestore';
+import { onSnapshot, DocumentReference, DocumentData } from 'firebase/firestore';
 
 export function useDoc<T extends DocumentData>(ref: DocumentReference<T> | null) {
   const [data, setData] = useState<T | null>(null);
@@ -10,10 +10,13 @@ export function useDoc<T extends DocumentData>(ref: DocumentReference<T> | null)
 
   useEffect(() => {
     if (!ref) {
+      setLoading(true);
       setData(null);
-      setLoading(false);
       return;
     }
+
+    setLoading(true);
+    setError(null);
 
     const unsubscribe = onSnapshot(ref, 
       (doc) => {
@@ -25,6 +28,7 @@ export function useDoc<T extends DocumentData>(ref: DocumentReference<T> | null)
         setLoading(false);
       },
       (err) => {
+        console.error("Error in useDoc snapshot:", err);
         setError(err);
         setLoading(false);
       }

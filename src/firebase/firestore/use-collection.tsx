@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
-import { collection, onSnapshot, Query, DocumentData } from 'firebase/firestore';
-import { useFirestore } from '../provider';
+import { useState, useEffect } from 'react';
+import { onSnapshot, Query, DocumentData } from 'firebase/firestore';
 
 export function useCollection<T extends DocumentData>(query: Query | null) {
   const [data, setData] = useState<T[] | null>(null);
@@ -11,10 +10,13 @@ export function useCollection<T extends DocumentData>(query: Query | null) {
 
   useEffect(() => {
     if (!query) {
-      setData([]);
-      setLoading(false);
+      setLoading(true);
+      setData(null);
       return;
     }
+    
+    setLoading(true);
+    setError(null);
 
     const unsubscribe = onSnapshot(query, 
       (snapshot) => {
@@ -23,6 +25,7 @@ export function useCollection<T extends DocumentData>(query: Query | null) {
         setLoading(false);
       },
       (err) => {
+        console.error("Error in useCollection snapshot:", err);
         setError(err);
         setLoading(false);
       }

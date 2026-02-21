@@ -1,9 +1,9 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { initializeApp, getApp, getApps, FirebaseApp } from 'firebase/app';
 import { getAuth, Auth } from 'firebase/auth';
-import { getFirestore, Firestore } from 'firebase/firestore';
+import { getFirestore, Firestore, enableIndexedDbPersistence } from 'firebase/firestore';
 import { firebaseConfig } from './config';
 
 export type FirebaseInstances = {
@@ -14,54 +14,43 @@ export type FirebaseInstances = {
 
 const FirebaseContext = createContext<FirebaseInstances | null>(null);
 
-let firebaseInstances: FirebaseInstances | null = null;
-
-function getFirebaseInstances_cached() {
-    if (firebaseInstances) {
-        return firebaseInstances;
-    }
-
-    if (!firebaseConfig || !(firebaseConfig as any).apiKey) {
-        console.warn("Firebase config not found, skipping initialization.");
-        return null;
-    }
-    
-    try {
-        const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-        const firestore = getFirestore(app);
-        const auth = getAuth(app);
-        firebaseInstances = { app, auth, firestore };
-        return firebaseInstances;
-    } catch (error) {
-        console.error("Firebase initialization failed:", error);
-        return null;
-    }
-}
-
-
-export const FirebaseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [firebase, setFirebase] = useState<FirebaseInstances | null>(null);
+export const FirebaseProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const [instances, setInstances] = useState<FirebaseInstances | null>(null);
 
   useEffect(() => {
-    setFirebase(getFirebaseInstances_cached());
+    try {
+      if (!firebaseConfig || !(firebaseConfig as any).apiKey) {
+        console.error("Firebase config is missing. App cannot connect to Firebase.");
+        return;
+      }
+
+      const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApp();
+      const auth = getAuth(app);
+      const firestore = getFirestore(app);
+
+      enableIndexedDbPersistence(firestore)
+        .catch((err) => {
+          if (err.code === 'failed-precondition') {
+            console.warn("Firestore persistence failed: can only be enabled in one tab at a time.");
+          } else if (err.code === 'unimplemented') {
+            console.warn("Firestore persistence is not supported in this browser.");
+          }
+        });
+        
+      setInstances({ app, auth, firestore });
+    } catch (error) {
+      console.error("Firebase initialization failed:", error);
+    }
   }, []);
 
   return (
-    <FirebaseContext.Provider value={firebase}>
+    <FirebaseContext.Provider value={instances}>
       {children}
     </FirebaseContext.Provider>
   );
 };
 
-export const useFirebase = () => {
-  return useContext(FirebaseContext);
-};
-
+export const useFirebase = () => useContext(FirebaseContext);
 export const useFirebaseApp = () => useFirebase()?.app;
 export const useAuth = () => useFirebase()?.auth;
 export const useFirestore = () => useFirebase()?.firestore;
-
-// Re-export hooks that require firebase context
-export { useUser } from './auth/use-user';
-export { useCollection } from './firestore/use-collection';
-export { useDoc } from './firestore/use-doc';
