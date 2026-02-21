@@ -1,32 +1,26 @@
 'use client';
 
 import { firebaseConfig } from '@/firebase/config';
-import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore, enableIndexedDbPersistence } from 'firebase/firestore'
+import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
+import { getAuth, type Auth } from 'firebase/auth';
+import { getFirestore, enableIndexedDbPersistence, type Firestore } from 'firebase/firestore';
 
-// IMPORTANT: DO NOT MODIFY THIS FUNCTION
-export function initializeFirebase() {
-  let firebaseApp: FirebaseApp;
+// Define a singleton object to hold the initialized services
+const services = (() => {
+  let app: FirebaseApp;
   if (!getApps().length) {
-    try {
-      firebaseApp = initializeApp();
-    } catch (e) {
-      if (process.env.NODE_ENV === "production") {
-        console.warn('Automatic initialization failed. Falling back to firebase config object.', e);
-      }
-      firebaseApp = initializeApp(firebaseConfig);
-    }
+    app = initializeApp(firebaseConfig);
   } else {
-    firebaseApp = getApp();
+    app = getApp();
   }
 
-  const firestore = getFirestore(firebaseApp);
-  enableIndexedDbPersistence(firestore).catch((err) => {
+  const firestoreInstance = getFirestore(app);
+
+  // Attempt to enable persistence. This might fail if another tab has it enabled.
+  enableIndexedDbPersistence(firestoreInstance).catch((err) => {
     if (err.code == 'failed-precondition') {
-      console.warn(
-        'Multiple tabs open, persistence can only be enabled in one tab at a time.'
-      );
+      // This is a normal scenario in a multi-tab environment.
+      // console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
     } else if (err.code == 'unimplemented') {
       console.warn(
         'The current browser does not support all of the features required to enable persistence.'
@@ -34,12 +28,18 @@ export function initializeFirebase() {
     }
   });
 
+  const authInstance = getAuth(app);
 
   return {
-    firebaseApp,
-    auth: getAuth(firebaseApp),
-    firestore
+    firebaseApp: app,
+    auth: authInstance,
+    firestore: firestoreInstance,
   };
+})();
+
+// This function now simply returns the singleton.
+export function initializeFirebase() {
+  return services;
 }
 
 export * from './provider';
@@ -48,4 +48,3 @@ export * from './firestore/use-collection';
 export * from './firestore/use-doc';
 export * from './errors';
 export * from './error-emitter';
-
