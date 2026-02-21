@@ -45,7 +45,7 @@ const praiseSchema = z.object({
 
 type FormData = z.infer<typeof praiseSchema>;
 
-export function AddSinglePraiseDialog({ children, onPraiseAdded }: { children: React.ReactNode, onPraiseAdded: (praise: Omit<Praise, 'id'>) => { success: boolean } }) {
+export function AddSinglePraiseDialog({ children, onPraiseAdded }: { children: React.ReactNode, onPraiseAdded: (praise: Omit<Praise, 'id'>) => Promise<{ success: boolean }> }) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -58,8 +58,8 @@ export function AddSinglePraiseDialog({ children, onPraiseAdded }: { children: R
     },
   });
 
-  function onSubmit(values: FormData) {
-    const result = onPraiseAdded(values);
+  async function onSubmit(values: FormData) {
+    const result = await onPraiseAdded(values);
     if (result.success) {
       toast({
         title: 'Alabanza Agregada',

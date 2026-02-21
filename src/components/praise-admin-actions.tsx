@@ -41,8 +41,8 @@ import {
 
 interface PraiseAdminActionsProps {
   praise: Praise;
-  onDelete: () => void;
-  onUpdate: (data: Omit<Praise, 'id'>) => { success: boolean };
+  onDelete: () => Promise<void>;
+  onUpdate: (data: Omit<Praise, 'id'>) => Promise<{ success: boolean }>;
 }
 
 const passwordSchema = z.object({
@@ -84,8 +84,8 @@ export function PraiseAdminActions({ praise, onDelete, onUpdate }: PraiseAdminAc
     }
   }
 
-  const handleUpdate = (data: Omit<Praise, 'id'>) => {
-    const result = onUpdate(data);
+  const handleUpdate = async (data: Omit<Praise, 'id'>) => {
+    const result = await onUpdate(data);
     return result;
   }
   

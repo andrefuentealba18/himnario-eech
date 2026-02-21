@@ -41,8 +41,8 @@ import {
 
 interface HymnAdminActionsProps {
   hymn: Hymn;
-  onDelete: () => void;
-  onUpdate: (data: Omit<Hymn, 'number'>) => { success: boolean };
+  onDelete: () => Promise<void>;
+  onUpdate: (data: Omit<Hymn, 'number' | 'id'>) => Promise<{ success: boolean }>;
 }
 
 const passwordSchema = z.object({
@@ -83,8 +83,8 @@ export function HymnAdminActions({ hymn, onDelete, onUpdate }: HymnAdminActionsP
     }
   }
 
-  const handleUpdate = (data: Omit<Hymn, 'number'>) => {
-    const result = onUpdate(data);
+  const handleUpdate = async (data: Omit<Hymn, 'id' | 'number'>) => {
+    const result = await onUpdate(data);
     return result;
   }
 

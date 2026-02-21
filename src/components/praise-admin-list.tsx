@@ -11,16 +11,16 @@ export function PraiseAdminList() {
   const { praises, deletePraise, updatePraise, isLoaded } = usePraises();
   const { toast } = useToast();
 
-  const handleDelete = (praiseId: string) => {
-    deletePraise(praiseId);
+  const handleDelete = async (praiseId: string) => {
+    await deletePraise(praiseId);
     toast({
       title: 'Alabanza Eliminada',
       description: 'La alabanza se ha eliminado de la lista.',
     });
   };
 
-  const handleUpdate = (praiseId: string) => (updatedData: Omit<Praise, 'id'>) => {
-    const result = updatePraise(praiseId, updatedData);
+  const handleUpdate = (praiseId: string) => async (updatedData: Omit<Praise, 'id'>) => {
+    const result = await updatePraise(praiseId, updatedData);
     if (result.success) {
       toast({
         title: 'Alabanza Actualizada',

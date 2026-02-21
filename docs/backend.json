@@ -1,0 +1,72 @@
+{
+  "entities": {
+    "Hymn": {
+      "title": "Hymn",
+      "description": "A hymn with a number, title, lyrics, and optional tone.",
+      "type": "object",
+      "properties": {
+        "number": {
+          "type": "number",
+          "description": "The hymn number."
+        },
+        "title": {
+          "type": "string",
+          "description": "The title of the hymn."
+        },
+        "lyrics": {
+          "type": "string",
+          "description": "The lyrics of the hymn."
+        },
+        "tone": {
+          "type": "string",
+          "description": "The musical tone of the hymn."
+        }
+      },
+      "required": [
+        "number",
+        "title",
+        "lyrics"
+      ]
+    },
+    "Praise": {
+      "title": "Praise",
+      "description": "A praise song with a title, lyrics, and optional tone.",
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string",
+          "description": "The title of the praise song."
+        },
+        "lyrics": {
+          "type": "string",
+          "description": "The lyrics of the praise song."
+        },
+        "tone": {
+          "type": "string",
+          "description": "The musical tone of the praise song."
+        }
+      },
+      "required": [
+        "title",
+        "lyrics"
+      ]
+    }
+  },
+  "auth": {
+    "providers": []
+  },
+  "firestore": {
+    "/hymns/{hymnId}": {
+      "schema": {
+        "$ref": "#/entities/Hymn"
+      },
+      "description": "Stores individual hymn documents."
+    },
+    "/praises/{praiseId}": {
+      "schema": {
+        "$ref": "#/entities/Praise"
+      },
+      "description": "Stores individual praise song documents."
+    }
+  }
+}

@@ -40,7 +40,7 @@ type PasswordFormData = z.infer<typeof passwordSchema>;
 interface EditToneDialogProps {
   children: React.ReactNode;
   song: { title: string; tone?: string };
-  onToneUpdated: (newTone: string) => { success: boolean };
+  onToneUpdated: (newTone: string) => Promise<{ success: boolean }>;
 }
 
 export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialogProps) {
@@ -80,8 +80,8 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
   }, [open, song.tone, toneForm, requiresAuth]);
 
 
-  function onToneSubmit(values: ToneFormData) {
-    const result = onToneUpdated(values.tone);
+  async function onToneSubmit(values: ToneFormData) {
+    const result = await onToneUpdated(values.tone);
     if (result.success) {
       toast({ title: 'Tonalidad actualizada' });
       handleOpenChange(false);

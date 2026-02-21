@@ -47,7 +47,7 @@ const hymnSchema = z.object({
   lyrics: z.string().min(1, 'La letra es requerida.'),
 });
 
-export function AddSingleHymnDialog({ children, onHymnAdded }: { children: React.ReactNode, onHymnAdded: (hymn: Hymn) => boolean }) {
+export function AddSingleHymnDialog({ children, onHymnAdded }: { children: React.ReactNode, onHymnAdded: (hymn: Omit<Hymn, 'id'>) => Promise<boolean> }) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -61,8 +61,8 @@ export function AddSingleHymnDialog({ children, onHymnAdded }: { children: React
     },
   });
 
-  function onSubmit(values: z.infer<typeof hymnSchema>) {
-    const success = onHymnAdded(values as Hymn);
+  async function onSubmit(values: z.infer<typeof hymnSchema>) {
+    const success = await onHymnAdded(values as Omit<Hymn, 'id'>);
     if (success) {
       toast({
         title: 'Himno Agregado',
@@ -71,7 +71,6 @@ export function AddSingleHymnDialog({ children, onHymnAdded }: { children: React
       form.reset();
       setOpen(false);
     }
-    // If not successful, the parent component will show a toast.
   }
 
   return (

@@ -11,16 +11,16 @@ export function HymnAdminList() {
   const { hymns, deleteHymn, updateHymn, isLoaded } = useHymns();
   const { toast } = useToast();
 
-  const handleDelete = (hymnNumber: number) => {
-    deleteHymn(hymnNumber);
+  const handleDelete = async (hymnNumber: number) => {
+    await deleteHymn(hymnNumber);
     toast({
       title: 'Himno Eliminado',
       description: 'El himno se ha eliminado de la lista.',
     });
   };
 
-  const handleUpdate = (hymnNumber: number) => (updatedData: Omit<Hymn, 'number'>) => {
-    const result = updateHymn(hymnNumber, updatedData);
+  const handleUpdate = (hymnNumber: number) => async (updatedData: Omit<Hymn, 'id' | 'number'>) => {
+    const result = await updateHymn(hymnNumber, updatedData);
     if (result.success) {
       toast({
         title: 'Himno Actualizado',

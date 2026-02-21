@@ -66,22 +66,22 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
 
   const isFav = isFavoritesLoaded && isFavorite(hymn.number);
 
-  const handleDelete = useCallback(() => {
-    deleteHymn(hymn.number);
+  const handleDelete = useCallback(async () => {
+    await deleteHymn(hymn.number);
     toast({ title: "Himno Eliminado", description: `El himno #${hymn.number} se ha eliminado.` });
     router.push('/hymns');
   }, [deleteHymn, hymn.number, router, toast]);
 
-  const handleUpdate = useCallback((updatedData: Omit<Hymn, 'number'>): { success: boolean } => {
-    const result = updateHymn(hymn.number, updatedData);
+  const handleUpdate = useCallback(async (updatedData: Omit<Hymn, 'id' | 'number'>): Promise<{ success: boolean }> => {
+    const result = await updateHymn(hymn.number, updatedData);
     if (result.success) {
       toast({ title: "Himno Actualizado" });
     }
     return result;
   }, [hymn.number, updateHymn, toast]);
 
-  const handleToneUpdate = useCallback((newTone: string) => {
-    const { number, ...restOfHymn } = hymn;
+  const handleToneUpdate = useCallback(async (newTone: string) => {
+    const { number, id, ...restOfHymn } = hymn;
     return handleUpdate({ ...restOfHymn, tone: newTone });
   }, [hymn, handleUpdate]);
 
@@ -125,7 +125,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
             {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
               const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
               if (isChorus) {
-                  const chorusText = paragraph.substring(paragraph.toUpperCase().indexOf('CORO') + 4).trim().replace(/^:/, '').trim();
+                  const chorusText = paragraph.substring(paragraph.toUpperCase().indexOf('CORO') + 4).trim().replace(/^[:.]/, '').trim();
                   return (
                     <p key={pIndex} className="whitespace-pre-wrap mb-4 font-bold leading-snug">
                       CORO:

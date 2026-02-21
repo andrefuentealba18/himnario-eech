@@ -56,7 +56,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
                  <div className="flex-1 px-4">
                     <Skeleton className="h-6 w-3/4 mx-auto" />
                  </div>
-                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="w-10" />
             </header>
             <main className="flex-1 py-8 container max-w-sm">
                 <div className="space-y-4 text-center">
@@ -70,16 +70,19 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     );
   }
 
-  const handleDelete = useCallback(() => {
-    deletePraise(praise.id);
+  const handleDelete = useCallback(async () => {
+    await deletePraise(praise.id);
     toast({ title: "Alabanza Eliminada", description: `"${praise.title}" se ha eliminado.` });
     router.push('/praises');
   }, [deletePraise, praise.id, praise.title, router, toast]);
 
-  const handleUpdate = useCallback((updatedData: Omit<Praise, 'id'>): { success: boolean } => {
-    const result = updatePraise(praise.id, updatedData);
+  const handleUpdate = useCallback(async (updatedData: Omit<Praise, 'id'>): Promise<{ success: boolean }> => {
+    const result = await updatePraise(praise.id, updatedData);
     if (result.success) {
       toast({ title: "Alabanza Actualizada" });
+       if (result.newId && result.newId !== praise.id) {
+          router.replace(`/praises/${result.newId}`);
+       }
     } else {
       toast({
         variant: 'destructive',
@@ -88,9 +91,9 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
       });
     }
     return { success: result.success };
-  }, [praise.id, updatePraise, toast]);
+  }, [praise.id, updatePraise, toast, router]);
 
-  const handleToneUpdate = useCallback((newTone: string) => {
+  const handleToneUpdate = useCallback(async (newTone: string) => {
     const { id, ...restOfPraise } = praise;
     return handleUpdate({ ...restOfPraise, tone: newTone });
   }, [praise, handleUpdate]);

@@ -74,7 +74,7 @@ function parsePraises(text: string): Omit<Praise, 'id'>[] {
 }
 
 
-export function AddPraisesDialog({ children, onPraisesAdded }: { children: React.ReactNode, onPraisesAdded: (praises: Omit<Praise, 'id'>[]) => { addedCount: number, duplicates: number } }) {
+export function AddPraisesDialog({ children, onPraisesAdded }: { children: React.ReactNode, onPraisesAdded: (praises: Omit<Praise, 'id'>[]) => Promise<{ addedCount: number, duplicates: number }> }) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -85,11 +85,11 @@ export function AddPraisesDialog({ children, onPraisesAdded }: { children: React
     },
   });
 
-  function onSubmit(values: z.infer<typeof bulkPraisesSchema>) {
+  async function onSubmit(values: z.infer<typeof bulkPraisesSchema>) {
     const parsedPraises = parsePraises(values.praisesText);
     
     if (parsedPraises.length > 0) {
-        const { addedCount, duplicates } = onPraisesAdded(parsedPraises);
+        const { addedCount, duplicates } = await onPraisesAdded(parsedPraises);
         toast({
           title: 'Alabanzas Procesadas',
           description: `Se agregaron ${addedCount} alabanzas nuevas. Se ignoraron ${duplicates} duplicados.`,

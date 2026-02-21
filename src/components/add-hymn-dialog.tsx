@@ -40,12 +40,12 @@ function normalizeTone(input: string): string {
     const cleaned = input.replace(/\.$/, '').trim();
     const parts = cleaned.split(/\s+/);
 
-    if (parts.length < 1 || parts.length > 2) {
-        return cleaned; // Return as is if format is unexpected
+    if (parts.length === 0 || parts.length > 2) {
+        return cleaned; 
     }
-
+    
     const notePart = parts[0].toLowerCase();
-    const scalePart = parts.length === 2 ? parts[1] : '';
+    const scalePart = parts.length > 1 ? parts[1].toLowerCase() : '';
 
     const noteMap: { [key: string]: string } = {
         'do': 'Do',
@@ -67,20 +67,26 @@ function normalizeTone(input: string): string {
         return cleaned; // If note part is not recognized, return original
     }
 
-    if (scalePart === 'M') {
-        return `${note} Mayor`;
-    }
     if (scalePart === 'm') {
         return `${note} menor`;
     }
     
-    // If no scale part, it might be something else, return as is.
+    // Default to Major if scale part is 'M' or not specified but note is valid
+    if (scalePart === 'm.' || scalePart === 'm' || scalePart === 'menor') {
+        return `${note} menor`;
+    }
+
+    if (scalePart === 'M' || scalePart === 'm' || scalePart === '' || scalePart === 'mayor') {
+        return `${note} Mayor`;
+    }
+
+
     return cleaned;
 }
 
 
-function parseHymns(text: string): Hymn[] {
-    const hymns: Hymn[] = [];
+function parseHymns(text: string): Omit<Hymn, 'id'>[] {
+    const hymns: Omit<Hymn, 'id'>[] = [];
     if (!text.trim()) {
         return hymns;
     }
@@ -90,70 +96,50 @@ function parseHymns(text: string): Hymn[] {
     if (hymnBlocks.length === 0 && text.trim().length > 0) {
         hymnBlocks.push(text.trim());
     }
-
-    for (const block of hymnBlocks) {
+    
+    hymnBlocks.forEach(block => {
         const lines = block.trim().split('\n');
-        if (lines.length === 0) continue;
-        
-        const headerMatch = lines.shift()!.trim().match(/^(\d+)\s*(.*)/);
-        if (!headerMatch) continue;
+        if (lines.length === 0) return;
+
+        const headerMatch = lines.shift()!.trim().match(/^(\d+)\s+([A-ZÁÉÍÓÚÑ¿?¡!,\s'’]+)/);
+        if (!headerMatch) return;
         
         const number = parseInt(headerMatch[1], 10);
         let title = headerMatch[2].trim();
         
-        if (isNaN(number)) continue;
+        if (isNaN(number)) return;
 
         let lyricsStartIndex = 0;
-        
-        if (title === '') {
-            for (let i = 0; i < lines.length; i++) {
-                const nextLine = lines[i].trim();
-                if (nextLine !== '' && nextLine.toUpperCase() === nextLine) {
-                    title = nextLine;
-                    lyricsStartIndex = i + 1;
-                    break;
-                }
-            }
-        }
-        
-        if (!title) continue;
-
         let tone: string = "Indefinida";
-        
-        for (let i = lyricsStartIndex; i < lines.length; i++) {
-            const trimmedLine = lines[i].trim();
-            if (trimmedLine === '') {
-                continue; 
-            }
 
-            const isVerse = /^\d+\.?\s+/.test(trimmedLine);
-            const isChorus = /^coro/i.test(trimmedLine);
-            
-            if (!isVerse && !isChorus && trimmedLine.length < 25) {
-                tone = normalizeTone(trimmedLine);
-                lyricsStartIndex = i + 1;
-            } else {
-                lyricsStartIndex = i;
+        if (lines.length > 0) {
+            const potentialToneLine = lines[0].trim();
+            // Basic check if it's a verse or chorus
+            const isVerse = /^\d+\.?\s+/.test(potentialToneLine);
+            const isChorus = /^coro/i.test(potentialToneLine);
+
+            if (!isVerse && !isChorus && potentialToneLine.length < 25 && potentialToneLine.length > 0) {
+                tone = normalizeTone(potentialToneLine);
+                lyricsStartIndex = 1;
             }
-            break; 
         }
-
+        
         const lyrics = lines.slice(lyricsStartIndex).join('\n').trim();
 
         if (lyrics || tone !== "Indefinida") {
-            hymns.push({
+             hymns.push({
                 number,
                 title,
                 lyrics,
                 tone: tone,
             });
         }
-    }
+    });
 
     return hymns;
 }
 
-export function AddHymnDialog({ children, onHymnsAdded }: { children: React.ReactNode, onHymnsAdded: (hymns: Hymn[]) => { addedCount: number, updatedCount: number } }) {
+export function AddHymnDialog({ children, onHymnsAdded }: { children: React.ReactNode, onHymnsAdded: (hymns: Omit<Hymn, 'id'>[]) => Promise<{ addedCount: number, updatedCount: number }> }) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -164,11 +150,11 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
     },
   });
 
-  function onSubmit(values: z.infer<typeof bulkHymnsSchema>) {
+  async function onSubmit(values: z.infer<typeof bulkHymnsSchema>) {
     const parsedHymns = parseHymns(values.hymnsText);
     
     if (parsedHymns.length > 0) {
-        const { addedCount, updatedCount } = onHymnsAdded(parsedHymns);
+        const { addedCount, updatedCount } = await onHymnsAdded(parsedHymns);
         toast({
           title: 'Himnos Procesados',
           description: `Se agregaron ${addedCount} himnos nuevos y se actualizaron ${updatedCount} existentes.`,

@@ -63,10 +63,10 @@ export default function PraisesIndexPage() {
         </header>
 
         <div className="p-4 flex-1 overflow-auto">
-          {isLoaded ? (
-            <PraiseListClient praises={praises} />
-          ) : (
+          {!isLoaded ? (
             <p>Cargando alabanzas...</p>
+          ) : (
+            <PraiseListClient praises={praises} />
           )}
         </div>
       </div>

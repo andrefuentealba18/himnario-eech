@@ -50,7 +50,7 @@ type FormData = z.infer<typeof hymnSchema>;
 interface EditHymnDialogProps {
   children: React.ReactNode;
   hymn: Hymn;
-  onHymnUpdated: (updatedData: Omit<Hymn, 'number'>) => { success: boolean };
+  onHymnUpdated: (updatedData: Omit<Hymn, 'id' | 'number'>) => Promise<{ success: boolean }>;
   onSaveComplete?: () => void;
 }
 
@@ -78,9 +78,9 @@ export function EditHymnDialog({ children, hymn, onHymnUpdated, onSaveComplete }
     }
   }, [hymn, form, open]);
 
-  function onSubmit(values: FormData) {
+  async function onSubmit(values: FormData) {
     const { number, ...updateData } = values;
-    const result = onHymnUpdated(updateData);
+    const result = await onHymnUpdated(updateData);
     if (result.success) {
       setOpen(false);
       onSaveComplete?.();

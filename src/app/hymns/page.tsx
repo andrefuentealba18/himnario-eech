@@ -22,12 +22,14 @@ export default function HymnsIndexPage() {
   const { hymns, addHymn, addHymns: addMultipleHymns, isLoaded } = useHymns();
   const { toast } = useToast();
 
-  const handleAddHymns = (newHymns: Hymn[]): { addedCount: number, duplicates: number } => {
-    return addMultipleHymns(newHymns);
+  const handleAddHymns = (newHymns: Omit<Hymn, 'id'>[]): Promise<{ addedCount: number, duplicates: number, updatedCount: number }> => {
+    // The context now returns added and updated, but the dialog expects duplicates.
+    // We can consider updated as duplicates for the message.
+    return addMultipleHymns(newHymns).then(result => ({ ...result, duplicates: result.updatedCount }));
   };
   
-  const handleAddSingleHymn = (newHymn: Hymn): boolean => {
-    const success = addHymn(newHymn);
+  const handleAddSingleHymn = async (newHymn: Omit<Hymn, 'id'>): Promise<boolean> => {
+    const success = await addHymn(newHymn);
     if(!success){
         toast({
             variant: 'destructive',
@@ -73,7 +75,7 @@ export default function HymnsIndexPage() {
                         Agregar un himno
                       </DropdownMenuItem>
                     </AddSingleHymnDialog>
-                     <AddHymnDialog onHymnsAdded={handleAddHymns}>
+                     <AddHymnDialog onHymnsAdded={addMultipleHymns}>
                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                         Agregar varios himnos
                        </DropdownMenuItem>

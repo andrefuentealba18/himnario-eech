@@ -46,7 +46,7 @@ type FormData = z.infer<typeof praiseSchema>;
 interface EditPraiseDialogProps {
   children: React.ReactNode;
   praise: Praise;
-  onPraiseUpdated: (updatedData: Omit<Praise, 'id'>) => { success: boolean };
+  onPraiseUpdated: (updatedData: Omit<Praise, 'id'>) => Promise<{ success: boolean }>;
   onSaveComplete?: () => void;
 }
 
@@ -73,8 +73,8 @@ export function EditPraiseDialog({ children, praise, onPraiseUpdated, onSaveComp
   }, [praise, form, open]);
 
 
-  function onSubmit(values: FormData) {
-    const result = onPraiseUpdated(values);
+  async function onSubmit(values: FormData) {
+    const result = await onPraiseUpdated(values);
     if (result.success) {
       setOpen(false);
       onSaveComplete?.();
