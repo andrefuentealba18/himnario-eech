@@ -51,10 +51,10 @@ export default function PraisesIndexPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem onSelect={() => setSinglePraiseDialogOpen(true)}>
+                      <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setSinglePraiseDialogOpen(true); }}>
                         Agregar una alabanza
                       </DropdownMenuItem>
-                       <DropdownMenuItem onSelect={() => setMultiPraiseDialogOpen(true)}>
+                       <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setMultiPraiseDialogOpen(true); }}>
                         Agregar varias alabanzas
                        </DropdownMenuItem>
                     </DropdownMenuContent>
