@@ -9,7 +9,7 @@ const HYMNS_KEY = 'himnario_hymns';
 interface HymnsContextType {
   hymns: Hymn[];
   addHymn: (newHymn: Hymn) => boolean;
-  addHymns: (newHymnsData: Hymn[]) => { addedCount: number, duplicates: number };
+  addHymns: (newHymnsData: Hymn[]) => { addedCount: number, updatedCount: number };
   updateHymn: (hymnNumber: number, newHymnData: Omit<Hymn, 'number'>) => { success: boolean };
   deleteHymn: (hymnNumber: number) => void;
   getHymnById: (id: number) => Hymn | undefined;
@@ -60,25 +60,24 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
     return true;
   }, [hymns]);
 
-  const addHymns = useCallback((newHymnsData: Hymn[]): { addedCount: number, duplicates: number } => {
-    const existingNumbers = new Set(hymns.map(p => p.number));
-    const uniqueNewHymns: Hymn[] = [];
+  const addHymns = useCallback((newHymnsData: Hymn[]): { addedCount: number, updatedCount: number } => {
+    const hymnsMap = new Map(hymns.map(h => [h.number, h]));
+    let addedCount = 0;
+    let updatedCount = 0;
 
     newHymnsData.forEach(hymn => {
-        if (!existingNumbers.has(hymn.number)) {
-            uniqueNewHymns.push(hymn);
-            existingNumbers.add(hymn.number);
+        if (hymnsMap.has(hymn.number)) {
+            updatedCount++;
+        } else {
+            addedCount++;
         }
+        hymnsMap.set(hymn.number, hymn);
     });
 
-    if (uniqueNewHymns.length > 0) {
-        setHymns(prevHymns => [...prevHymns, ...uniqueNewHymns].sort((a, b) => a.number - b.number));
-    }
+    const newHymns = Array.from(hymnsMap.values()).sort((a, b) => a.number - b.number);
+    setHymns(newHymns);
 
-    return {
-        addedCount: uniqueNewHymns.length,
-        duplicates: newHymnsData.length - uniqueNewHymns.length
-    };
+    return { addedCount, updatedCount };
   }, [hymns]);
 
   const updateHymn = useCallback((hymnNumber: number, newHymnData: Omit<Hymn, 'number'>): { success: boolean } => {
