@@ -30,7 +30,7 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { deletePraise, updatePraise } = usePraises();
-  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isFontLoaded } = useFontSize(fontSizes.length, 1);
+  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded } = useFontSize(fontSizes.length, 1);
 
   const handleDelete = useCallback(() => {
     deletePraise(praise.id);
@@ -104,12 +104,12 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
       </main>
 
       <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-background/80 backdrop-blur-sm p-4 border-t">
-           <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-14 w-14">
+           <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isLoaded || fontSizeIndex === 0} className="rounded-full h-14 w-14">
              <ZoomOut className="h-7 w-7" />
              <span className="sr-only">Reducir texto</span>
            </Button>
            <PraiseAdminActions praise={praise} onDelete={handleDelete} onUpdate={handleUpdate} />
-           <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
+           <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
              <ZoomIn className="h-7 w-7" />
              <span className="sr-only">Aumentar texto</span>
            </Button>

@@ -31,7 +31,7 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
   const router = useRouter();
   const { toast } = useToast();
   const { deleteHymn, updateHymn } = useHymns();
-  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isFontLoaded } = useFontSize(fontSizes.length, 1);
+  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
   const { isFavorite, toggleFavorite, isLoaded } = useFavorites();
   
   const isFav = isLoaded && isFavorite(hymn.number);
