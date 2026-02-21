@@ -10,8 +10,9 @@ export function useDoc<T extends DocumentData>(ref: DocumentReference<T> | null)
 
   useEffect(() => {
     if (!ref) {
-      setLoading(true);
       setData(null);
+      setLoading(false); // If no ref, we are not loading.
+      setError(null);
       return;
     }
 

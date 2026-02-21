@@ -109,7 +109,9 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     return praises.find(p => p.id === id);
   }, [praises]);
 
-  const value = { praises, addPraise, addPraises, deletePraise, updatePraise, getPraiseById, isLoaded: !isLoading };
+  const isLoaded = !!firestore && !isLoading;
+
+  const value = { praises, addPraise, addPraises, deletePraise, updatePraise, getPraiseById, isLoaded };
 
   return <PraisesContext.Provider value={value}>{children}</PraisesContext.Provider>;
 }

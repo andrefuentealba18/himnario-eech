@@ -106,7 +106,9 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
     return hymns.find(h => h.number === id);
   }, [hymns]);
 
-  const value = { hymns, addHymn, addHymns, updateHymn, deleteHymn, getHymnById, isLoaded: !isLoading };
+  const isLoaded = !!firestore && !isLoading;
+
+  const value = { hymns, addHymn, addHymns, updateHymn, deleteHymn, getHymnById, isLoaded };
 
   return <HymnsContext.Provider value={value}>{children}</HymnsContext.Provider>;
 }

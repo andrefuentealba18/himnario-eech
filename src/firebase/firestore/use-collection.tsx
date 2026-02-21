@@ -10,8 +10,9 @@ export function useCollection<T extends DocumentData>(query: Query | null) {
 
   useEffect(() => {
     if (!query) {
-      setLoading(true);
       setData(null);
+      setLoading(false); // If no query, we are not loading.
+      setError(null);
       return;
     }
     
