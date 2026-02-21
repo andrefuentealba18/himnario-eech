@@ -1,9 +1,9 @@
 'use client';
 
-import React, { DependencyList, createContext, useContext, ReactNode, useMemo } from 'react';
+import React, { DependencyList, createContext, useContext, ReactNode, useMemo, useEffect, useState } from 'react';
 import { FirebaseApp } from 'firebase/app';
 import { Firestore } from 'firebase/firestore';
-import { Auth, User } from 'firebase/auth';
+import { Auth, User, onAuthStateChanged, signInAnonymously } from 'firebase/auth';
 
 export interface FirebaseContextState {
   firebaseApp: FirebaseApp | null;
@@ -27,12 +27,36 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   children,
   ...services
 }) => {
+  const { auth } = services;
+  const [user, setUser] = useState<User | null>(null);
+  const [isUserLoading, setIsUserLoading] = useState(true);
+  
+  useEffect(() => {
+    if (auth) {
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (user) {
+          setUser(user);
+          setIsUserLoading(false);
+        } else {
+          // If no user, sign in anonymously. The onAuthStateChanged will be called again with the new user.
+          signInAnonymously(auth).catch((error) => {
+            console.error("Anonymous sign-in failed", error);
+            setIsUserLoading(false);
+          });
+        }
+      });
+      return () => unsubscribe();
+    } else {
+      setIsUserLoading(false);
+    }
+  }, [auth]);
+
   const contextValue = useMemo(() => ({
     ...services,
-    user: null, 
-    isUserLoading: true, 
+    user, 
+    isUserLoading, 
     areServicesAvailable: !!(services.firebaseApp && services.firestore && services.auth),
-  }), [services]);
+  }), [services, user, isUserLoading]);
 
   return (
     <FirebaseContext.Provider value={contextValue}>
