@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -34,78 +35,60 @@ const bulkHymnsSchema = z.object({
 
 function parseHymns(text: string): Hymn[] {
     const hymns: Hymn[] = [];
-    if (!text) {
+    if (!text.trim()) {
         return hymns;
     }
 
-    const regex = /^\s*(\d+)\.\s*([^\r\n]+)/gm;
-    let match;
-    const hymnHeaders = [];
+    // Split text into potential hymn blocks. Each block should start with a number and a dot.
+    const hymnBlocks = text.split(/^\s*(?=\d+\.\s)/m).filter(block => block.trim() !== "");
 
-    // 1. Find all hymn headers (e.g., "116. Título")
-    while ((match = regex.exec(text)) !== null) {
-        const titleCandidate = match[2].trim();
-        if (titleCandidate.length > 0 && titleCandidate.length < 100) {
-             hymnHeaders.push({
-                number: parseInt(match[1], 10),
-                title: titleCandidate,
-                startIndex: match.index,
-                headerLength: match[0].length,
-            });
-        }
-    }
+    if (hymnBlocks.length === 0) return [];
 
-    if (hymnHeaders.length === 0) return [];
+    for (const block of hymnBlocks) {
+        const lines = block.trim().split('\n');
+        if (lines.length === 0) continue;
 
-    // 2. Process each hymn block found between headers
-    for (let i = 0; i < hymnHeaders.length; i++) {
-        const header = hymnHeaders[i];
-        const nextHeader = hymnHeaders[i + 1];
-        
-        const contentStartIndex = header.startIndex + header.headerLength;
-        const contentEndIndex = nextHeader ? nextHeader.startIndex : text.length;
+        // The first line should be the number and title. e.g., "1. HIMNO OFICIAL..."
+        const headerMatch = lines[0].match(/^(\d+)\.\s*(.*)/);
+        if (!headerMatch) continue;
 
-        let content = text.substring(contentStartIndex, contentEndIndex).trim();
-        
+        const number = parseInt(headerMatch[1], 10);
+        const title = headerMatch[2].trim();
+        if (!title) continue;
+
         let tone: string | undefined = undefined;
-        let lyrics: string = content;
+        let lyricsLines = lines.slice(1);
 
-        if (content) {
-            const lines = content.split('\n');
-            let firstContentLineIndex = -1;
-            let firstContentLine = '';
-            
-            // Find the first non-empty line, which might be the tone
-            for (let j = 0; j < lines.length; j++) {
-                if (lines[j].trim() !== '') {
-                    firstContentLineIndex = j;
-                    firstContentLine = lines[j].trim();
-                    break;
-                }
-            }
-
-            if (firstContentLine) {
-                const isKeyInList = musicalKeys.find(k => k.toLowerCase() === firstContentLine.toLowerCase());
-                const keyRegex = /^[A-G](s|b)?[mM]?\s*\.?\s*M?\.?$/i;
-
-                // Check if this first line is a musical key
-                if (isKeyInList || (keyRegex.test(firstContentLine) && firstContentLine.length < 15)) {
-                    tone = firstContentLine;
-                    // If it is a tone, the lyrics are everything *after* that line
-                    lyrics = lines.slice(firstContentLineIndex + 1).join('\n').trim();
-                } else {
-                    // Otherwise, the entire block is lyrics
-                    lyrics = content;
-                }
+        // Check if the next non-empty line is a tone
+        let firstContentLineIndex = -1;
+        for (let i = 0; i < lyricsLines.length; i++) {
+            if (lyricsLines[i].trim() !== '') {
+                firstContentLineIndex = i;
+                break;
             }
         }
 
-        if (!isNaN(header.number) && header.title && lyrics) {
+        if (firstContentLineIndex !== -1) {
+            const potentialTone = lyricsLines[firstContentLineIndex].trim();
+            const isKeyInList = musicalKeys.find(k => k.toLowerCase() === potentialTone.toLowerCase());
+            const keyRegex = /^[A-G](s|b)?[mM]?\s*\.?\s*M?\.?$/i;
+            
+            const toneKeywordRegex = /^(tono|tonalidad|notas):/i;
+
+            if (toneKeywordRegex.test(potentialTone) || isKeyInList || (keyRegex.test(potentialTone) && potentialTone.length < 20)) {
+                tone = potentialTone.replace(toneKeywordRegex, '').trim();
+                lyricsLines = lyricsLines.slice(firstContentLineIndex + 1);
+            }
+        }
+
+        const lyrics = lyricsLines.join('\n').trim();
+
+        if (!isNaN(number) && title && lyrics) {
             hymns.push({
-                number: header.number,
-                title: header.title,
-                lyrics: lyrics,
-                tone: tone,
+                number,
+                title,
+                lyrics,
+                tone,
             });
         }
     }
@@ -151,7 +134,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Agregar Varios Himnos</DialogTitle>
           <DialogDescription>
