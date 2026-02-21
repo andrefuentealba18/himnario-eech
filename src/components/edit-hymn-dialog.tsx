@@ -89,7 +89,7 @@ export function EditHymnDialog({ children, hymn, onHymnUpdated }: EditHymnDialog
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Editar Himno #{hymn.number}</DialogTitle>
           <DialogDescription>

@@ -72,7 +72,7 @@ export function AddSongDialog() {
           Agregar Canción
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Agregar Nueva Canción</DialogTitle>
           <DialogDescription>

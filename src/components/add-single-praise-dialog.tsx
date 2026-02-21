@@ -81,7 +81,7 @@ export function AddSinglePraiseDialog({ children, onPraiseAdded }: { children: R
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Agregar Nueva Alabanza</DialogTitle>
           <DialogDescription>

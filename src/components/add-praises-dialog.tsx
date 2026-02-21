@@ -111,7 +111,7 @@ export function AddPraisesDialog({ children, onPraisesAdded }: { children: React
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Agregar Varias Alabanzas</DialogTitle>
           <DialogDescription>

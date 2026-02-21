@@ -122,7 +122,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Agregar Varios Himnos</DialogTitle>
           <DialogDescription>

@@ -79,7 +79,7 @@ export function AddSingleHymnDialog({ children, onHymnAdded }: { children: React
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Agregar Nuevo Himno</DialogTitle>
           <DialogDescription>

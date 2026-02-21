@@ -70,7 +70,7 @@ export function SettingsDialog() {
           Configuración
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Acceso de Administrador</DialogTitle>
           <DialogDescription>

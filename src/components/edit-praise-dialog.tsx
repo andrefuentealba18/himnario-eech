@@ -83,7 +83,7 @@ export function EditPraiseDialog({ children, praise, onPraiseUpdated }: EditPrai
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Editar Alabanza</DialogTitle>
           <DialogDescription>
