@@ -37,14 +37,18 @@ function parsePraises(text: string): Omit<Praise, 'id'>[] {
         return praises;
     }
 
-    const praiseBlocks = text.trim().split(/\n\s*\n/);
+    // Use a more robust regex to split by one or more blank lines.
+    const praiseBlocks = text.trim().split(/\n\s*\n+/);
 
     for (const block of praiseBlocks) {
-        const lines = block.trim().split('\n');
+        // Trim each block and filter out any empty lines that might result from extra whitespace.
+        const lines = block.trim().split('\n').filter(line => line.trim() !== '');
+        
         if (lines.length > 0) {
             const title = lines.shift()!.trim();
             const lyrics = lines.join('\n').trim();
 
+            // Only add the praise if both title and lyrics are present.
             if (title && lyrics) {
                 praises.push({ title, lyrics });
             }
