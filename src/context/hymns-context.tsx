@@ -10,6 +10,7 @@ interface HymnsContextType {
   hymns: Hymn[];
   addHymn: (newHymn: Hymn) => boolean;
   addHymns: (newHymnsData: Hymn[]) => { addedCount: number, duplicates: number };
+  updateHymn: (hymnNumber: number, newHymnData: Omit<Hymn, 'number'>) => { success: boolean };
   deleteHymn: (hymnNumber: number) => void;
   getHymnById: (id: number) => Hymn | undefined;
   isLoaded: boolean;
@@ -23,14 +24,19 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     try {
-      const storedHymns = localStorage.getItem(HYMNS_KEY);
-      if (storedHymns) {
-        setHymns(JSON.parse(storedHymns));
+      const storedHymnsRaw = localStorage.getItem(HYMNS_KEY);
+      if (storedHymnsRaw) {
+        const storedHymns = JSON.parse(storedHymnsRaw);
+        if (Array.isArray(storedHymns) && storedHymns.length > 0) {
+          setHymns(storedHymns);
+        } else {
+          setHymns(initialHymns.sort((a, b) => a.number - b.number));
+        }
       } else {
         setHymns(initialHymns.sort((a, b) => a.number - b.number));
       }
     } catch (error) {
-      console.error("Failed to load hymns from localStorage", error);
+      console.error("Failed to load or parse hymns from localStorage", error);
       setHymns(initialHymns.sort((a, b) => a.number - b.number));
     }
     setIsLoaded(true);
@@ -75,6 +81,17 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
     };
   }, [hymns]);
 
+  const updateHymn = useCallback((hymnNumber: number, newHymnData: Omit<Hymn, 'number'>): { success: boolean } => {
+    setHymns(prevHymns => {
+        const updatedHymns = prevHymns.map(h => 
+            h.number === hymnNumber ? { ...h, ...newHymnData, number: hymnNumber } : h
+        );
+        return updatedHymns;
+    });
+    return { success: true };
+  }, []);
+
+
   const deleteHymn = useCallback((hymnNumber: number) => {
     setHymns(prevHymns => prevHymns.filter(h => h.number !== hymnNumber));
   }, []);
@@ -84,7 +101,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
     return hymns.find(h => h.number === id);
   }, [hymns, isLoaded]);
 
-  const value = { hymns, addHymn, addHymns, deleteHymn, getHymnById, isLoaded };
+  const value = { hymns, addHymn, addHymns, updateHymn, deleteHymn, getHymnById, isLoaded };
 
   return <HymnsContext.Provider value={value}>{children}</HymnsContext.Provider>;
 }

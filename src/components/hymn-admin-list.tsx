@@ -1,12 +1,14 @@
 "use client";
 
+import type { Hymn } from '@/lib/hymns';
 import { useHymns } from '@/context/hymns-context';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { EditHymnDialog } from './edit-hymn-dialog';
 
 export function HymnAdminList() {
-  const { hymns, deleteHymn, isLoaded } = useHymns();
+  const { hymns, deleteHymn, updateHymn, isLoaded } = useHymns();
   const { toast } = useToast();
 
   const handleDelete = (hymnNumber: number) => {
@@ -17,11 +19,15 @@ export function HymnAdminList() {
     });
   };
 
-  const handleEdit = () => {
-    toast({
-      title: 'Próximamente',
-      description: 'La función de editar estará disponible pronto.',
-    });
+  const handleUpdate = (hymnNumber: number) => (updatedData: Omit<Hymn, 'number'>) => {
+    const result = updateHymn(hymnNumber, updatedData);
+    if (result.success) {
+      toast({
+        title: 'Himno Actualizado',
+        description: `El himno #${hymnNumber} se ha guardado correctamente.`,
+      });
+    }
+    return result;
   };
 
   if (!isLoaded) {
@@ -41,10 +47,12 @@ export function HymnAdminList() {
             <span className="ml-2 font-medium">{hymn.title}</span>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" size="icon" onClick={handleEdit}>
-              <Edit className="h-4 w-4" />
-              <span className="sr-only">Editar</span>
-            </Button>
+            <EditHymnDialog hymn={hymn} onHymnUpdated={handleUpdate(hymn.number)}>
+              <Button variant="outline" size="icon">
+                <Edit className="h-4 w-4" />
+                <span className="sr-only">Editar</span>
+              </Button>
+            </EditHymnDialog>
             <Button variant="destructive" size="icon" onClick={() => handleDelete(hymn.number)}>
               <Trash2 className="h-4 w-4" />
               <span className="sr-only">Eliminar</span>

@@ -2,10 +2,14 @@
 
 import type { Hymn } from '@/lib/hymns';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { useHymns } from '@/context/hymns-context';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useFontSize } from '@/hooks/use-font-size';
+import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
-import { Star, ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
+import { HymnAdminActions } from '@/components/hymn-admin-actions';
+import { Star, ChevronLeft, ZoomIn, ZoomOut, Settings } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 interface HymnDetailClientProps {
@@ -22,11 +26,27 @@ const fontSizes = [
 ];
 
 export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
-  // Start with a larger default font size, index 1 ('text-lg')
-  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isFontLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
+  const router = useRouter();
+  const { toast } = useToast();
+  const { deleteHymn, updateHymn } = useHymns();
+  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isFontLoaded } = useFontSize(fontSizes.length, 1);
   const { isFavorite, toggleFavorite, isLoaded } = useFavorites();
   
   const isFav = isLoaded && isFavorite(hymn.number);
+
+  const handleDelete = () => {
+    deleteHymn(hymn.number);
+    toast({ title: "Himno Eliminado", description: `El himno #${hymn.number} se ha eliminado.` });
+    router.push('/hymns');
+  };
+
+  const handleUpdate = (updatedData: Omit<Hymn, 'number'>): { success: boolean } => {
+    const result = updateHymn(hymn.number, updatedData);
+    if (result.success) {
+      toast({ title: "Himno Actualizado" });
+    }
+    return result;
+  };
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background">
@@ -89,6 +109,7 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
              <ZoomOut className="h-7 w-7" />
              <span className="sr-only">Reducir texto</span>
            </Button>
+           <HymnAdminActions hymn={hymn} onDelete={handleDelete} onUpdate={handleUpdate} />
            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
              <ZoomIn className="h-7 w-7" />
              <span className="sr-only">Aumentar texto</span>
