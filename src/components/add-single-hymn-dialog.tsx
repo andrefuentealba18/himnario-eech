@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
+import type { Hymn } from '@/lib/hymns';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -36,7 +37,7 @@ const hymnSchema = z.object({
   lyrics: z.string().min(1, 'La letra es requerida.'),
 });
 
-export function AddSingleHymnDialog({ children }: { children: React.ReactNode }) {
+export function AddSingleHymnDialog({ children, onHymnAdded }: { children: React.ReactNode, onHymnAdded: (hymn: Hymn) => boolean }) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
 
@@ -50,13 +51,16 @@ export function AddSingleHymnDialog({ children }: { children: React.ReactNode })
   });
 
   function onSubmit(values: z.infer<typeof hymnSchema>) {
-    console.log(values);
-    toast({
-      title: 'Himno Agregado (Simulación)',
-      description: `En una aplicación real, el himno #${values.number} "${values.title}" se guardaría.`,
-    });
-    form.reset();
-    setOpen(false);
+    const success = onHymnAdded(values);
+    if (success) {
+      toast({
+        title: 'Himno Agregado',
+        description: `El himno #${values.number} "${values.title}" ha sido guardado.`,
+      });
+      form.reset();
+      setOpen(false);
+    }
+    // If not successful, the parent component will show a toast.
   }
 
   return (

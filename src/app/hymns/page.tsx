@@ -1,6 +1,8 @@
 "use client";
 
-import { hymns } from '@/lib/hymns';
+import { useState } from 'react';
+import type { Hymn } from '@/lib/hymns';
+import { hymns as initialHymns } from '@/lib/hymns';
 import { HymnListClient } from '@/components/hymn-list-client';
 import { BookOpen, ChevronLeft, Plus, ChevronDown } from 'lucide-react';
 import Link from 'next/link';
@@ -13,9 +15,39 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useToast } from '@/hooks/use-toast';
 
 
 export default function HymnsIndexPage() {
+  const [hymns, setHymns] = useState<Hymn[]>(initialHymns);
+  const { toast } = useToast();
+
+  const handleAddHymns = (newHymns: Hymn[]): number => {
+    const existingNumbers = new Set(hymns.map(h => h.number));
+    const uniqueNewHymns = newHymns.filter(h => !existingNumbers.has(h.number));
+    
+    if (uniqueNewHymns.length > 0) {
+      setHymns(prevHymns => [...prevHymns, ...uniqueNewHymns].sort((a, b) => a.number - b.number));
+    }
+    
+    return uniqueNewHymns.length;
+  };
+  
+  const handleAddSingleHymn = (newHymn: Hymn): boolean => {
+    const existingNumbers = new Set(hymns.map(h => h.number));
+    if(existingNumbers.has(newHymn.number)){
+        toast({
+            variant: 'destructive',
+            title: 'Error al agregar',
+            description: `El himno número ${newHymn.number} ya existe.`,
+        });
+        return false;
+    }
+    setHymns(prevHymns => [...prevHymns, newHymn].sort((a,b) => a.number - b.number));
+    return true;
+  }
+
+
   return (
     <main className="flex flex-col items-center bg-background min-h-screen">
       <div className="w-full max-w-2xl mx-auto">
@@ -42,12 +74,12 @@ export default function HymnsIndexPage() {
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent>
-                    <AddSingleHymnDialog>
+                    <AddSingleHymnDialog onHymnAdded={handleAddSingleHymn}>
                       <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                         Agregar un himno
                       </DropdownMenuItem>
                     </AddSingleHymnDialog>
-                     <AddHymnDialog>
+                     <AddHymnDialog onHymnsAdded={handleAddHymns}>
                        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
                         Agregar varios himnos
                        </DropdownMenuItem>
