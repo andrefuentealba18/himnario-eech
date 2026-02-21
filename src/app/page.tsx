@@ -37,7 +37,7 @@ export default function HomePage() {
           </Button>
         </div>
         <footer className="text-center text-sm text-muted-foreground">
-          <p>Iglesia Evangélica Episcopal de Chile</p>
+          <p>Iglesia Ejercito Evangélico de Chile</p>
         </footer>
       </div>
     </main>
