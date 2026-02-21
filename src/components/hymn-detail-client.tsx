@@ -1,9 +1,8 @@
-
 "use client";
 
 import type { Hymn } from '@/lib/hymns';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, notFound } from 'next/navigation';
 import { useHymns } from '@/context/hymns-context';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useFontSize } from '@/hooks/use-font-size';
@@ -11,11 +10,12 @@ import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { HymnAdminActions } from '@/components/hymn-admin-actions';
 import { Star, ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface HymnDetailClientProps {
-  hymn: Hymn;
+  hymnId: number;
 }
 
 const fontSizes = [
@@ -27,13 +27,43 @@ const fontSizes = [
   'text-4xl',  // 36px
 ];
 
-export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
+export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const { deleteHymn, updateHymn } = useHymns();
-  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded } = useFontSize(fontSizes.length, 1);
+  const { getHymnById, deleteHymn, updateHymn, isLoaded: isHymnsLoaded } = useHymns();
+  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
   const { isFavorite, toggleFavorite, isLoaded: isFavoritesLoaded } = useFavorites();
   
+  const hymn = getHymnById(hymnId);
+
+  useEffect(() => {
+    if (isHymnsLoaded && !hymn) {
+      notFound();
+    }
+  }, [isHymnsLoaded, hymn]);
+
+  if (!isHymnsLoaded || !hymn) {
+    return (
+        <div className="flex flex-col min-h-screen bg-background">
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                 <div className="flex-1 px-4">
+                    <Skeleton className="h-6 w-3/4 mx-auto" />
+                 </div>
+                <Skeleton className="h-10 w-10 rounded-full" />
+            </header>
+            <main className="flex-1 py-8 container max-w-sm">
+                <div className="space-y-4 text-center">
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-5/6 mx-auto" />
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-4/6 mx-auto" />
+                </div>
+            </main>
+        </div>
+    );
+  }
+
   const isFav = isFavoritesLoaded && isFavorite(hymn.number);
 
   const handleDelete = useCallback(() => {
@@ -94,8 +124,17 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
           >
             {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
               const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
+              if (isChorus) {
+                  const chorusText = paragraph.substring(paragraph.toUpperCase().indexOf('CORO') + 4).trim().replace(/^:/, '').trim();
+                  return (
+                    <p key={pIndex} className="whitespace-pre-wrap mb-4 font-bold leading-snug">
+                      CORO:
+                      {chorusText && `\n${chorusText}`}
+                    </p>
+                  )
+              }
               return (
-                 <p key={pIndex} className={`whitespace-pre-wrap mb-4 ${isChorus ? 'font-bold leading-snug' : ''}`}>
+                 <p key={pIndex} className="whitespace-pre-wrap mb-4">
                   {paragraph}
                 </p>
               );
@@ -105,12 +144,12 @@ export function HymnDetailClient({ hymn }: HymnDetailClientProps) {
       </main>
       
       <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-background/80 backdrop-blur-sm p-4 border-t">
-           <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isLoaded || fontSizeIndex === 0} className="rounded-full h-14 w-14">
+           <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-14 w-14">
              <ZoomOut className="h-7 w-7" />
              <span className="sr-only">Reducir texto</span>
            </Button>
            <HymnAdminActions hymn={hymn} onDelete={handleDelete} onUpdate={handleUpdate} />
-           <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
+           <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
              <ZoomIn className="h-7 w-7" />
              <span className="sr-only">Aumentar texto</span>
            </Button>

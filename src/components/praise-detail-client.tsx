@@ -6,15 +6,16 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { usePraises } from '@/context/praises-context';
-import { useRouter } from 'next/navigation';
+import { useRouter, notFound } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { PraiseAdminActions } from './praise-admin-actions';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
 import { useFontSize } from '@/hooks/use-font-size';
+import { Skeleton } from '@/components/ui/skeleton';
 
 interface PraiseDetailClientProps {
-  praise: Praise;
+  praiseId: string;
 }
 
 const fontSizes = [
@@ -26,11 +27,48 @@ const fontSizes = [
   'text-4xl',  // 36px
 ];
 
-export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
+export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
   const router = useRouter();
   const { toast } = useToast();
-  const { deletePraise, updatePraise } = usePraises();
-  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded } = useFontSize(fontSizes.length, 1);
+  const { getPraiseById, deletePraise, updatePraise, isLoaded: isPraisesLoaded } = usePraises();
+  const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
+
+  const praise = getPraiseById(praiseId);
+
+  useEffect(() => {
+    if (isPraisesLoaded && !praise) {
+      notFound();
+    }
+  }, [isPraisesLoaded, praise]);
+
+  useEffect(() => {
+    if (praise && praiseId !== praise.id) {
+        router.replace(`/praises/${praise.id}`);
+    }
+  }, [praise, praiseId, router]);
+
+
+  if (!isPraisesLoaded || !praise) {
+    return (
+        <div className="flex flex-col min-h-screen bg-background">
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                 <div className="flex-1 px-4">
+                    <Skeleton className="h-6 w-3/4 mx-auto" />
+                 </div>
+                <Skeleton className="h-10 w-10 rounded-full" />
+            </header>
+            <main className="flex-1 py-8 container max-w-sm">
+                <div className="space-y-4 text-center">
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-5/6 mx-auto" />
+                    <Skeleton className="h-8 w-full" />
+                    <Skeleton className="h-8 w-4/6 mx-auto" />
+                </div>
+            </main>
+        </div>
+    );
+  }
 
   const handleDelete = useCallback(() => {
     deletePraise(praise.id);
@@ -38,24 +76,19 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
     router.push('/praises');
   }, [deletePraise, praise.id, praise.title, router, toast]);
 
-  const handleUpdate = useCallback((updatedData: Omit<Praise, 'id'>): { success: boolean, newId?: string } => {
+  const handleUpdate = useCallback((updatedData: Omit<Praise, 'id'>): { success: boolean } => {
     const result = updatePraise(praise.id, updatedData);
-    if (result.success && result.newId) {
+    if (result.success) {
       toast({ title: "Alabanza Actualizada" });
-      // If the ID (slug) changed, we need to redirect to the new URL
-      if (result.newId !== praise.id) {
-        router.replace(`/praises/${result.newId}`);
-      }
-      return { success: true };
     } else {
       toast({
         variant: 'destructive',
         title: 'Error al actualizar',
         description: 'Ya existe una alabanza con ese título.',
       });
-      return { success: false };
     }
-  }, [praise.id, updatePraise, router, toast]);
+    return { success: result.success };
+  }, [praise.id, updatePraise, toast]);
 
   const handleToneUpdate = useCallback((newTone: string) => {
     const { id, ...restOfPraise } = praise;
@@ -104,12 +137,12 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
       </main>
 
       <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-background/80 backdrop-blur-sm p-4 border-t">
-           <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isLoaded || fontSizeIndex === 0} className="rounded-full h-14 w-14">
+           <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-14 w-14">
              <ZoomOut className="h-7 w-7" />
              <span className="sr-only">Reducir texto</span>
            </Button>
            <PraiseAdminActions praise={praise} onDelete={handleDelete} onUpdate={handleUpdate} />
-           <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
+           <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
              <ZoomIn className="h-7 w-7" />
              <span className="sr-only">Aumentar texto</span>
            </Button>
