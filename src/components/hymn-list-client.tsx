@@ -9,15 +9,25 @@ import { useFavorites } from '@/hooks/use-favorites';
 import { Search, Star, List } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { useFontSize } from '@/hooks/use-font-size';
+import { cn } from '@/lib/utils';
 
 interface HymnListClientProps {
   hymns: Hymn[];
 }
 
+const listFontSizes = [
+  'text-sm',
+  'text-base',
+  'text-lg',
+  'text-xl',
+];
+
 export function HymnListClient({ hymns }: HymnListClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
   const { favorites, isLoaded } = useFavorites();
+  const { fontSizeIndex } = useFontSize(listFontSizes.length, 1);
 
   const filteredHymns = useMemo(() => {
     const lowercasedSearchTerm = searchTerm.toLowerCase();
@@ -41,7 +51,7 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
   }, [searchTerm, hymns, activeTab, favorites, isLoaded]);
 
   return (
-    <div className="space-y-4">
+    <div className={cn("space-y-4", listFontSizes[fontSizeIndex])}>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
@@ -92,7 +102,7 @@ function HymnRoll({ hymns }: { hymns: Hymn[] }) {
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-15rem)]">
+    <ScrollArea className="h-[calc(100vh-20rem)]">
         <div className="flex flex-col">
         {hymns.map((hymn) => (
             <Link

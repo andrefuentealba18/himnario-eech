@@ -7,13 +7,23 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { useFontSize } from '@/hooks/use-font-size';
+import { cn } from '@/lib/utils';
 
 interface PraiseListClientProps {
   praises: Praise[];
 }
 
+const listFontSizes = [
+  'text-sm',
+  'text-base',
+  'text-lg',
+  'text-xl',
+];
+
 export function PraiseListClient({ praises }: PraiseListClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const { fontSizeIndex } = useFontSize(listFontSizes.length, 1);
 
   const filteredPraises = useMemo(() => {
     const lowercasedSearchTerm = searchTerm.toLowerCase();
@@ -30,7 +40,7 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
   }, [searchTerm, praises]);
 
   return (
-    <div className="space-y-4">
+    <div className={cn("space-y-4", listFontSizes[fontSizeIndex])}>
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
@@ -57,7 +67,7 @@ function PraiseRoll({ praises }: { praises: Praise[] }) {
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-12rem)]">
+    <ScrollArea className="h-[calc(100vh-17rem)]">
         <div className="flex flex-col">
         {praises.map((praise) => (
             <Link
