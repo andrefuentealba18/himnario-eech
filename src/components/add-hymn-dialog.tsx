@@ -91,7 +91,7 @@ function parseHymns(text: string): Omit<Hymn, 'id'>[] {
         return hymns;
     }
     
-    const hymnBlocks = text.split(/^\s*(?=\d+\s+.{3,})/m).filter(block => block.trim());
+    const hymnBlocks = text.split(/^\s*(?=\d+\s+.*)/m).filter(block => block.trim());
 
     if (hymnBlocks.length === 0 && text.trim().length > 0) {
         hymnBlocks.push(text.trim());
@@ -163,7 +163,7 @@ export function AddHymnDialog({ children, onHymnsAdded }: { children: React.Reac
         toast({
             variant: "destructive",
             title: 'Formato Incorrecto',
-            description: 'No se pudieron procesar los himnos. Asegúrate que cada himno empiece con un número y un título en mayúsculas (ej: 116 TÍTULO).',
+            description: 'No se pudieron procesar los himnos. Asegúrate que cada himno empiece con un número y un título en MAYÚSCULAS (ej: 116 TÍTULO).',
         });
     }
     
