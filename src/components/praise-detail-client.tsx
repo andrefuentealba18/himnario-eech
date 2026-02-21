@@ -62,7 +62,7 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8">
-        <div className="container max-w-lg px-6 text-center">
+        <div className="container max-w-md px-6 text-center">
             <div
                 className={`font-body leading-loose text-lg`}
             >
