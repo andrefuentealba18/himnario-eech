@@ -53,17 +53,18 @@ export function usePraises() {
   }, [praises]);
 
   const addPraises = useCallback((newPraisesData: Omit<Praise, 'id'>[]): { addedCount: number, duplicates: number } => {
-    const existingIds = new Set(praises.map(p => p.id));
+    const existingTitles = new Set(praises.map(p => p.title.toUpperCase()));
     const uniqueNewPraises: Praise[] = [];
 
     newPraisesData.forEach(praiseData => {
-        const id = slugify(praiseData.title);
-        if (!existingIds.has(id)) {
+        const upperCaseTitle = praiseData.title.toUpperCase();
+        if (!existingTitles.has(upperCaseTitle)) {
+            const id = slugify(praiseData.title);
             uniqueNewPraises.push({ ...praiseData, id });
-            existingIds.add(id);
+            existingTitles.add(upperCaseTitle);
         }
     });
-
+    
     if (uniqueNewPraises.length > 0) {
         setPraises(prevPraises => [...prevPraises, ...uniqueNewPraises].sort((a, b) => a.title.localeCompare(b.title)));
     }
@@ -77,11 +78,26 @@ export function usePraises() {
   const deletePraise = useCallback((praiseId: string) => {
     setPraises(prevPraises => prevPraises.filter(p => p.id !== praiseId));
   }, []);
+  
+  const updatePraise = useCallback((praiseId: string, newPraiseData: Omit<Praise, 'id'>): { success: boolean, newId?: string, error?: string } => {
+    const newId = slugify(newPraiseData.title);
+    if (praises.some(p => p.id === newId && newId !== praiseId)) {
+      return { success: false, error: 'duplicate' };
+    }
+
+    setPraises(prevPraises => {
+        const updatedPraises = prevPraises.map(p => 
+            p.id === praiseId ? { ...newPraiseData, id: newId } : p
+        );
+        return updatedPraises.sort((a, b) => a.title.localeCompare(b.title));
+    });
+    return { success: true, newId: newId };
+  }, [praises]);
 
   const getPraiseById = useCallback((id: string): Praise | undefined => {
     if (!isLoaded) return undefined;
     return praises.find(p => p.id === id);
   }, [praises, isLoaded]);
 
-  return { praises, addPraise, addPraises, deletePraise, getPraiseById, isLoaded };
+  return { praises, addPraise, addPraises, deletePraise, updatePraise, getPraiseById, isLoaded };
 }

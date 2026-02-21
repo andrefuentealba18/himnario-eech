@@ -4,12 +4,45 @@ import type { Praise } from '@/lib/praises';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft } from 'lucide-react';
+import { usePraises } from '@/hooks/use-praises';
+import { useRouter } from 'next/navigation';
+import { useToast } from '@/hooks/use-toast';
+import { PraiseAdminActions } from './praise-admin-actions';
 
 interface PraiseDetailClientProps {
   praise: Praise;
 }
 
 export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
+  const router = useRouter();
+  const { toast } = useToast();
+  const { deletePraise, updatePraise } = usePraises();
+
+  const handleDelete = () => {
+    deletePraise(praise.id);
+    toast({ title: "Alabanza Eliminada", description: `"${praise.title}" se ha eliminado.` });
+    router.push('/praises');
+  };
+
+  const handleUpdate = (updatedData: Omit<Praise, 'id'>): { success: boolean } => {
+    const result = updatePraise(praise.id, updatedData);
+    if (result.success && result.newId) {
+      toast({ title: "Alabanza Actualizada" });
+      // If the ID (slug) changed, we need to redirect to the new URL
+      if (result.newId !== praise.id) {
+        router.replace(`/praises/${result.newId}`);
+      }
+      return { success: true };
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Error al actualizar',
+        description: 'Ya existe una alabanza con ese título.',
+      });
+      return { success: false };
+    }
+  };
+
   return (
     <div className="relative flex flex-col min-h-screen bg-background">
       <div 
@@ -44,6 +77,10 @@ export function PraiseDetailClient({ praise }: PraiseDetailClientProps) {
             </div>
         </div>
       </main>
+
+      <footer className="container mx-auto text-center pb-8">
+        <PraiseAdminActions praise={praise} onDelete={handleDelete} onUpdate={handleUpdate} />
+      </footer>
     </div>
   );
 }
