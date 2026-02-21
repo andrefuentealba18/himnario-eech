@@ -74,10 +74,10 @@ export default function HymnsIndexPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                        <DropdownMenuItem onSelect={() => setSingleHymnDialogOpen(true)}>
+                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setSingleHymnDialogOpen(true); }}>
                           Agregar un himno
                         </DropdownMenuItem>
-                         <DropdownMenuItem onSelect={() => setMultiHymnDialogOpen(true)}>
+                         <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setMultiHymnDialogOpen(true); }}>
                           Agregar varios himnos
                          </DropdownMenuItem>
                     </DropdownMenuContent>

@@ -51,10 +51,10 @@ export default function ChoirsIndexPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem onSelect={() => setSingleChoirDialogOpen(true)}>
+                      <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setSingleChoirDialogOpen(true); }}>
                         Agregar un coro
                       </DropdownMenuItem>
-                       <DropdownMenuItem onSelect={() => setMultiChoirDialogOpen(true)}>
+                       <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setMultiChoirDialogOpen(true); }}>
                         Agregar varios coros
                        </DropdownMenuItem>
                     </DropdownMenuContent>

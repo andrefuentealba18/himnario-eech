@@ -51,10 +51,10 @@ export default function YouthChoirsIndexPage() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
-                      <DropdownMenuItem onSelect={() => setSingleYouthChoirDialogOpen(true)}>
+                      <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setSingleYouthChoirDialogOpen(true); }}>
                         Agregar una alabanza
                       </DropdownMenuItem>
-                       <DropdownMenuItem onSelect={() => setMultiYouthChoirDialogOpen(true)}>
+                       <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setMultiYouthChoirDialogOpen(true); }}>
                         Agregar varias alabanzas
                        </DropdownMenuItem>
                     </DropdownMenuContent>
