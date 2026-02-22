@@ -14,12 +14,10 @@ export type Repertoire = {
   id: string;
   name: string;
   createdAt: any; // Firestore Timestamp
-  firstHymn?: HymnReference | null;
+  firstHymns?: HymnReference[];
   generalPraises?: SongReference[];
-  preWordPraise?: SongReference | null;
-  sickPraise?: SongReference | null;
-  intermediatePraise?: SongReference | null;
-  finalPraise?: SongReference | null;
+  preWordPraises?: SongReference[];
+  sickPraises?: SongReference[];
+  intermediatePraises?: SongReference[];
+  finalPraises?: SongReference[];
 };
-
-    

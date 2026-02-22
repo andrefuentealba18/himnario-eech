@@ -55,23 +55,31 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
       'youth-choir': '/youth-choirs/',
   }
 
-  const renderHymn = (hymn?: HymnReference | null) => {
-    if (!hymn) return <p className="text-muted-foreground">No seleccionado</p>;
+  const renderHymns = (hymns?: HymnReference[]) => {
+    if (!hymns || hymns.length === 0) return <p className="text-muted-foreground p-3">No seleccionado</p>;
     return (
-        <Link href={`/hymns/${hymn.number}`} className="flex items-center gap-3 p-3 -mx-3 rounded-lg hover:bg-muted/50 transition-colors">
-            <BookOpen className="h-5 w-5 text-primary" />
-            <span className="font-medium">{hymn.number}. {hymn.title}</span>
-        </Link>
+        <div className="space-y-1">
+            {hymns.map((hymn, index) => (
+                <Link key={index} href={`/hymns/${hymn.number}`} className="flex items-center gap-3 p-3 -mx-3 rounded-lg hover:bg-muted/50 transition-colors">
+                    <BookOpen className="h-5 w-5 text-primary" />
+                    <span className="font-medium">{hymn.number}. {hymn.title}</span>
+                </Link>
+            ))}
+        </div>
     )
   }
   
-  const renderSong = (song?: SongReference | null) => {
-    if (!song) return <p className="text-muted-foreground">No seleccionado</p>;
+  const renderSongs = (songs?: SongReference[]) => {
+    if (!songs || songs.length === 0) return <p className="text-muted-foreground p-3">No seleccionado</p>;
     return (
-        <Link href={`${songTypeToHref[song.type]}${song.id}`} className="flex items-center gap-3 p-3 -mx-3 rounded-lg hover:bg-muted/50 transition-colors">
-            {songTypeToIcon[song.type]}
-            <span className="font-medium">{song.title}</span>
-        </Link>
+        <div className="space-y-1">
+            {songs.map((song, index) => (
+                <Link key={index} href={`${songTypeToHref[song.type]}${song.id}`} className="flex items-center gap-3 p-3 -mx-3 rounded-lg hover:bg-muted/50 transition-colors">
+                    {songTypeToIcon[song.type]}
+                    <span className="font-medium">{song.title}</span>
+                </Link>
+            ))}
+        </div>
     )
   }
 
@@ -118,40 +126,33 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
 
         <div className="p-4 space-y-6">
             <Card>
-                <CardHeader><CardTitle>1. Primer Himno</CardTitle></CardHeader>
-                <CardContent>{renderHymn(repertoire.firstHymn)}</CardContent>
+                <CardHeader><CardTitle>1. Primeros Himnos</CardTitle></CardHeader>
+                <CardContent>{renderHymns(repertoire.firstHymns)}</CardContent>
             </Card>
 
              <Card>
                 <CardHeader><CardTitle>2. Alabanzas</CardTitle></CardHeader>
-                <CardContent className="space-y-1">
-                    {repertoire.generalPraises && repertoire.generalPraises.length > 0 ? (
-                        repertoire.generalPraises.map((song, index) => <div key={index}>{renderSong(song)}</div>)
-                    ) : (
-                        <p className="text-muted-foreground">No se seleccionaron alabanzas generales.</p>
-                    )}
-                </CardContent>
+                <CardContent>{renderSongs(repertoire.generalPraises)}</CardContent>
             </Card>
 
             <Card>
-                <CardHeader><CardTitle>3. Alabanza antes de la Palabra</CardTitle></CardHeader>
-                <CardContent>{renderSong(repertoire.preWordPraise)}</CardContent>
+                <CardHeader><CardTitle>3. Alabanzas antes de la Palabra</CardTitle></CardHeader>
+                <CardContent>{renderSongs(repertoire.preWordPraises)}</CardContent>
             </Card>
              <Card>
-                <CardHeader><CardTitle>4. Alabanza por los Enfermos</CardTitle></CardHeader>
-                <CardContent>{renderSong(repertoire.sickPraise)}</CardContent>
+                <CardHeader><CardTitle>4. Alabanzas por los Enfermos</CardTitle></CardHeader>
+                <CardContent>{renderSongs(repertoire.sickPraises)}</CardContent>
             </Card>
              <Card>
-                <CardHeader><CardTitle>5. Alabanza Intermedia</CardTitle></CardHeader>
-                <CardContent>{renderSong(repertoire.intermediatePraise)}</CardContent>
+                <CardHeader><CardTitle>5. Alabanzas Intermedias</CardTitle></CardHeader>
+                <CardContent>{renderSongs(repertoire.intermediatePraises)}</CardContent>
             </Card>
              <Card>
-                <CardHeader><CardTitle>6. Alabanza Final</CardTitle></CardHeader>
-                <CardContent>{renderSong(repertoire.finalPraise)}</CardContent>
+                <CardHeader><CardTitle>6. Alabanzas Finales</CardTitle></CardHeader>
+                <CardContent>{renderSongs(repertoire.finalPraises)}</CardContent>
             </Card>
         </div>
       </div>
     </main>
   );
 }
-    
