@@ -1,48 +1,15 @@
 "use client";
 
-import { useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
 import { useHymns } from '@/context/hymns-context';
-import type { Hymn } from '@/lib/hymns';
 import { HymnListClient } from '@/components/hymn-list-client';
-import { BookOpen, ChevronLeft, Plus, ChevronDown } from 'lucide-react';
+import { BookOpen, ChevronLeft } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { AddHymnDialog } from '@/components/add-hymn-dialog';
-import { AddSingleHymnDialog } from '@/components/add-single-hymn-dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Badge } from '@/components/ui/badge';
 
 
 export default function HymnsIndexPage() {
-  const { hymns, addHymn, addHymns: addMultipleHymns, isLoaded } = useHymns();
-  const { toast } = useToast();
-  const [isSingleHymnDialogOpen, setSingleHymnDialogOpen] = useState(false);
-  const [isMultiHymnDialogOpen, setMultiHymnDialogOpen] = useState(false);
-
-  const handleAddHymns = (newHymns: Omit<Hymn, 'id'>[]): Promise<{ addedCount: number, updatedCount: number }> => {
-    // The context now returns added and updated, but the dialog expects duplicates.
-    // We can consider updated as duplicates for the message.
-    return addMultipleHymns(newHymns).then(result => ({ ...result, duplicates: result.updatedCount }));
-  };
-  
-  const handleAddSingleHymn = async (newHymn: Omit<Hymn, 'id'>): Promise<boolean> => {
-    const success = await addHymn(newHymn);
-    if(!success){
-        toast({
-            variant: 'destructive',
-            title: 'Error al agregar',
-            description: `El himno número ${newHymn.number} ya existe.`,
-        });
-    }
-    return success;
-  }
-
+  const { hymns, isLoaded } = useHymns();
 
   return (
     <>
@@ -64,25 +31,6 @@ export default function HymnsIndexPage() {
                 </Badge>
                 <BookOpen className="h-8 w-8 text-primary" />
               </div>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline">
-                        <Plus className="mr-2 h-4 w-4" />
-                        Agregar
-                        <ChevronDown className="ml-2 h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setSingleHymnDialogOpen(true); }}>
-                          Agregar un himno
-                        </DropdownMenuItem>
-                         <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setMultiHymnDialogOpen(true); }}>
-                          Agregar varios himnos
-                         </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-              </div>
           </header>
 
           <div className="p-4 flex-1 overflow-auto">
@@ -91,18 +39,6 @@ export default function HymnsIndexPage() {
 
         </div>
       </main>
-
-      <AddSingleHymnDialog 
-        open={isSingleHymnDialogOpen}
-        onOpenChange={setSingleHymnDialogOpen}
-        onHymnAdded={handleAddSingleHymn}
-      />
-      
-      <AddHymnDialog 
-        open={isMultiHymnDialogOpen}
-        onOpenChange={setMultiHymnDialogOpen}
-        onHymnsAdded={addMultipleHymns}
-      />
     </>
   );
 }
