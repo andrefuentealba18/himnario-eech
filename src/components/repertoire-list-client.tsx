@@ -47,7 +47,7 @@ export function RepertoireListClient() {
           </CardHeader>
           <CardContent>
             <p className="text-sm text-muted-foreground truncate">
-              {repertoire.firstHymn?.title || 'Sin himno de inicio'}
+              {repertoire.firstHymns?.[0]?.title || 'Sin canto de inicio'}
             </p>
           </CardContent>
           <CardFooter className="flex justify-between">

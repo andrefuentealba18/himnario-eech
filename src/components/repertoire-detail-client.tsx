@@ -19,7 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import type { HymnReference, SongReference } from "@/lib/repertoires";
+import type { SongReference } from "@/lib/repertoires";
 
 interface RepertoireDetailClientProps {
   repertoireId: string;
@@ -43,30 +43,18 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
     return <p>Repertorio no encontrado.</p>;
   }
 
-  const songTypeToIcon = {
+  const songTypeToIcon: Record<SongReference['type'], React.ReactNode> = {
+      'hymn': <BookOpen className="h-5 w-5 text-primary" />,
       'praise': <Music className="h-5 w-5 text-primary" />,
       'choir': <Mic className="h-5 w-5 text-primary" />,
       'youth-choir': <Users className="h-5 w-5 text-primary" />,
   }
 
-  const songTypeToHref = {
+  const songTypeToHref: Record<SongReference['type'], string> = {
+      'hymn': '/hymns/',
       'praise': '/praises/',
       'choir': '/choirs/',
       'youth-choir': '/youth-choirs/',
-  }
-
-  const renderHymns = (hymns?: HymnReference[]) => {
-    if (!hymns || hymns.length === 0) return <p className="text-muted-foreground p-3">No seleccionado</p>;
-    return (
-        <div className="space-y-1">
-            {hymns.map((hymn, index) => (
-                <Link key={index} href={`/hymns/${hymn.number}`} className="flex items-center gap-3 p-3 -mx-3 rounded-lg hover:bg-muted/50 transition-colors">
-                    <BookOpen className="h-5 w-5 text-primary" />
-                    <span className="font-medium">{hymn.number}. {hymn.title}</span>
-                </Link>
-            ))}
-        </div>
-    )
   }
   
   const renderSongs = (songs?: SongReference[]) => {
@@ -74,9 +62,9 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
     return (
         <div className="space-y-1">
             {songs.map((song, index) => (
-                <Link key={index} href={`${songTypeToHref[song.type]}${song.id}`} className="flex items-center gap-3 p-3 -mx-3 rounded-lg hover:bg-muted/50 transition-colors">
+                <Link key={index} href={`${songTypeToHref[song.type]}${song.type === 'hymn' ? song.number : song.id}`} className="flex items-center gap-3 p-3 -mx-3 rounded-lg hover:bg-muted/50 transition-colors">
                     {songTypeToIcon[song.type]}
-                    <span className="font-medium">{song.title}</span>
+                    <span className="font-medium">{song.number ? `${song.number}. ` : ''}{song.title}</span>
                 </Link>
             ))}
         </div>
@@ -126,12 +114,12 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
 
         <div className="p-4 space-y-6">
             <Card>
-                <CardHeader><CardTitle>1. Primeros Himnos</CardTitle></CardHeader>
-                <CardContent>{renderHymns(repertoire.firstHymns)}</CardContent>
+                <CardHeader><CardTitle>1. Primeros Cantos</CardTitle></CardHeader>
+                <CardContent>{renderSongs(repertoire.firstHymns)}</CardContent>
             </Card>
 
              <Card>
-                <CardHeader><CardTitle>2. Alabanzas</CardTitle></CardHeader>
+                <CardHeader><CardTitle>2. Alabanzas Generales</CardTitle></CardHeader>
                 <CardContent>{renderSongs(repertoire.generalPraises)}</CardContent>
             </Card>
 

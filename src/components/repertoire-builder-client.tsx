@@ -18,6 +18,7 @@ import { Separator } from "./ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
 import { cn } from "@/lib/utils";
+import type { SongReference } from "@/lib/repertoires";
 
 const songIdSchema = z.object({ id: z.string().min(1, "Debes seleccionar un canto.") });
 
@@ -35,28 +36,27 @@ type RepertoireFormData = z.infer<typeof repertoireSchema>;
 
 const songItem = { id: "" };
 
-function SearchableSelect({ songs, value, onChange, placeholder, type = 'praise' }: { songs: any[], value: string, onChange: (value: string) => void, placeholder: string, type?: 'hymn' | 'praise' }) {
+function SearchableSelect({ songs, value, onChange, placeholder }: { songs: any[], value: string, onChange: (value: string) => void, placeholder: string }) {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState('');
 
+    const getSongValue = (song: any) => `${song.type}:${song.id}`;
+
     const selectedSongTitle = useMemo(() => {
         if (!value) return placeholder;
-        const songId = type === 'hymn' ? value : value.split(':')[1];
-        const song = songs.find(s => s.id === songId);
+        const song = songs.find(s => getSongValue(s) === value);
         if (!song) return placeholder;
-        return type === 'hymn' ? `${song.number}. ${song.title}` : song.title;
-    }, [value, songs, type, placeholder]);
+        return song.type === 'hymn' ? `${song.number}. ${song.title}` : song.title;
+    }, [value, songs, placeholder]);
 
     const filteredSongs = useMemo(() => {
         if (!search) return songs;
         const lowercasedSearch = search.toLowerCase();
         return songs.filter(song => 
             song.title.toLowerCase().includes(lowercasedSearch) ||
-            (type === 'hymn' && song.number.toString().includes(lowercasedSearch))
+            (song.number && song.number.toString().includes(lowercasedSearch))
         );
-    }, [search, songs, type]);
-
-    const getSongValue = (song: any) => type === 'hymn' ? song.id : `${song.type}:${song.id}`;
+    }, [search, songs]);
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -94,7 +94,7 @@ function SearchableSelect({ songs, value, onChange, placeholder, type = 'praise'
                                 className="text-sm cursor-pointer p-2 hover:bg-accent rounded-sm flex items-center gap-2"
                             >
                                 <Check className={cn("h-4 w-4", value === getSongValue(song) ? "opacity-100" : "opacity-0")} />
-                                <span className="truncate">{type === 'hymn' && `${song.number}. `}{song.title}</span>
+                                <span className="truncate">{song.number && `${song.number}. `}{song.title}</span>
                             </div>
                         )) : <div className="p-2 text-center text-sm text-muted-foreground">No se encontraron cantos.</div>}
                     </div>
@@ -104,7 +104,7 @@ function SearchableSelect({ songs, value, onChange, placeholder, type = 'praise'
     );
 }
 
-function MultiSongSelectField({ control, name, label, songs, type = 'praise' }: { control: Control<RepertoireFormData>, name: any, label: string, songs: any[], type?: 'hymn' | 'praise' }) {
+function MultiSongSelectField({ control, name, label, songs }: { control: Control<RepertoireFormData>, name: any, label: string, songs: any[] }) {
     const { fields, append, remove } = useFieldArray({
         control,
         name,
@@ -127,7 +127,6 @@ function MultiSongSelectField({ control, name, label, songs, type = 'praise' }: 
                                             value={field.value}
                                             onChange={field.onChange}
                                             placeholder={`Seleccionar canto ${index + 1}...`}
-                                            type={type}
                                         />
                                     </FormControl>
                                     <FormMessage />
@@ -155,14 +154,15 @@ export function RepertoireBuilderClient() {
   const { youthChoirs, isLoaded: youthChoirsLoaded } = useYouthChoirs();
   const { addRepertoire } = useRepertoires();
 
-  const allPraises = useMemo(() => {
+  const allSongs = useMemo(() => {
     const combined = [
+      ...hymns.map(h => ({ ...h, type: 'hymn' as const })),
       ...praises.map(p => ({ ...p, type: 'praise' as const })),
       ...choirs.map(c => ({ ...c, type: 'choir' as const })),
       ...youthChoirs.map(yc => ({ ...yc, type: 'youth-choir' as const }))
     ];
-    return combined.sort((a, b) => a.title.localeCompare(b.title));
-  }, [praises, choirs, youthChoirs]);
+    return combined.sort((a, b) => a.title.localeCompare(b.title, 'es', { sensitivity: 'base' }));
+  }, [hymns, praises, choirs, youthChoirs]);
 
   const isLoaded = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded;
 
@@ -180,31 +180,31 @@ export function RepertoireBuilderClient() {
   });
 
   const onSubmit = (data: RepertoireFormData) => {
-    const findSong = (idWithType: string) => {
-      if (!idWithType) return undefined;
-      const [type, id] = idWithType.split(":");
-      const song = allPraises.find(p => p.id === id && p.type === type);
-      return song ? { id: song.id, title: song.title, type: song.type } : undefined;
-    }
+    const findSong = (idWithType: string): SongReference | undefined => {
+        if (!idWithType) return undefined;
+        const [type, id] = idWithType.split(":");
+        const song = allSongs.find(s => s.id === id && s.type === type);
+        
+        if (!song) return undefined;
 
-    const findHymn = (id: string) => {
-        if (!id) return undefined;
-        const hymn = hymns.find(h => h.id === id);
-        return hymn ? { id: hymn.id, number: hymn.number, title: hymn.title } : undefined;
+        if (song.type === 'hymn') {
+            return { id: song.id, number: song.number, title: song.title, type: 'hymn' };
+        }
+        return { id: song.id, title: song.title, type: song.type };
     }
     
-    const filterAndMap = (arr: {id: string}[] | undefined, findFn: (id: string) => any) => {
-        return arr?.map(item => findFn(item.id)).filter(Boolean) as any[] || [];
+    const filterAndMap = (arr: {id: string}[] | undefined) => {
+        return arr?.map(item => findSong(item.id)).filter(Boolean) as SongReference[] || [];
     }
 
     const repertoirePayload = {
       name: data.name,
-      firstHymns: filterAndMap(data.firstHymns, findHymn),
-      generalPraises: filterAndMap(data.generalPraises, findSong),
-      preWordPraises: filterAndMap(data.preWordPraises, findSong),
-      sickPraises: filterAndMap(data.sickPraises, findSong),
-      intermediatePraises: filterAndMap(data.intermediatePraises, findSong),
-      finalPraises: filterAndMap(data.finalPraises, findSong),
+      firstHymns: filterAndMap(data.firstHymns),
+      generalPraises: filterAndMap(data.generalPraises),
+      preWordPraises: filterAndMap(data.preWordPraises),
+      sickPraises: filterAndMap(data.sickPraises),
+      intermediatePraises: filterAndMap(data.intermediatePraises),
+      finalPraises: filterAndMap(data.finalPraises),
     };
 
     addRepertoire(repertoirePayload);
@@ -237,12 +237,12 @@ export function RepertoireBuilderClient() {
               )}
             />
 
-            <MultiSongSelectField control={form.control} name="firstHymns" label="1. Primeros Himnos" songs={hymns} type="hymn" />
-            <MultiSongSelectField control={form.control} name="generalPraises" label="2. Alabanzas" songs={allPraises} />
-            <MultiSongSelectField control={form.control} name="preWordPraises" label="3. Alabanzas antes de la Palabra" songs={allPraises} />
-            <MultiSongSelectField control={form.control} name="sickPraises" label="4. Alabanzas por los Enfermos" songs={allPraises} />
-            <MultiSongSelectField control={form.control} name="intermediatePraises" label="5. Alabanzas Intermedias" songs={allPraises} />
-            <MultiSongSelectField control={form.control} name="finalPraises" label="6. Alabanzas Finales" songs={allPraises} />
+            <MultiSongSelectField control={form.control} name="firstHymns" label="1. Primeros Cantos" songs={allSongs} />
+            <MultiSongSelectField control={form.control} name="generalPraises" label="2. Alabanzas Generales" songs={allSongs} />
+            <MultiSongSelectField control={form.control} name="preWordPraises" label="3. Alabanzas antes de la Palabra" songs={allSongs} />
+            <MultiSongSelectField control={form.control} name="sickPraises" label="4. Alabanzas por los Enfermos" songs={allSongs} />
+            <MultiSongSelectField control={form.control} name="intermediatePraises" label="5. Alabanzas Intermedias" songs={allSongs} />
+            <MultiSongSelectField control={form.control} name="finalPraises" label="6. Alabanzas Finales" songs={allSongs} />
 
             <Separator />
             
