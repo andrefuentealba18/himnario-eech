@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { Praise } from '@/lib/praises';
@@ -27,6 +26,34 @@ const fontSizes = [
   'text-4xl',  // 36px
 ];
 
+function PraiseDetailSkeleton() {
+    return (
+        <div className="flex flex-col min-h-screen bg-background">
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="flex-1 px-4 text-center">
+                    <Skeleton className="h-5 w-3/4 mx-auto mb-1" />
+                    <Skeleton className="h-5 w-1/4 mx-auto" />
+                </div>
+                <div className="w-10" />
+            </header>
+            <main className="flex-1 py-8 container max-w-sm">
+                <div className="space-y-4 text-center">
+                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-6 w-5/6 mx-auto" />
+                    <Skeleton className="h-6 w-full" />
+                    <Skeleton className="h-6 w-4/6 mx-auto" />
+                </div>
+            </main>
+            <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-background/80 backdrop-blur-sm p-4 border-t">
+              <Skeleton className="h-14 w-14 rounded-full" />
+              <Skeleton className="h-14 w-14 rounded-full" />
+              <Skeleton className="h-14 w-14 rounded-full" />
+            </footer>
+        </div>
+    );
+}
+
 export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
   const router = useRouter();
   const { toast } = useToast();
@@ -35,39 +62,20 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
 
   const praise = getPraiseById(praiseId);
 
-  useEffect(() => {
-    if (isPraisesLoaded && !praise) {
-      notFound();
-    }
-  }, [isPraisesLoaded, praise]);
-
+  // This useEffect handles URL correction if the title (and thus slug/id) changes
   useEffect(() => {
     if (praise && praiseId !== praise.id) {
         router.replace(`/praises/${praise.id}`);
     }
   }, [praise, praiseId, router]);
 
+  if (!isPraisesLoaded) {
+    return <PraiseDetailSkeleton />;
+  }
 
-  if (!isPraisesLoaded || !praise) {
-    return (
-        <div className="flex flex-col min-h-screen bg-background">
-            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
-                <Skeleton className="h-10 w-10 rounded-full" />
-                 <div className="flex-1 px-4">
-                    <Skeleton className="h-6 w-3/4 mx-auto" />
-                 </div>
-                <div className="w-10" />
-            </header>
-            <main className="flex-1 py-8 container max-w-sm">
-                <div className="space-y-4 text-center">
-                    <Skeleton className="h-8 w-full" />
-                    <Skeleton className="h-8 w-5/6 mx-auto" />
-                    <Skeleton className="h-8 w-full" />
-                    <Skeleton className="h-8 w-4/6 mx-auto" />
-                </div>
-            </main>
-        </div>
-    );
+  if (!praise) {
+    notFound();
+    return null;
   }
 
   const handleDelete = useCallback(async () => {
