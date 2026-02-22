@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection, doc, updateDoc, query, where } from 'firebase/firestore';
+import { collection, doc, updateDoc } from 'firebase/firestore';
 import type { SongRequest } from '@/lib/song-requests';
 import { usePraises } from '@/context/praises-context';
 import { useChoirs } from '@/context/choirs-context';
@@ -29,17 +29,22 @@ export function SongRequestsList() {
   const { addChoir } = useChoirs();
   const { addYouthChoir } = useYouthChoirs();
 
-  const requestsQuery = useMemoFirebase(() => {
+  const requestsCollection = useMemoFirebase(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'songRequests'), where('status', '==', 'pending'));
+    return collection(firestore, 'songRequests');
   }, [firestore]);
 
-  const { data: requests, isLoading } = useCollection<SongRequest>(requestsQuery);
+  const { data: allRequests, isLoading } = useCollection<SongRequest>(requestsCollection);
+
+  const pendingRequests = useMemo(() => {
+    if (!allRequests) return [];
+    return allRequests.filter(req => req.status === 'pending');
+  }, [allRequests]);
 
   const sortedRequests = useMemo(() => {
-    if (!requests) return [];
-    return [...requests].sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
-  }, [requests]);
+    if (!pendingRequests) return [];
+    return [...pendingRequests].sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+  }, [pendingRequests]);
 
   const handleApprove = async (request: SongRequest) => {
     if (!firestore) return;
