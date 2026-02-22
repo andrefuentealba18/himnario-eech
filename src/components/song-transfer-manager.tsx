@@ -63,7 +63,7 @@ export function SongTransferManager() {
     setSelectedSongs(new Set());
   }, [sourceCategory]);
 
-  const handleSelectAll = (checked: boolean | 'indeterminate') => {
+  const handleSelectAll = (checked: boolean) => {
     if (checked) {
       setSelectedSongs(new Set(sourceSongs.map(s => s.id)));
     } else {
@@ -156,9 +156,8 @@ export function SongTransferManager() {
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(categoryLabels)
-                    .filter(([key]) => key !== destinationCategory)
                     .map(([key, label]) => (
-                        <SelectItem key={key} value={key}>{label}</SelectItem>
+                        <SelectItem key={key} value={key} disabled={key === destinationCategory}>{label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -176,9 +175,8 @@ export function SongTransferManager() {
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(categoryLabels)
-                    .filter(([key]) => key !== sourceCategory)
                     .map(([key, label]) => (
-                        <SelectItem key={key} value={key}>{label}</SelectItem>
+                        <SelectItem key={key} value={key} disabled={key === sourceCategory}>{label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -196,8 +194,8 @@ export function SongTransferManager() {
                                 <div className="flex items-center space-x-2 pb-2 border-b mb-2">
                                   <Checkbox
                                     id="select-all"
-                                    checked={isSelectAllChecked}
-                                    onCheckedChange={handleSelectAll}
+                                    checked={isSelectAllChecked ? true : isSelectAllIndeterminate ? 'indeterminate' : false}
+                                    onCheckedChange={(checked) => handleSelectAll(!!checked)}
                                     aria-label="Seleccionar todo"
                                   />
                                   <label
