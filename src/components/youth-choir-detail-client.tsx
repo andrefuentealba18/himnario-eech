@@ -11,6 +11,15 @@ import { useCallback, useEffect } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
 import { useFontSize } from '@/hooks/use-font-size';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+
+const slugify = (text: string): string =>
+  text.toString().toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
 
 interface YouthChoirDetailClientProps {
   youthChoirId: string;
@@ -61,6 +70,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
   const searchParams = useSearchParams();
   const { getYouthChoirById, deleteYouthChoir, updateYouthChoir, isLoaded: isYouthChoirsLoaded } = useYouthChoirs();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
+  const { toast } = useToast();
   
   const from = searchParams.get('from');
   const backHref = from === 'admin' ? '/admin?tab=more-settings' : '/youth-choirs';
@@ -73,15 +83,25 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
     router.push('/youth-choirs');
   }, [deleteYouthChoir, youthChoir, router]);
 
-  const handleUpdate = useCallback((updatedData: Omit<YouthChoir, 'id'>) => {
-    if (!youthChoir) return;
-    updateYouthChoir(youthChoir.id, updatedData);
-  }, [youthChoir, updateYouthChoir]);
+  const handleUpdate = useCallback(async (updatedData: Omit<YouthChoir, 'id'>) => {
+    if (!youthChoir) return { success: false };
+    const result = await updateYouthChoir(youthChoir.id, updatedData);
+    if(result.success) {
+      toast({ title: "Alabanza Actualizada", description: `La alabanza "${updatedData.title}" se ha guardado correctamente.` });
+      const newId = slugify(updatedData.title);
+      if (newId !== youthChoir.id) {
+        router.replace(`/youth-choirs/${newId}`);
+      }
+    } else {
+       toast({ variant: 'destructive', title: 'Error al actualizar', description: result.error === 'duplicate' ? 'Ya existe una alabanza con ese título.' : 'No se pudo guardar el cambio.' });
+    }
+    return result;
+  }, [youthChoir, updateYouthChoir, router, toast]);
 
-  const handleToneUpdate = useCallback((newTone: string) => {
-    if (!youthChoir) return;
+  const handleToneUpdate = useCallback(async (newTone: string) => {
+    if (!youthChoir) return { success: false };
     const { id, ...restOfYouthChoir } = youthChoir;
-    handleUpdate({ ...restOfYouthChoir, tone: newTone });
+    return await handleUpdate({ ...restOfYouthChoir, tone: newTone });
   }, [youthChoir, handleUpdate]);
 
   useEffect(() => {

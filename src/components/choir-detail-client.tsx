@@ -12,7 +12,16 @@ import { EditToneDialog } from './edit-tone-dialog';
 import { useFontSize } from '@/hooks/use-font-size';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
+const slugify = (text: string): string =>
+  text.toString().toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+    
 interface ChoirDetailClientProps {
   choirId: string;
 }
@@ -65,6 +74,7 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
   const searchParams = useSearchParams();
   const { getChoirById, deleteChoir, updateChoir, isLoaded: isChoirsLoaded } = useChoirs();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
+  const { toast } = useToast();
 
   const from = searchParams.get('from');
   const backHref = from === 'admin' ? '/admin?tab=more-settings' : '/choirs';
@@ -77,15 +87,25 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
     router.push('/choirs');
   }, [deleteChoir, choir, router]);
 
-  const handleUpdate = useCallback((updatedData: Omit<Choir, 'id'>) => {
-    if (!choir) return;
-    updateChoir(choir.id, updatedData);
-  }, [choir, updateChoir]);
+  const handleUpdate = useCallback(async (updatedData: Omit<Choir, 'id'>) => {
+    if (!choir) return { success: false };
+    const result = await updateChoir(choir.id, updatedData);
+    if(result.success) {
+        toast({ title: "Coro Actualizado", description: `El coro "${updatedData.title}" se ha guardado correctamente.` });
+        const newId = slugify(updatedData.title);
+        if (newId !== choir.id) {
+          router.replace(`/choirs/${newId}`);
+        }
+    } else {
+        toast({ variant: 'destructive', title: 'Error al actualizar', description: result.error === 'duplicate' ? 'Ya existe un coro con ese título.' : 'No se pudo guardar el cambio.' });
+    }
+    return result;
+  }, [choir, updateChoir, router, toast]);
 
-  const handleToneUpdate = useCallback((newTone: string) => {
-    if (!choir) return;
+  const handleToneUpdate = useCallback(async (newTone: string) => {
+    if (!choir) return { success: false };
     const { id, ...restOfChoir } = choir;
-    handleUpdate({ ...restOfChoir, tone: newTone });
+    return await handleUpdate({ ...restOfChoir, tone: newTone });
   }, [choir, handleUpdate]);
 
   useEffect(() => {

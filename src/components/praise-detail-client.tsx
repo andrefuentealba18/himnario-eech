@@ -11,6 +11,15 @@ import { useCallback, useEffect } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
 import { useFontSize } from '@/hooks/use-font-size';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
+
+const slugify = (text: string): string =>
+  text.toString().toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
 
 interface PraiseDetailClientProps {
   praiseId: string;
@@ -63,6 +72,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
   const searchParams = useSearchParams();
   const { getPraiseById, deletePraise, updatePraise, isLoaded: isPraisesLoaded } = usePraises();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
+  const { toast } = useToast();
 
   const from = searchParams.get('from');
   const backHref = from === 'admin' ? '/admin?tab=more-settings' : '/praises';
@@ -75,15 +85,25 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     router.push('/praises');
   }, [deletePraise, praise, router]);
 
-  const handleUpdate = useCallback((updatedData: Omit<Praise, 'id'>) => {
-    if (!praise) return;
-    updatePraise(praise.id, updatedData);
-  }, [praise, updatePraise]);
+  const handleUpdate = useCallback(async (updatedData: Omit<Praise, 'id'>) => {
+    if (!praise) return { success: false };
+    const result = await updatePraise(praise.id, updatedData);
+    if(result.success) {
+      toast({ title: "Alabanza Actualizada", description: `La alabanza "${updatedData.title}" se ha guardado correctamente.` });
+       const newId = slugify(updatedData.title);
+       if (newId !== praise.id) {
+          router.replace(`/praises/${newId}`);
+       }
+    } else {
+      toast({ variant: 'destructive', title: 'Error al actualizar', description: result.error === 'duplicate' ? 'Ya existe una alabanza con ese título.' : 'No se pudo guardar el cambio.' });
+    }
+    return result;
+  }, [praise, updatePraise, router, toast]);
 
-  const handleToneUpdate = useCallback((newTone: string) => {
-    if (!praise) return;
+  const handleToneUpdate = useCallback(async (newTone: string) => {
+    if (!praise) return { success: false };
     const { id, ...restOfPraise } = praise;
-    handleUpdate({ ...restOfPraise, tone: newTone });
+    return await handleUpdate({ ...restOfPraise, tone: newTone });
   }, [praise, handleUpdate]);
   
   useEffect(() => {

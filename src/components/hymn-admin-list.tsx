@@ -28,10 +28,6 @@ export function HymnAdminList() {
 
   const handleDelete = async (hymnNumber: number) => {
     await deleteHymn(hymnNumber);
-    toast({
-      title: 'Himno Eliminado',
-      description: 'El himno se ha eliminado de la lista.',
-    });
   };
 
   const handleUpdate = (hymnNumber: number) => async (updatedData: Omit<Hymn, 'id' | 'number'>) => {
@@ -45,7 +41,7 @@ export function HymnAdminList() {
         toast({
             variant: 'destructive',
             title: 'Error al Actualizar',
-            description: 'No se pudo guardar el himno. Es posible que no tengas permisos.',
+            description: 'No se pudo guardar el himno.',
         });
     }
     return result;

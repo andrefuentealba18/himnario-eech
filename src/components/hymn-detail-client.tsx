@@ -12,6 +12,7 @@ import { Star, ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { useCallback } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
+import { useToast } from '@/hooks/use-toast';
 
 interface HymnDetailClientProps {
   hymnId: number;
@@ -67,6 +68,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
   const { getHymnById, deleteHymn, updateHymn, isLoaded: isHymnsLoaded } = useHymns();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
   const { isFavorite, toggleFavorite, isLoaded: isFavoritesLoaded } = useFavorites();
+  const { toast } = useToast();
   
   const hymn = getHymnById(hymnId);
 
@@ -76,15 +78,21 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
     router.push('/hymns');
   }, [deleteHymn, hymn, router]);
 
-  const handleUpdate = useCallback((updatedData: Omit<Hymn, 'id' | 'number'>) => {
-    if (!hymn) return;
-    updateHymn(hymn.number, updatedData);
-  }, [hymn, updateHymn]);
+  const handleUpdate = useCallback(async (updatedData: Omit<Hymn, 'id' | 'number'>) => {
+    if (!hymn) return { success: false };
+    const result = await updateHymn(hymn.number, updatedData);
+    if(result.success) {
+      toast({ title: "Himno Actualizado", description: `El himno #${hymn.number} se ha guardado correctamente.` });
+    } else {
+      toast({ variant: 'destructive', title: 'Error al actualizar', description: 'No se pudo guardar el himno.' });
+    }
+    return result;
+  }, [hymn, updateHymn, toast]);
 
-  const handleToneUpdate = useCallback((newTone: string) => {
-    if (!hymn) return;
+  const handleToneUpdate = useCallback(async (newTone: string) => {
+    if (!hymn) return { success: false };
     const { number, id, ...restOfHymn } = hymn;
-    handleUpdate({ ...restOfHymn, tone: newTone });
+    return await handleUpdate({ ...restOfHymn, tone: newTone });
   }, [hymn, handleUpdate]);
 
   if (!isHymnsLoaded || !hymn) {

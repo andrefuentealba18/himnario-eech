@@ -49,7 +49,7 @@ const hymnSchema = z.object({
 interface AddSingleHymnDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onHymnAdded: (hymn: Omit<Hymn, 'id'>) => Promise<boolean>;
+  onHymnAdded: (hymn: Omit<Hymn, 'id'>) => Promise<{ success: boolean; error?: string }>;
 }
 
 export function AddSingleHymnDialog({ open, onOpenChange, onHymnAdded }: AddSingleHymnDialogProps) {
@@ -72,13 +72,19 @@ export function AddSingleHymnDialog({ open, onOpenChange, onHymnAdded }: AddSing
   }, [open, form]);
 
   async function onSubmit(values: z.infer<typeof hymnSchema>) {
-    const success = await onHymnAdded(values as Omit<Hymn, 'id'>);
-    if (success) {
+    const result = await onHymnAdded(values as Omit<Hymn, 'id'>);
+    if (result.success) {
       toast({
         title: 'Himno Agregado',
         description: `El himno #${values.number} "${values.title}" ha sido guardado.`,
       });
       onOpenChange(false);
+    } else {
+       toast({
+        variant: 'destructive',
+        title: 'Error al agregar',
+        description: result.error === 'duplicate' ? 'Ya existe un himno con ese número.' : 'No se pudo guardar el himno.',
+      });
     }
   }
 
