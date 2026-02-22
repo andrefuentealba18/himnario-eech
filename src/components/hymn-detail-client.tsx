@@ -69,6 +69,28 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
   
   const hymn = getHymnById(hymnId);
 
+  const handleDelete = useCallback(async () => {
+    if (!hymn) return;
+    await deleteHymn(hymn.number);
+    toast({ title: "Himno Eliminado", description: `El himno #${hymn.number} se ha eliminado.` });
+    router.push('/hymns');
+  }, [deleteHymn, hymn, router, toast]);
+
+  const handleUpdate = useCallback(async (updatedData: Omit<Hymn, 'id' | 'number'>): Promise<{ success: boolean }> => {
+    if (!hymn) return { success: false };
+    const result = await updateHymn(hymn.number, updatedData);
+    if (result.success) {
+      toast({ title: "Himno Actualizado" });
+    }
+    return result;
+  }, [hymn, updateHymn, toast]);
+
+  const handleToneUpdate = useCallback(async (newTone: string) => {
+    if (!hymn) return { success: false };
+    const { number, id, ...restOfHymn } = hymn;
+    return handleUpdate({ ...restOfHymn, tone: newTone });
+  }, [hymn, handleUpdate]);
+
   if (!isHymnsLoaded) {
     return <HymnDetailSkeleton />;
   }
@@ -79,26 +101,6 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
   }
 
   const isFav = isFavoritesLoaded && isFavorite(hymn.number);
-
-  const handleDelete = useCallback(async () => {
-    await deleteHymn(hymn.number);
-    toast({ title: "Himno Eliminado", description: `El himno #${hymn.number} se ha eliminado.` });
-    router.push('/hymns');
-  }, [deleteHymn, hymn.number, router, toast]);
-
-  const handleUpdate = useCallback(async (updatedData: Omit<Hymn, 'id' | 'number'>): Promise<{ success: boolean }> => {
-    const result = await updateHymn(hymn.number, updatedData);
-    if (result.success) {
-      toast({ title: "Himno Actualizado" });
-    }
-    return result;
-  }, [hymn.number, updateHymn, toast]);
-
-  const handleToneUpdate = useCallback(async (newTone: string) => {
-    const { number, id, ...restOfHymn } = hymn;
-    return handleUpdate({ ...restOfHymn, tone: newTone });
-  }, [hymn, handleUpdate]);
-
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background">

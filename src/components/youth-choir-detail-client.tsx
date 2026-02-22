@@ -62,6 +62,37 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
 
   const youthChoir = getYouthChoirById(youthChoirId);
 
+  const handleDelete = useCallback(async () => {
+    if (!youthChoir) return;
+    await deleteYouthChoir(youthChoir.id);
+    toast({ title: "Alabanza Eliminada", description: `"${youthChoir.title}" se ha eliminado.` });
+    router.push('/youth-choirs');
+  }, [deleteYouthChoir, youthChoir, router, toast]);
+
+  const handleUpdate = useCallback(async (updatedData: Omit<YouthChoir, 'id'>): Promise<{ success: boolean }> => {
+    if (!youthChoir) return { success: false };
+    const result = await updateYouthChoir(youthChoir.id, updatedData);
+    if (result.success) {
+      toast({ title: "Alabanza Actualizada" });
+       if (result.newId && result.newId !== youthChoir.id) {
+          router.replace(`/youth-choirs/${result.newId}`);
+       }
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Error al actualizar',
+        description: 'Ya existe una alabanza con ese título.',
+      });
+    }
+    return { success: result.success };
+  }, [youthChoir, updateYouthChoir, toast, router]);
+
+  const handleToneUpdate = useCallback(async (newTone: string) => {
+    if (!youthChoir) return { success: false };
+    const { id, ...restOfYouthChoir } = youthChoir;
+    return handleUpdate({ ...restOfYouthChoir, tone: newTone });
+  }, [youthChoir, handleUpdate]);
+
   // This useEffect handles URL correction if the title (and thus slug/id) changes
   useEffect(() => {
     if (youthChoir && youthChoirId !== youthChoir.id) {
@@ -77,35 +108,6 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
     notFound();
     return null;
   }
-
-  const handleDelete = useCallback(async () => {
-    await deleteYouthChoir(youthChoir.id);
-    toast({ title: "Alabanza Eliminada", description: `"${youthChoir.title}" se ha eliminado.` });
-    router.push('/youth-choirs');
-  }, [deleteYouthChoir, youthChoir.id, youthChoir.title, router, toast]);
-
-  const handleUpdate = useCallback(async (updatedData: Omit<YouthChoir, 'id'>): Promise<{ success: boolean }> => {
-    const result = await updateYouthChoir(youthChoir.id, updatedData);
-    if (result.success) {
-      toast({ title: "Alabanza Actualizada" });
-       if (result.newId && result.newId !== youthChoir.id) {
-          router.replace(`/youth-choirs/${result.newId}`);
-       }
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Error al actualizar',
-        description: 'Ya existe una alabanza con ese título.',
-      });
-    }
-    return { success: result.success };
-  }, [youthChoir.id, updateYouthChoir, toast, router]);
-
-  const handleToneUpdate = useCallback(async (newTone: string) => {
-    const { id, ...restOfYouthChoir } = youthChoir;
-    return handleUpdate({ ...restOfYouthChoir, tone: newTone });
-  }, [youthChoir, handleUpdate]);
-
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background">

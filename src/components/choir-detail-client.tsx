@@ -66,6 +66,37 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
 
   const choir = getChoirById(choirId);
 
+  const handleDelete = useCallback(async () => {
+    if (!choir) return;
+    await deleteChoir(choir.id);
+    toast({ title: "Coro Eliminado", description: `"${choir.title}" se ha eliminado.` });
+    router.push('/choirs');
+  }, [deleteChoir, choir, router, toast]);
+
+  const handleUpdate = useCallback(async (updatedData: Omit<Choir, 'id'>): Promise<{ success: boolean }> => {
+    if (!choir) return { success: false };
+    const result = await updateChoir(choir.id, updatedData);
+    if (result.success) {
+      toast({ title: "Coro Actualizado" });
+       if (result.newId && result.newId !== choir.id) {
+          router.replace(`/choirs/${result.newId}`);
+       }
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Error al actualizar',
+        description: 'Ya existe un coro con ese título.',
+      });
+    }
+    return { success: result.success };
+  }, [choir, updateChoir, toast, router]);
+
+  const handleToneUpdate = useCallback(async (newTone: string) => {
+    if (!choir) return { success: false };
+    const { id, ...restOfChoir } = choir;
+    return handleUpdate({ ...restOfChoir, tone: newTone });
+  }, [choir, handleUpdate]);
+
   // This useEffect handles URL correction if the title (and thus slug/id) changes
   useEffect(() => {
     if (choir && choirId !== choir.id) {
@@ -81,35 +112,6 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
     notFound();
     return null;
   }
-
-  const handleDelete = useCallback(async () => {
-    await deleteChoir(choir.id);
-    toast({ title: "Coro Eliminado", description: `"${choir.title}" se ha eliminado.` });
-    router.push('/choirs');
-  }, [deleteChoir, choir.id, choir.title, router, toast]);
-
-  const handleUpdate = useCallback(async (updatedData: Omit<Choir, 'id'>): Promise<{ success: boolean }> => {
-    const result = await updateChoir(choir.id, updatedData);
-    if (result.success) {
-      toast({ title: "Coro Actualizado" });
-       if (result.newId && result.newId !== choir.id) {
-          router.replace(`/choirs/${result.newId}`);
-       }
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Error al actualizar',
-        description: 'Ya existe un coro con ese título.',
-      });
-    }
-    return { success: result.success };
-  }, [choir.id, updateChoir, toast, router]);
-
-  const handleToneUpdate = useCallback(async (newTone: string) => {
-    const { id, ...restOfChoir } = choir;
-    return handleUpdate({ ...restOfChoir, tone: newTone });
-  }, [choir, handleUpdate]);
-
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background">

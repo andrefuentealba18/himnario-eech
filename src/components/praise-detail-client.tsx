@@ -62,6 +62,37 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
 
   const praise = getPraiseById(praiseId);
 
+  const handleDelete = useCallback(async () => {
+    if (!praise) return;
+    await deletePraise(praise.id);
+    toast({ title: "Alabanza Eliminada", description: `"${praise.title}" se ha eliminado.` });
+    router.push('/praises');
+  }, [deletePraise, praise, router, toast]);
+
+  const handleUpdate = useCallback(async (updatedData: Omit<Praise, 'id'>): Promise<{ success: boolean }> => {
+    if (!praise) return { success: false };
+    const result = await updatePraise(praise.id, updatedData);
+    if (result.success) {
+      toast({ title: "Alabanza Actualizada" });
+       if (result.newId && result.newId !== praise.id) {
+          router.replace(`/praises/${result.newId}`);
+       }
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Error al actualizar',
+        description: 'Ya existe una alabanza con ese título.',
+      });
+    }
+    return { success: result.success };
+  }, [praise, updatePraise, toast, router]);
+
+  const handleToneUpdate = useCallback(async (newTone: string) => {
+    if (!praise) return { success: false };
+    const { id, ...restOfPraise } = praise;
+    return handleUpdate({ ...restOfPraise, tone: newTone });
+  }, [praise, handleUpdate]);
+  
   // This useEffect handles URL correction if the title (and thus slug/id) changes
   useEffect(() => {
     if (praise && praiseId !== praise.id) {
@@ -77,35 +108,6 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     notFound();
     return null;
   }
-
-  const handleDelete = useCallback(async () => {
-    await deletePraise(praise.id);
-    toast({ title: "Alabanza Eliminada", description: `"${praise.title}" se ha eliminado.` });
-    router.push('/praises');
-  }, [deletePraise, praise.id, praise.title, router, toast]);
-
-  const handleUpdate = useCallback(async (updatedData: Omit<Praise, 'id'>): Promise<{ success: boolean }> => {
-    const result = await updatePraise(praise.id, updatedData);
-    if (result.success) {
-      toast({ title: "Alabanza Actualizada" });
-       if (result.newId && result.newId !== praise.id) {
-          router.replace(`/praises/${result.newId}`);
-       }
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Error al actualizar',
-        description: 'Ya existe una alabanza con ese título.',
-      });
-    }
-    return { success: result.success };
-  }, [praise.id, updatePraise, toast, router]);
-
-  const handleToneUpdate = useCallback(async (newTone: string) => {
-    const { id, ...restOfPraise } = praise;
-    return handleUpdate({ ...restOfPraise, tone: newTone });
-  }, [praise, handleUpdate]);
-
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background">
