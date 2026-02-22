@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, DatabaseBackup } from 'lucide-react';
+import { ChevronLeft, DatabaseBackup, Shuffle } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
@@ -9,6 +9,7 @@ import { YouthChoirAdminList } from '@/components/youth-choir-admin-list';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MissingHymns } from '@/components/missing-hymns';
 import { BackupManager } from '@/components/backup-manager';
+import { SongTransferManager } from '@/components/song-transfer-manager';
 
 export default function AdminPage() {
   return (
@@ -29,12 +30,16 @@ export default function AdminPage() {
 
         <div className="p-4">
           <Tabs defaultValue="hymns" className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="hymns">Himnos</TabsTrigger>
               <TabsTrigger value="praises">Alabanzas</TabsTrigger>
               <TabsTrigger value="choirs">Coros</TabsTrigger>
               <TabsTrigger value="youth-choirs">Coro Juventud</TabsTrigger>
               <TabsTrigger value="missing-hymns">Faltantes</TabsTrigger>
+              <TabsTrigger value="transfer">
+                <Shuffle className="mr-2 h-4 w-4" />
+                Traspasar
+              </TabsTrigger>
               <TabsTrigger value="backup">
                 <DatabaseBackup className="mr-2 h-4 w-4" />
                 Respaldo
@@ -82,6 +87,9 @@ export default function AdminPage() {
             </TabsContent>
             <TabsContent value="missing-hymns">
                 <MissingHymns />
+            </TabsContent>
+            <TabsContent value="transfer">
+                <SongTransferManager />
             </TabsContent>
              <TabsContent value="backup">
                 <BackupManager />
