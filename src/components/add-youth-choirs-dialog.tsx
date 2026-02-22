@@ -25,9 +25,15 @@ function parseSongs(text: string): Omit<YouthChoir, 'id'>[] {
     const lines = text.split('\n');
     let currentSong: Omit<YouthChoir, 'id'> | null = null;
     let currentLyrics: string[] = [];
+    
+    const ignorePattern = /^ejercito evangelico de chile las torres\s*\d*$/i;
 
     for (const line of lines) {
         const trimmedLine = line.trim();
+
+        if (ignorePattern.test(trimmedLine)) {
+            continue;
+        }
         
         const isTitle = trimmedLine.length > 0 && trimmedLine === trimmedLine.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(trimmedLine);
 

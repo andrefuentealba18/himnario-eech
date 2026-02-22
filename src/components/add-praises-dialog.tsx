@@ -26,7 +26,7 @@ function parsePraises(text: string): Omit<Praise, 'id'>[] {
     let currentPraise: Omit<Praise, 'id'> | null = null;
     let currentLyrics: string[] = [];
 
-    const ignorePattern = /^ejercito evangelico de chile las torres \d+$/i;
+    const ignorePattern = /^ejercito evangelico de chile las torres\s*\d*$/i;
 
     for (const line of lines) {
         const trimmedLine = line.trim();

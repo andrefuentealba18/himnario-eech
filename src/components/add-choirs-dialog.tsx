@@ -24,6 +24,8 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
 
     const lines = text.split('\n');
     let currentSong: Partial<Choir> & { lyricsLines: string[] } | null = null;
+    
+    const ignorePattern = /^ejercito evangelico de chile las torres\s*\d*$/i;
 
     const saveCurrentSong = () => {
         if (currentSong) {
@@ -37,6 +39,11 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
 
     for (const line of lines) {
         const trimmedLine = line.trim();
+
+        if (ignorePattern.test(trimmedLine)) {
+            continue;
+        }
+
         const isAllUpper = trimmedLine.length > 0 && trimmedLine === trimmedLine.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(trimmedLine);
 
         if (isAllUpper) {
