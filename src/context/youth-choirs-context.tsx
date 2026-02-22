@@ -20,6 +20,7 @@ interface YouthChoirsContextType {
   deleteYouthChoir: (youthChoirId: string) => Promise<void>;
   updateYouthChoir: (youthChoirId: string, newYouthChoirData: Omit<YouthChoir, 'id'>) => Promise<{ success: boolean, newId?: string, error?: string }>;
   getYouthChoirById: (id: string) => YouthChoir | undefined;
+  restoreYouthChoirs: (youthChoirsToRestore: Omit<YouthChoir, 'id'>[]) => Promise<void>;
   isLoaded: boolean;
 }
 
@@ -115,7 +116,27 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     return youthChoirs.find(p => p.id === id);
   }, [youthChoirs]);
 
-  const value = { youthChoirs, addYouthChoir, addYouthChoirs, deleteYouthChoir, updateYouthChoir, getYouthChoirById, isLoaded };
+  const restoreYouthChoirs = useCallback(async (youthChoirsToRestore: Omit<YouthChoir, 'id'>[]) => {
+    if (!firestore) return;
+    const batch = writeBatch(firestore);
+  
+    // Delete all existing documents
+    youthChoirs.forEach(yc => {
+      const docRef = doc(firestore, 'youth-choirs', yc.id);
+      batch.delete(docRef);
+    });
+    
+    // Add new documents from backup
+    youthChoirsToRestore.forEach(ycData => {
+      const id = slugify(ycData.title);
+      const docRef = doc(firestore, 'youth-choirs', id);
+      batch.set(docRef, ycData);
+    });
+  
+    await batch.commit();
+  }, [firestore, youthChoirs]);
+
+  const value = { youthChoirs, addYouthChoir, addYouthChoirs, deleteYouthChoir, updateYouthChoir, getYouthChoirById, restoreYouthChoirs, isLoaded };
 
   return <YouthChoirsContext.Provider value={value}>{children}</YouthChoirsContext.Provider>;
 }
@@ -127,5 +148,3 @@ export function useYouthChoirs() {
   }
   return context;
 }
-
-    

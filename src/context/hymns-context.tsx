@@ -14,6 +14,7 @@ interface HymnsContextType {
   updateHymn: (hymnNumber: number, newHymnData: Omit<Hymn, 'id' | 'number'>) => Promise<{ success: boolean }>;
   deleteHymn: (hymnNumber: number) => Promise<void>;
   getHymnById: (id: number) => Hymn | undefined;
+  restoreHymns: (hymnsToRestore: Omit<Hymn, 'id'>[]) => Promise<void>;
   isLoaded: boolean;
 }
 
@@ -116,7 +117,26 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
     return hymns.find(h => h.number === id);
   }, [hymns]);
 
-  const value = { hymns, addHymn, addHymns, updateHymn, deleteHymn, getHymnById, isLoaded };
+  const restoreHymns = useCallback(async (hymnsToRestore: Omit<Hymn, 'id'>[]) => {
+    if (!firestore) return;
+    const batch = writeBatch(firestore);
+
+    // Delete all existing documents
+    hymns.forEach(hymn => {
+      const docRef = doc(firestore, 'hymns', hymn.number.toString());
+      batch.delete(docRef);
+    });
+    
+    // Add new documents from backup
+    hymnsToRestore.forEach(hymn => {
+      const docRef = doc(firestore, 'hymns', hymn.number.toString());
+      batch.set(docRef, hymn);
+    });
+
+    await batch.commit();
+  }, [firestore, hymns]);
+
+  const value = { hymns, addHymn, addHymns, updateHymn, deleteHymn, getHymnById, restoreHymns, isLoaded };
 
   return <HymnsContext.Provider value={value}>{children}</HymnsContext.Provider>;
 }

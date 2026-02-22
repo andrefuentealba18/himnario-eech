@@ -20,6 +20,7 @@ interface ChoirsContextType {
   deleteChoir: (choirId: string) => Promise<void>;
   updateChoir: (choirId: string, newChoirData: Omit<Choir, 'id'>) => Promise<{ success: boolean, newId?: string, error?: string }>;
   getChoirById: (id: string) => Choir | undefined;
+  restoreChoirs: (choirsToRestore: Omit<Choir, 'id'>[]) => Promise<void>;
   isLoaded: boolean;
 }
 
@@ -115,7 +116,27 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     return choirs.find(p => p.id === id);
   }, [choirs]);
 
-  const value = { choirs, addChoir, addChoirs, deleteChoir, updateChoir, getChoirById, isLoaded };
+  const restoreChoirs = useCallback(async (choirsToRestore: Omit<Choir, 'id'>[]) => {
+    if (!firestore) return;
+    const batch = writeBatch(firestore);
+  
+    // Delete all existing documents
+    choirs.forEach(choir => {
+      const docRef = doc(firestore, 'choirs', choir.id);
+      batch.delete(docRef);
+    });
+    
+    // Add new documents from backup
+    choirsToRestore.forEach(choirData => {
+      const id = slugify(choirData.title);
+      const docRef = doc(firestore, 'choirs', id);
+      batch.set(docRef, choirData);
+    });
+  
+    await batch.commit();
+  }, [firestore, choirs]);
+
+  const value = { choirs, addChoir, addChoirs, deleteChoir, updateChoir, getChoirById, restoreChoirs, isLoaded };
 
   return <ChoirsContext.Provider value={value}>{children}</ChoirsContext.Provider>;
 }
@@ -127,5 +148,3 @@ export function useChoirs() {
   }
   return context;
 }
-
-    

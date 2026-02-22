@@ -20,6 +20,7 @@ interface PraisesContextType {
   deletePraise: (praiseId: string) => Promise<void>;
   updatePraise: (praiseId: string, newPraiseData: Omit<Praise, 'id'>) => Promise<{ success: boolean, newId?: string, error?: string }>;
   getPraiseById: (id: string) => Praise | undefined;
+  restorePraises: (praisesToRestore: Omit<Praise, 'id'>[]) => Promise<void>;
   isLoaded: boolean;
 }
 
@@ -115,7 +116,27 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     return praises.find(p => p.id === id);
   }, [praises]);
 
-  const value = { praises, addPraise, addPraises, deletePraise, updatePraise, getPraiseById, isLoaded };
+  const restorePraises = useCallback(async (praisesToRestore: Omit<Praise, 'id'>[]) => {
+    if (!firestore) return;
+    const batch = writeBatch(firestore);
+
+    // Delete all existing documents
+    praises.forEach(praise => {
+      const docRef = doc(firestore, 'praises', praise.id);
+      batch.delete(docRef);
+    });
+    
+    // Add new documents from backup
+    praisesToRestore.forEach(praiseData => {
+      const id = slugify(praiseData.title);
+      const docRef = doc(firestore, 'praises', id);
+      batch.set(docRef, praiseData);
+    });
+
+    await batch.commit();
+  }, [firestore, praises]);
+
+  const value = { praises, addPraise, addPraises, deletePraise, updatePraise, getPraiseById, restorePraises, isLoaded };
 
   return <PraisesContext.Provider value={value}>{children}</PraisesContext.Provider>;
 }
