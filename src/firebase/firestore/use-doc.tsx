@@ -24,7 +24,7 @@ export interface UseDocResult<T> {
 export function useDoc<T = any>(
   memoizedDocRef: DocumentReference<DocumentData> | null | undefined,
 ): UseDocResult<T> {
-  const { areServicesAvailable } = useFirebase();
+  const { areServicesAvailable, isUserLoading } = useFirebase();
   type StateDataType = WithId<T> | null;
 
   const [data, setData] = useState<StateDataType>(null);
@@ -32,8 +32,15 @@ export function useDoc<T = any>(
   const [error, setError] = useState<FirestoreError | Error | null>(null);
 
   useEffect(() => {
-     if (!areServicesAvailable || !memoizedDocRef) {
-      if (!areServicesAvailable) setIsLoading(false);
+     if (!areServicesAvailable || isUserLoading) {
+      setIsLoading(true);
+      return;
+    }
+
+    if (!memoizedDocRef) {
+      setIsLoading(false);
+      setData(null);
+      setError(null);
       return;
     }
 
@@ -66,7 +73,7 @@ export function useDoc<T = any>(
     );
 
     return () => unsubscribe();
-  }, [memoizedDocRef, areServicesAvailable]);
+  }, [memoizedDocRef, areServicesAvailable, isUserLoading]);
 
   return { data, isLoading, error };
 }

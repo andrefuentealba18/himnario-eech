@@ -35,7 +35,7 @@ export interface InternalQuery extends Query<DocumentData> {
 export function useCollection<T = any>(
     memoizedTargetRefOrQuery: (CollectionReference<DocumentData> | Query<DocumentData>)  | null | undefined,
 ): UseCollectionResult<T> {
-  const { areServicesAvailable } = useFirebase();
+  const { areServicesAvailable, isUserLoading } = useFirebase();
   type ResultItemType = WithId<T>;
   type StateDataType = ResultItemType[] | null;
 
@@ -44,13 +44,21 @@ export function useCollection<T = any>(
   const [error, setError] = useState<FirestoreError | Error | null>(null);
 
   useEffect(() => {
-    if (!areServicesAvailable || !memoizedTargetRefOrQuery) {
-      // If Firebase is not ready or query is null, don't attempt to fetch.
-      // Set loading to false only when we know we can't proceed.
-      if (!areServicesAvailable) setIsLoading(false);
+    // We are in a loading state until services are ready and user auth state is resolved.
+    if (!areServicesAvailable || isUserLoading) {
+      setIsLoading(true);
       return;
     }
 
+    // If services/user are ready, but there's no query, we are done loading.
+    if (!memoizedTargetRefOrQuery) {
+      setIsLoading(false);
+      setData(null);
+      setError(null);
+      return;
+    }
+
+    // At this point, we are ready to fetch data.
     setIsLoading(true);
     setError(null);
     
@@ -85,7 +93,7 @@ export function useCollection<T = any>(
     );
 
     return () => unsubscribe();
-  }, [memoizedTargetRefOrQuery, areServicesAvailable]); 
+  }, [memoizedTargetRefOrQuery, areServicesAvailable, isUserLoading]); 
 
   return { data, isLoading, error };
 }
