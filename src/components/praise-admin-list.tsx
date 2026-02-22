@@ -7,6 +7,7 @@ import { Edit, Trash2, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { usePraises } from '@/context/praises-context';
 import { EditPraiseDialog } from './edit-praise-dialog';
+import { EditToneDialog } from './edit-tone-dialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 
@@ -49,6 +50,24 @@ export function PraiseAdminList() {
     }
     return result;
   };
+  
+  const handleToneUpdate = (praise: Praise) => async (newTone: string): Promise<{ success: boolean; }> => {
+    const { id, ...restOfPraise } = praise;
+    const result = await updatePraise(id, { ...restOfPraise, tone: newTone });
+    if (result.success) {
+      toast({
+        title: 'Tonalidad Actualizada',
+        description: `La tonalidad de "${praise.title}" se ha guardado.`,
+      });
+    } else {
+      toast({
+        variant: 'destructive',
+        title: 'Error al actualizar',
+        description: result.error === 'duplicate' ? 'Ya existe una alabanza con ese título.' : 'No se pudo guardar la tonalidad.',
+      });
+    }
+    return { success: result.success };
+  };
 
 
   if (!isLoaded) {
@@ -75,12 +94,16 @@ export function PraiseAdminList() {
       </div>
       <div className="flex flex-col gap-2">
         {filteredPraises.map((praise) => (
-          <div key={praise.id} className="flex items-center justify-between p-3 border rounded-lg">
-            <div className="flex items-center gap-2">
-              <span className="font-medium">{praise.title}</span>
-              {praise.tone && <Badge variant="outline">{praise.tone}</Badge>}
+          <div key={praise.id} className="flex items-center justify-between p-3 border rounded-lg gap-2">
+            <div className="flex items-center gap-2 flex-grow min-w-0">
+              <span className="font-medium truncate">{praise.title}</span>
+              <EditToneDialog song={praise} onToneUpdated={handleToneUpdate(praise)}>
+                <Badge variant="outline" className="cursor-pointer flex-shrink-0">
+                    {praise.tone || 'Indefinido'}
+                </Badge>
+              </EditToneDialog>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-shrink-0">
               <EditPraiseDialog praise={praise} onPraiseUpdated={handleUpdate(praise.id)}>
                 <Button variant="outline" size="icon">
                   <Edit className="h-4 w-4" />
