@@ -40,6 +40,12 @@ export function HymnAdminList() {
         title: 'Himno Actualizado',
         description: `El himno #${hymnNumber} se ha guardado correctamente.`,
       });
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Error al Actualizar',
+            description: 'No se pudo guardar el himno. Es posible que no tengas permisos.',
+        });
     }
     return result;
   };

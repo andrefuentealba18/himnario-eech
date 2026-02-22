@@ -118,12 +118,13 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
         await setDoc(docRef, dataToSave, { merge: true });
         return { success: true };
     } catch(error) {
+        console.error("Error updating hymn:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
             path: docRef.path,
             operation: 'update',
             requestResourceData: dataToSave
         }));
-        throw error;
+        return { success: false };
     }
   }, [firestore]);
 

@@ -123,12 +123,13 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
       }
       return { success: true, newId: newId };
     } catch(error) {
+        console.error("Error updating choir:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
             path: oldDocRef.path,
             operation: 'update',
             requestResourceData: dataToSave
         }));
-        throw error;
+        return { success: false, error: 'permission_denied' };
     }
   }, [firestore, choirs]);
 
