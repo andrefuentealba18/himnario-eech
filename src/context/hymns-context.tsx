@@ -7,6 +7,17 @@ import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePe
 import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
+// Helper to remove undefined values from an object, which Firestore doesn't support.
+const removeUndefined = (obj: Record<string, any>): Record<string, any> => {
+  const newObj: Record<string, any> = {};
+  Object.keys(obj).forEach((key) => {
+    if (obj[key] !== undefined) {
+      newObj[key] = obj[key];
+    }
+  });
+  return newObj;
+};
+
 interface HymnsContextType {
   hymns: Hymn[];
   addHymn: (newHymn: Omit<Hymn, 'id'>) => Promise<boolean>;
@@ -55,9 +66,9 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
                     number: hymn.number,
                     title: hymn.title,
                     lyrics: hymn.lyrics,
-                    tone: hymn.tone || '',
+                    tone: hymn.tone,
                 };
-                batch.set(docRef, dataToSave);
+                batch.set(docRef, removeUndefined(dataToSave));
             });
 
             try {
@@ -83,9 +94,9 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
         number: newHymn.number,
         title: newHymn.title,
         lyrics: newHymn.lyrics,
-        tone: newHymn.tone || '',
+        tone: newHymn.tone,
     };
-    await setDoc(docRef, dataToSave);
+    await setDoc(docRef, removeUndefined(dataToSave));
     return true;
   }, [firestore, hymns]);
 
@@ -103,9 +114,9 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
             number: hymn.number,
             title: hymn.title,
             lyrics: hymn.lyrics,
-            tone: hymn.tone || '',
+            tone: hymn.tone,
         };
-        batch.set(docRef, dataToSave, { merge: true });
+        batch.set(docRef, removeUndefined(dataToSave), { merge: true });
         if (hymnsMap.has(hymn.number)) {
             updatedCount++;
         } else {
@@ -121,13 +132,11 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
     if (!firestore) return { success: false };
     const docRef = doc(firestore, 'hymns', hymnNumber.toString());
     const dataToSave = {
-      title: newHymnData.title,
-      lyrics: newHymnData.lyrics,
-      tone: newHymnData.tone || '',
+      ...newHymnData,
       number: hymnNumber,
     };
     try {
-        await setDoc(docRef, dataToSave, { merge: true });
+        await setDoc(docRef, removeUndefined(dataToSave), { merge: true });
         return { success: true };
     } catch(error) {
         console.error("Error updating hymn:", error);
@@ -168,9 +177,9 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
           number: hymn.number,
           title: hymn.title,
           lyrics: hymn.lyrics,
-          tone: hymn.tone || '',
+          tone: hymn.tone,
       };
-      batch.set(docRef, dataToSave);
+      batch.set(docRef, removeUndefined(dataToSave));
     });
 
     await batch.commit();
