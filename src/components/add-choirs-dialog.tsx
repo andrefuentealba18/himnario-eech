@@ -40,9 +40,13 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
     for (const line of lines) {
         const trimmedLine = line.trim();
 
+        if (ignorePattern.test(trimmedLine)) {
+            continue;
+        }
+
         const isAllUpper = trimmedLine.length > 0 && trimmedLine === trimmedLine.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(trimmedLine);
         
-        if (isAllUpper && !ignorePattern.test(trimmedLine)) {
+        if (isAllUpper) {
             // This is a potential title or metadata.
             let isMetadataLine = false;
             // Check if it's a metadata line (only if it's right after a title)

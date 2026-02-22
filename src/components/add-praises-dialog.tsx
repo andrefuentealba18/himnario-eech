@@ -31,10 +31,13 @@ function parsePraises(text: string): Omit<Praise, 'id'>[] {
     for (const line of lines) {
         const trimmedLine = line.trim();
         
-        const isAllUpper = trimmedLine.length > 0 && trimmedLine === trimmedLine.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(trimmedLine);
-        const isTitle = isAllUpper && !ignorePattern.test(trimmedLine);
+        if (ignorePattern.test(trimmedLine)) {
+            continue;
+        }
 
-        if (isTitle) {
+        const isAllUpper = trimmedLine.length > 0 && trimmedLine === trimmedLine.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(trimmedLine);
+
+        if (isAllUpper) {
             if (currentPraise) {
                 currentPraise.lyrics = currentLyrics.join('\n').trim();
                 if (currentPraise.title && currentPraise.lyrics) {
