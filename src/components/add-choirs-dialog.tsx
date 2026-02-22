@@ -22,76 +22,30 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
         return songs;
     }
 
-    const lines = text.split('\n');
-    let currentSong: Partial<Choir> & { lyricsLines: string[] } | null = null;
-    
-    const ignorePattern = /^ejerci(t|ot)o evangelico de chile( templo)? las torres\s*\d*$/i;
-    let justIgnoredHeader = false;
+    // The user specified that songs will be separated by two lines (a blank line).
+    // This regex splits the text into blocks by one or more blank lines.
+    const songBlocks = text.trim().split(/(?:\r?\n){2,}/);
 
-    const saveCurrentSong = () => {
-        if (currentSong && currentSong.title && currentSong.lyricsLines.length > 0) {
-            currentSong.lyrics = currentSong.lyricsLines.join('\n').trim();
-            if (currentSong.title && currentSong.lyrics) {
-                const { lyricsLines, ...songData } = currentSong;
-                songs.push(songData as Omit<Choir, 'id'>);
-            }
-        }
-    };
-
-    for (const line of lines) {
-        const trimmedLine = line.trim();
-
-        if (justIgnoredHeader && /^\d+$/.test(trimmedLine)) {
-            justIgnoredHeader = false;
-            continue;
-        }
-        justIgnoredHeader = false;
-
-        if (ignorePattern.test(trimmedLine)) {
-            justIgnoredHeader = true;
+    for (const block of songBlocks) {
+        const trimmedBlock = block.trim();
+        if (!trimmedBlock) {
             continue;
         }
 
-        const isAllUpper = trimmedLine.length > 0 && trimmedLine === trimmedLine.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(trimmedLine);
-        
-        if (isAllUpper) {
-            let isMetadataLine = false;
-            if (currentSong && currentSong.lyricsLines.length === 0) {
-                const metadataLine = trimmedLine.toUpperCase();
-                let metadataFound = false;
+        const lines = trimmedBlock.split(/\r?\n/);
+        if (lines.length === 0) {
+            continue;
+        }
 
-                if (metadataLine.includes('RAPIDO')) {
-                    currentSong.speed = 'Rapido';
-                    metadataFound = true;
-                } else if (metadataLine.includes('LENTO')) {
-                    currentSong.speed = 'Lento';
-                    metadataFound = true;
-                }
-    
-                const tonePart = metadataLine.replace('RAPIDO', '').replace('LENTO', '').trim();
-                if(tonePart) {
-                    currentSong.tone = tonePart.split(' ').map(w => w.charAt(0) + w.slice(1).toLowerCase()).join(' ');
-                    metadataFound = true;
-                }
-                
-                if (metadataFound) {
-                    isMetadataLine = true;
-                }
-            }
+        // The first line is the title.
+        const title = lines[0].trim();
+        // The entire block is the lyrics, as per the new format.
+        const lyrics = trimmedBlock;
 
-            if (isMetadataLine) {
-                continue;
-            } else {
-                saveCurrentSong();
-                currentSong = { title: trimmedLine, lyricsLines: [] };
-            }
-        } else {
-            if (currentSong) {
-                currentSong.lyricsLines.push(line);
-            }
+        if (title && lyrics) {
+            songs.push({ title, lyrics });
         }
     }
-    saveCurrentSong();
     return songs;
 }
 
@@ -131,7 +85,7 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
         toast({
             variant: "destructive",
             title: 'Formato Incorrecto',
-            description: 'No se pudieron procesar los coros. Asegúrate que el título de cada coro esté completamente en mayúsculas.',
+            description: 'No se pudieron procesar los coros. Asegúrate de separar cada coro con una línea en blanco.',
         });
     }
     
@@ -144,7 +98,7 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
         <DialogHeader>
           <DialogTitle>Agregar Varios Coros</DialogTitle>
           <DialogDescription>
-            Pega el texto de varios coros. Cada coro debe comenzar con su título en MAYÚSCULAS. Opcionalmente, en la línea siguiente puedes agregar la tonalidad y velocidad (ej: SOL MAYOR RAPIDO). Los coros serán enviados para revisión.
+            Pega el texto de varios coros. La primera línea de cada coro será usada como su título. Separa cada coro con dos líneas (deja una línea en blanco entre ellos). Los coros serán enviados para revisión.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
@@ -152,7 +106,7 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
                 <Label htmlFor="choir-bulk-text">Texto de los coros</Label>
                 <Textarea 
                   id="choir-bulk-text"
-                  placeholder="TÍTULO EN MAYÚSCULAS&#10;SOL MAYOR RAPIDO&#10;Letra del coro...&#10;...&#10;&#10;OTRO TÍTULO EN MAYÚSCULAS&#10;..." 
+                  placeholder="La primera línea es el título...&#10;Letra del coro...&#10;...&#10;&#10;El siguiente coro empieza aquí...&#10;Su primera línea es el título..." 
                   className="h-64 min-h-[10rem]"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
