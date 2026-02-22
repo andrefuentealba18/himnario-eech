@@ -146,19 +146,17 @@ service cloud.firestore {
 
     /**
      * @description Stores user-created song repertoires. Authenticated users can create, read, update, and delete.
-     * @path /repertoires/{document=**}
-     * @principle The recursive wildcard `{document=**}` is used to grant list permission on the collection itself.
+     * @path /repertoires/{repertoireId}
      */
-    match /repertoires/{document=**} {
+    match /repertoires/{repertoireId} {
       allow read, write: if request.auth != null;
     }
 
     /**
      * @description Stores user-submitted songs pending for admin approval. Authenticated users can read and write.
-     * @path /songRequests/{document=**}
-     * @principle The recursive wildcard `{document=**}` is used to grant list permission on the collection itself.
+     * @path /songRequests/{songRequestId}
      */
-    match /songRequests/{document=**} {
+    match /songRequests/{songRequestId} {
       allow read, write: if request.auth != null;
     }
 

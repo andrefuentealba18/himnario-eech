@@ -145,33 +145,19 @@ service cloud.firestore {
     }
 
     /**
-     * @description Stores user-created song repertoires.
-     * Allows listing the collection for any authenticated user.
-     */
-    match /repertoires {
-      allow list: if request.auth != null;
-    }
-    
-    /**
-     * @description Allows document-specific operations for authenticated users.
+     * @description Stores user-created song repertoires. Authenticated users can create, read, update, and delete.
+     * @path /repertoires/{repertoireId}
      */
     match /repertoires/{repertoireId} {
-      allow get, create, update, delete: if request.auth != null;
+      allow read, write: if request.auth != null;
     }
 
     /**
-     * @description Stores user-submitted songs pending for admin approval.
-     * Allows listing the collection for any authenticated user.
-     */
-    match /songRequests {
-      allow list: if request.auth != null;
-    }
-    
-    /**
-     * @description Allows document-specific operations for authenticated users.
+     * @description Stores user-submitted songs pending for admin approval. Authenticated users can read and write.
+     * @path /songRequests/{songRequestId}
      */
     match /songRequests/{songRequestId} {
-      allow get, create, update, delete: if request.auth != null;
+      allow read, write: if request.auth != null;
     }
 
     /**
