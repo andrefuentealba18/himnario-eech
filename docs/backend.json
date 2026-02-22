@@ -129,6 +129,141 @@
         "lyrics"
       ]
     },
+    "Repertoire": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Repertoire",
+      "type": "object",
+      "description": "Represents a user-created repertoire or song list for a service.",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "firstHymn": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "number": {
+              "type": "number"
+            },
+            "title": {
+              "type": "string"
+            }
+          }
+        },
+        "generalPraises": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "praise",
+                  "choir",
+                  "youth-choir"
+                ]
+              }
+            }
+          }
+        },
+        "preWordPraise": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "praise",
+                "choir",
+                "youth-choir"
+              ]
+            }
+          }
+        },
+        "sickPraise": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "praise",
+                "choir",
+                "youth-choir"
+              ]
+            }
+          }
+        },
+        "intermediatePraise": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "praise",
+                "choir",
+                "youth-choir"
+              ]
+            }
+          }
+        },
+        "finalPraise": {
+          "type": "object",
+          "properties": {
+            "id": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "type": {
+              "type": "string",
+              "enum": [
+                "praise",
+                "choir",
+                "youth-choir"
+              ]
+            }
+          }
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "createdAt"
+      ]
+    },
     "UserProfile": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "UserProfile",
@@ -248,6 +383,22 @@
             {
               "name": "youthChoirId",
               "description": "The unique identifier for a specific youth choir song."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/repertoires/{repertoireId}",
+        "definition": {
+          "entityName": "Repertoire",
+          "schema": {
+            "$ref": "#/backend/entities/Repertoire"
+          },
+          "description": "Stores user-created song repertoires.",
+          "params": [
+            {
+              "name": "repertoireId",
+              "description": "The unique identifier for the repertoire."
             }
           ]
         }

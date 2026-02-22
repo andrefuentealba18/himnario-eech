@@ -4,6 +4,7 @@ import { HymnsProvider } from '@/context/hymns-context';
 import { PraisesProvider } from '@/context/praises-context';
 import { ChoirsProvider } from '@/context/choirs-context';
 import { YouthChoirsProvider } from '@/context/youth-choirs-context';
+import { RepertoiresProvider } from '@/context/repertoires-context';
 import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 
 export function AppProvider({ children }: { children: React.ReactNode }) {
@@ -12,10 +13,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       <PraisesProvider>
         <ChoirsProvider>
           <YouthChoirsProvider>
-            <>
+            <RepertoiresProvider>
               {children}
               <FirebaseErrorListener />
-            </>
+            </RepertoiresProvider>
           </YouthChoirsProvider>
         </ChoirsProvider>
       </PraisesProvider>

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { Music, Book, Users, Mic, Church } from 'lucide-react';
+import { Music, Book, Users, Mic, Church, ListMusic } from 'lucide-react';
 import { AddSongDialog } from '@/components/add-song-dialog';
 import { SettingsDialog } from '@/components/settings-dialog';
 
@@ -65,7 +65,15 @@ export default function HomePage() {
             </div>
             
             <footer className="text-center text-sm text-muted-foreground pt-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '1s' }}>
-              <SettingsDialog />
+              <div className="flex justify-center items-center gap-4">
+                <Button asChild variant="ghost">
+                  <Link href="/repertoire">
+                    <ListMusic className="mr-2 h-4 w-4" />
+                    Arma tu repertorio
+                  </Link>
+                </Button>
+                <SettingsDialog />
+              </div>
               <p className="mt-2">Iglesia Ejército Evangélico de Chile</p>
             </footer>
           </div>
