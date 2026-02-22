@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { usePraises } from '@/context/praises-context';
 import { EditPraiseDialog } from './edit-praise-dialog';
 import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
 
 export function PraiseAdminList() {
   const { praises, deletePraise, updatePraise, isLoaded } = usePraises();
@@ -75,8 +76,9 @@ export function PraiseAdminList() {
       <div className="flex flex-col gap-2">
         {filteredPraises.map((praise) => (
           <div key={praise.id} className="flex items-center justify-between p-3 border rounded-lg">
-            <div>
+            <div className="flex items-center gap-2">
               <span className="font-medium">{praise.title}</span>
+              {praise.tone && <Badge variant="outline">{praise.tone}</Badge>}
             </div>
             <div className="flex gap-2">
               <EditPraiseDialog praise={praise} onPraiseUpdated={handleUpdate(praise.id)}>
