@@ -14,7 +14,6 @@ import { MissingHymns } from '@/components/missing-hymns';
 import { BackupManager } from '@/components/backup-manager';
 import { SongTransferManager } from '@/components/song-transfer-manager';
 import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
-import { SongRequestsList } from '@/components/song-requests-list';
 
 export default function AdminPage() {
   const searchParams = useSearchParams();
@@ -44,12 +43,11 @@ export default function AdminPage() {
 
         <div className="p-4">
           <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="hymns">Himnos</TabsTrigger>
               <TabsTrigger value="praises">Alabanzas</TabsTrigger>
               <TabsTrigger value="choirs">Coros</TabsTrigger>
               <TabsTrigger value="youth-choirs">Coro Juventud</TabsTrigger>
-              <TabsTrigger value="requests">Solicitudes</TabsTrigger>
               <TabsTrigger value="more-settings">
                 <Settings className="mr-2 h-4 w-4" />
                 Más
@@ -92,16 +90,6 @@ export default function AdminPage() {
                   </CardHeader>
                   <CardContent>
                     <YouthChoirAdminList />
-                  </CardContent>
-                </Card>
-            </TabsContent>
-            <TabsContent value="requests">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Solicitudes de Canciones</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <SongRequestsList />
                   </CardContent>
                 </Card>
             </TabsContent>

@@ -1,193 +1,41 @@
 rules_version = '2';
 
-/**
- * Core Philosophy: This ruleset implements a dual security model. It provides public,
- * read-only access to central data collections ('hymns', 'praises', 'choirs', 'youth-choirs') while enforcing a strict
- * user-ownership model for all personal data ('users'). This ensures that core
- * application content is widely available, while user-specific information like
- * preferences and favorites is kept private and secure.
- *
- * Data Structure: The data is organized into three main top-level collections:
- * 1. /hymns/{hymnId}: A public collection containing all hymn data.
- * 2. /praises/{praiseId}: A public collection containing all praise data.
- * 3. /choirs/{choirId}: A public collection containing all choir data.
- * 4. /youth-choirs/{youthChoirId}: A public collection containing all youth choir data.
- * 5. /users/{userId}: A collection where each document represents a user's private
- *    data tree. User-specific data, such as favorite hymns, is stored in
- *    subcollections within this tree (e.g., /users/{userId}/favoriteHymns).
- *
- * Key Security Decisions:
- * - Public Data: The `/hymns`, `/praises`, `/choirs`, and `/youth-choirs` collections are publicly readable by anyone, including
- *   unauthenticated users. Writes (create, update, delete) are restricted to authenticated
- *   users. The client-side application is expected to handle admin-level authorization
- *   before attempting a write. This protects the integrity of the core app data.
- * - User Data Privacy: All documents and subcollections under `/users/{userId}` are
- *   strictly accessible only to the authenticated user whose UID matches the `{userId}`.
- * - No User Enumeration: Listing the entire `/users` collection is explicitly disallowed
- *   to prevent malicious actors from discovering the application's user base.
- *
- * Denormalization for Authorization: To ensure performant and simple authorization checks,
- * a user's UID is denormalized directly onto the documents they own. For example, a
- * `UserProfile` document at `/users/abc` contains a field `id: "abc"`. This allows rules
- * to verify ownership without needing to reference the document's path, making them
- * more robust.
- *
- * Structural Segregation: The design separates public data (`/hymns`, `/praises`, etc.) from private
- * user data (`/users`). This separation is a key security feature, preventing any
- * possibility of private data being accidentally exposed through a misconfigured rule
- * on a mixed-content collection.
- */
 service cloud.firestore {
   match /databases/{database}/documents {
-
-    //-------------------------------------------------------------------------
-    // Helper Functions
-    //-------------------------------------------------------------------------
-
-    /**
-     * Returns true if the authenticated user's UID matches the provided userId.
-     * This is the primary function for verifying resource ownership.
-     */
     function isOwner(userId) {
-      // Explicitly check for authentication to avoid potential errors if request.auth is null.
       return request.auth != null && request.auth.uid == userId;
     }
 
-    /**
-     * Returns true if the document already exists and the requester is the owner.
-     * Used for secure update and delete operations.
-     */
-    function isExistingOwner(userId) {
-      return isOwner(userId) && resource != null;
-    }
-
-    /**
-     * Validates a new UserProfile on creation.
-     * Ensures the creator is the owner and the internal 'id' field matches the UID,
-     * which is critical for authorization integrity. This is an authorization check,
-     * not merely schema enforcement, as it ensures consistent ownership denormalization.
-     */
-    function canCreateUserProfile(userId) {
-      return isOwner(userId) && request.resource.data.id == userId;
-    }
-
-    /**
-     * Validates a UserProfile on update.
-     * Ensures the updater is the owner and that the 'id' field cannot be changed,
-     * preventing ownership hijacking. This immutability is an authorization integrity check.
-     */
-    function canUpdateUserProfile(userId) {
-      return isExistingOwner(userId) && request.resource.data.id == resource.data.id;
-    }
-
-    /**
-     * Validates a new FavoriteHymn on creation.
-     * Ensures the creator is the owner and the denormalized 'userProfileId' is set
-     * correctly, linking it permanently to the parent user. This is an authorization check.
-     */
-    function canCreateFavoriteHymn(userId) {
-      return isOwner(userId) && request.resource.data.userProfileId == userId;
-    }
-
-    /**
-     * Validates a FavoriteHymn on update.
-     * Ensures the updater is the owner and the 'userProfileId' is immutable.
-     * This immutability is an authorization integrity check.
-     */
-    function canUpdateFavoriteHymn(userId) {
-      return isExistingOwner(userId) && request.resource.data.userProfileId == resource.data.userProfileId;
-    }
-
-    //-------------------------------------------------------------------------
-    // Collection Rules
-    //-------------------------------------------------------------------------
-
-    /**
-     * @description Publicly accessible hymn data. Anyone can read. Writes are restricted to authenticated users.
-     * @path /hymns/{hymnId}
-     * @allow (get) Any user, signed in or not, can retrieve a specific hymn.
-     * @deny (create) An unauthenticated user attempts to create a new hymn document.
-     * @principle Secures core application data as public-read, while allowing admins (via client-side auth) to write.
-     */
     match /hymns/{hymnId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    /**
-     * @description Publicly accessible praise data. Anyone can read. Writes are restricted to authenticated users.
-     * @path /praises/{praiseId}
-     * @allow (list) Any user, signed in or not, can list all praises.
-     * @deny (update) An unauthenticated user attempts to update a praise document.
-     * @principle Secures core application data as public-read, while allowing admins (via client-side auth) to write.
-     */
     match /praises/{praiseId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
     
-    /**
-     * @description Publicly accessible choir data. Anyone can read. Writes are restricted to authenticated users.
-     * @path /choirs/{choirId}
-     */
     match /choirs/{choirId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
     
-    /**
-     * @description Publicly accessible youth choir data. Anyone can read. Writes are restricted to authenticated users.
-     * @path /youth-choirs/{youthChoirId}
-     */
     match /youth-choirs/{youthChoirId} {
       allow read: if true;
       allow write: if request.auth != null;
     }
 
-    /**
-     * @description Stores user-created song repertoires. Authenticated users can create, read, update, and delete.
-     * @path /repertoires/{repertoireId}
-     */
     match /repertoires/{repertoireId} {
       allow read, write: if request.auth != null;
     }
 
-    /**
-     * @description Stores user-submitted songs pending for admin approval. Authenticated users can read and write.
-     * @path /songRequests/{songRequestId}
-     */
-    match /songRequests/{songRequestId} {
-      allow read, write: if request.auth != null;
-    }
-
-    /**
-     * @description Stores user-specific settings. Only the owner can read or write their own profile.
-     * @path /users/{userId}
-     * @allow (create) A new user (auth.uid: 'user123') creates their profile at `/users/user123`.
-     * @deny (get) A user (auth.uid: 'user123') tries to read a profile at `/users/user456`.
-     * @deny (list) Any user attempts to list all documents in the `/users` collection.
-     * @principle Enforces strict user ownership and prevents user enumeration.
-     */
     match /users/{userId} {
-      allow get: if isOwner(userId);
-      allow list: if false; // Prevent user enumeration
-      allow create: if canCreateUserProfile(userId);
-      allow update: if canUpdateUserProfile(userId);
-      allow delete: if isExistingOwner(userId);
+      allow read, create, update, delete: if isOwner(userId);
+      allow list: if false;
 
-      /**
-       * @description A user's private list of favorite hymns.
-       * @path /users/{userId}/favoriteHymns/{favoriteHymnId}
-       * @allow (list) A user (auth.uid: 'user123') lists all their favorites at `/users/user123/favoriteHymns`.
-       * @deny (create) A user (auth.uid: 'user456') tries to add a favorite to another user's list at `/users/user123/favoriteHymns`.
-       * @principle Restricts access to a user's own private subcollection data tree.
-       */
       match /favoriteHymns/{favoriteHymnId} {
-        allow get: if isOwner(userId);
-        allow list: if isOwner(userId);
-        allow create: if canCreateFavoriteHymn(userId);
-        allow update: if canUpdateFavoriteHymn(userId);
-        allow delete: if isExistingOwner(userId);
+        allow read, write: if isOwner(userId);
       }
     }
   }

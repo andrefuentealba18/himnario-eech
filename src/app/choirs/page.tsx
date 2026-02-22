@@ -15,9 +15,10 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from '@/components/ui/badge';
+import type { Choir } from '@/lib/choirs';
 
 export default function ChoirsIndexPage() {
-  const { choirs, addChoirs, isLoaded } = useChoirs();
+  const { choirs, addChoir, addChoirs, isLoaded } = useChoirs();
   const [isSingleChoirDialogOpen, setSingleChoirDialogOpen] = useState(false);
   const [isMultiChoirDialogOpen, setMultiChoirDialogOpen] = useState(false);
 
@@ -52,7 +53,7 @@ export default function ChoirsIndexPage() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setSingleChoirDialogOpen(true); }}>
-                        Sugerir un coro
+                        Agregar un coro
                       </DropdownMenuItem>
                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setMultiChoirDialogOpen(true); }}>
                         Agregar varios coros
@@ -75,6 +76,7 @@ export default function ChoirsIndexPage() {
       <AddSingleChoirDialog
         open={isSingleChoirDialogOpen}
         onOpenChange={setSingleChoirDialogOpen}
+        onChoirAdded={addChoir}
       />
       <AddChoirsDialog
         open={isMultiChoirDialogOpen}

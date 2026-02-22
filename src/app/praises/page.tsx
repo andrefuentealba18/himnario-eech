@@ -17,7 +17,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 
 export default function PraisesIndexPage() {
-  const { praises, addPraises, isLoaded } = usePraises();
+  const { praises, addPraises, isLoaded, addPraise } = usePraises();
   const [isSinglePraiseDialogOpen, setSinglePraiseDialogOpen] = useState(false);
   const [isMultiPraiseDialogOpen, setMultiPraiseDialogOpen] = useState(false);
 
@@ -52,7 +52,7 @@ export default function PraisesIndexPage() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setSinglePraiseDialogOpen(true); }}>
-                        Sugerir una alabanza
+                        Agregar una alabanza
                       </DropdownMenuItem>
                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setMultiPraiseDialogOpen(true); }}>
                         Agregar varias alabanzas
@@ -74,6 +74,7 @@ export default function PraisesIndexPage() {
       <AddSinglePraiseDialog
         open={isSinglePraiseDialogOpen}
         onOpenChange={setSinglePraiseDialogOpen}
+        onPraiseAdded={addPraise}
       />
       <AddPraisesDialog
         open={isMultiPraiseDialogOpen}

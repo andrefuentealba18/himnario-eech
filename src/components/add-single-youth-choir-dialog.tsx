@@ -5,8 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { musicalKeys } from '@/lib/musical-keys';
-import { useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import type { YouthChoir } from '@/lib/youth-choirs';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -36,28 +35,26 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const youthChoirRequestSchema = z.object({
-  submitterName: z.string().min(1, 'Tu nombre es requerido.'),
+const youthChoirSchema = z.object({
   title: z.string().min(1, 'El título es requerido.'),
   tone: z.string().optional(),
   lyrics: z.string().min(1, 'La letra es requerida.'),
 });
 
-type FormData = z.infer<typeof youthChoirRequestSchema>;
+type FormData = z.infer<typeof youthChoirSchema>;
 
 interface AddSingleYouthChoirDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onYouthChoirAdded: (choir: Omit<YouthChoir, 'id'>) => Promise<{ success: boolean; youthChoir?: YouthChoir }>;
 }
 
-export function AddSingleYouthChoirDialog({ open, onOpenChange }: AddSingleYouthChoirDialogProps) {
-  const firestore = useFirestore();
+export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdded }: AddSingleYouthChoirDialogProps) {
   const { toast } = useToast();
 
   const form = useForm<FormData>({
-    resolver: zodResolver(youthChoirRequestSchema),
+    resolver: zodResolver(youthChoirSchema),
     defaultValues: {
-      submitterName: '',
       title: '',
       tone: '',
       lyrics: '',
@@ -71,36 +68,20 @@ export function AddSingleYouthChoirDialog({ open, onOpenChange }: AddSingleYouth
   }, [open, form]);
 
   async function onSubmit(values: FormData) {
-    if (!firestore) {
-      toast({
-        variant: "destructive",
-        title: 'Error de Conexión',
-        description: 'No se pudo enviar la sugerencia. Por favor, intenta de nuevo.',
-      });
-      return;
-    }
-    
-    try {
-      const requestsCollection = collection(firestore, 'songRequests');
-      await addDoc(requestsCollection, {
-        ...values,
-        category: 'youth-choir',
-        status: 'pending',
-        createdAt: serverTimestamp(),
-      });
+    const result = await onYouthChoirAdded(values);
 
+    if (result.success) {
       toast({
-        title: 'Sugerencia Enviada',
-        description: 'Gracias por tu contribución. La alabanza será revisada por un administrador antes de ser agregada.',
+        title: 'Alabanza Agregada',
+        description: `La alabanza "${values.title}" ha sido guardada.`,
       });
       onOpenChange(false);
-    } catch (error) {
-       toast({
+    } else {
+      toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'No se pudo enviar tu sugerencia.',
+        description: 'Ya existe una alabanza con ese título.',
       });
-      console.error("Error submitting song request: ", error);
     }
   }
 
@@ -108,9 +89,9 @@ export function AddSingleYouthChoirDialog({ open, onOpenChange }: AddSingleYouth
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Sugerir Nueva Alabanza (Coro Juventud)</DialogTitle>
+          <DialogTitle>Agregar Nueva Alabanza (Coro Juventud)</DialogTitle>
           <DialogDescription>
-            Completa los detalles para sugerir una nueva alabanza. Un administrador la revisará.
+            Completa los detalles para agregar una nueva alabanza.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -163,21 +144,8 @@ export function AddSingleYouthChoirDialog({ open, onOpenChange }: AddSingleYouth
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="submitterName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tu Nombre</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nombre de quien sugiere" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <DialogFooter>
-              <Button type="submit">Enviar Sugerencia</Button>
+              <Button type="submit">Guardar Alabanza</Button>
             </DialogFooter>
           </form>
         </Form>

@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Music, Book, Users, Mic, Church, ListMusic } from 'lucide-react';
-import { AddSongDialog } from '@/components/add-song-dialog';
 import { SettingsDialog } from '@/components/settings-dialog';
 
 export default function HomePage() {
@@ -15,7 +14,7 @@ export default function HomePage() {
 
       <div className="relative z-10">
         <header className="absolute top-0 left-0 w-full p-4 flex justify-end opacity-0 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
-            <AddSongDialog />
+            
         </header>
         
         <main className="container mx-auto flex flex-col items-center justify-center min-h-screen p-4">

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect } from 'react';
@@ -6,8 +5,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { musicalKeys } from '@/lib/musical-keys';
-import { useFirestore } from '@/firebase';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import type { Praise } from '@/lib/praises';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -37,28 +35,26 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const praiseRequestSchema = z.object({
-  submitterName: z.string().min(1, 'Tu nombre es requerido.'),
+const praiseSchema = z.object({
   title: z.string().min(1, 'El título es requerido.'),
   tone: z.string().optional(),
   lyrics: z.string().min(1, 'La letra es requerida.'),
 });
 
-type FormData = z.infer<typeof praiseRequestSchema>;
+type FormData = z.infer<typeof praiseSchema>;
 
 interface AddSinglePraiseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  onPraiseAdded: (praise: Omit<Praise, 'id'>) => Promise<{ success: boolean; praise?: Praise }>;
 }
 
-export function AddSinglePraiseDialog({ open, onOpenChange }: AddSinglePraiseDialogProps) {
-  const firestore = useFirestore();
+export function AddSinglePraiseDialog({ open, onOpenChange, onPraiseAdded }: AddSinglePraiseDialogProps) {
   const { toast } = useToast();
 
   const form = useForm<FormData>({
-    resolver: zodResolver(praiseRequestSchema),
+    resolver: zodResolver(praiseSchema),
     defaultValues: {
-      submitterName: '',
       title: '',
       tone: '',
       lyrics: '',
@@ -72,36 +68,19 @@ export function AddSinglePraiseDialog({ open, onOpenChange }: AddSinglePraiseDia
   }, [open, form]);
 
   async function onSubmit(values: FormData) {
-     if (!firestore) {
-      toast({
-        variant: "destructive",
-        title: 'Error de Conexión',
-        description: 'No se pudo enviar la sugerencia. Por favor, intenta de nuevo.',
-      });
-      return;
-    }
-    
-    try {
-      const requestsCollection = collection(firestore, 'songRequests');
-      await addDoc(requestsCollection, {
-        ...values,
-        category: 'praise',
-        status: 'pending',
-        createdAt: serverTimestamp(),
-      });
-
-      toast({
-        title: 'Sugerencia Enviada',
-        description: 'Gracias por tu contribución. La alabanza será revisada por un administrador antes de ser agregada.',
-      });
-      onOpenChange(false);
-    } catch (error) {
-       toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'No se pudo enviar tu sugerencia.',
-      });
-      console.error("Error submitting song request: ", error);
+    const result = await onPraiseAdded(values);
+    if(result.success){
+        toast({
+            title: 'Alabanza Agregada',
+            description: `La alabanza "${values.title}" ha sido guardada.`,
+        });
+        onOpenChange(false);
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Error',
+            description: 'Ya existe una alabanza con ese título.',
+        });
     }
   }
 
@@ -109,9 +88,9 @@ export function AddSinglePraiseDialog({ open, onOpenChange }: AddSinglePraiseDia
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Sugerir Nueva Alabanza</DialogTitle>
+          <DialogTitle>Agregar Nueva Alabanza</DialogTitle>
           <DialogDescription>
-            Completa los detalles para sugerir una nueva alabanza. Un administrador la revisará.
+            Completa los detalles para agregar una nueva alabanza.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -164,21 +143,8 @@ export function AddSinglePraiseDialog({ open, onOpenChange }: AddSinglePraiseDia
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="submitterName"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Tu Nombre</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Nombre de quien sugiere" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
             <DialogFooter>
-              <Button type="submit">Enviar Sugerencia</Button>
+              <Button type="submit">Guardar Alabanza</Button>
             </DialogFooter>
           </form>
         </Form>
