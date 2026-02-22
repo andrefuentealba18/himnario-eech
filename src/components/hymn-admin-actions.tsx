@@ -69,8 +69,8 @@ export function HymnAdminActions({ hymn, onDelete, onUpdate }: HymnAdminActionsP
         title: 'Contraseña Incorrecta',
         description: 'Por favor, inténtalo de nuevo.',
       });
-      form.setValue('password', '');
     }
+    form.reset();
   }
 
   const handleOpenChange = (open: boolean) => {

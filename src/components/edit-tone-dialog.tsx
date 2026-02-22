@@ -98,8 +98,8 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
         title: 'Contraseña Incorrecta',
         description: 'Por favor, inténtalo de nuevo.',
       });
-      passwordForm.reset();
     }
+    passwordForm.reset();
   }
 
   const handleOpenChange = (open: boolean) => {

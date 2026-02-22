@@ -69,8 +69,8 @@ export function ChoirAdminActions({ choir, onDelete, onUpdate }: ChoirAdminActio
         title: 'Contraseña Incorrecta',
         description: 'Por favor, inténtalo de nuevo.',
       });
-      form.setValue('password', '');
     }
+    form.reset();
   }
 
   const handleOpenChange = (open: boolean) => {

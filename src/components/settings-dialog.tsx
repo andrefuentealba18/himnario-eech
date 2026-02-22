@@ -50,7 +50,6 @@ export function SettingsDialog() {
         description: 'Redirigiendo a la página de administración...',
       });
       setOpen(false);
-      form.reset();
       router.push('/admin');
     } else {
       toast({
@@ -58,8 +57,8 @@ export function SettingsDialog() {
         title: 'Contraseña Incorrecta',
         description: 'Por favor, inténtalo de nuevo.',
       });
-      form.setValue('password', '');
     }
+    form.reset();
   }
 
   return (
