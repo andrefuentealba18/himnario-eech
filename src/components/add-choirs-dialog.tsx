@@ -25,7 +25,8 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
     const lines = text.split('\n');
     let currentSong: Partial<Choir> & { lyricsLines: string[] } | null = null;
     
-    const ignorePattern = /^ejercito evangelico de chile las torres\s*\d*$/i;
+    const ignorePattern = /^ejerci(t|ot)o evangelico de chile( templo)? las torres\s*\d*$/i;
+    let justIgnoredHeader = false;
 
     const saveCurrentSong = () => {
         if (currentSong) {
@@ -40,7 +41,14 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
     for (const line of lines) {
         const trimmedLine = line.trim();
 
+        if (justIgnoredHeader && /^\d+$/.test(trimmedLine)) {
+            justIgnoredHeader = false;
+            continue;
+        }
+        justIgnoredHeader = false;
+
         if (ignorePattern.test(trimmedLine)) {
+            justIgnoredHeader = true;
             continue;
         }
 
