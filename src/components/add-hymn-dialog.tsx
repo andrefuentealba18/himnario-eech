@@ -125,7 +125,7 @@ function parseHymns(text: string): Omit<Hymn, 'id'>[] {
 interface AddHymnDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onHymnsAdded: (hymns: Omit<Hymn, 'id'>[]) => Promise<{ addedCount: number, updatedCount: number }>;
+  onHymnsAdded: (hymns: Omit<Hymn, 'id'>[]) => void;
 }
 
 export function AddHymnDialog({ open, onOpenChange, onHymnsAdded }: AddHymnDialogProps) {
@@ -138,7 +138,7 @@ export function AddHymnDialog({ open, onOpenChange, onHymnsAdded }: AddHymnDialo
     }
   }, [open]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (text.trim() === '') {
         toast({
@@ -152,11 +152,7 @@ export function AddHymnDialog({ open, onOpenChange, onHymnsAdded }: AddHymnDialo
     const parsedHymns = parseHymns(text);
     
     if (parsedHymns.length > 0) {
-        const { addedCount, updatedCount } = await onHymnsAdded(parsedHymns);
-        toast({
-          title: 'Himnos Procesados',
-          description: `Se agregaron ${addedCount} himnos nuevos y se actualizaron ${updatedCount} existentes.`,
-        });
+        onHymnsAdded(parsedHymns);
     } else {
         toast({
             variant: "destructive",

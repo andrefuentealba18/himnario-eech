@@ -29,7 +29,7 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
     let justIgnoredHeader = false;
 
     const saveCurrentSong = () => {
-        if (currentSong) {
+        if (currentSong && currentSong.title && currentSong.lyricsLines.length > 0) {
             currentSong.lyrics = currentSong.lyricsLines.join('\n').trim();
             if (currentSong.title && currentSong.lyrics) {
                 const { lyricsLines, ...songData } = currentSong;
@@ -55,9 +55,7 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
         const isAllUpper = trimmedLine.length > 0 && trimmedLine === trimmedLine.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(trimmedLine);
         
         if (isAllUpper) {
-            // This is a potential title or metadata.
             let isMetadataLine = false;
-            // Check if it's a metadata line (only if it's right after a title)
             if (currentSong && currentSong.lyricsLines.length === 0) {
                 const metadataLine = trimmedLine.toUpperCase();
                 let metadataFound = false;
@@ -82,21 +80,18 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
             }
 
             if (isMetadataLine) {
-                // This was processed as metadata, so skip to next line
                 continue;
             } else {
-                // This is a new title
                 saveCurrentSong();
                 currentSong = { title: trimmedLine, lyricsLines: [] };
             }
         } else {
-            // This is a lyric line, an ignored uppercase line, or an empty line.
             if (currentSong) {
-                currentLyrics.push(line);
+                currentSong.lyricsLines.push(line);
             }
         }
     }
-    saveCurrentSong(); // Save the last song
+    saveCurrentSong();
     return songs;
 }
 
@@ -104,7 +99,7 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
 interface AddChoirsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onChoirsAdded: (choirs: Omit<Choir, 'id'>[]) => Promise<{ addedCount: number, duplicates: number }>;
+  onChoirsAdded: (choirs: Omit<Choir, 'id'>[]) => void;
 }
 
 export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirsDialogProps) {
@@ -117,7 +112,7 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
     }
   }, [open]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (text.trim() === '') {
         toast({
@@ -131,11 +126,7 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
     const parsed = parseSongs(text);
     
     if (parsed.length > 0) {
-        const { addedCount, duplicates } = await onChoirsAdded(parsed);
-        toast({
-          title: 'Coros enviados a revisión',
-          description: `Se enviaron ${addedCount} coros nuevos. Se ignoraron ${duplicates} duplicados.`,
-        });
+        onChoirsAdded(parsed);
     } else {
         toast({
             variant: "destructive",

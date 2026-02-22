@@ -75,7 +75,7 @@ function parseSongs(text: string): Omit<YouthChoir, 'id'>[] {
 interface AddYouthChoirsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onYouthChoirsAdded: (youthChoirs: Omit<YouthChoir, 'id'>[]) => Promise<{ addedCount: number, duplicates: number }>;
+  onYouthChoirsAdded: (youthChoirs: Omit<YouthChoir, 'id'>[]) => void;
 }
 
 export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded }: AddYouthChoirsDialogProps) {
@@ -88,16 +88,12 @@ export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded }:
     }
   }, [open]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const parsed = parseSongs(text);
     
     if (parsed.length > 0) {
-        const { addedCount, duplicates } = await onYouthChoirsAdded(parsed);
-        toast({
-          title: 'Alabanzas Enviadas a Revisión',
-          description: `Se enviaron ${addedCount} alabanzas nuevas. Se ignoraron ${duplicates} duplicados.`,
-        });
+        onYouthChoirsAdded(parsed);
     } else {
         toast({
             variant: "destructive",

@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { useChoirs } from '@/context/choirs-context';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
 import { ChoirAdminActions } from './choir-admin-actions';
 import { useCallback, useEffect } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
@@ -64,7 +63,6 @@ function ChoirDetailSkeleton() {
 export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { toast } = useToast();
   const { getChoirById, deleteChoir, updateChoir, isLoaded: isChoirsLoaded } = useChoirs();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
 
@@ -73,46 +71,21 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
 
   const choir = getChoirById(choirId);
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = useCallback(() => {
     if (!choir) return;
-    try {
-        await deleteChoir(choir.id);
-        toast({ title: "Coro Eliminado", description: `"${choir.title}" se ha eliminado.` });
-        router.push('/choirs');
-    } catch(error) {
-        toast({
-            variant: 'destructive',
-            title: 'Error al eliminar',
-            description: 'No se pudo eliminar el coro. Es posible que no tengas permisos.',
-        });
-    }
-  }, [deleteChoir, choir, router, toast]);
+    deleteChoir(choir.id);
+    router.push('/choirs');
+  }, [deleteChoir, choir, router]);
 
-  const handleUpdate = useCallback(async (updatedData: Omit<Choir, 'id'>): Promise<{ success: boolean, newId?: string }> => {
-    if (!choir) return { success: false };
-    const result = await updateChoir(choir.id, updatedData);
-    if (result.success) {
-      toast({ title: "Coro Actualizado" });
-       if (result.newId && result.newId !== choir.id) {
-          router.replace(`/choirs/${result.newId}`);
-       }
-    } else {
-        const description = result.error === 'duplicate'
-        ? 'Ya existe un coro con ese título.'
-        : 'No se pudo guardar el cambio. Es posible que no tengas permisos.';
-      toast({
-        variant: 'destructive',
-        title: 'Error al actualizar',
-        description: description,
-      });
-    }
-    return { success: result.success, newId: result.newId };
-  }, [choir, updateChoir, toast, router]);
+  const handleUpdate = useCallback((updatedData: Omit<Choir, 'id'>) => {
+    if (!choir) return;
+    updateChoir(choir.id, updatedData);
+  }, [choir, updateChoir]);
 
-  const handleToneUpdate = useCallback(async (newTone: string) => {
-    if (!choir) return { success: false };
+  const handleToneUpdate = useCallback((newTone: string) => {
+    if (!choir) return;
     const { id, ...restOfChoir } = choir;
-    return handleUpdate({ ...restOfChoir, tone: newTone });
+    handleUpdate({ ...restOfChoir, tone: newTone });
   }, [choir, handleUpdate]);
 
   useEffect(() => {

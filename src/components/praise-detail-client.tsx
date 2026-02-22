@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { usePraises } from '@/context/praises-context';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
 import { PraiseAdminActions } from './praise-admin-actions';
 import { useCallback, useEffect } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
@@ -62,7 +61,6 @@ function PraiseDetailSkeleton() {
 export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { toast } = useToast();
   const { getPraiseById, deletePraise, updatePraise, isLoaded: isPraisesLoaded } = usePraises();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
 
@@ -71,46 +69,21 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
 
   const praise = getPraiseById(praiseId);
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = useCallback(() => {
     if (!praise) return;
-    try {
-        await deletePraise(praise.id);
-        toast({ title: "Alabanza Eliminada", description: `"${praise.title}" se ha eliminado.` });
-        router.push('/praises');
-    } catch(error) {
-        toast({
-            variant: 'destructive',
-            title: 'Error al eliminar',
-            description: 'No se pudo eliminar la alabanza. Es posible que no tengas permisos.',
-        });
-    }
-  }, [deletePraise, praise, router, toast]);
+    deletePraise(praise.id);
+    router.push('/praises');
+  }, [deletePraise, praise, router]);
 
-  const handleUpdate = useCallback(async (updatedData: Omit<Praise, 'id'>): Promise<{ success: boolean, newId?: string, error?: string }> => {
-    if (!praise) return { success: false, error: 'no-praise' };
-    const result = await updatePraise(praise.id, updatedData);
-    if (result.success) {
-      toast({ title: "Alabanza Actualizada" });
-       if (result.newId && result.newId !== praise.id) {
-          router.replace(`/praises/${result.newId}`);
-       }
-    } else {
-        const description = result.error === 'duplicate'
-        ? 'Ya existe una alabanza con ese título.'
-        : 'No se pudo guardar el cambio. Es posible que no tengas permisos.';
-      toast({
-        variant: 'destructive',
-        title: 'Error al actualizar',
-        description: description,
-      });
-    }
-    return { success: result.success, newId: result.newId };
-  }, [praise, updatePraise, toast, router]);
+  const handleUpdate = useCallback((updatedData: Omit<Praise, 'id'>) => {
+    if (!praise) return;
+    updatePraise(praise.id, updatedData);
+  }, [praise, updatePraise]);
 
-  const handleToneUpdate = useCallback(async (newTone: string) => {
-    if (!praise) return { success: false };
+  const handleToneUpdate = useCallback((newTone: string) => {
+    if (!praise) return;
     const { id, ...restOfPraise } = praise;
-    return handleUpdate({ ...restOfPraise, tone: newTone });
+    handleUpdate({ ...restOfPraise, tone: newTone });
   }, [praise, handleUpdate]);
   
   useEffect(() => {

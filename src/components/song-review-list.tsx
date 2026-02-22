@@ -29,7 +29,6 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
 import { Check, Edit, Trash2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import { EditPraiseDialog } from './edit-praise-dialog';
 import { EditChoirDialog } from './edit-choir-dialog';
 import { EditYouthChoirDialog } from './edit-youth-choir-dialog';
@@ -46,7 +45,6 @@ export function SongReviewList() {
   const { pendingPraises, approvePraise, deletePraise, updatePraise, isLoaded: praisesLoaded } = usePraises();
   const { pendingChoirs, approveChoir, deleteChoir, updateChoir, isLoaded: choirsLoaded } = useChoirs();
   const { pendingYouthChoirs, approveYouthChoir, deleteYouthChoir, updateYouthChoir, isLoaded: youthChoirsLoaded } = useYouthChoirs();
-  const { toast } = useToast();
 
   const isLoaded = praisesLoaded && choirsLoaded && youthChoirsLoaded;
 
@@ -59,26 +57,16 @@ export function SongReviewList() {
     ].sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
   }, [pendingPraises, pendingChoirs, pendingYouthChoirs, isLoaded]);
 
-  const handleApprove = async (song: PendingSong) => {
-    try {
-      if (song.category === 'praise') await approvePraise(song.id);
-      else if (song.category === 'choir') await approveChoir(song.id);
-      else await approveYouthChoir(song.id);
-      toast({ title: 'Canción Aprobada', description: `"${song.title}" ahora es visible para todos.` });
-    } catch (error) {
-      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo aprobar la canción.' });
-    }
+  const handleApprove = (song: PendingSong) => {
+    if (song.category === 'praise') approvePraise(song.id);
+    else if (song.category === 'choir') approveChoir(song.id);
+    else approveYouthChoir(song.id);
   };
 
-  const handleDelete = async (song: PendingSong) => {
-    try {
-      if (song.category === 'praise') await deletePraise(song.id);
-      else if (song.category === 'choir') await deleteChoir(song.id);
-      else await deleteYouthChoir(song.id);
-      toast({ title: 'Canción Rechazada', description: `"${song.title}" ha sido eliminada.` });
-    } catch (error) {
-      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo eliminar la canción.' });
-    }
+  const handleDelete = (song: PendingSong) => {
+    if (song.category === 'praise') deletePraise(song.id);
+    else if (song.category === 'choir') deleteChoir(song.id);
+    else deleteYouthChoir(song.id);
   };
 
   const handleUpdate = (song: PendingSong) => {

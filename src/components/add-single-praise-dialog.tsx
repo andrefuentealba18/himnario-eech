@@ -26,7 +26,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
 import {
   Select,
   SelectContent,
@@ -46,12 +45,10 @@ type FormData = z.infer<typeof praiseSchema>;
 interface AddSinglePraiseDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onPraiseAdded: (praise: Omit<Praise, 'id'>) => Promise<{ success: boolean; praise?: Praise }>;
+  onPraiseAdded: (praise: Omit<Praise, 'id'>) => void;
 }
 
 export function AddSinglePraiseDialog({ open, onOpenChange, onPraiseAdded }: AddSinglePraiseDialogProps) {
-  const { toast } = useToast();
-
   const form = useForm<FormData>({
     resolver: zodResolver(praiseSchema),
     defaultValues: {
@@ -67,21 +64,9 @@ export function AddSinglePraiseDialog({ open, onOpenChange, onPraiseAdded }: Add
     }
   }, [open, form]);
 
-  async function onSubmit(values: FormData) {
-    const result = await onPraiseAdded(values);
-    if(result.success){
-        toast({
-            title: 'Alabanza Enviada a Revisión',
-            description: `La alabanza "${values.title}" ha sido enviada.`,
-        });
-        onOpenChange(false);
-    } else {
-        toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Ya existe una alabanza con ese título.',
-        });
-    }
+  function onSubmit(values: FormData) {
+    onPraiseAdded(values);
+    onOpenChange(false);
   }
 
   return (

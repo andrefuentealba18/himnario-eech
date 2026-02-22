@@ -4,6 +4,8 @@ import { createContext, useContext, useCallback, ReactNode, useMemo } from 'reac
 import type { Choir } from '@/lib/choirs';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 const slugify = (text: string): string =>
   text.toString().toLowerCase()
@@ -27,13 +29,13 @@ const removeUndefined = (obj: Record<string, any>): Record<string, any> => {
 interface ChoirsContextType {
   choirs: Choir[];
   pendingChoirs: Choir[];
-  addChoir: (newChoirData: Omit<Choir, 'id'>) => Promise<{ success: boolean; choir?: Choir }>;
-  addChoirs: (newChoirsData: Omit<Choir, 'id'>[]) => Promise<{ addedCount: number, duplicates: number }>;
-  deleteChoir: (choirId: string) => Promise<void>;
-  updateChoir: (choirId: string, newChoirData: Omit<Choir, 'id'>) => Promise<{ success: boolean, newId?: string, error?: string }>;
-  approveChoir: (choirId: string) => Promise<void>;
+  addChoir: (newChoirData: Omit<Choir, 'id'>) => void;
+  addChoirs: (newChoirsData: Omit<Choir, 'id'>[]) => void;
+  deleteChoir: (choirId: string) => void;
+  updateChoir: (choirId: string, newChoirData: Omit<Choir, 'id'>) => void;
+  approveChoir: (choirId: string) => void;
   getChoirById: (id: string) => Choir | undefined;
-  restoreChoirs: (choirsToRestore: Omit<Choir, 'id'>[]) => Promise<void>;
+  restoreChoirs: (choirsToRestore: Omit<Choir, 'id'>[]) => void;
   isLoaded: boolean;
 }
 
@@ -41,7 +43,9 @@ const ChoirsContext = createContext<ChoirsContextType | undefined>(undefined);
 
 export function ChoirsProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
-  
+  const { toast } = useToast();
+  const router = useRouter();
+
   const choirsCollectionRef = useMemoFirebase(() => 
     firestore ? collection(firestore, 'choirs') : null
   , [firestore]);
@@ -58,13 +62,13 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     return rawChoirs ? [...rawChoirs].filter(c => c.status === 'pending').sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)) : [];
   }, [rawChoirs]);
   
-  const addChoir = useCallback(async (newChoirData: Omit<Choir, 'id'>): Promise<{ success: boolean; choir?: Choir }> => {
-    if (!firestore) return { success: false };
+  const addChoir = useCallback((newChoirData: Omit<Choir, 'id'>) => {
+    if (!firestore) return;
     const id = slugify(newChoirData.title);
     
-    const allChoirs = rawChoirs || [];
-    if (allChoirs.some(p => p.id === id)) {
-      return { success: false };
+    if ((rawChoirs || []).some(p => p.id === id)) {
+      toast({ variant: 'destructive', title: 'Error', description: 'Ya existe un coro con ese título.' });
+      return;
     }
 
     const docRef = doc(firestore, 'choirs', id);
@@ -73,19 +77,31 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
         status: 'pending' as const,
         createdAt: serverTimestamp() 
     };
-    await setDoc(docRef, removeUndefined(dataToSave));
-    return { success: true, choir: { ...newChoirData, id } };
-  }, [firestore, rawChoirs]);
+    
+    setDoc(docRef, removeUndefined(dataToSave))
+      .then(() => {
+        toast({ title: 'Coro Enviado a Revisión', description: `El coro "${newChoirData.title}" ha sido enviado.` });
+      })
+      .catch((error) => {
+        console.error("Error adding choir:", error);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'create',
+          requestResourceData: dataToSave
+        }));
+        toast({ variant: 'destructive', title: 'Error al Enviar', description: 'No se pudo enviar el coro.' });
+      });
 
-  const addChoirs = useCallback(async (newChoirsData: Omit<Choir, 'id'>[]): Promise<{ addedCount: number, duplicates: number }> => {
-    if (!firestore) return { addedCount: 0, duplicates: 0 };
+  }, [firestore, rawChoirs, toast]);
+
+  const addChoirs = useCallback((newChoirsData: Omit<Choir, 'id'>[]) => {
+    if (!firestore) return;
     
     const batch = writeBatch(firestore);
     let addedCount = 0;
     let duplicates = 0;
     
-    const allChoirs = rawChoirs || [];
-    const existingTitles = new Set(allChoirs.map(p => p.id));
+    const existingTitles = new Set((rawChoirs || []).map(p => p.id));
 
     for (const choirData of newChoirsData) {
       const id = slugify(choirData.title);
@@ -105,73 +121,99 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     }
     
     if (addedCount > 0) {
-      await batch.commit();
+      batch.commit()
+        .then(() => {
+          toast({ title: 'Coros enviados a revisión', description: `Se enviaron ${addedCount} coros nuevos. Se ignoraron ${duplicates} duplicados.` });
+        })
+        .catch((error) => {
+          console.error("Error adding choirs in batch:", error);
+          toast({ variant: 'destructive', title: 'Error al Enviar', description: 'No se pudieron enviar los coros.' });
+        });
+    } else {
+      toast({ title: 'No se agregaron coros', description: `Se encontraron ${duplicates} duplicados.` });
     }
+  }, [firestore, rawChoirs, toast]);
 
-    return { addedCount, duplicates };
-  }, [firestore, rawChoirs]);
-
-  const approveChoir = useCallback(async (choirId: string) => {
+  const approveChoir = useCallback((choirId: string) => {
     if (!firestore) return;
     const docRef = doc(firestore, 'choirs', choirId);
-    await updateDoc(docRef, { status: 'approved' });
-  }, [firestore]);
+    updateDoc(docRef, { status: 'approved' })
+      .then(() => {
+        toast({ title: 'Coro Aprobado', description: `El coro ahora es visible para todos.` });
+      })
+      .catch((error) => {
+        console.error("Error approving choir:", error);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'update' }));
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo aprobar el coro.' });
+      });
+  }, [firestore, toast]);
 
-  const deleteChoir = useCallback(async (choirId: string) => {
+  const deleteChoir = useCallback((choirId: string) => {
     if (!firestore) return;
     const docRef = doc(firestore, 'choirs', choirId);
-    await deleteDoc(docRef);
-  }, [firestore]);
+    deleteDoc(docRef)
+      .then(() => {
+        toast({ title: 'Coro Eliminado', description: 'El coro se ha eliminado de la lista.' });
+      })
+      .catch((error) => {
+        console.error("Error deleting choir:", error);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));
+        toast({ variant: 'destructive', title: 'Error al eliminar', description: 'No se pudo eliminar el coro.' });
+      });
+  }, [firestore, toast]);
   
-  const updateChoir = useCallback(async (choirId: string, newChoirData: Omit<Choir, 'id'>): Promise<{ success: boolean, newId?: string, error?: string }> => {
-    if (!firestore) return { success: false, error: 'firestore_not_ready' };
+  const updateChoir = useCallback((choirId: string, newChoirData: Omit<Choir, 'id'>) => {
+    if (!firestore) return;
     const newId = slugify(newChoirData.title);
     
-    const allChoirs = rawChoirs || [];
-    if (newId !== choirId && allChoirs.some(p => p.id === newId)) {
-        return { success: false, error: 'duplicate' };
+    if (newId !== choirId && (rawChoirs || []).some(p => p.id === newId)) {
+      toast({ variant: 'destructive', title: 'Error al actualizar', description: 'Ya existe un coro con ese título.' });
+      return;
     }
 
     const oldDocRef = doc(firestore, 'choirs', choirId);
     const dataToSave = removeUndefined(newChoirData);
-    
-    try {
+
+    const handleSuccess = () => {
+      toast({ title: "Coro Actualizado", description: `El coro "${newChoirData.title}" se ha guardado correctamente.` });
       if (newId !== choirId) {
-          const newDocRef = doc(firestore, 'choirs', newId);
-          const batch = writeBatch(firestore);
-          batch.delete(oldDocRef);
-          batch.set(newDocRef, dataToSave);
-          await batch.commit();
-      } else {
-          await setDoc(oldDocRef, dataToSave, { merge: true });
+        router.replace(`/choirs/${newId}`);
       }
-      return { success: true, newId: newId };
-    } catch(error) {
-        console.error("Error updating choir:", error);
-        errorEmitter.emit('permission-error', new FirestorePermissionError({
-            path: oldDocRef.path,
-            operation: 'update',
-            requestResourceData: dataToSave
-        }));
-        return { success: false, error: 'permission_denied' };
+    };
+    const handleError = (error: any) => {
+      console.error("Error updating choir:", error);
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: oldDocRef.path,
+        operation: 'update',
+        requestResourceData: dataToSave
+      }));
+      toast({ variant: 'destructive', title: 'Error al actualizar', description: 'No se pudo guardar el cambio.' });
+    };
+
+    if (newId !== choirId) {
+        const newDocRef = doc(firestore, 'choirs', newId);
+        const batch = writeBatch(firestore);
+        batch.delete(oldDocRef);
+        batch.set(newDocRef, dataToSave);
+        batch.commit().then(handleSuccess).catch(handleError);
+    } else {
+        setDoc(oldDocRef, dataToSave, { merge: true }).then(handleSuccess).catch(handleError);
     }
-  }, [firestore, rawChoirs]);
+  }, [firestore, rawChoirs, toast, router]);
 
   const getChoirById = useCallback((id: string): Choir | undefined => {
     return (rawChoirs || []).find(p => p.id === id);
   }, [rawChoirs]);
 
-  const restoreChoirs = useCallback(async (choirsToRestore: Omit<Choir, 'id'>[]) => {
+  const restoreChoirs = useCallback((choirsToRestore: Omit<Choir, 'id'>[]) => {
     if (!firestore) return;
     const batch = writeBatch(firestore);
   
-    // Delete all existing documents
     (rawChoirs || []).forEach(choir => {
       const docRef = doc(firestore, 'choirs', choir.id);
       batch.delete(docRef);
     });
     
-    // Add new documents from backup
     choirsToRestore.forEach(choirData => {
       const id = slugify(choirData.title);
       const docRef = doc(firestore, 'choirs', id);
@@ -179,7 +221,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
       batch.set(docRef, removeUndefined(dataWithStatus));
     });
   
-    await batch.commit();
+    batch.commit().catch(error => console.error("Error restoring choirs:", error));
   }, [firestore, rawChoirs]);
 
   const value = { choirs, pendingChoirs, addChoir, addChoirs, approveChoir, deleteChoir, updateChoir, getChoirById, restoreChoirs, isLoaded };

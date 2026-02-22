@@ -46,7 +46,7 @@ type FormData = z.infer<typeof youthChoirSchema>;
 interface EditYouthChoirDialogProps {
   children: React.ReactNode;
   youthChoir: YouthChoir;
-  onYouthChoirUpdated: (updatedData: Omit<YouthChoir, 'id'>) => Promise<{ success: boolean }>;
+  onYouthChoirUpdated: (updatedData: Omit<YouthChoir, 'id'>) => void;
   onSaveComplete?: () => void;
 }
 
@@ -73,16 +73,10 @@ export function EditYouthChoirDialog({ children, youthChoir, onYouthChoirUpdated
   }, [youthChoir, form, open]);
 
 
-  async function onSubmit(values: FormData) {
-    try {
-      const result = await onYouthChoirUpdated(values);
-      if (result.success) {
-        setOpen(false);
-        onSaveComplete?.();
-      }
-    } catch (error) {
-      console.error('Failed to update youth choir', error);
-    }
+  function onSubmit(values: FormData) {
+    onYouthChoirUpdated(values);
+    setOpen(false);
+    onSaveComplete?.();
   }
 
   return (

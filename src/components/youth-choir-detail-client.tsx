@@ -6,7 +6,6 @@ import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useToast } from '@/hooks/use-toast';
 import { YouthChoirAdminActions } from './youth-choir-admin-actions';
 import { useCallback, useEffect } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
@@ -60,7 +59,6 @@ function YouthChoirDetailSkeleton() {
 export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { toast } = useToast();
   const { getYouthChoirById, deleteYouthChoir, updateYouthChoir, isLoaded: isYouthChoirsLoaded } = useYouthChoirs();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
   
@@ -69,46 +67,21 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
 
   const youthChoir = getYouthChoirById(youthChoirId);
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = useCallback(() => {
     if (!youthChoir) return;
-    try {
-        await deleteYouthChoir(youthChoir.id);
-        toast({ title: "Alabanza Eliminada", description: `"${youthChoir.title}" se ha eliminado.` });
-        router.push('/youth-choirs');
-    } catch (error) {
-         toast({
-            variant: 'destructive',
-            title: 'Error al eliminar',
-            description: 'No se pudo eliminar la alabanza. Es posible que no tengas permisos.',
-        });
-    }
-  }, [deleteYouthChoir, youthChoir, router, toast]);
+    deleteYouthChoir(youthChoir.id);
+    router.push('/youth-choirs');
+  }, [deleteYouthChoir, youthChoir, router]);
 
-  const handleUpdate = useCallback(async (updatedData: Omit<YouthChoir, 'id'>): Promise<{ success: boolean, newId?: string }> => {
-    if (!youthChoir) return { success: false };
-    const result = await updateYouthChoir(youthChoir.id, updatedData);
-    if (result.success) {
-      toast({ title: "Alabanza Actualizada" });
-       if (result.newId && result.newId !== youthChoir.id) {
-          router.replace(`/youth-choirs/${result.newId}`);
-       }
-    } else {
-       const description = result.error === 'duplicate'
-        ? 'Ya existe una alabanza con ese título.'
-        : 'No se pudo guardar el cambio. Es posible que no tengas permisos.';
-      toast({
-        variant: 'destructive',
-        title: 'Error al actualizar',
-        description: description,
-      });
-    }
-    return { success: result.success, newId: result.newId };
-  }, [youthChoir, updateYouthChoir, toast, router]);
+  const handleUpdate = useCallback((updatedData: Omit<YouthChoir, 'id'>) => {
+    if (!youthChoir) return;
+    updateYouthChoir(youthChoir.id, updatedData);
+  }, [youthChoir, updateYouthChoir]);
 
-  const handleToneUpdate = useCallback(async (newTone: string) => {
-    if (!youthChoir) return { success: false };
+  const handleToneUpdate = useCallback((newTone: string) => {
+    if (!youthChoir) return;
     const { id, ...restOfYouthChoir } = youthChoir;
-    return handleUpdate({ ...restOfYouthChoir, tone: newTone });
+    handleUpdate({ ...restOfYouthChoir, tone: newTone });
   }, [youthChoir, handleUpdate]);
 
   useEffect(() => {

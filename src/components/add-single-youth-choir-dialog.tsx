@@ -26,7 +26,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
 import {
   Select,
   SelectContent,
@@ -46,12 +45,10 @@ type FormData = z.infer<typeof youthChoirSchema>;
 interface AddSingleYouthChoirDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onYouthChoirAdded: (choir: Omit<YouthChoir, 'id'>) => Promise<{ success: boolean; youthChoir?: YouthChoir }>;
+  onYouthChoirAdded: (choir: Omit<YouthChoir, 'id'>) => void;
 }
 
 export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdded }: AddSingleYouthChoirDialogProps) {
-  const { toast } = useToast();
-
   const form = useForm<FormData>({
     resolver: zodResolver(youthChoirSchema),
     defaultValues: {
@@ -67,22 +64,9 @@ export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdde
     }
   }, [open, form]);
 
-  async function onSubmit(values: FormData) {
-    const result = await onYouthChoirAdded(values);
-
-    if (result.success) {
-      toast({
-        title: 'Alabanza Enviada a Revisión',
-        description: `La alabanza "${values.title}" ha sido enviada.`,
-      });
-      onOpenChange(false);
-    } else {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'Ya existe una alabanza con ese título.',
-      });
-    }
+  function onSubmit(values: FormData) {
+    onYouthChoirAdded(values);
+    onOpenChange(false);
   }
 
   return (

@@ -20,12 +20,11 @@ const removeUndefined = (obj: Record<string, any>): Record<string, any> => {
 
 interface HymnsContextType {
   hymns: Hymn[];
-  addHymn: (newHymn: Omit<Hymn, 'id'>) => Promise<boolean>;
-  addHymns: (newHymnsData: Omit<Hymn, 'id'>[]) => Promise<{ addedCount: number, updatedCount: number }>;
-  updateHymn: (hymnNumber: number, newHymnData: Omit<Hymn, 'id' | 'number'>) => Promise<{ success: boolean }>;
-  deleteHymn: (hymnNumber: number) => Promise<void>;
+  addHymns: (newHymnsData: Omit<Hymn, 'id'>[]) => void;
+  updateHymn: (hymnNumber: number, newHymnData: Omit<Hymn, 'id' | 'number'>) => void;
+  deleteHymn: (hymnNumber: number) => void;
   getHymnById: (id: number) => Hymn | undefined;
-  restoreHymns: (hymnsToRestore: Omit<Hymn, 'id'>[]) => Promise<void>;
+  restoreHymns: (hymnsToRestore: Omit<Hymn, 'id'>[]) => void;
   isLoaded: boolean;
 }
 
@@ -48,7 +47,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
   }, [rawHymns]);
 
   useEffect(() => {
-    const migrateData = async () => {
+    const migrateData = () => {
         if (!firestore) return;
         if (isLoaded && rawHymns?.length === 0) {
             const migrationFlag = 'hymns_migrated_v2';
@@ -71,37 +70,22 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
                 batch.set(docRef, removeUndefined(dataToSave));
             });
 
-            try {
-              await batch.commit();
-              localStorage.setItem(migrationFlag, 'true');
-              toast({ title: '¡Himnario listo!', description: 'Todos los himnos han sido cargados en la nube.' });
-            } catch (error) {
-              console.error("Hymn migration failed:", error);
-              toast({ variant: 'destructive', title: 'Error de Migración', description: 'No se pudieron cargar los himnos iniciales.' });
-            }
+            batch.commit()
+              .then(() => {
+                localStorage.setItem(migrationFlag, 'true');
+                toast({ title: '¡Himnario listo!', description: 'Todos los himnos han sido cargados en la nube.' });
+              })
+              .catch((error) => {
+                console.error("Hymn migration failed:", error);
+                toast({ variant: 'destructive', title: 'Error de Migración', description: 'No se pudieron cargar los himnos iniciales.' });
+              });
         }
     };
     migrateData();
   }, [isLoaded, rawHymns, firestore, toast]);
 
-  const addHymn = useCallback(async (newHymn: Omit<Hymn, 'id'>): Promise<boolean> => {
-    if (!firestore) return false;
-    if (hymns.some(h => h.number === newHymn.number)) {
-      return false;
-    }
-    const docRef = doc(firestore, 'hymns', newHymn.number.toString());
-    const dataToSave = {
-        number: newHymn.number,
-        title: newHymn.title,
-        lyrics: newHymn.lyrics,
-        tone: newHymn.tone,
-    };
-    await setDoc(docRef, removeUndefined(dataToSave));
-    return true;
-  }, [firestore, hymns]);
-
-  const addHymns = useCallback(async (newHymnsData: Omit<Hymn, 'id'>[]): Promise<{ addedCount: number, updatedCount: number }> => {
-    if (!firestore) return { addedCount: 0, updatedCount: 0 };
+  const addHymns = useCallback((newHymnsData: Omit<Hymn, 'id'>[]) => {
+    if (!firestore) return;
     
     const batch = writeBatch(firestore);
     const hymnsMap = new Map(hymns.map(h => [h.number, h]));
@@ -124,53 +108,65 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
         }
     });
 
-    await batch.commit();
-    return { addedCount, updatedCount };
-  }, [firestore, hymns]);
+    batch.commit()
+      .then(() => {
+        toast({ title: 'Himnos Procesados', description: `Se agregaron ${addedCount} himnos nuevos y se actualizaron ${updatedCount} existentes.` });
+      })
+      .catch((error) => {
+        console.error("Error adding/updating hymns:", error);
+        toast({ variant: 'destructive', title: 'Error al Guardar', description: 'No se pudieron guardar los himnos.' });
+      });
+  }, [firestore, hymns, toast]);
 
-  const updateHymn = useCallback(async (hymnNumber: number, newHymnData: Omit<Hymn, 'id' | 'number'>): Promise<{ success: boolean }> => {
-    if (!firestore) return { success: false };
+  const updateHymn = useCallback((hymnNumber: number, newHymnData: Omit<Hymn, 'id' | 'number'>) => {
+    if (!firestore) return;
     const docRef = doc(firestore, 'hymns', hymnNumber.toString());
     const dataToSave = {
       ...newHymnData,
       number: hymnNumber,
     };
-    try {
-        await setDoc(docRef, removeUndefined(dataToSave), { merge: true });
-        return { success: true };
-    } catch(error) {
+    setDoc(docRef, removeUndefined(dataToSave), { merge: true })
+      .then(() => {
+        toast({ title: 'Himno Actualizado', description: `El himno #${hymnNumber} se ha guardado correctamente.` });
+      })
+      .catch((error) => {
         console.error("Error updating hymn:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
             path: docRef.path,
             operation: 'update',
             requestResourceData: dataToSave
         }));
-        return { success: false };
-    }
-  }, [firestore]);
+        toast({ variant: 'destructive', title: 'Error al Actualizar', description: 'No se pudo guardar el himno.' });
+      });
+  }, [firestore, toast]);
 
-
-  const deleteHymn = useCallback(async (hymnNumber: number) => {
+  const deleteHymn = useCallback((hymnNumber: number) => {
     if (!firestore) return;
     const docRef = doc(firestore, 'hymns', hymnNumber.toString());
-    await deleteDoc(docRef);
-  }, [firestore]);
+    deleteDoc(docRef)
+      .then(() => {
+        toast({ title: 'Himno Eliminado', description: 'El himno se ha eliminado de la lista.' });
+      })
+      .catch((error) => {
+        console.error("Error deleting hymn:", error);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));
+        toast({ variant: 'destructive', title: 'Error al Eliminar', description: 'No se pudo eliminar el himno.' });
+      });
+  }, [firestore, toast]);
   
   const getHymnById = useCallback((id: number): Hymn | undefined => {
     return hymns.find(h => h.number === id);
   }, [hymns]);
 
-  const restoreHymns = useCallback(async (hymnsToRestore: Omit<Hymn, 'id'>[]) => {
+  const restoreHymns = useCallback((hymnsToRestore: Omit<Hymn, 'id'>[]) => {
     if (!firestore) return;
     const batch = writeBatch(firestore);
 
-    // Delete all existing documents
     hymns.forEach(hymn => {
       const docRef = doc(firestore, 'hymns', hymn.number.toString());
       batch.delete(docRef);
     });
     
-    // Add new documents from backup
     hymnsToRestore.forEach(hymn => {
       const docRef = doc(firestore, 'hymns', hymn.number.toString());
        const dataToSave = {
@@ -182,10 +178,10 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
       batch.set(docRef, removeUndefined(dataToSave));
     });
 
-    await batch.commit();
+    batch.commit().catch(error => console.error("Error restoring hymns:", error));
   }, [firestore, hymns]);
 
-  const value = { hymns, addHymn, addHymns, updateHymn, deleteHymn, getHymnById, restoreHymns, isLoaded };
+  const value = { hymns, addHymns, updateHymn, deleteHymn, getHymnById, restoreHymns, isLoaded };
 
   return <HymnsContext.Provider value={value}>{children}</HymnsContext.Provider>;
 }

@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation';
 import { useHymns } from '@/context/hymns-context';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useFontSize } from '@/hooks/use-font-size';
-import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import { HymnAdminActions } from '@/components/hymn-admin-actions';
 import { Star, ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
@@ -65,47 +64,27 @@ function HymnDetailSkeleton() {
 
 export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
   const router = useRouter();
-  const { toast } = useToast();
   const { getHymnById, deleteHymn, updateHymn, isLoaded: isHymnsLoaded } = useHymns();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
   const { isFavorite, toggleFavorite, isLoaded: isFavoritesLoaded } = useFavorites();
   
   const hymn = getHymnById(hymnId);
 
-  const handleDelete = useCallback(async () => {
+  const handleDelete = useCallback(() => {
     if (!hymn) return;
-    try {
-        await deleteHymn(hymn.number);
-        toast({ title: "Himno Eliminado", description: `El himno #${hymn.number} se ha eliminado.` });
-        router.push('/hymns');
-    } catch (error) {
-        toast({
-            variant: 'destructive',
-            title: 'Error al eliminar',
-            description: 'No se pudo eliminar el himno. Es posible que no tengas permisos.',
-        });
-    }
-  }, [deleteHymn, hymn, router, toast]);
+    deleteHymn(hymn.number);
+    router.push('/hymns');
+  }, [deleteHymn, hymn, router]);
 
-  const handleUpdate = useCallback(async (updatedData: Omit<Hymn, 'id' | 'number'>): Promise<{ success: boolean }> => {
-    if (!hymn) return { success: false };
-    const result = await updateHymn(hymn.number, updatedData);
-    if (result.success) {
-      toast({ title: "Himno Actualizado" });
-    } else {
-        toast({
-            variant: 'destructive',
-            title: 'Error al Actualizar',
-            description: 'No se pudo guardar el himno. Es posible que no tengas permisos.',
-        });
-    }
-    return result;
-  }, [hymn, updateHymn, toast]);
+  const handleUpdate = useCallback((updatedData: Omit<Hymn, 'id' | 'number'>) => {
+    if (!hymn) return;
+    updateHymn(hymn.number, updatedData);
+  }, [hymn, updateHymn]);
 
-  const handleToneUpdate = useCallback(async (newTone: string) => {
-    if (!hymn) return { success: false };
+  const handleToneUpdate = useCallback((newTone: string) => {
+    if (!hymn) return;
     const { number, id, ...restOfHymn } = hymn;
-    return handleUpdate({ ...restOfHymn, tone: newTone });
+    handleUpdate({ ...restOfHymn, tone: newTone });
   }, [hymn, handleUpdate]);
 
   if (!isHymnsLoaded || !hymn) {

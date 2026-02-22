@@ -76,7 +76,7 @@ function parsePraises(text: string): Omit<Praise, 'id'>[] {
 interface AddPraisesDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onPraisesAdded: (praises: Omit<Praise, 'id'>[]) => Promise<{ addedCount: number, duplicates: number }>;
+  onPraisesAdded: (praises: Omit<Praise, 'id'>[]) => void;
 }
 
 export function AddPraisesDialog({ open, onOpenChange, onPraisesAdded }: AddPraisesDialogProps) {
@@ -89,7 +89,7 @@ export function AddPraisesDialog({ open, onOpenChange, onPraisesAdded }: AddPrai
     }
   }, [open]);
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (text.trim() === '') {
         toast({
@@ -103,11 +103,7 @@ export function AddPraisesDialog({ open, onOpenChange, onPraisesAdded }: AddPrai
     const parsedPraises = parsePraises(text);
     
     if (parsedPraises.length > 0) {
-        const { addedCount, duplicates } = await onPraisesAdded(parsedPraises);
-        toast({
-          title: 'Alabanzas Enviadas a Revisión',
-          description: `Se enviaron ${addedCount} alabanzas nuevas. Se ignoraron ${duplicates} duplicados.`,
-        });
+        onPraisesAdded(parsedPraises);
     } else {
         toast({
             variant: "destructive",

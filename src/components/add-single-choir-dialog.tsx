@@ -26,7 +26,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
 import {
   Select,
   SelectContent,
@@ -47,12 +46,10 @@ type FormData = z.infer<typeof choirSchema>;
 interface AddSingleChoirDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onChoirAdded: (choir: Omit<Choir, 'id'>) => Promise<{ success: boolean; choir?: Choir }>;
+    onChoirAdded: (choir: Omit<Choir, 'id'>) => void;
 }
 
 export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSingleChoirDialogProps) {
-  const { toast } = useToast();
-
   const form = useForm<FormData>({
     resolver: zodResolver(choirSchema),
     defaultValues: {
@@ -69,22 +66,9 @@ export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSi
     }
   }, [open, form]);
 
-  async function onSubmit(values: FormData) {
-    const result = await onChoirAdded(values);
-
-    if (result.success) {
-      toast({
-        title: 'Coro Enviado a Revisión',
-        description: `El coro "${values.title}" ha sido enviado.`,
-      });
-      onOpenChange(false);
-    } else {
-        toast({
-            variant: 'destructive',
-            title: 'Error',
-            description: 'Ya existe un coro con ese título.',
-        });
-    }
+  function onSubmit(values: FormData) {
+    onChoirAdded(values);
+    onOpenChange(false);
   }
 
   return (
