@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MissingHymns } from '@/components/missing-hymns';
 import { BackupManager } from '@/components/backup-manager';
 import { SongTransferManager } from '@/components/song-transfer-manager';
+import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
 
 export default function AdminPage() {
   return (
@@ -82,6 +83,7 @@ export default function AdminPage() {
             </TabsContent>
             <TabsContent value="more-settings">
                 <div className="space-y-6">
+                    <DuplicateSongsManager />
                     <MissingHymns />
                     <SongTransferManager />
                     <BackupManager />
