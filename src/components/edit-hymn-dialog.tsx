@@ -79,11 +79,15 @@ export function EditHymnDialog({ children, hymn, onHymnUpdated, onSaveComplete }
   }, [hymn, form, open]);
 
   async function onSubmit(values: FormData) {
-    const { number, ...updateData } = values;
-    const result = await onHymnUpdated(updateData);
-    if (result.success) {
-      setOpen(false);
-      onSaveComplete?.();
+    try {
+      const { number, ...updateData } = values;
+      const result = await onHymnUpdated(updateData);
+      if (result.success) {
+        setOpen(false);
+        onSaveComplete?.();
+      }
+    } catch (error) {
+      console.error('Failed to update hymn', error);
     }
   }
 

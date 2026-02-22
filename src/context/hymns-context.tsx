@@ -3,7 +3,7 @@
 import { createContext, useContext, useEffect, useCallback, ReactNode, useMemo } from 'react';
 import type { Hymn } from '@/lib/hymns';
 import { hymns as initialHymnsData } from '@/lib/hymns-initial';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
@@ -102,8 +102,18 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
   const updateHymn = useCallback(async (hymnNumber: number, newHymnData: Omit<Hymn, 'id' | 'number'>): Promise<{ success: boolean }> => {
     if (!firestore) return { success: false };
     const docRef = doc(firestore, 'hymns', hymnNumber.toString());
-    await setDoc(docRef, { ...newHymnData, number: hymnNumber }, { merge: true });
-    return { success: true };
+    const dataToSave = { ...newHymnData, number: hymnNumber };
+    try {
+        await setDoc(docRef, dataToSave, { merge: true });
+        return { success: true };
+    } catch(error) {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+            path: docRef.path,
+            operation: 'update',
+            requestResourceData: dataToSave
+        }));
+        throw error;
+    }
   }, [firestore]);
 
 

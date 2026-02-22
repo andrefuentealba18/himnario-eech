@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { Praise } from '@/lib/praises';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 
 const slugify = (text: string): string =>
@@ -99,17 +99,25 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
 
     const oldDocRef = doc(firestore, 'praises', praiseId);
     
-    if (newId !== praiseId) {
-        const newDocRef = doc(firestore, 'praises', newId);
-        const batch = writeBatch(firestore);
-        batch.delete(oldDocRef);
-        batch.set(newDocRef, newPraiseData);
-        await batch.commit();
-    } else {
-        await setDoc(oldDocRef, newPraiseData, { merge: true });
+    try {
+      if (newId !== praiseId) {
+          const newDocRef = doc(firestore, 'praises', newId);
+          const batch = writeBatch(firestore);
+          batch.delete(oldDocRef);
+          batch.set(newDocRef, newPraiseData);
+          await batch.commit();
+      } else {
+          await setDoc(oldDocRef, newPraiseData, { merge: true });
+      }
+      return { success: true, newId: newId };
+    } catch (error) {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: oldDocRef.path,
+        operation: 'update',
+        requestResourceData: newPraiseData
+      }));
+      throw error;
     }
-    
-    return { success: true, newId: newId };
   }, [firestore, praises]);
 
   const getPraiseById = useCallback((id: string): Praise | undefined => {

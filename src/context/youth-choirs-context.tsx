@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { YouthChoir } from '@/lib/youth-choirs';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 
 const slugify = (text: string): string =>
@@ -99,17 +99,25 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
 
     const oldDocRef = doc(firestore, 'youth-choirs', youthChoirId);
     
-    if (newId !== youthChoirId) {
-        const newDocRef = doc(firestore, 'youth-choirs', newId);
-        const batch = writeBatch(firestore);
-        batch.delete(oldDocRef);
-        batch.set(newDocRef, newYouthChoirData);
-        await batch.commit();
-    } else {
-        await setDoc(oldDocRef, newYouthChoirData, { merge: true });
+    try {
+      if (newId !== youthChoirId) {
+          const newDocRef = doc(firestore, 'youth-choirs', newId);
+          const batch = writeBatch(firestore);
+          batch.delete(oldDocRef);
+          batch.set(newDocRef, newYouthChoirData);
+          await batch.commit();
+      } else {
+          await setDoc(oldDocRef, newYouthChoirData, { merge: true });
+      }
+      return { success: true, newId: newId };
+    } catch (error) {
+      errorEmitter.emit('permission-error', new FirestorePermissionError({
+        path: oldDocRef.path,
+        operation: 'update',
+        requestResourceData: newYouthChoirData
+      }));
+      throw error;
     }
-    
-    return { success: true, newId: newId };
   }, [firestore, youthChoirs]);
 
   const getYouthChoirById = useCallback((id: string): YouthChoir | undefined => {

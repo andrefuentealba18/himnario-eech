@@ -77,10 +77,14 @@ export function EditChoirDialog({ children, choir, onChoirUpdated, onSaveComplet
 
 
   async function onSubmit(values: FormData) {
-    const result = await onChoirUpdated(values);
-    if (result.success) {
-      setOpen(false);
-      onSaveComplete?.();
+    try {
+      const result = await onChoirUpdated(values);
+      if (result.success) {
+        setOpen(false);
+        onSaveComplete?.();
+      }
+    } catch (error) {
+      console.error('Failed to update choir', error);
     }
   }
 
@@ -176,5 +180,3 @@ export function EditChoirDialog({ children, choir, onChoirUpdated, onSaveComplet
     </Dialog>
   );
 }
-
-    

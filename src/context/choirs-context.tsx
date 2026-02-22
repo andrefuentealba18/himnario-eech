@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { Choir } from '@/lib/choirs';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 
 const slugify = (text: string): string =>
@@ -99,17 +99,25 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
 
     const oldDocRef = doc(firestore, 'choirs', choirId);
     
-    if (newId !== choirId) {
-        const newDocRef = doc(firestore, 'choirs', newId);
-        const batch = writeBatch(firestore);
-        batch.delete(oldDocRef);
-        batch.set(newDocRef, newChoirData);
-        await batch.commit();
-    } else {
-        await setDoc(oldDocRef, newChoirData, { merge: true });
+    try {
+      if (newId !== choirId) {
+          const newDocRef = doc(firestore, 'choirs', newId);
+          const batch = writeBatch(firestore);
+          batch.delete(oldDocRef);
+          batch.set(newDocRef, newChoirData);
+          await batch.commit();
+      } else {
+          await setDoc(oldDocRef, newChoirData, { merge: true });
+      }
+      return { success: true, newId: newId };
+    } catch(error) {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+            path: oldDocRef.path,
+            operation: 'update',
+            requestResourceData: newChoirData
+        }));
+        throw error;
     }
-    
-    return { success: true, newId: newId };
   }, [firestore, choirs]);
 
   const getChoirById = useCallback((id: string): Choir | undefined => {

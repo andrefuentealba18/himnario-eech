@@ -74,10 +74,14 @@ export function EditYouthChoirDialog({ children, youthChoir, onYouthChoirUpdated
 
 
   async function onSubmit(values: FormData) {
-    const result = await onYouthChoirUpdated(values);
-    if (result.success) {
-      setOpen(false);
-      onSaveComplete?.();
+    try {
+      const result = await onYouthChoirUpdated(values);
+      if (result.success) {
+        setOpen(false);
+        onSaveComplete?.();
+      }
+    } catch (error) {
+      console.error('Failed to update youth choir', error);
     }
   }
 
@@ -152,5 +156,3 @@ export function EditYouthChoirDialog({ children, youthChoir, onYouthChoirUpdated
     </Dialog>
   );
 }
-
-    

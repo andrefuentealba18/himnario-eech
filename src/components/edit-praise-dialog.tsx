@@ -74,10 +74,14 @@ export function EditPraiseDialog({ children, praise, onPraiseUpdated, onSaveComp
 
 
   async function onSubmit(values: FormData) {
-    const result = await onPraiseUpdated(values);
-    if (result.success) {
-      setOpen(false);
-      onSaveComplete?.();
+    try {
+      const result = await onPraiseUpdated(values);
+      if (result.success) {
+        setOpen(false);
+        onSaveComplete?.();
+      }
+    } catch (error) {
+      console.error('Failed to update praise', error);
     }
   }
 
