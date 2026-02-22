@@ -26,7 +26,9 @@ const fontSizes = [
   'text-4xl',  // 36px
   'text-5xl',  // 48px
   'text-6xl',  // 60px
-  'text-7xl',  // 72px
+  'text-7xl',  // 72px,
+  'text-8xl',
+  'text-9xl',
 ];
 
 function PraiseDetailSkeleton() {
@@ -80,8 +82,8 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     }
   }, [deletePraise, praise, router, toast]);
 
-  const handleUpdate = useCallback(async (updatedData: Omit<Praise, 'id'>): Promise<{ success: boolean, newId?: string }> => {
-    if (!praise) return { success: false };
+  const handleUpdate = useCallback(async (updatedData: Omit<Praise, 'id'>): Promise<{ success: boolean, newId?: string, error?: string }> => {
+    if (!praise) return { success: false, error: 'no-praise' };
     const result = await updatePraise(praise.id, updatedData);
     if (result.success) {
       toast({ title: "Alabanza Actualizada" });
@@ -147,14 +149,14 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="w-full max-w-2xl text-center">
+        <div className="w-full max-w-4xl text-center">
             <div
                 className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
             >
                 {praise.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const isChorus = paragraph.toUpperCase().startsWith('CORO');
                   return (
-                    <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-bold leading-snug' : ''}`}>
+                    <p key={pIndex} className={`whitespace-pre-wrap mb-8 ${isChorus ? 'font-bold leading-snug' : ''}`}>
                       {paragraph}
                     </p>
                   );
@@ -168,7 +170,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
              <ZoomOut className="h-7 w-7" />
              <span className="sr-only">Reducir texto</span>
            </Button>
-           <PraiseAdminActions praise={praise} onDelete={handleDelete} onUpdate={handleUpdate} />
+           <PraiseAdminActions praise={praise} onUpdate={handleUpdate} onDelete={handleDelete} />
            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
              <ZoomIn className="h-7 w-7" />
              <span className="sr-only">Aumentar texto</span>
