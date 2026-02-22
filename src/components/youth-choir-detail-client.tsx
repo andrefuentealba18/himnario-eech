@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
-import { useRouter, notFound } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { YouthChoirAdminActions } from './youth-choir-admin-actions';
 import { useCallback, useEffect } from 'react';
@@ -18,7 +18,6 @@ interface YouthChoirDetailClientProps {
 }
 
 const fontSizes = [
-  'text-sm',   // 14px
   'text-base', // 16px
   'text-lg',   // 18px
   'text-xl',   // 20px
@@ -26,6 +25,8 @@ const fontSizes = [
   'text-3xl',  // 30px
   'text-4xl',  // 36px
   'text-5xl',  // 48px
+  'text-6xl',  // 60px
+  'text-7xl',  // 72px
 ];
 
 function YouthChoirDetailSkeleton() {
@@ -107,10 +108,15 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
   }, [youthChoir, handleUpdate]);
 
   useEffect(() => {
+    if (isYouthChoirsLoaded && !youthChoir) {
+      // router.push('/404');
+      return;
+    }
+
     if (youthChoir && youthChoirId !== youthChoir.id) {
         router.replace(`/youth-choirs/${youthChoir.id}`);
     }
-  }, [youthChoir, youthChoirId, router]);
+  }, [youthChoir, youthChoirId, router, isYouthChoirsLoaded]);
 
   if (!isYouthChoirsLoaded || !youthChoir) {
     return <YouthChoirDetailSkeleton />;
@@ -140,14 +146,14 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="max-w-prose text-center">
+        <div className="w-full max-w-2xl text-center">
             <div
                 className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
             >
                 {youthChoir.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const isChorus = paragraph.toUpperCase().startsWith('CORO');
                   return (
-                    <p key={pIndex} className={`whitespace-pre-wrap mb-4 ${isChorus ? 'font-bold leading-snug' : ''}`}>
+                    <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-bold leading-snug' : ''}`}>
                       {paragraph}
                     </p>
                   );

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { usePraises } from '@/context/praises-context';
-import { useRouter, notFound } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { PraiseAdminActions } from './praise-admin-actions';
 import { useCallback, useEffect } from 'react';
@@ -18,7 +18,6 @@ interface PraiseDetailClientProps {
 }
 
 const fontSizes = [
-  'text-sm',   // 14px
   'text-base', // 16px
   'text-lg',   // 18px
   'text-xl',   // 20px
@@ -26,6 +25,8 @@ const fontSizes = [
   'text-3xl',  // 30px
   'text-4xl',  // 36px
   'text-5xl',  // 48px
+  'text-6xl',  // 60px
+  'text-7xl',  // 72px
 ];
 
 function PraiseDetailSkeleton() {
@@ -107,10 +108,16 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
   }, [praise, handleUpdate]);
   
   useEffect(() => {
+    if (isPraisesLoaded && !praise) {
+      // If data is loaded but the specific praise is not found.
+      // router.push('/404'); // or a custom not-found page
+      return;
+    }
+    
     if (praise && praiseId !== praise.id) {
         router.replace(`/praises/${praise.id}`);
     }
-  }, [praise, praiseId, router]);
+  }, [praise, praiseId, router, isPraisesLoaded]);
 
   if (!isPraisesLoaded || !praise) {
     return <PraiseDetailSkeleton />;
@@ -140,14 +147,14 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="max-w-prose text-center">
+        <div className="w-full max-w-2xl text-center">
             <div
                 className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
             >
                 {praise.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const isChorus = paragraph.toUpperCase().startsWith('CORO');
                   return (
-                    <p key={pIndex} className={`whitespace-pre-wrap mb-4 ${isChorus ? 'font-bold leading-snug' : ''}`}>
+                    <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-bold leading-snug' : ''}`}>
                       {paragraph}
                     </p>
                   );

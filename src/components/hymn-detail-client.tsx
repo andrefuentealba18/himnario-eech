@@ -2,7 +2,7 @@
 
 import type { Hymn } from '@/lib/hymns';
 import Link from 'next/link';
-import { useRouter, notFound } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useHymns } from '@/context/hymns-context';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useFontSize } from '@/hooks/use-font-size';
@@ -19,7 +19,6 @@ interface HymnDetailClientProps {
 }
 
 const fontSizes = [
-  'text-sm',   // 14px
   'text-base', // 16px
   'text-lg',   // 18px
   'text-xl',   // 20px
@@ -27,6 +26,8 @@ const fontSizes = [
   'text-3xl',  // 30px
   'text-4xl',  // 36px
   'text-5xl',  // 48px
+  'text-6xl',  // 60px
+  'text-7xl',  // 72px
 ];
 
 function HymnDetailSkeleton() {
@@ -145,7 +146,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="max-w-prose text-center">
+        <div className="w-full max-w-2xl text-center">
           <div
             className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
           >
@@ -154,14 +155,14 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
               if (isChorus) {
                   const chorusText = paragraph.substring(paragraph.toUpperCase().indexOf('CORO') + 4).trim().replace(/^[:.]/, '').trim();
                   return (
-                    <p key={pIndex} className="whitespace-pre-wrap mb-4 font-bold leading-snug">
+                    <p key={pIndex} className="whitespace-pre-wrap mb-6 font-bold leading-snug">
                       CORO:
                       {chorusText && `\n${chorusText}`}
                     </p>
                   )
               }
               return (
-                 <p key={pIndex} className="whitespace-pre-wrap mb-4">
+                 <p key={pIndex} className="whitespace-pre-wrap mb-6">
                   {paragraph}
                 </p>
               );
