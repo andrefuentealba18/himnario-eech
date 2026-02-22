@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { AppProvider } from '@/context/app-provider';
@@ -7,8 +7,13 @@ import { FirebaseClientProvider } from '@/firebase';
 export const metadata: Metadata = {
   title: 'Himnario EECH Móvil',
   description: 'Tu cancionero digital del Ejercito Evangélico de Chile',
-  viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
-  themeColor: '#3b82f6',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#A0C4FF',
 };
 
 export default function RootLayout({
