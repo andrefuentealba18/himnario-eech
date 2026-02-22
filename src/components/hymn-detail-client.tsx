@@ -19,12 +19,14 @@ interface HymnDetailClientProps {
 }
 
 const fontSizes = [
-  'text-base',   // 16px
+  'text-sm',   // 14px
+  'text-base', // 16px
   'text-lg',   // 18px
   'text-xl',   // 20px
   'text-2xl',  // 24px
   'text-3xl',  // 30px
   'text-4xl',  // 36px
+  'text-5xl',  // 48px
 ];
 
 function HymnDetailSkeleton() {
@@ -41,7 +43,7 @@ function HymnDetailSkeleton() {
         </div>
         <Skeleton className="h-8 w-8 rounded-full" />
       </header>
-      <main className="flex-1 py-8 container max-w-sm">
+      <main className="flex-1 py-8 container max-w-prose px-4">
         <div className="space-y-4 text-center">
           <Skeleton className="h-6 w-full" />
           <Skeleton className="h-6 w-5/6 mx-auto" />
@@ -71,9 +73,17 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
 
   const handleDelete = useCallback(async () => {
     if (!hymn) return;
-    await deleteHymn(hymn.number);
-    toast({ title: "Himno Eliminado", description: `El himno #${hymn.number} se ha eliminado.` });
-    router.push('/hymns');
+    try {
+        await deleteHymn(hymn.number);
+        toast({ title: "Himno Eliminado", description: `El himno #${hymn.number} se ha eliminado.` });
+        router.push('/hymns');
+    } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: 'Error al eliminar',
+            description: 'No se pudo eliminar el himno. Es posible que no tengas permisos.',
+        });
+    }
   }, [deleteHymn, hymn, router, toast]);
 
   const handleUpdate = useCallback(async (updatedData: Omit<Hymn, 'id' | 'number'>): Promise<{ success: boolean }> => {
@@ -81,6 +91,12 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
     const result = await updateHymn(hymn.number, updatedData);
     if (result.success) {
       toast({ title: "Himno Actualizado" });
+    } else {
+        toast({
+            variant: 'destructive',
+            title: 'Error al Actualizar',
+            description: 'No se pudo guardar el himno. Es posible que no tengas permisos.',
+        });
     }
     return result;
   }, [hymn, updateHymn, toast]);
@@ -91,13 +107,8 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
     return handleUpdate({ ...restOfHymn, tone: newTone });
   }, [hymn, handleUpdate]);
 
-  if (!isHymnsLoaded) {
+  if (!isHymnsLoaded || !hymn) {
     return <HymnDetailSkeleton />;
-  }
-
-  if (!hymn) {
-    notFound();
-    return null;
   }
 
   const isFav = isFavoritesLoaded && isFavorite(hymn.number);
@@ -134,7 +145,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="max-w-[20rem] text-center">
+        <div className="max-w-prose text-center">
           <div
             className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
           >

@@ -18,12 +18,14 @@ interface PraiseDetailClientProps {
 }
 
 const fontSizes = [
-  'text-base',   // 16px
+  'text-sm',   // 14px
+  'text-base', // 16px
   'text-lg',   // 18px
   'text-xl',   // 20px
   'text-2xl',  // 24px
   'text-3xl',  // 30px
   'text-4xl',  // 36px
+  'text-5xl',  // 48px
 ];
 
 function PraiseDetailSkeleton() {
@@ -37,7 +39,7 @@ function PraiseDetailSkeleton() {
                 </div>
                 <div className="w-10" />
             </header>
-            <main className="flex-1 py-8 container max-w-sm">
+            <main className="flex-1 py-8 container max-w-prose px-4">
                 <div className="space-y-4 text-center">
                     <Skeleton className="h-6 w-full" />
                     <Skeleton className="h-6 w-5/6 mx-auto" />
@@ -64,12 +66,20 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
 
   const handleDelete = useCallback(async () => {
     if (!praise) return;
-    await deletePraise(praise.id);
-    toast({ title: "Alabanza Eliminada", description: `"${praise.title}" se ha eliminado.` });
-    router.push('/praises');
+    try {
+        await deletePraise(praise.id);
+        toast({ title: "Alabanza Eliminada", description: `"${praise.title}" se ha eliminado.` });
+        router.push('/praises');
+    } catch(error) {
+        toast({
+            variant: 'destructive',
+            title: 'Error al eliminar',
+            description: 'No se pudo eliminar la alabanza. Es posible que no tengas permisos.',
+        });
+    }
   }, [deletePraise, praise, router, toast]);
 
-  const handleUpdate = useCallback(async (updatedData: Omit<Praise, 'id'>): Promise<{ success: boolean }> => {
+  const handleUpdate = useCallback(async (updatedData: Omit<Praise, 'id'>): Promise<{ success: boolean, newId?: string }> => {
     if (!praise) return { success: false };
     const result = await updatePraise(praise.id, updatedData);
     if (result.success) {
@@ -78,13 +88,16 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
           router.replace(`/praises/${result.newId}`);
        }
     } else {
+        const description = result.error === 'duplicate'
+        ? 'Ya existe una alabanza con ese título.'
+        : 'No se pudo guardar el cambio. Es posible que no tengas permisos.';
       toast({
         variant: 'destructive',
         title: 'Error al actualizar',
-        description: 'Ya existe una alabanza con ese título.',
+        description: description,
       });
     }
-    return { success: result.success };
+    return { success: result.success, newId: result.newId };
   }, [praise, updatePraise, toast, router]);
 
   const handleToneUpdate = useCallback(async (newTone: string) => {
@@ -93,20 +106,14 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     return handleUpdate({ ...restOfPraise, tone: newTone });
   }, [praise, handleUpdate]);
   
-  // This useEffect handles URL correction if the title (and thus slug/id) changes
   useEffect(() => {
     if (praise && praiseId !== praise.id) {
         router.replace(`/praises/${praise.id}`);
     }
   }, [praise, praiseId, router]);
 
-  if (!isPraisesLoaded) {
+  if (!isPraisesLoaded || !praise) {
     return <PraiseDetailSkeleton />;
-  }
-
-  if (!praise) {
-    notFound();
-    return null;
   }
 
   return (
@@ -133,7 +140,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="max-w-[20rem] text-center">
+        <div className="max-w-prose text-center">
             <div
                 className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
             >

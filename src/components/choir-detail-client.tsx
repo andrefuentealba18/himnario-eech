@@ -19,12 +19,14 @@ interface ChoirDetailClientProps {
 }
 
 const fontSizes = [
-  'text-base',   // 16px
+  'text-sm',   // 14px
+  'text-base', // 16px
   'text-lg',   // 18px
   'text-xl',   // 20px
   'text-2xl',  // 24px
   'text-3xl',  // 30px
   'text-4xl',  // 36px
+  'text-5xl',  // 48px
 ];
 
 function ChoirDetailSkeleton() {
@@ -41,7 +43,7 @@ function ChoirDetailSkeleton() {
                 </div>
                 <div className="w-10" />
             </header>
-            <main className="flex-1 py-8 container max-w-sm">
+            <main className="flex-1 py-8 container max-w-prose px-4">
                 <div className="space-y-4 text-center">
                     <Skeleton className="h-6 w-full" />
                     <Skeleton className="h-6 w-5/6 mx-auto" />
@@ -68,12 +70,20 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
 
   const handleDelete = useCallback(async () => {
     if (!choir) return;
-    await deleteChoir(choir.id);
-    toast({ title: "Coro Eliminado", description: `"${choir.title}" se ha eliminado.` });
-    router.push('/choirs');
+    try {
+        await deleteChoir(choir.id);
+        toast({ title: "Coro Eliminado", description: `"${choir.title}" se ha eliminado.` });
+        router.push('/choirs');
+    } catch(error) {
+        toast({
+            variant: 'destructive',
+            title: 'Error al eliminar',
+            description: 'No se pudo eliminar el coro. Es posible que no tengas permisos.',
+        });
+    }
   }, [deleteChoir, choir, router, toast]);
 
-  const handleUpdate = useCallback(async (updatedData: Omit<Choir, 'id'>): Promise<{ success: boolean }> => {
+  const handleUpdate = useCallback(async (updatedData: Omit<Choir, 'id'>): Promise<{ success: boolean, newId?: string }> => {
     if (!choir) return { success: false };
     const result = await updateChoir(choir.id, updatedData);
     if (result.success) {
@@ -82,13 +92,16 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
           router.replace(`/choirs/${result.newId}`);
        }
     } else {
+        const description = result.error === 'duplicate'
+        ? 'Ya existe un coro con ese título.'
+        : 'No se pudo guardar el cambio. Es posible que no tengas permisos.';
       toast({
         variant: 'destructive',
         title: 'Error al actualizar',
-        description: 'Ya existe un coro con ese título.',
+        description: description,
       });
     }
-    return { success: result.success };
+    return { success: result.success, newId: result.newId };
   }, [choir, updateChoir, toast, router]);
 
   const handleToneUpdate = useCallback(async (newTone: string) => {
@@ -97,20 +110,14 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
     return handleUpdate({ ...restOfChoir, tone: newTone });
   }, [choir, handleUpdate]);
 
-  // This useEffect handles URL correction if the title (and thus slug/id) changes
   useEffect(() => {
     if (choir && choirId !== choir.id) {
         router.replace(`/choirs/${choir.id}`);
     }
   }, [choir, choirId, router]);
 
-  if (!isChoirsLoaded) {
+  if (!isChoirsLoaded || !choir) {
     return <ChoirDetailSkeleton />;
-  }
-
-  if (!choir) {
-    notFound();
-    return null;
   }
 
   return (
@@ -142,7 +149,7 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="max-w-[20rem] text-center">
+        <div className="max-w-prose text-center">
             <div
                 className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
             >

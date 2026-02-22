@@ -18,12 +18,14 @@ interface YouthChoirDetailClientProps {
 }
 
 const fontSizes = [
-  'text-base',   // 16px
+  'text-sm',   // 14px
+  'text-base', // 16px
   'text-lg',   // 18px
   'text-xl',   // 20px
   'text-2xl',  // 24px
   'text-3xl',  // 30px
   'text-4xl',  // 36px
+  'text-5xl',  // 48px
 ];
 
 function YouthChoirDetailSkeleton() {
@@ -37,7 +39,7 @@ function YouthChoirDetailSkeleton() {
                 </div>
                 <div className="w-10" />
             </header>
-            <main className="flex-1 py-8 container max-w-sm">
+            <main className="flex-1 py-8 container max-w-prose px-4">
                 <div className="space-y-4 text-center">
                     <Skeleton className="h-6 w-full" />
                     <Skeleton className="h-6 w-5/6 mx-auto" />
@@ -64,12 +66,20 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
 
   const handleDelete = useCallback(async () => {
     if (!youthChoir) return;
-    await deleteYouthChoir(youthChoir.id);
-    toast({ title: "Alabanza Eliminada", description: `"${youthChoir.title}" se ha eliminado.` });
-    router.push('/youth-choirs');
+    try {
+        await deleteYouthChoir(youthChoir.id);
+        toast({ title: "Alabanza Eliminada", description: `"${youthChoir.title}" se ha eliminado.` });
+        router.push('/youth-choirs');
+    } catch (error) {
+         toast({
+            variant: 'destructive',
+            title: 'Error al eliminar',
+            description: 'No se pudo eliminar la alabanza. Es posible que no tengas permisos.',
+        });
+    }
   }, [deleteYouthChoir, youthChoir, router, toast]);
 
-  const handleUpdate = useCallback(async (updatedData: Omit<YouthChoir, 'id'>): Promise<{ success: boolean }> => {
+  const handleUpdate = useCallback(async (updatedData: Omit<YouthChoir, 'id'>): Promise<{ success: boolean, newId?: string }> => {
     if (!youthChoir) return { success: false };
     const result = await updateYouthChoir(youthChoir.id, updatedData);
     if (result.success) {
@@ -78,13 +88,16 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
           router.replace(`/youth-choirs/${result.newId}`);
        }
     } else {
+       const description = result.error === 'duplicate'
+        ? 'Ya existe una alabanza con ese título.'
+        : 'No se pudo guardar el cambio. Es posible que no tengas permisos.';
       toast({
         variant: 'destructive',
         title: 'Error al actualizar',
-        description: 'Ya existe una alabanza con ese título.',
+        description: description,
       });
     }
-    return { success: result.success };
+    return { success: result.success, newId: result.newId };
   }, [youthChoir, updateYouthChoir, toast, router]);
 
   const handleToneUpdate = useCallback(async (newTone: string) => {
@@ -93,20 +106,14 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
     return handleUpdate({ ...restOfYouthChoir, tone: newTone });
   }, [youthChoir, handleUpdate]);
 
-  // This useEffect handles URL correction if the title (and thus slug/id) changes
   useEffect(() => {
     if (youthChoir && youthChoirId !== youthChoir.id) {
         router.replace(`/youth-choirs/${youthChoir.id}`);
     }
   }, [youthChoir, youthChoirId, router]);
 
-  if (!isYouthChoirsLoaded) {
+  if (!isYouthChoirsLoaded || !youthChoir) {
     return <YouthChoirDetailSkeleton />;
-  }
-
-  if (!youthChoir) {
-    notFound();
-    return null;
   }
 
   return (
@@ -133,7 +140,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="max-w-[20rem] text-center">
+        <div className="max-w-prose text-center">
             <div
                 className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
             >
