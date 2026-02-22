@@ -40,13 +40,10 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
     for (const line of lines) {
         const trimmedLine = line.trim();
 
-        if (ignorePattern.test(trimmedLine)) {
-            continue;
-        }
-
         const isAllUpper = trimmedLine.length > 0 && trimmedLine === trimmedLine.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(trimmedLine);
-
-        if (isAllUpper) {
+        
+        if (isAllUpper && !ignorePattern.test(trimmedLine)) {
+            // This is a potential title or metadata.
             let isMetadataLine = false;
             // Check if it's a metadata line (only if it's right after a title)
             if (currentSong && currentSong.lyricsLines.length === 0) {
@@ -80,14 +77,8 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
                 saveCurrentSong();
                 currentSong = { title: trimmedLine, lyricsLines: [] };
             }
-        } else if (trimmedLine) {
-            // This is a lyric line
-            if (currentSong) {
-                currentSong.lyricsLines.push(line);
-            }
         } else {
-            // If the line is empty, it could be a separator between verses,
-            // or just an empty line. Add it to lyrics if we are in a song.
+            // This is a lyric line, an ignored uppercase line, or an empty line.
             if (currentSong) {
                 currentSong.lyricsLines.push(line);
             }
