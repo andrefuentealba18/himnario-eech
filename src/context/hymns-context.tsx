@@ -7,6 +7,17 @@ import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePe
 import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
+// Helper to remove undefined values from an object, which Firestore doesn't support.
+const removeUndefined = (obj: Record<string, any>): Record<string, any> => {
+  const newObj: Record<string, any> = {};
+  Object.keys(obj).forEach((key) => {
+    if (obj[key] !== undefined) {
+      newObj[key] = obj[key];
+    }
+  });
+  return newObj;
+};
+
 interface HymnsContextType {
   hymns: Hymn[];
   addHymn: (newHymn: Omit<Hymn, 'id'>) => Promise<boolean>;
@@ -73,7 +84,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
       return false;
     }
     const docRef = doc(firestore, 'hymns', newHymn.number.toString());
-    await setDoc(docRef, newHymn);
+    await setDoc(docRef, removeUndefined(newHymn));
     return true;
   }, [firestore, hymns]);
 
@@ -87,7 +98,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
 
     newHymnsData.forEach(hymn => {
         const docRef = doc(firestore, 'hymns', hymn.number.toString());
-        batch.set(docRef, hymn, { merge: true });
+        batch.set(docRef, removeUndefined(hymn), { merge: true });
         if (hymnsMap.has(hymn.number)) {
             updatedCount++;
         } else {
@@ -102,7 +113,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
   const updateHymn = useCallback(async (hymnNumber: number, newHymnData: Omit<Hymn, 'id' | 'number'>): Promise<{ success: boolean }> => {
     if (!firestore) return { success: false };
     const docRef = doc(firestore, 'hymns', hymnNumber.toString());
-    const dataToSave = { ...newHymnData, number: hymnNumber };
+    const dataToSave = removeUndefined({ ...newHymnData, number: hymnNumber });
     try {
         await setDoc(docRef, dataToSave, { merge: true });
         return { success: true };
@@ -140,7 +151,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
     // Add new documents from backup
     hymnsToRestore.forEach(hymn => {
       const docRef = doc(firestore, 'hymns', hymn.number.toString());
-      batch.set(docRef, hymn);
+      batch.set(docRef, removeUndefined(hymn));
     });
 
     await batch.commit();

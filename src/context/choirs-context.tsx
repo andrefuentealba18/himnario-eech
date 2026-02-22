@@ -13,6 +13,17 @@ const slugify = (text: string): string =>
     .replace(/^-+/, '')
     .replace(/-+$/, '');
 
+// Helper to remove undefined values from an object, which Firestore doesn't support.
+const removeUndefined = (obj: Record<string, any>): Record<string, any> => {
+  const newObj: Record<string, any> = {};
+  Object.keys(obj).forEach((key) => {
+    if (obj[key] !== undefined) {
+      newObj[key] = obj[key];
+    }
+  });
+  return newObj;
+};
+
 interface ChoirsContextType {
   choirs: Choir[];
   addChoir: (newChoirData: Omit<Choir, 'id'>) => Promise<{ success: boolean; choir?: Choir }>;
@@ -51,7 +62,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
 
     const docRef = doc(firestore, 'choirs', id);
     const newChoir = { ...newChoirData, id };
-    await setDoc(docRef, newChoirData);
+    await setDoc(docRef, removeUndefined(newChoirData));
     return { success: true, choir: newChoir };
   }, [firestore, choirs]);
 
@@ -70,7 +81,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
         duplicates++;
       } else {
         const docRef = doc(firestore, 'choirs', id);
-        batch.set(docRef, choirData);
+        batch.set(docRef, removeUndefined(choirData));
         addedCount++;
         existingTitles.add(id);
       }
@@ -98,23 +109,24 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     }
 
     const oldDocRef = doc(firestore, 'choirs', choirId);
+    const dataToSave = removeUndefined(newChoirData);
     
     try {
       if (newId !== choirId) {
           const newDocRef = doc(firestore, 'choirs', newId);
           const batch = writeBatch(firestore);
           batch.delete(oldDocRef);
-          batch.set(newDocRef, newChoirData);
+          batch.set(newDocRef, dataToSave);
           await batch.commit();
       } else {
-          await setDoc(oldDocRef, newChoirData, { merge: true });
+          await setDoc(oldDocRef, dataToSave, { merge: true });
       }
       return { success: true, newId: newId };
     } catch(error) {
         errorEmitter.emit('permission-error', new FirestorePermissionError({
             path: oldDocRef.path,
             operation: 'update',
-            requestResourceData: newChoirData
+            requestResourceData: dataToSave
         }));
         throw error;
     }
@@ -138,7 +150,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     choirsToRestore.forEach(choirData => {
       const id = slugify(choirData.title);
       const docRef = doc(firestore, 'choirs', id);
-      batch.set(docRef, choirData);
+      batch.set(docRef, removeUndefined(choirData));
     });
   
     await batch.commit();

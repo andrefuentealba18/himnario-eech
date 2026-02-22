@@ -13,6 +13,17 @@ const slugify = (text: string): string =>
     .replace(/^-+/, '')
     .replace(/-+$/, '');
 
+// Helper to remove undefined values from an object, which Firestore doesn't support.
+const removeUndefined = (obj: Record<string, any>): Record<string, any> => {
+  const newObj: Record<string, any> = {};
+  Object.keys(obj).forEach((key) => {
+    if (obj[key] !== undefined) {
+      newObj[key] = obj[key];
+    }
+  });
+  return newObj;
+};
+
 interface PraisesContextType {
   praises: Praise[];
   addPraise: (newPraiseData: Omit<Praise, 'id'>) => Promise<{ success: boolean; praise?: Praise }>;
@@ -51,7 +62,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
 
     const docRef = doc(firestore, 'praises', id);
     const newPraise = { ...newPraiseData, id };
-    await setDoc(docRef, newPraiseData);
+    await setDoc(docRef, removeUndefined(newPraiseData));
     return { success: true, praise: newPraise };
   }, [firestore, praises]);
 
@@ -70,7 +81,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         duplicates++;
       } else {
         const docRef = doc(firestore, 'praises', id);
-        batch.set(docRef, praiseData);
+        batch.set(docRef, removeUndefined(praiseData));
         addedCount++;
         existingTitles.add(id);
       }
@@ -98,23 +109,24 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     }
 
     const oldDocRef = doc(firestore, 'praises', praiseId);
+    const dataToSave = removeUndefined(newPraiseData);
     
     try {
       if (newId !== praiseId) {
           const newDocRef = doc(firestore, 'praises', newId);
           const batch = writeBatch(firestore);
           batch.delete(oldDocRef);
-          batch.set(newDocRef, newPraiseData);
+          batch.set(newDocRef, dataToSave);
           await batch.commit();
       } else {
-          await setDoc(oldDocRef, newPraiseData, { merge: true });
+          await setDoc(oldDocRef, dataToSave, { merge: true });
       }
       return { success: true, newId: newId };
     } catch (error) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
         path: oldDocRef.path,
         operation: 'update',
-        requestResourceData: newPraiseData
+        requestResourceData: dataToSave
       }));
       throw error;
     }
@@ -138,7 +150,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     praisesToRestore.forEach(praiseData => {
       const id = slugify(praiseData.title);
       const docRef = doc(firestore, 'praises', id);
-      batch.set(docRef, praiseData);
+      batch.set(docRef, removeUndefined(praiseData));
     });
 
     await batch.commit();
