@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { useChoirs } from '@/context/choirs-context';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { ChoirAdminActions } from './choir-admin-actions';
 import { useCallback, useEffect } from 'react';
@@ -63,9 +63,13 @@ function ChoirDetailSkeleton() {
 
 export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const { getChoirById, deleteChoir, updateChoir, isLoaded: isChoirsLoaded } = useChoirs();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
+
+  const from = searchParams.get('from');
+  const backHref = from === 'admin' ? '/admin?tab=more-settings' : '/choirs';
 
   const choir = getChoirById(choirId);
 
@@ -134,7 +138,7 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
       />
       <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/choirs">
+          <Link href={backHref}>
             <ChevronLeft className="h-7 w-7" />
             <span className="sr-only">Volver</span>
           </Link>

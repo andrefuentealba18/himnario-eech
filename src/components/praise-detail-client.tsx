@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { usePraises } from '@/context/praises-context';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { PraiseAdminActions } from './praise-admin-actions';
 import { useCallback, useEffect } from 'react';
@@ -61,9 +61,13 @@ function PraiseDetailSkeleton() {
 
 export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const { getPraiseById, deletePraise, updatePraise, isLoaded: isPraisesLoaded } = usePraises();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
+
+  const from = searchParams.get('from');
+  const backHref = from === 'admin' ? '/admin?tab=more-settings' : '/praises';
 
   const praise = getPraiseById(praiseId);
 
@@ -132,7 +136,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
       />
       <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/praises">
+          <Link href={backHref}>
             <ChevronLeft className="h-7 w-7" />
             <span className="sr-only">Volver</span>
           </Link>

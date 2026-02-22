@@ -1,7 +1,10 @@
+'use client';
+
 import Link from 'next/link';
+import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, DatabaseBackup, Shuffle, Settings } from 'lucide-react';
+import { ChevronLeft, Settings } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
@@ -13,6 +16,15 @@ import { SongTransferManager } from '@/components/song-transfer-manager';
 import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
 
 export default function AdminPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const tab = searchParams.get('tab') || 'hymns';
+
+  const handleTabChange = (value: string) => {
+    router.replace(`${pathname}?tab=${value}`, { scroll: false });
+  };
+
   return (
     <main className="flex flex-col items-center bg-background min-h-screen">
       <div className="w-full max-w-4xl mx-auto">
@@ -30,7 +42,7 @@ export default function AdminPage() {
         </header>
 
         <div className="p-4">
-          <Tabs defaultValue="hymns" className="w-full">
+          <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="hymns">Himnos</TabsTrigger>
               <TabsTrigger value="praises">Alabanzas</TabsTrigger>

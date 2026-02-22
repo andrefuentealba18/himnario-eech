@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { YouthChoirAdminActions } from './youth-choir-admin-actions';
 import { useCallback, useEffect } from 'react';
@@ -59,9 +59,13 @@ function YouthChoirDetailSkeleton() {
 
 export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const { getYouthChoirById, deleteYouthChoir, updateYouthChoir, isLoaded: isYouthChoirsLoaded } = useYouthChoirs();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
+  
+  const from = searchParams.get('from');
+  const backHref = from === 'admin' ? '/admin?tab=more-settings' : '/youth-choirs';
 
   const youthChoir = getYouthChoirById(youthChoirId);
 
@@ -129,7 +133,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
       />
       <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
         <Button variant="ghost" size="icon" asChild>
-          <Link href="/youth-choirs">
+          <Link href={backHref}>
             <ChevronLeft className="h-7 w-7" />
             <span className="sr-only">Volver</span>
           </Link>

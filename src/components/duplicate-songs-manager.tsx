@@ -116,7 +116,7 @@ export function DuplicateSongsManager() {
                     <div key={`${song.category}-${song.id}`} className="flex items-center justify-between p-2 rounded-md bg-muted/50">
                       <div className="flex items-center gap-3">
                          <Badge variant="secondary">{categoryLabels[song.category]}</Badge>
-                         <Link href={`${categoryHrefs[song.category]}${song.id}`} className="underline hover:text-primary">
+                         <Link href={`${categoryHrefs[song.category]}${song.id}?from=admin`} className="underline hover:text-primary">
                             Ver canción
                          </Link>
                       </div>
