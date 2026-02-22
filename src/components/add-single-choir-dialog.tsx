@@ -74,8 +74,8 @@ export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSi
 
     if (result.success) {
       toast({
-        title: 'Coro Agregado',
-        description: `El coro "${values.title}" ha sido guardado.`,
+        title: 'Coro Enviado a Revisión',
+        description: `El coro "${values.title}" ha sido enviado.`,
       });
       onOpenChange(false);
     } else {
@@ -93,7 +93,7 @@ export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSi
         <DialogHeader>
           <DialogTitle>Agregar Nuevo Coro</DialogTitle>
           <DialogDescription>
-            Completa los detalles para agregar un nuevo coro.
+            Completa los detalles para agregar un nuevo coro. Será enviado para revisión.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -168,7 +168,7 @@ export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSi
               )}
             />
             <DialogFooter>
-              <Button type="submit">Guardar Coro</Button>
+              <Button type="submit">Enviar a Revisión</Button>
             </DialogFooter>
           </form>
         </Form>

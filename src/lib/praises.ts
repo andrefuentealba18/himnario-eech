@@ -3,6 +3,8 @@ export type Praise = {
   title: string;
   lyrics: string;
   tone?: string;
+  status?: 'pending' | 'approved';
+  createdAt?: any; // Firestore Timestamp
 };
 
 // The actual data is now managed by the usePraises hook in `src/hooks/use-praises.ts`

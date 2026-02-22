@@ -72,8 +72,8 @@ export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdde
 
     if (result.success) {
       toast({
-        title: 'Alabanza Agregada',
-        description: `La alabanza "${values.title}" ha sido guardada.`,
+        title: 'Alabanza Enviada a Revisión',
+        description: `La alabanza "${values.title}" ha sido enviada.`,
       });
       onOpenChange(false);
     } else {
@@ -91,7 +91,7 @@ export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdde
         <DialogHeader>
           <DialogTitle>Agregar Nueva Alabanza (Coro Juventud)</DialogTitle>
           <DialogDescription>
-            Completa los detalles para agregar una nueva alabanza.
+            Completa los detalles para agregar una nueva alabanza. Será enviada a revisión.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -145,7 +145,7 @@ export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdde
               )}
             />
             <DialogFooter>
-              <Button type="submit">Guardar Alabanza</Button>
+              <Button type="submit">Enviar a Revisión</Button>
             </DialogFooter>
           </form>
         </Form>

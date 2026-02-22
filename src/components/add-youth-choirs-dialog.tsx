@@ -95,8 +95,8 @@ export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded }:
     if (parsed.length > 0) {
         const { addedCount, duplicates } = await onYouthChoirsAdded(parsed);
         toast({
-          title: 'Alabanzas Procesadas',
-          description: `Se agregaron ${addedCount} alabanzas nuevas. Se ignoraron ${duplicates} duplicados.`,
+          title: 'Alabanzas Enviadas a Revisión',
+          description: `Se enviaron ${addedCount} alabanzas nuevas. Se ignoraron ${duplicates} duplicados.`,
         });
     } else {
         toast({
@@ -115,7 +115,7 @@ export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded }:
         <DialogHeader>
           <DialogTitle>Agregar Varias Alabanzas (Coro Juventud)</DialogTitle>
           <DialogDescription>
-            Pega el texto de varias alabanzas. Cada una debe comenzar con su título escrito completamente en MAYÚSCULAS.
+            Pega el texto de varias alabanzas. Cada una debe comenzar con su título escrito completamente en MAYÚSCULAS. Serán enviadas a revisión.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
@@ -130,7 +130,7 @@ export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded }:
                 />
             </div>
             <DialogFooter>
-              <Button type="submit">Guardar Alabanzas</Button>
+              <Button type="submit">Enviar a Revisión</Button>
             </DialogFooter>
         </form>
       </DialogContent>

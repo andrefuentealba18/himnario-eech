@@ -4,4 +4,6 @@ export type Choir = {
   lyrics: string;
   tone?: string;
   speed?: 'Rapido' | 'Lento';
+  status?: 'pending' | 'approved';
+  createdAt?: any; // Firestore Timestamp
 };

@@ -92,7 +92,7 @@ function parseSongs(text: string): Omit<Choir, 'id'>[] {
         } else {
             // This is a lyric line, an ignored uppercase line, or an empty line.
             if (currentSong) {
-                currentSong.lyricsLines.push(line);
+                currentLyrics.push(line);
             }
         }
     }
@@ -133,8 +133,8 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
     if (parsed.length > 0) {
         const { addedCount, duplicates } = await onChoirsAdded(parsed);
         toast({
-          title: 'Coros Procesados',
-          description: `Se agregaron ${addedCount} coros nuevos. Se ignoraron ${duplicates} duplicados.`,
+          title: 'Coros enviados a revisión',
+          description: `Se enviaron ${addedCount} coros nuevos. Se ignoraron ${duplicates} duplicados.`,
         });
     } else {
         toast({
@@ -153,7 +153,7 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
         <DialogHeader>
           <DialogTitle>Agregar Varios Coros</DialogTitle>
           <DialogDescription>
-            Pega el texto de varios coros. Cada coro debe comenzar con su título en MAYÚSCULAS. Opcionalmente, en la línea siguiente puedes agregar la tonalidad y velocidad (ej: SOL MAYOR RAPIDO).
+            Pega el texto de varios coros. Cada coro debe comenzar con su título en MAYÚSCULAS. Opcionalmente, en la línea siguiente puedes agregar la tonalidad y velocidad (ej: SOL MAYOR RAPIDO). Los coros serán enviados para revisión.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
@@ -168,7 +168,7 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
                 />
             </div>
             <DialogFooter>
-              <Button type="submit">Guardar Coros</Button>
+              <Button type="submit">Enviar a Revisión</Button>
             </DialogFooter>
         </form>
       </DialogContent>

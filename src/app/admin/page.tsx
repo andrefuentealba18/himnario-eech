@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, Settings } from 'lucide-react';
+import { ChevronLeft, Settings, Inbox } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
@@ -14,12 +14,24 @@ import { MissingHymns } from '@/components/missing-hymns';
 import { BackupManager } from '@/components/backup-manager';
 import { SongTransferManager } from '@/components/song-transfer-manager';
 import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
+import { SongReviewList } from '@/components/song-review-list';
+import { Badge } from '@/components/ui/badge';
+
+import { usePraises } from '@/context/praises-context';
+import { useChoirs } from '@/context/choirs-context';
+import { useYouthChoirs } from '@/context/youth-choirs-context';
 
 export default function AdminPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
   const tab = searchParams.get('tab') || 'hymns';
+
+  const { pendingPraises } = usePraises();
+  const { pendingChoirs } = useChoirs();
+  const { pendingYouthChoirs } = useYouthChoirs();
+
+  const pendingCount = pendingPraises.length + pendingChoirs.length + pendingYouthChoirs.length;
 
   const handleTabChange = (value: string) => {
     router.replace(`${pathname}?tab=${value}`, { scroll: false });
@@ -43,7 +55,12 @@ export default function AdminPage() {
 
         <div className="p-4">
           <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
+              <TabsTrigger value="review">
+                <Inbox className="mr-2 h-4 w-4" />
+                Revisiones
+                {pendingCount > 0 && <Badge className="ml-2">{pendingCount}</Badge>}
+              </TabsTrigger>
               <TabsTrigger value="hymns">Himnos</TabsTrigger>
               <TabsTrigger value="praises">Alabanzas</TabsTrigger>
               <TabsTrigger value="choirs">Coros</TabsTrigger>
@@ -53,6 +70,16 @@ export default function AdminPage() {
                 Más
               </TabsTrigger>
             </TabsList>
+            <TabsContent value="review">
+               <Card>
+                  <CardHeader>
+                    <CardTitle>Canciones Pendientes de Revisión</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <SongReviewList />
+                  </CardContent>
+                </Card>
+            </TabsContent>
             <TabsContent value="hymns">
               <Card>
                 <CardHeader>

@@ -105,8 +105,8 @@ export function AddPraisesDialog({ open, onOpenChange, onPraisesAdded }: AddPrai
     if (parsedPraises.length > 0) {
         const { addedCount, duplicates } = await onPraisesAdded(parsedPraises);
         toast({
-          title: 'Alabanzas Procesadas',
-          description: `Se agregaron ${addedCount} alabanzas nuevas. Se ignoraron ${duplicates} duplicados.`,
+          title: 'Alabanzas Enviadas a Revisión',
+          description: `Se enviaron ${addedCount} alabanzas nuevas. Se ignoraron ${duplicates} duplicados.`,
         });
     } else {
         toast({
@@ -125,7 +125,7 @@ export function AddPraisesDialog({ open, onOpenChange, onPraisesAdded }: AddPrai
         <DialogHeader>
           <DialogTitle>Agregar Varias Alabanzas</DialogTitle>
           <DialogDescription>
-            Pega el texto de varias alabanzas. Cada alabanza debe comenzar con su título escrito completamente en MAYÚSCULAS. El sistema las separará automáticamente.
+            Pega el texto de varias alabanzas. Cada alabanza debe comenzar con su título escrito completamente en MAYÚSCULAS. Las alabanzas serán enviadas para revisión por un administrador.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
@@ -140,7 +140,7 @@ export function AddPraisesDialog({ open, onOpenChange, onPraisesAdded }: AddPrai
                 />
             </div>
             <DialogFooter>
-              <Button type="submit">Guardar Alabanzas</Button>
+              <Button type="submit">Enviar a Revisión</Button>
             </DialogFooter>
         </form>
       </DialogContent>

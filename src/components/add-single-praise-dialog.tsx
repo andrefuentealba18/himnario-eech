@@ -71,8 +71,8 @@ export function AddSinglePraiseDialog({ open, onOpenChange, onPraiseAdded }: Add
     const result = await onPraiseAdded(values);
     if(result.success){
         toast({
-            title: 'Alabanza Agregada',
-            description: `La alabanza "${values.title}" ha sido guardada.`,
+            title: 'Alabanza Enviada a Revisión',
+            description: `La alabanza "${values.title}" ha sido enviada.`,
         });
         onOpenChange(false);
     } else {
@@ -90,7 +90,7 @@ export function AddSinglePraiseDialog({ open, onOpenChange, onPraiseAdded }: Add
         <DialogHeader>
           <DialogTitle>Agregar Nueva Alabanza</DialogTitle>
           <DialogDescription>
-            Completa los detalles para agregar una nueva alabanza.
+            Completa los detalles para agregar una nueva alabanza. Será enviada a revisión.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -144,7 +144,7 @@ export function AddSinglePraiseDialog({ open, onOpenChange, onPraiseAdded }: Add
               )}
             />
             <DialogFooter>
-              <Button type="submit">Guardar Alabanza</Button>
+              <Button type="submit">Enviar a Revisión</Button>
             </DialogFooter>
           </form>
         </Form>
