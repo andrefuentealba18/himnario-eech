@@ -26,8 +26,14 @@ function parsePraises(text: string): Omit<Praise, 'id'>[] {
     let currentPraise: Omit<Praise, 'id'> | null = null;
     let currentLyrics: string[] = [];
 
+    const ignorePattern = /^ejercito evangelico de chile las torres \d+$/i;
+
     for (const line of lines) {
         const trimmedLine = line.trim();
+
+        if (ignorePattern.test(trimmedLine)) {
+            continue;
+        }
         
         const isTitle = trimmedLine.length > 0 && trimmedLine === trimmedLine.toUpperCase() && /[A-ZÁÉÍÓÚÑ]/.test(trimmedLine);
 
