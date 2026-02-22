@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'Himnario EECH Móvil',
   description: 'Tu cancionero digital del Ejercito Evangélico de Chile',
   viewport: 'width=device-width, initial-scale=1, maximum-scale=1',
-  themeColor: '#D6A93D',
+  themeColor: '#3b82f6',
 };
 
 export default function RootLayout({

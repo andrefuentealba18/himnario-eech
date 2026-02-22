@@ -8,10 +8,10 @@ export default function HomePage() {
   return (
     <div className="relative min-h-screen w-full bg-background text-foreground overflow-hidden">
       <div 
-        className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background -z-20 animate-fade-in"
+        className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background -z-20 animate-fade-in"
       />
-      <div className="absolute top-0 -left-1/4 w-1/2 h-1/2 bg-primary/10 rounded-full filter blur-3xl opacity-50 animate-fade-in" style={{ animationDelay: '0.2s' }} />
-      <div className="absolute bottom-0 -right-1/4 w-1/2 h-1/2 bg-secondary/20 rounded-full filter blur-3xl opacity-50 animate-fade-in" style={{ animationDelay: '0.4s' }} />
+      <div className="absolute top-0 -left-1/4 w-1/2 h-1/2 bg-primary/10 rounded-full filter blur-3xl opacity-30 animate-fade-in" style={{ animationDelay: '0.2s' }} />
+      <div className="absolute bottom-0 -right-1/4 w-1/2 h-1/2 bg-secondary/40 rounded-full filter blur-3xl opacity-30 animate-fade-in" style={{ animationDelay: '0.4s' }} />
 
       <div className="relative z-10 flex flex-col items-center justify-center min-h-screen">
         <main className="container mx-auto flex flex-col items-center justify-center p-4">
