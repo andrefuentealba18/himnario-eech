@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, DatabaseBackup, Shuffle } from 'lucide-react';
+import { ChevronLeft, DatabaseBackup, Shuffle, Settings } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
@@ -30,19 +30,14 @@ export default function AdminPage() {
 
         <div className="p-4">
           <Tabs defaultValue="hymns" className="w-full">
-            <TabsList className="grid w-full grid-cols-7">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="hymns">Himnos</TabsTrigger>
               <TabsTrigger value="praises">Alabanzas</TabsTrigger>
               <TabsTrigger value="choirs">Coros</TabsTrigger>
               <TabsTrigger value="youth-choirs">Coro Juventud</TabsTrigger>
-              <TabsTrigger value="missing-hymns">Faltantes</TabsTrigger>
-              <TabsTrigger value="transfer">
-                <Shuffle className="mr-2 h-4 w-4" />
-                Traspasar
-              </TabsTrigger>
-              <TabsTrigger value="backup">
-                <DatabaseBackup className="mr-2 h-4 w-4" />
-                Respaldo
+              <TabsTrigger value="more-settings">
+                <Settings className="mr-2 h-4 w-4" />
+                Más Opciones
               </TabsTrigger>
             </TabsList>
             <TabsContent value="hymns">
@@ -85,14 +80,12 @@ export default function AdminPage() {
                   </CardContent>
                 </Card>
             </TabsContent>
-            <TabsContent value="missing-hymns">
-                <MissingHymns />
-            </TabsContent>
-            <TabsContent value="transfer">
-                <SongTransferManager />
-            </TabsContent>
-             <TabsContent value="backup">
-                <BackupManager />
+            <TabsContent value="more-settings">
+                <div className="space-y-6">
+                    <MissingHymns />
+                    <SongTransferManager />
+                    <BackupManager />
+                </div>
             </TabsContent>
           </Tabs>
         </div>
