@@ -17,7 +17,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 
 export default function YouthChoirsIndexPage() {
-  const { youthChoirs, addYouthChoir, addYouthChoirs, isLoaded } = useYouthChoirs();
+  const { youthChoirs, addYouthChoirs, isLoaded } = useYouthChoirs();
   const [isSingleYouthChoirDialogOpen, setSingleYouthChoirDialogOpen] = useState(false);
   const [isMultiYouthChoirDialogOpen, setMultiYouthChoirDialogOpen] = useState(false);
 
@@ -52,7 +52,7 @@ export default function YouthChoirsIndexPage() {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent>
                       <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setSingleYouthChoirDialogOpen(true); }}>
-                        Agregar una alabanza
+                        Sugerir una alabanza
                       </DropdownMenuItem>
                        <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setMultiYouthChoirDialogOpen(true); }}>
                         Agregar varias alabanzas
@@ -75,7 +75,6 @@ export default function YouthChoirsIndexPage() {
       <AddSingleYouthChoirDialog
         open={isSingleYouthChoirDialogOpen}
         onOpenChange={setSingleYouthChoirDialogOpen}
-        onYouthChoirAdded={addYouthChoir}
       />
        <AddYouthChoirsDialog
         open={isMultiYouthChoirDialogOpen}

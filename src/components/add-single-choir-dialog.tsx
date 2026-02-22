@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import type { Choir } from '@/lib/choirs';
 import { musicalKeys } from '@/lib/musical-keys';
+import { useFirestore } from '@/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -35,27 +36,29 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-const choirSchema = z.object({
+const choirRequestSchema = z.object({
+  submitterName: z.string().min(1, 'Tu nombre es requerido.'),
   title: z.string().min(1, 'El título es requerido.'),
   tone: z.string().optional(),
   lyrics: z.string().min(1, 'La letra es requerida.'),
   speed: z.string().optional(),
 });
 
-type FormData = z.infer<typeof choirSchema>;
+type FormData = z.infer<typeof choirRequestSchema>;
 
 interface AddSingleChoirDialogProps {
     open: boolean;
     onOpenChange: (open: boolean) => void;
-    onChoirAdded: (choir: Omit<Choir, 'id'>) => Promise<{ success: boolean; choir?: Choir }>;
 }
 
-export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSingleChoirDialogProps) {
+export function AddSingleChoirDialog({ open, onOpenChange }: AddSingleChoirDialogProps) {
+  const firestore = useFirestore();
   const { toast } = useToast();
 
   const form = useForm<FormData>({
-    resolver: zodResolver(choirSchema),
+    resolver: zodResolver(choirRequestSchema),
     defaultValues: {
+      submitterName: '',
       title: '',
       tone: '',
       lyrics: '',
@@ -70,19 +73,36 @@ export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSi
   }, [open, form]);
 
   async function onSubmit(values: FormData) {
-    const result = await onChoirAdded(values);
-    if (result.success) {
+    if (!firestore) {
       toast({
-        title: 'Coro Agregado',
-        description: `El coro "${values.title}" ha sido guardado.`,
+        variant: "destructive",
+        title: 'Error de Conexión',
+        description: 'No se pudo enviar la sugerencia. Por favor, intenta de nuevo.',
+      });
+      return;
+    }
+    
+    try {
+      const requestsCollection = collection(firestore, 'songRequests');
+      await addDoc(requestsCollection, {
+        ...values,
+        category: 'choir',
+        status: 'pending',
+        createdAt: serverTimestamp(),
+      });
+
+      toast({
+        title: 'Sugerencia Enviada',
+        description: 'Gracias por tu contribución. El coro será revisado por un administrador antes de ser agregado.',
       });
       onOpenChange(false);
-    } else {
-        toast({
-            variant: 'destructive',
-            title: 'Error al agregar',
-            description: `El coro con el título "${values.title}" ya existe.`,
-        });
+    } catch (error) {
+       toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'No se pudo enviar tu sugerencia.',
+      });
+      console.error("Error submitting song request: ", error);
     }
   }
 
@@ -90,9 +110,9 @@ export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSi
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle>Agregar Nuevo Coro</DialogTitle>
+          <DialogTitle>Sugerir Nuevo Coro</DialogTitle>
           <DialogDescription>
-            Completa los detalles del nuevo coro. Haz clic en guardar cuando termines.
+            Completa los detalles para sugerir un nuevo coro. Un administrador lo revisará.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -166,8 +186,21 @@ export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSi
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="submitterName"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Tu Nombre</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Nombre de quien sugiere" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <DialogFooter>
-              <Button type="submit">Guardar Coro</Button>
+              <Button type="submit">Enviar Sugerencia</Button>
             </DialogFooter>
           </form>
         </Form>

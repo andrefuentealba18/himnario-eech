@@ -207,6 +207,24 @@
       },
       "required": ["id", "name", "createdAt"]
     },
+    "SongRequest": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SongRequest",
+      "type": "object",
+      "description": "Represents a user-submitted song pending for admin approval.",
+      "properties": {
+        "id": { "type": "string" },
+        "submitterName": { "type": "string", "description": "The name of the person submitting the song." },
+        "category": { "type": "string", "enum": ["praise", "choir", "youth-choir"] },
+        "title": { "type": "string" },
+        "lyrics": { "type": "string" },
+        "tone": { "type": "string" },
+        "speed": { "type": "string", "enum": ["Rapido", "Lento"] },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "submitterName", "category", "title", "lyrics", "status", "createdAt"]
+    },
     "UserProfile": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "UserProfile",
@@ -342,6 +360,22 @@
             {
               "name": "repertoireId",
               "description": "The unique identifier for the repertoire."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/songRequests/{songRequestId}",
+        "definition": {
+          "entityName": "SongRequest",
+          "schema": {
+            "$ref": "#/backend/entities/SongRequest"
+          },
+          "description": "Stores user-submitted songs pending for admin approval.",
+          "params": [
+            {
+              "name": "songRequestId",
+              "description": "The unique identifier for the song request."
             }
           ]
         }
