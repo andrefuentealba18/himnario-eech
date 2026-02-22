@@ -15,17 +15,6 @@ import { ArrowRight, Loader2 } from 'lucide-react';
 import type { Praise } from '@/lib/praises';
 import type { Choir } from '@/lib/choirs';
 import type { YouthChoir } from '@/lib/youth-choirs';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 
 type Song = Praise | Choir | YouthChoir;
 type Category = 'praises' | 'choirs' | 'youth-choirs';
@@ -150,7 +139,7 @@ export function SongTransferManager() {
         <div className="flex items-center gap-4">
           <div className="flex-1 space-y-2">
             <Label htmlFor="source-category">Desde</Label>
-            <Select value={sourceCategory} onValueChange={(v) => setSourceCategory(v as Category)}>
+            <Select value={sourceCategory} onValueChange={(v) => setSourceCategory(v as Category)} disabled={isTransferring}>
               <SelectTrigger id="source-category">
                 <SelectValue placeholder="Seleccionar origen..." />
               </SelectTrigger>
@@ -169,7 +158,7 @@ export function SongTransferManager() {
 
           <div className="flex-1 space-y-2">
             <Label htmlFor="destination-category">Hacia</Label>
-             <Select value={destinationCategory} onValueChange={(v) => setDestinationCategory(v as Category)}>
+             <Select value={destinationCategory} onValueChange={(v) => setDestinationCategory(v as Category)} disabled={isTransferring}>
               <SelectTrigger id="destination-category">
                 <SelectValue placeholder="Seleccionar destino..." />
               </SelectTrigger>
@@ -197,6 +186,7 @@ export function SongTransferManager() {
                                     checked={isSelectAllChecked ? true : isSelectAllIndeterminate ? 'indeterminate' : false}
                                     onCheckedChange={(checked) => handleSelectAll(!!checked)}
                                     aria-label="Seleccionar todo"
+                                    disabled={isTransferring}
                                   />
                                   <label
                                     htmlFor="select-all"
@@ -211,6 +201,7 @@ export function SongTransferManager() {
                                             id={song.id}
                                             checked={selectedSongs.has(song.id)}
                                             onCheckedChange={(checked) => handleSongSelect(song.id, !!checked)}
+                                            disabled={isTransferring}
                                         />
                                         <label htmlFor={song.id} className="text-sm w-full truncate">
                                             {song.title}
@@ -226,26 +217,12 @@ export function SongTransferManager() {
         )}
 
         <div className="flex justify-end">
-            <AlertDialog>
-                <AlertDialogTrigger asChild>
-                     <Button disabled={!sourceCategory || !destinationCategory || selectedSongs.size === 0 || isTransferring}>
-                        {isTransferring && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Traspasar ({selectedSongs.size})
-                    </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>¿Confirmar traspaso?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                           Se moverán {selectedSongs.size} canciones desde "{sourceCategory && categoryLabels[sourceCategory]}" hacia "{destinationCategory && categoryLabels[destinationCategory]}". Esta acción es irreversible.
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                        <AlertDialogAction onClick={handleTransfer}>Sí, traspasar</AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
+            <Button 
+                onClick={handleTransfer}
+                disabled={!sourceCategory || !destinationCategory || selectedSongs.size === 0 || isTransferring}>
+                {isTransferring && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Traspasar ({selectedSongs.size})
+            </Button>
         </div>
       </CardContent>
     </Card>
