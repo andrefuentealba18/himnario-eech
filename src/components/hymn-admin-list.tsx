@@ -8,6 +8,7 @@ import { Edit, Trash2, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { EditHymnDialog } from './edit-hymn-dialog';
 import { Input } from '@/components/ui/input';
+import { normalizeSearchTerm } from '@/lib/utils';
 
 export function HymnAdminList() {
   const { hymns, deleteHymn, updateHymn, isLoaded } = useHymns();
@@ -15,13 +16,13 @@ export function HymnAdminList() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredHymns = useMemo(() => {
-    const lowercasedSearchTerm = searchTerm.toLowerCase();
-    if (!lowercasedSearchTerm) {
+    const normalizedSearch = normalizeSearchTerm(searchTerm);
+    if (!normalizedSearch) {
       return hymns;
     }
     return hymns.filter(hymn =>
-      hymn.title.toLowerCase().includes(lowercasedSearchTerm) ||
-      hymn.number.toString().includes(lowercasedSearchTerm)
+      normalizeSearchTerm(hymn.title).includes(normalizedSearch) ||
+      hymn.number.toString().includes(normalizedSearch)
     );
   }, [searchTerm, hymns]);
 

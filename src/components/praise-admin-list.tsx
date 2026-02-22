@@ -10,6 +10,7 @@ import { EditPraiseDialog } from './edit-praise-dialog';
 import { EditToneDialog } from './edit-tone-dialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { normalizeSearchTerm } from '@/lib/utils';
 
 export function PraiseAdminList() {
   const { praises, deletePraise, updatePraise, isLoaded } = usePraises();
@@ -17,12 +18,12 @@ export function PraiseAdminList() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredPraises = useMemo(() => {
-    const lowercasedSearchTerm = searchTerm.toLowerCase();
-    if (!lowercasedSearchTerm) {
+    const normalizedSearch = normalizeSearchTerm(searchTerm);
+    if (!normalizedSearch) {
       return praises;
     }
     return praises.filter(praise =>
-      praise.title.toLowerCase().includes(lowercasedSearchTerm)
+      normalizeSearchTerm(praise.title).includes(normalizedSearch)
     );
   }, [searchTerm, praises]);
 

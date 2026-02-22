@@ -14,6 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { normalizeSearchTerm } from '@/lib/utils';
 
 interface ChoirListClientProps {
   choirs: Choir[];
@@ -37,17 +38,23 @@ export function ChoirListClient({ choirs }: ChoirListClientProps) {
       listToFilter = choirs.filter(choir => choir.tone && choir.tone.includes('menor'));
     }
 
-    const lowercasedSearchTerm = searchTerm.toLowerCase();
+    const normalizedSearch = normalizeSearchTerm(searchTerm);
 
-    if (!lowercasedSearchTerm) {
+    if (!normalizedSearch) {
       return listToFilter;
     }
 
-    return listToFilter.filter(choir =>
-      choir.title.toLowerCase().includes(lowercasedSearchTerm) ||
-      choir.lyrics.toLowerCase().includes(lowercasedSearchTerm) ||
-      (choir.tone && choir.tone.toLowerCase().includes(lowercasedSearchTerm))
-    );
+    return listToFilter.filter(choir => {
+        const normalizedTitle = normalizeSearchTerm(choir.title);
+        const normalizedLyrics = normalizeSearchTerm(choir.lyrics);
+        const normalizedTone = choir.tone ? normalizeSearchTerm(choir.tone) : '';
+        
+        return (
+            normalizedTitle.includes(normalizedSearch) ||
+            normalizedLyrics.includes(normalizedSearch) ||
+            normalizedTone.includes(normalizedSearch)
+        );
+    });
   }, [searchTerm, choirs, activeTab]);
 
   return (

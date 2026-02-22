@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
 import { EditYouthChoirDialog } from './edit-youth-choir-dialog';
 import { Input } from '@/components/ui/input';
+import { normalizeSearchTerm } from '@/lib/utils';
 
 export function YouthChoirAdminList() {
   const { youthChoirs, deleteYouthChoir, updateYouthChoir, isLoaded } = useYouthChoirs();
@@ -15,12 +16,12 @@ export function YouthChoirAdminList() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredYouthChoirs = useMemo(() => {
-    const lowercasedSearchTerm = searchTerm.toLowerCase();
-    if (!lowercasedSearchTerm) {
+    const normalizedSearch = normalizeSearchTerm(searchTerm);
+    if (!normalizedSearch) {
       return youthChoirs;
     }
     return youthChoirs.filter(youthChoir =>
-      youthChoir.title.toLowerCase().includes(lowercasedSearchTerm)
+      normalizeSearchTerm(youthChoir.title).includes(normalizedSearch)
     );
   }, [searchTerm, youthChoirs]);
 

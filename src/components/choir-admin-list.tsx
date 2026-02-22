@@ -8,6 +8,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useChoirs } from '@/context/choirs-context';
 import { EditChoirDialog } from './edit-choir-dialog';
 import { Input } from '@/components/ui/input';
+import { normalizeSearchTerm } from '@/lib/utils';
 
 export function ChoirAdminList() {
   const { choirs, deleteChoir, updateChoir, isLoaded } = useChoirs();
@@ -15,12 +16,12 @@ export function ChoirAdminList() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredChoirs = useMemo(() => {
-    const lowercasedSearchTerm = searchTerm.toLowerCase();
-    if (!lowercasedSearchTerm) {
+    const normalizedSearch = normalizeSearchTerm(searchTerm);
+    if (!normalizedSearch) {
       return choirs;
     }
     return choirs.filter(choir =>
-      choir.title.toLowerCase().includes(lowercasedSearchTerm)
+      normalizeSearchTerm(choir.title).includes(normalizedSearch)
     );
   }, [searchTerm, choirs]);
 

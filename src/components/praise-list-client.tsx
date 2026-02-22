@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { normalizeSearchTerm } from '@/lib/utils';
 
 interface PraiseListClientProps {
   praises: Praise[];
@@ -16,16 +17,23 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const filteredPraises = useMemo(() => {
-    const lowercasedSearchTerm = searchTerm.toLowerCase();
+    const normalizedSearch = normalizeSearchTerm(searchTerm);
 
-    if (!lowercasedSearchTerm) {
+    if (!normalizedSearch) {
       return praises;
     }
 
-    return praises.filter(praise =>
-      praise.title.toLowerCase().includes(lowercasedSearchTerm) ||
-      praise.lyrics.toLowerCase().includes(lowercasedSearchTerm) ||
-      (praise.tone && praise.tone.toLowerCase().includes(lowercasedSearchTerm))
+    return praises.filter(praise => {
+        const normalizedTitle = normalizeSearchTerm(praise.title);
+        const normalizedLyrics = normalizeSearchTerm(praise.lyrics);
+        const normalizedTone = praise.tone ? normalizeSearchTerm(praise.tone) : '';
+
+        return (
+          normalizedTitle.includes(normalizedSearch) ||
+          normalizedLyrics.includes(normalizedSearch) ||
+          normalizedTone.includes(normalizedSearch)
+        );
+      }
     );
   }, [searchTerm, praises]);
 

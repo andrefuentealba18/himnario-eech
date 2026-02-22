@@ -9,6 +9,7 @@ import { useFavorites } from '@/hooks/use-favorites';
 import { Search, Star, List } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { normalizeSearchTerm } from '@/lib/utils';
 
 interface HymnListClientProps {
   hymns: Hymn[];
@@ -20,7 +21,7 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
   const { favorites, isLoaded } = useFavorites();
 
   const filteredHymns = useMemo(() => {
-    const lowercasedSearchTerm = searchTerm.toLowerCase();
+    const normalizedSearch = normalizeSearchTerm(searchTerm);
     
     let listToFilter = hymns;
     if (activeTab === 'favorites') {
@@ -28,16 +29,22 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
       listToFilter = hymns.filter(hymn => favorites.has(hymn.number));
     }
 
-    if (!lowercasedSearchTerm) {
+    if (!normalizedSearch) {
       return listToFilter;
     }
 
-    return listToFilter.filter(hymn =>
-      hymn.title.toLowerCase().includes(lowercasedSearchTerm) ||
-      hymn.number.toString().includes(lowercasedSearchTerm) ||
-      hymn.lyrics.toLowerCase().includes(lowercasedSearchTerm) ||
-      (hymn.tone && hymn.tone.toLowerCase().includes(lowercasedSearchTerm))
-    );
+    return listToFilter.filter(hymn => {
+        const normalizedTitle = normalizeSearchTerm(hymn.title);
+        const normalizedLyrics = normalizeSearchTerm(hymn.lyrics);
+        const normalizedTone = hymn.tone ? normalizeSearchTerm(hymn.tone) : '';
+        
+        return (
+            normalizedTitle.includes(normalizedSearch) ||
+            hymn.number.toString().includes(normalizedSearch) ||
+            normalizedLyrics.includes(normalizedSearch) ||
+            normalizedTone.includes(normalizedSearch)
+        );
+    });
   }, [searchTerm, hymns, activeTab, favorites, isLoaded]);
 
   return (
