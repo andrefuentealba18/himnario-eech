@@ -137,17 +137,16 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
         </Button>
       </header>
 
-      <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="w-full max-w-2xl">
-          <div className={`font-body leading-loose text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
+      <main className="flex-1 py-8 px-4 flex justify-center items-start">
+        <div className="w-full max-w-3xl bg-background/60 backdrop-blur-lg border rounded-2xl p-6 sm:p-10 shadow-xl">
+          <div className={`font-body leading-relaxed text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
             {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
               const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
               if (isChorus) {
                   return (
-                    <div key={pIndex} className="my-8 relative">
-                      <div className="absolute inset-0 bg-primary/10 rounded-2xl transform -rotate-1"></div>
-                      <div className="relative p-6 bg-background/70 backdrop-blur-sm border border-primary/20 rounded-lg shadow-lg">
-                        <div className="flex items-center justify-center gap-2 mb-4 text-sm font-semibold tracking-widest uppercase text-primary">
+                    <div key={pIndex} className="my-6">
+                      <div className="p-4 bg-primary/5 border-l-4 border-primary rounded-lg">
+                        <div className="flex items-center justify-center gap-2 mb-2 text-xs font-semibold tracking-widest uppercase text-primary">
                           <Music2 className="h-4 w-4"/>
                           <span>Coro</span>
                         </div>
@@ -159,7 +158,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
                   )
               }
               return (
-                 <p key={pIndex} className="whitespace-pre-wrap mb-8">
+                 <p key={pIndex} className="whitespace-pre-wrap mb-6">
                   {paragraph}
                 </p>
               );
