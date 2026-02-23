@@ -22,15 +22,20 @@ interface ChoirListClientProps {
 
 export function ChoirListClient({ choirs }: ChoirListClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('rapidos');
+  const [activeTab, setActiveTab] = useState('all');
 
   const filteredChoirs = useMemo(() => {
-    let listToFilter: Choir[];
+    let listToFilter = choirs;
 
-    if (activeTab === 'lentos') {
-      listToFilter = choirs.filter(choir => choir.speed === 'Lento');
-    } else { // Default to 'rapidos'
+    // Filter by tab
+    if (activeTab === 'rapidos') {
       listToFilter = choirs.filter(choir => choir.speed === 'Rapido');
+    } else if (activeTab === 'lentos') {
+      listToFilter = choirs.filter(choir => choir.speed === 'Lento');
+    } else if (activeTab === 'mayores') {
+      listToFilter = choirs.filter(choir => choir.tone && choir.tone.includes('Mayor'));
+    } else if (activeTab === 'menores') {
+      listToFilter = choirs.filter(choir => choir.tone && choir.tone.includes('menor'));
     }
 
     const normalizedSearch = normalizeSearchTerm(searchTerm);
@@ -66,9 +71,12 @@ export function ChoirListClient({ choirs }: ChoirListClientProps) {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-2 h-auto">
+        <TabsList className="grid w-full grid-cols-5 h-auto">
+          <TabsTrigger value="all">Todos</TabsTrigger>
           <TabsTrigger value="rapidos">Rápidos</TabsTrigger>
           <TabsTrigger value="lentos">Lentos</TabsTrigger>
+          <TabsTrigger value="mayores">Mayores</TabsTrigger>
+          <TabsTrigger value="menores">Menores</TabsTrigger>
         </TabsList>
       </Tabs>
 
