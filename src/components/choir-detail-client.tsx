@@ -3,7 +3,7 @@
 import type { Choir } from '@/lib/choirs';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut, Music2 } from 'lucide-react';
 import { useChoirs } from '@/context/choirs-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChoirAdminActions } from './choir-admin-actions';
@@ -41,19 +41,19 @@ const fontSizes = [
 function ChoirDetailSkeleton() {
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-20">
-                <Skeleton className="h-10 w-10 rounded-full" />
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-24">
+                <Skeleton className="h-12 w-12 rounded-full" />
                 <div className="flex-1 px-4 text-center">
-                    <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
-                    <div className="flex items-center justify-center gap-2">
-                      <Skeleton className="h-5 w-1/4 mx-auto" />
-                      <Skeleton className="h-5 w-1/4 mx-auto" />
+                    <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
+                    <div className="flex items-center justify-center gap-2 mt-2">
+                      <Skeleton className="h-6 w-24 rounded-full" />
+                      <Skeleton className="h-6 w-24 rounded-full" />
                     </div>
                 </div>
-                <div className="w-10" />
+                <div className="w-12 h-12" />
             </header>
             <main className="flex-1 py-8 container max-w-2xl px-4">
-                <div className="space-y-6 text-center">
+                <div className="space-y-8 text-center">
                     <Skeleton className="h-6 w-full" />
                     <Skeleton className="h-6 w-5/6 mx-auto" />
                     <Skeleton className="h-6 w-4/6 mx-auto mb-8" />
@@ -62,10 +62,12 @@ function ChoirDetailSkeleton() {
                     <Skeleton className="h-6 w-4/6 mx-auto" />
                 </div>
             </main>
-            <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-background/80 backdrop-blur-sm p-4 border-t">
-              <Skeleton className="h-14 w-14 rounded-full" />
-              <Skeleton className="h-14 w-14 rounded-full" />
-              <Skeleton className="h-14 w-14 rounded-full" />
+            <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4">
+              <div className="flex items-center justify-center gap-2 bg-background/80 backdrop-blur-sm border rounded-full shadow-lg p-2">
+                <Skeleton className="h-12 w-12 rounded-full" />
+                <Skeleton className="h-14 w-14 rounded-full" />
+                <Skeleton className="h-12 w-12 rounded-full" />
+              </div>
             </footer>
         </div>
     );
@@ -127,53 +129,59 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
   }
 
   return (
-    <div className="relative flex flex-col min-h-screen bg-background">
-      <div className="absolute top-0 -left-1/4 w-1/2 h-1/2 bg-primary/10 rounded-full filter blur-3xl opacity-30 animate-fade-in" />
-      <div className="absolute bottom-0 -right-1/4 w-1/2 h-1/2 bg-secondary/40 rounded-full filter blur-3xl opacity-30 animate-fade-in" />
-      <div 
-        className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background -z-10"
-      />
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-20">
-        <Button variant="ghost" size="icon" asChild>
+    <div className="flex flex-col min-h-screen bg-background">
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background animate-fade-in" />
+        <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/15 rounded-full filter blur-3xl opacity-50 animate-pulse-slow" />
+        <div className="absolute -bottom-1/4 -right-1/4 w-3/4 h-3/4 bg-secondary/20 rounded-full filter blur-3xl opacity-40 animate-pulse-slow" style={{ animationDelay: '2s' }} />
+      </div>
+
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-24">
+        <Button variant="ghost" size="icon" asChild className="h-12 w-12">
           <Link href={backHref}>
             <ChevronLeft className="h-7 w-7" />
             <span className="sr-only">Volver</span>
           </Link>
         </Button>
-        <div className="text-center px-4 overflow-hidden flex-1">
-            <h1 className="font-headline text-2xl font-bold text-primary truncate">{choir.title}</h1>
-            <div className="flex items-center justify-center gap-2 mt-1">
+        <div className="text-center px-2 overflow-hidden flex-1">
+            <h1 className="font-headline text-3xl font-bold text-primary truncate">{choir.title}</h1>
+            <div className="flex items-center justify-center gap-2 mt-2">
                 <EditToneDialog song={choir} onToneUpdated={handleToneUpdate}>
-                  <Button variant="outline" size="sm" className="h-auto px-2 py-0.5 text-xs">
-                    {choir.tone || 'Tonalidad: Indefinida'}
+                  <Button variant="outline" size="sm" className="h-auto px-3 py-1 text-xs rounded-full">
+                    {choir.tone || 'Tonalidad'}
                   </Button>
                 </EditToneDialog>
                  {choir.speed && (
-                    <Badge variant="secondary" className="text-xs capitalize">{choir.speed}</Badge>
+                    <Badge variant="secondary" className="text-xs capitalize rounded-full px-3 py-1">{choir.speed}</Badge>
                 )}
             </div>
         </div>
-        <div className="w-10" />
+        <div className="w-12 h-12" />
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
         <div className="w-full max-w-2xl">
-            <div
-                className={`font-body leading-relaxed text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
-            >
+            <div className={`font-body leading-loose text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
                 {choir.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
-                  const isChorus = paragraph.toUpperCase().startsWith('CORO');
+                  const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
                   if (isChorus) {
                     return (
-                        <div key={pIndex} className="mb-6 bg-primary/10 p-4 rounded-lg border border-primary/20">
-                            <p className="whitespace-pre-wrap font-bold leading-snug">
-                                {paragraph}
-                            </p>
+                        <div key={pIndex} className="my-8 relative">
+                            <div className="absolute inset-0 bg-primary/10 rounded-2xl transform -rotate-1"></div>
+                            <div className="relative p-6 bg-background/70 backdrop-blur-sm border border-primary/20 rounded-lg shadow-lg">
+                                <div className="flex items-center justify-center gap-2 mb-4 text-sm font-semibold tracking-widest uppercase text-primary">
+                                <Music2 className="h-4 w-4"/>
+                                <span>Coro</span>
+                                </div>
+                                <p className="whitespace-pre-wrap font-semibold leading-relaxed text-foreground/90">
+                                    {paragraph.substring(4).trim()}
+                                </p>
+                            </div>
                         </div>
                     )
                   }
                   return (
-                    <p key={pIndex} className="whitespace-pre-wrap mb-6">
+                    <p key={pIndex} className="whitespace-pre-wrap mb-8">
                       {paragraph}
                     </p>
                   );
@@ -182,16 +190,18 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
         </div>
       </main>
 
-      <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-background/80 backdrop-blur-sm p-4 border-t">
-           <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-14 w-14">
-             <ZoomOut className="h-7 w-7" />
-             <span className="sr-only">Reducir texto</span>
-           </Button>
-           <ChoirAdminActions choir={choir} onDelete={handleDelete} onUpdate={handleUpdate} />
-           <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-14 w-14">
-             <ZoomIn className="h-7 w-7" />
-             <span className="sr-only">Aumentar texto</span>
-           </Button>
+      <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4">
+           <div className="flex items-center justify-center gap-2 bg-background/80 backdrop-blur-sm border rounded-full shadow-lg p-2">
+            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-12 w-12">
+              <ZoomOut className="h-6 w-6" />
+              <span className="sr-only">Reducir texto</span>
+            </Button>
+            <ChoirAdminActions choir={choir} onDelete={handleDelete} onUpdate={handleUpdate} />
+            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-12 w-12">
+              <ZoomIn className="h-6 w-6" />
+              <span className="sr-only">Aumentar texto</span>
+            </Button>
+         </div>
       </footer>
     </div>
   );
