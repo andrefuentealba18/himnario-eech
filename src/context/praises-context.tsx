@@ -81,7 +81,8 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
 
     setDoc(docRef, removeUndefined(dataToSave))
       .then(() => {
-        toast({ title: 'Alabanza Enviada a Revisión', description: `La alabanza "${newPraiseData.title}" ha sido enviada.` });
+        toast({ title: 'Actualizando la lista...' });
+        setTimeout(() => window.location.reload(), 500);
       })
       .catch((error) => {
         console.error("Error adding praise:", error);
@@ -123,7 +124,8 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     if (addedCount > 0) {
       batch.commit()
         .then(() => {
-          toast({ title: 'Alabanzas Enviadas a Revisión', description: `Se enviaron ${addedCount} alabanzas nuevas. Se ignoraron ${duplicates} duplicados.` });
+          toast({ title: 'Actualizando la lista...' });
+          setTimeout(() => window.location.reload(), 500);
         })
         .catch((error) => {
           console.error("Error adding praises in batch:", error);

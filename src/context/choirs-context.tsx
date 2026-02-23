@@ -81,7 +81,8 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     
     setDoc(docRef, removeUndefined(dataToSave))
       .then(() => {
-        toast({ title: 'Coro Enviado a Revisión', description: `El coro "${newChoirData.title}" ha sido enviado.` });
+        toast({ title: 'Actualizando la lista...' });
+        setTimeout(() => window.location.reload(), 500);
       })
       .catch((error) => {
         console.error("Error adding choir:", error);
@@ -123,7 +124,8 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     if (addedCount > 0) {
       batch.commit()
         .then(() => {
-          toast({ title: 'Coros enviados a revisión', description: `Se enviaron ${addedCount} coros nuevos. Se ignoraron ${duplicates} duplicados.` });
+          toast({ title: 'Actualizando la lista...' });
+          setTimeout(() => window.location.reload(), 500);
         })
         .catch((error) => {
           console.error("Error adding choirs in batch:", error);

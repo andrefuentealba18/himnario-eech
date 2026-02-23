@@ -81,7 +81,8 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
 
     setDoc(docRef, removeUndefined(dataToSave))
       .then(() => {
-        toast({ title: 'Alabanza Enviada a Revisión', description: `La alabanza "${newYouthChoirData.title}" ha sido enviada.` });
+        toast({ title: 'Actualizando la lista...' });
+        setTimeout(() => window.location.reload(), 500);
       })
       .catch((error) => {
         console.error("Error adding youth choir:", error);
@@ -123,7 +124,8 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     if (addedCount > 0) {
       batch.commit()
         .then(() => {
-          toast({ title: 'Alabanzas Enviadas a Revisión', description: `Se enviaron ${addedCount} alabanzas nuevas. Se ignoraron ${duplicates} duplicados.` });
+          toast({ title: 'Actualizando la lista...' });
+          setTimeout(() => window.location.reload(), 500);
         })
         .catch((error) => {
           console.error("Error adding youth choirs in batch:", error);
