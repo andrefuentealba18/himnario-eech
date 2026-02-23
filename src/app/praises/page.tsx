@@ -15,11 +15,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 export default function PraisesIndexPage() {
   const { praises, addPraises, isLoaded, addPraise } = usePraises();
   const [isSinglePraiseDialogOpen, setSinglePraiseDialogOpen] = useState(false);
   const [isMultiPraiseDialogOpen, setMultiPraiseDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleSinglePraiseOpenChange = (open: boolean) => {
+    setSinglePraiseDialogOpen(open);
+    if (!open) {
+      toast({ title: 'Actualizando la lista...' });
+      setTimeout(() => window.location.reload(), 500);
+    }
+  };
+
+  const handleMultiPraiseOpenChange = (open: boolean) => {
+    setMultiPraiseDialogOpen(open);
+    if (!open) {
+      toast({ title: 'Actualizando la lista...' });
+      setTimeout(() => window.location.reload(), 500);
+    }
+  };
 
   return (
     <>
@@ -73,12 +91,12 @@ export default function PraisesIndexPage() {
       </main>
       <AddSinglePraiseDialog
         open={isSinglePraiseDialogOpen}
-        onOpenChange={setSinglePraiseDialogOpen}
+        onOpenChange={handleSinglePraiseOpenChange}
         onPraiseAdded={addPraise}
       />
       <AddPraisesDialog
         open={isMultiPraiseDialogOpen}
-        onOpenChange={setMultiPraiseDialogOpen}
+        onOpenChange={handleMultiPraiseOpenChange}
         onPraisesAdded={addPraises}
       />
     </>

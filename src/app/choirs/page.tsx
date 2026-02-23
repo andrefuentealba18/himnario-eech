@@ -16,11 +16,29 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Badge } from '@/components/ui/badge';
 import type { Choir } from '@/lib/choirs';
+import { useToast } from '@/hooks/use-toast';
 
 export default function ChoirsIndexPage() {
   const { choirs, addChoir, addChoirs, isLoaded } = useChoirs();
   const [isSingleChoirDialogOpen, setSingleChoirDialogOpen] = useState(false);
   const [isMultiChoirDialogOpen, setMultiChoirDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleSingleOpenChange = (open: boolean) => {
+    setSingleChoirDialogOpen(open);
+    if (!open) {
+      toast({ title: 'Actualizando la lista...' });
+      setTimeout(() => window.location.reload(), 500);
+    }
+  };
+
+  const handleMultiOpenChange = (open: boolean) => {
+    setMultiChoirDialogOpen(open);
+    if (!open) {
+      toast({ title: 'Actualizando la lista...' });
+      setTimeout(() => window.location.reload(), 500);
+    }
+  };
 
   return (
     <>
@@ -75,12 +93,12 @@ export default function ChoirsIndexPage() {
 
       <AddSingleChoirDialog
         open={isSingleChoirDialogOpen}
-        onOpenChange={setSingleChoirDialogOpen}
+        onOpenChange={handleSingleOpenChange}
         onChoirAdded={addChoir}
       />
       <AddChoirsDialog
         open={isMultiChoirDialogOpen}
-        onOpenChange={setMultiChoirDialogOpen}
+        onOpenChange={handleMultiOpenChange}
         onChoirsAdded={addChoirs}
       />
     </>

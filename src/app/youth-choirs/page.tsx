@@ -15,11 +15,29 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 export default function YouthChoirsIndexPage() {
   const { youthChoirs, addYouthChoirs, isLoaded, addYouthChoir } = useYouthChoirs();
   const [isSingleYouthChoirDialogOpen, setSingleYouthChoirDialogOpen] = useState(false);
   const [isMultiYouthChoirDialogOpen, setMultiYouthChoirDialogOpen] = useState(false);
+  const { toast } = useToast();
+
+  const handleSingleOpenChange = (open: boolean) => {
+    setSingleYouthChoirDialogOpen(open);
+    if (!open) {
+      toast({ title: 'Actualizando la lista...' });
+      setTimeout(() => window.location.reload(), 500);
+    }
+  };
+
+  const handleMultiOpenChange = (open: boolean) => {
+    setMultiYouthChoirDialogOpen(open);
+    if (!open) {
+      toast({ title: 'Actualizando la lista...' });
+      setTimeout(() => window.location.reload(), 500);
+    }
+  };
 
   return (
     <>
@@ -74,12 +92,12 @@ export default function YouthChoirsIndexPage() {
 
       <AddSingleYouthChoirDialog
         open={isSingleYouthChoirDialogOpen}
-        onOpenChange={setSingleYouthChoirDialogOpen}
+        onOpenChange={handleSingleOpenChange}
         onYouthChoirAdded={addYouthChoir}
       />
        <AddYouthChoirsDialog
         open={isMultiYouthChoirDialogOpen}
-        onOpenChange={setMultiYouthChoirDialogOpen}
+        onOpenChange={handleMultiOpenChange}
         onYouthChoirsAdded={addYouthChoirs}
       />
     </>
