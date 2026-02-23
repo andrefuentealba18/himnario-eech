@@ -15,7 +15,7 @@ export function useFavorites() {
         setFavorites(new Set(JSON.parse(storedFavorites)));
       }
     } catch (error) {
-      console.error("Failed to load favorites from localStorage", error);
+      console.error("No se pudieron cargar los favoritos desde localStorage", error);
     }
     setIsLoaded(true);
   }, []);
@@ -25,7 +25,7 @@ export function useFavorites() {
       try {
         localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favorites)));
       } catch (error) {
-        console.error("Failed to save favorites to localStorage", error);
+        console.error("No se pudieron guardar los favoritos en localStorage", error);
       }
     }
   }, [favorites, isLoaded]);

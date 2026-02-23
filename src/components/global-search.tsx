@@ -28,6 +28,13 @@ const categoryIcons = {
   'youth-choir': <Users className="h-5 w-5 text-muted-foreground" />,
 };
 
+const categoryLabels = {
+  hymn: 'Himno',
+  praise: 'Alabanza',
+  choir: 'Coro',
+  'youth-choir': 'Coro Juventud',
+};
+
 const categoryHrefs = {
     hymn: '/hymns/',
     praise: '/praises/',
@@ -126,7 +133,7 @@ export function GlobalSearch() {
                                     {categoryIcons[song.type]}
                                     <div className="flex-1 overflow-hidden">
                                         <p className="font-medium truncate">{song.title}</p>
-                                        <p className="text-xs text-muted-foreground capitalize">{song.type === 'hymn' ? `Himno #${song.number}` : song.type.replace('-', ' ')}</p>
+                                        <p className="text-xs text-muted-foreground capitalize">{song.type === 'hymn' ? `Himno #${song.number}` : categoryLabels[song.type]}</p>
                                     </div>
                                 </div>
                             ))

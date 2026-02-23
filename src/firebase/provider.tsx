@@ -40,7 +40,7 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
         } else {
           // If no user, sign in anonymously. The onAuthStateChanged will be called again with the new user.
           signInAnonymously(auth).catch((error) => {
-            console.error("Anonymous sign-in failed", error);
+            console.error("Error en el inicio de sesión anónimo", error);
             setIsUserLoading(false);
           });
         }

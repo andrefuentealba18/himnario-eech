@@ -22,7 +22,7 @@ export function useFontSize(maxIndex: number, defaultIndex: number = DEFAULT_FON
         setFontSizeIndex(defaultIndex);
       }
     } catch (error) {
-      console.error("Failed to load font size from localStorage", error);
+      console.error("No se pudo cargar el tamaño de fuente desde localStorage", error);
     }
     setIsLoaded(true);
   }, [maxIndex, defaultIndex]);
@@ -32,7 +32,7 @@ export function useFontSize(maxIndex: number, defaultIndex: number = DEFAULT_FON
       try {
         localStorage.setItem(FONT_SIZE_KEY, fontSizeIndex.toString());
       } catch (error) {
-        console.error("Failed to save font size to localStorage", error);
+        console.error("No se pudo guardar el tamaño de fuente en localStorage", error);
       }
     }
   }, [fontSizeIndex, isLoaded]);
