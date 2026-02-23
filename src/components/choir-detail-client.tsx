@@ -131,9 +131,9 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background animate-fade-in" />
-        <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/15 rounded-full filter blur-3xl opacity-50 animate-pulse-slow" />
-        <div className="absolute -bottom-1/4 -right-1/4 w-3/4 h-3/4 bg-secondary/20 rounded-full filter blur-3xl opacity-40 animate-pulse-slow" style={{ animationDelay: '2s' }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10 animate-fade-in" />
+        <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/20 rounded-full filter blur-3xl opacity-50 animate-pulse-slow" />
+        <div className="absolute -bottom-1/4 -right-1/4 w-3/4 h-3/4 bg-chart-4/20 rounded-full filter blur-3xl opacity-40 animate-pulse-slow" style={{ animationDelay: '2s' }} />
       </div>
 
       <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-24">
