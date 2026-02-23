@@ -138,7 +138,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
           </Link>
         </Button>
         <div className="text-center px-2 overflow-hidden flex-1">
-            <h1 className="font-headline text-3xl font-bold text-primary truncate">{youthChoir.title}</h1>
+            <h1 className="font-headline text-2xl font-bold text-primary truncate">{youthChoir.title}</h1>
             <div className="mt-2">
                 <EditToneDialog song={youthChoir} onToneUpdated={handleToneUpdate}>
                 <Button variant="outline" size="sm" className="h-auto px-3 py-1 text-xs rounded-full">

@@ -144,7 +144,7 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
           </Link>
         </Button>
         <div className="text-center px-2 overflow-hidden flex-1">
-            <h1 className="font-headline text-3xl font-bold text-primary truncate">{choir.title}</h1>
+            <h1 className="font-headline text-2xl font-bold text-primary truncate">{choir.title}</h1>
             <div className="flex items-center justify-center gap-2 mt-2">
                 <EditToneDialog song={choir} onToneUpdated={handleToneUpdate}>
                   <Button variant="outline" size="sm" className="h-auto px-3 py-1 text-xs rounded-full">
