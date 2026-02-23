@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Music, Book, Users, Mic, Church, ListMusic } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
+import { GlobalSearch } from '@/components/global-search';
 
 export default function HomePage() {
   return (
@@ -13,8 +14,8 @@ export default function HomePage() {
       <div className="absolute top-0 -left-1/4 w-1/2 h-1/2 bg-primary/10 rounded-full filter blur-3xl opacity-30 animate-fade-in" style={{ animationDelay: '0.2s' }} />
       <div className="absolute bottom-0 -right-1/4 w-1/2 h-1/2 bg-secondary/40 rounded-full filter blur-3xl opacity-30 animate-fade-in" style={{ animationDelay: '0.4s' }} />
 
-      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen">
-        <main className="container mx-auto flex flex-col items-center justify-center p-4">
+      <div className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4">
+        <main className="container mx-auto flex flex-col items-center justify-center">
           <div className="w-full max-w-lg text-center space-y-8">
             
             <header className="space-y-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
@@ -28,9 +29,13 @@ export default function HomePage() {
                 ¿Qué deseas cantar hoy?
               </p>
             </header>
+
+            <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+                <GlobalSearch />
+            </div>
             
             <div className="grid grid-cols-2 gap-4 w-full">
-              <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+              <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
                 <Link href="/hymns" className="group block">
                   <Card className="transition-all duration-300 hover:shadow-primary/20 hover:shadow-lg hover:-translate-y-1 hover:border-primary/50">
                     <CardContent className="flex flex-col items-center justify-center p-6 space-y-2">
@@ -40,7 +45,7 @@ export default function HomePage() {
                   </Card>
                 </Link>
               </div>
-              <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.5s' }}>
+              <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
                 <Link href="/praises" className="group block">
                   <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-foreground/20">
                     <CardContent className="flex flex-col items-center justify-center p-6 space-y-2">
@@ -50,7 +55,7 @@ export default function HomePage() {
                   </Card>
                 </Link>
               </div>
-              <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
+              <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
                 <Link href="/choirs" className="group block">
                   <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-foreground/20">
                     <CardContent className="flex flex-col items-center justify-center p-6 space-y-2">
@@ -60,7 +65,7 @@ export default function HomePage() {
                   </Card>
                 </Link>
               </div>
-              <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.7s' }}>
+              <div className="opacity-0 animate-fade-in-up" style={{ animationDelay: '0.9s' }}>
                 <Link href="/youth-choirs" className="group block">
                   <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-foreground/20">
                     <CardContent className="flex flex-col items-center justify-center p-6 space-y-2">
@@ -72,7 +77,7 @@ export default function HomePage() {
               </div>
             </div>
             
-            <footer className="text-center text-sm text-muted-foreground pt-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.9s' }}>
+            <footer className="text-center text-sm text-muted-foreground pt-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '1.1s' }}>
               <div className="flex justify-center items-center gap-4">
                 <Button asChild variant="ghost">
                   <Link href="/repertoire">
