@@ -44,7 +44,7 @@ export function SettingsDialog() {
   });
 
   function onSubmit(values: z.infer<typeof passwordSchema>) {
-    if (values.password === 'Pablito_4002') {
+    if (values.password === '4002') {
       toast({
         title: 'Acceso concedido',
         description: 'Redirigiendo a la página de administración...',

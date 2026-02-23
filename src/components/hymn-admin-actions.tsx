@@ -60,7 +60,7 @@ export function HymnAdminActions({ hymn, onDelete, onUpdate }: HymnAdminActionsP
   });
 
   function onPasswordSubmit(values: z.infer<typeof passwordSchema>) {
-    if (values.password === 'Pablito_4002') {
+    if (values.password === '4002') {
       toast({ title: 'Acceso concedido' });
       setIsAuthenticated(true);
     } else {

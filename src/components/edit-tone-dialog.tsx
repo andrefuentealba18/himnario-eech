@@ -91,7 +91,7 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
   }
   
   function onPasswordSubmit(values: PasswordFormData) {
-    if (values.password === 'Pablito_4002') {
+    if (values.password === '4002') {
       toast({ title: 'Acceso concedido' });
       setIsAuthenticated(true);
     } else {

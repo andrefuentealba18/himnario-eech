@@ -60,7 +60,7 @@ export function YouthChoirAdminActions({ youthChoir, onDelete, onUpdate }: Youth
   });
 
   function onPasswordSubmit(values: z.infer<typeof passwordSchema>) {
-    if (values.password === 'Pablito_4002') {
+    if (values.password === '4002') {
       toast({ title: 'Acceso concedido' });
       setIsAuthenticated(true);
     } else {
@@ -169,5 +169,3 @@ export function YouthChoirAdminActions({ youthChoir, onDelete, onUpdate }: Youth
     </Dialog>
   );
 }
-
-    
