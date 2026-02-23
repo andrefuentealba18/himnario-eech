@@ -27,15 +27,10 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
   const filteredPraises = useMemo(() => {
     let listToFilter = praises;
 
-    // Filter by tab
     if (activeTab === 'rapidos') {
       listToFilter = praises.filter(praise => praise.speed === 'Rapido');
     } else if (activeTab === 'lentos') {
       listToFilter = praises.filter(praise => praise.speed === 'Lento');
-    } else if (activeTab === 'mayores') {
-      listToFilter = praises.filter(praise => praise.tone && praise.tone.includes('Mayor'));
-    } else if (activeTab === 'menores') {
-      listToFilter = praises.filter(praise => praise.tone && praise.tone.includes('menor'));
     }
 
     const normalizedSearch = normalizeSearchTerm(searchTerm);
@@ -71,12 +66,10 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5 h-auto">
-          <TabsTrigger value="all">Todos</TabsTrigger>
-          <TabsTrigger value="rapidos">Rápidos</TabsTrigger>
-          <TabsTrigger value="lentos">Lentos</TabsTrigger>
-          <TabsTrigger value="mayores">Mayores</TabsTrigger>
-          <TabsTrigger value="menores">Menores</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 h-auto">
+          <TabsTrigger value="all" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Todos</TabsTrigger>
+          <TabsTrigger value="rapidos" className="data-[state=active]:bg-chart-1 data-[state=active]:text-white">Rápidos</TabsTrigger>
+          <TabsTrigger value="lentos" className="data-[state=active]:bg-chart-2 data-[state=active]:text-white">Lentos</TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -153,5 +146,3 @@ function PraiseRoll({ praises }: { praises: Praise[] }) {
     </ScrollArea>
   );
 }
-
-    
