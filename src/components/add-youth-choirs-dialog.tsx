@@ -33,11 +33,16 @@ function parseSongs(text: string): Omit<YouthChoir, 'id'>[] {
     for (const line of lines) {
         const trimmedLine = line.trim();
         
-        if (justIgnoredHeader && /^\d+$/.test(trimmedLine)) {
+        if (justIgnoredHeader) {
+            if (/^\d+$/.test(trimmedLine)) {
+                justIgnoredHeader = false;
+                continue;
+            }
+            if (trimmedLine === '') {
+                continue;
+            }
             justIgnoredHeader = false;
-            continue;
         }
-        justIgnoredHeader = false;
 
         if (ignorePattern.test(trimmedLine)) {
             justIgnoredHeader = true;
