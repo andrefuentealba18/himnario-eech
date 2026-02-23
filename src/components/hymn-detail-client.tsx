@@ -33,10 +33,10 @@ const fontSizes = [
 function HymnDetailSkeleton() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-20">
         <Skeleton className="h-10 w-10 rounded-full" />
         <div className="flex-1 px-4 text-center">
-            <Skeleton className="h-5 w-2/4 mx-auto mb-1" />
+            <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
             <div className="flex items-center justify-center gap-2">
                 <Skeleton className="h-4 w-1/4" />
                 <Skeleton className="h-5 w-1/4" />
@@ -44,12 +44,12 @@ function HymnDetailSkeleton() {
         </div>
         <Skeleton className="h-8 w-8 rounded-full" />
       </header>
-      <main className="flex-1 py-8 container max-w-prose px-4">
-        <div className="space-y-4 text-center">
+      <main className="flex-1 py-8 container max-w-2xl px-4">
+        <div className="space-y-6 text-center">
           <Skeleton className="h-6 w-full" />
           <Skeleton className="h-6 w-5/6 mx-auto" />
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-4/6 mx-auto" />
+          <Skeleton className="h-6 w-4/6 mx-auto mb-8" />
+          <Skeleton className="h-24 w-full rounded-lg" />
           <Skeleton className="h-6 w-full" />
           <Skeleton className="h-6 w-5/6 mx-auto" />
         </div>
@@ -103,10 +103,12 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background">
+      <div className="absolute top-0 -left-1/4 w-1/2 h-1/2 bg-primary/10 rounded-full filter blur-3xl opacity-30 animate-fade-in" />
+      <div className="absolute bottom-0 -right-1/4 w-1/2 h-1/2 bg-secondary/40 rounded-full filter blur-3xl opacity-30 animate-fade-in" />
       <div 
-        className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background -z-10"
+        className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background -z-10"
       />
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-20">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/hymns">
             <ChevronLeft className="h-7 w-7" />
@@ -114,7 +116,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
           </Link>
         </Button>
         <div className="text-center px-4 overflow-hidden flex-1">
-            <h1 className="font-bold font-headline text-lg truncate">{hymn.title}</h1>
+            <h1 className="font-headline text-2xl font-bold text-primary truncate">{hymn.title}</h1>
             <div className="flex items-center justify-center gap-2 mt-1">
                 <p className="text-sm text-muted-foreground">
                   Himno Nº {hymn.number}
@@ -133,19 +135,19 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="w-full max-w-2xl text-center">
+        <div className="w-full max-w-2xl">
           <div
-            className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
+            className={`font-body leading-relaxed text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
           >
             {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
               const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
               if (isChorus) {
-                  const chorusText = paragraph.substring(paragraph.toUpperCase().indexOf('CORO') + 4).trim().replace(/^[:.]/, '').trim();
                   return (
-                    <p key={pIndex} className="whitespace-pre-wrap mb-6 font-bold leading-snug">
-                      CORO:
-                      {chorusText && `\n${chorusText}`}
-                    </p>
+                    <div key={pIndex} className="mb-6 bg-primary/10 p-4 rounded-lg border border-primary/20">
+                        <p className="whitespace-pre-wrap font-bold leading-snug">
+                            {paragraph}
+                        </p>
+                    </div>
                   )
               }
               return (

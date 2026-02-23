@@ -43,18 +43,20 @@ const fontSizes = [
 function PraiseDetailSkeleton() {
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-20">
                 <Skeleton className="h-10 w-10 rounded-full" />
                 <div className="flex-1 px-4 text-center">
-                    <Skeleton className="h-5 w-3/4 mx-auto mb-1" />
+                    <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
                     <Skeleton className="h-5 w-1/4 mx-auto" />
                 </div>
                 <div className="w-10" />
             </header>
-            <main className="flex-1 py-8 container max-w-prose px-4">
-                <div className="space-y-4 text-center">
+            <main className="flex-1 py-8 container max-w-2xl px-4">
+                <div className="space-y-6 text-center">
                     <Skeleton className="h-6 w-full" />
                     <Skeleton className="h-6 w-5/6 mx-auto" />
+                    <Skeleton className="h-6 w-4/6 mx-auto mb-8" />
+                    <Skeleton className="h-24 w-full rounded-lg" />
                     <Skeleton className="h-6 w-full" />
                     <Skeleton className="h-6 w-4/6 mx-auto" />
                 </div>
@@ -125,10 +127,12 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
 
   return (
     <div className="relative flex flex-col min-h-screen bg-background">
+      <div className="absolute top-0 -left-1/4 w-1/2 h-1/2 bg-primary/10 rounded-full filter blur-3xl opacity-30 animate-fade-in" />
+      <div className="absolute bottom-0 -right-1/4 w-1/2 h-1/2 bg-secondary/40 rounded-full filter blur-3xl opacity-30 animate-fade-in" />
       <div 
-        className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background -z-10"
+        className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-background -z-10"
       />
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-16">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-20">
         <Button variant="ghost" size="icon" asChild>
           <Link href={backHref}>
             <ChevronLeft className="h-7 w-7" />
@@ -136,8 +140,8 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
           </Link>
         </Button>
         <div className="text-center px-4 overflow-hidden flex-1">
-            <h1 className="font-bold font-headline text-lg truncate mb-1">{praise.title}</h1>
-            <div className="flex items-center justify-center gap-2">
+            <h1 className="font-headline text-2xl font-bold text-primary truncate">{praise.title}</h1>
+            <div className="flex items-center justify-center gap-2 mt-1">
                 <EditToneDialog song={praise} onToneUpdated={handleToneUpdate}>
                   <Button variant="outline" size="sm" className="h-auto px-2 py-0.5 text-xs">
                     {praise.tone || 'Tonalidad: Indefinida'}
@@ -152,14 +156,23 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8 flex justify-center px-4">
-        <div className="w-full max-w-4xl text-center">
+        <div className="w-full max-w-2xl">
             <div
-                className={`font-body leading-relaxed transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
+                className={`font-body leading-relaxed text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}
             >
                 {praise.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const isChorus = paragraph.toUpperCase().startsWith('CORO');
+                  if (isChorus) {
+                    return (
+                        <div key={pIndex} className="mb-6 bg-primary/10 p-4 rounded-lg border border-primary/20">
+                            <p className="whitespace-pre-wrap font-bold leading-snug">
+                                {paragraph}
+                            </p>
+                        </div>
+                    )
+                  }
                   return (
-                    <p key={pIndex} className={`whitespace-pre-wrap mb-8 ${isChorus ? 'font-bold leading-snug' : ''}`}>
+                    <p key={pIndex} className="whitespace-pre-wrap mb-6">
                       {paragraph}
                     </p>
                   );
@@ -182,5 +195,3 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     </div>
   );
 }
-
-    
