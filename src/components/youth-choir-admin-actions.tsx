@@ -95,8 +95,8 @@ export function YouthChoirAdminActions({ youthChoir, onDelete, onUpdate }: Youth
   return (
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" className="rounded-full h-14 w-14">
-          <Settings className="h-7 w-7" />
+        <Button variant="outline" size="icon" className="rounded-full h-12 w-12">
+          <Settings className="h-6 w-6" />
           <span className="sr-only">Configuración</span>
         </Button>
       </DialogTrigger>

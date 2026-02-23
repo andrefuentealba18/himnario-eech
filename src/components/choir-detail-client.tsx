@@ -131,7 +131,7 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10 animate-fade-in" />
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-chart-5/10 animate-fade-in" />
         <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/20 rounded-full filter blur-3xl opacity-50 animate-pulse-slow" />
         <div className="absolute -bottom-1/4 -right-1/4 w-3/4 h-3/4 bg-chart-4/20 rounded-full filter blur-3xl opacity-40 animate-pulse-slow" style={{ animationDelay: '2s' }} />
       </div>
@@ -144,7 +144,7 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
           </Link>
         </Button>
         <div className="text-center px-2 overflow-hidden flex-1">
-            <h1 className="font-headline text-xl font-bold text-primary truncate">{choir.title}</h1>
+            <h1 className="font-headline text-lg font-bold text-primary truncate">{choir.title}</h1>
             <div className="flex items-center justify-center gap-2 mt-2">
                 <EditToneDialog song={choir} onToneUpdated={handleToneUpdate}>
                   <Button variant="outline" size="sm" className="h-auto px-3 py-1 text-xs rounded-full">
@@ -176,13 +176,13 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
 
       <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4">
            <div className="flex items-center justify-center gap-2 bg-background/80 backdrop-blur-sm border rounded-full shadow-lg p-2">
-            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-12 w-12">
-              <ZoomOut className="h-6 w-6" />
+            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-10 w-10">
+              <ZoomOut className="h-5 w-5" />
               <span className="sr-only">Reducir texto</span>
             </Button>
             <ChoirAdminActions choir={choir} onDelete={handleDelete} onUpdate={handleUpdate} />
-            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-12 w-12">
-              <ZoomIn className="h-6 w-6" />
+            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10">
+              <ZoomIn className="h-5 w-5" />
               <span className="sr-only">Aumentar texto</span>
             </Button>
          </div>
