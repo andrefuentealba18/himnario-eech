@@ -152,26 +152,11 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
 
       <main className="flex-1 py-8 px-4 flex justify-center items-start">
         <div className="w-full max-w-3xl bg-background/60 backdrop-blur-lg border rounded-2xl p-6 sm:p-10 shadow-xl">
-            <div className={`font-body leading-relaxed text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
+            <div className={`font-body leading-loose text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
                 {youthChoir.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
-                  if (isChorus) {
-                    return (
-                      <div key={pIndex} className="my-6">
-                        <div className="p-4 bg-primary/5 border-l-4 border-primary rounded-lg">
-                          <div className="flex items-center justify-center gap-2 mb-2 text-xs font-semibold tracking-widest uppercase text-primary">
-                            <Music2 className="h-4 w-4"/>
-                            <span>Coro</span>
-                          </div>
-                          <p className="whitespace-pre-wrap font-semibold leading-relaxed text-foreground/90">
-                              {paragraph.substring(4).trim()}
-                          </p>
-                        </div>
-                      </div>
-                    )
-                  }
                   return (
-                    <p key={pIndex} className="whitespace-pre-wrap mb-6">
+                    <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-semibold' : ''}`}>
                       {paragraph}
                     </p>
                   );
