@@ -75,7 +75,7 @@ export function AddSingleHymnDialog({ open, onOpenChange, onHymnAdded }: AddSing
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Agregar Nuevo Himno</DialogTitle>
           <DialogDescription>

@@ -174,7 +174,7 @@ export function AddHymnDialog({ open, onOpenChange, onHymnsAdded }: AddHymnDialo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-xl">
+      <DialogContent className="sm:max-w-xl" onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Agregar Varios Himnos</DialogTitle>
           <DialogDescription>

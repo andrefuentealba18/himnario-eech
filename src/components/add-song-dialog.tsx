@@ -110,7 +110,7 @@ export function AddSongDialog() {
           Sugerir Canción
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Sugerir Nueva Canción</DialogTitle>
           <DialogDescription>

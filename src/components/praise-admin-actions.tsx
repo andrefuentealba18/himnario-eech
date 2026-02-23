@@ -96,12 +96,12 @@ export function PraiseAdminActions({ praise, onDelete, onUpdate }: PraiseAdminAc
   return (
     <Dialog open={dialogOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="icon" className="rounded-full h-12 w-12">
-          <Settings className="h-6 w-6" />
+        <Button variant="outline" size="icon" className="rounded-full h-10 w-10">
+          <Settings className="h-5 w-5" />
           <span className="sr-only">Configuración</span>
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent onCloseAutoFocus={(e) => e.preventDefault()}>
         {!isAuthenticated ? (
           <>
             <DialogHeader>

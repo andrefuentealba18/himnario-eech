@@ -69,7 +69,7 @@ export function SettingsDialog() {
           Configuración
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Acceso de Administrador</DialogTitle>
           <DialogDescription>

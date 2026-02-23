@@ -72,7 +72,7 @@ export function AddSinglePraiseDialog({ open, onOpenChange, onPraiseAdded }: Add
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Agregar Nueva Alabanza</DialogTitle>
           <DialogDescription>

@@ -70,7 +70,7 @@ export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdde
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-lg" onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
           <DialogTitle>Agregar Nueva Alabanza (Coro Juventud)</DialogTitle>
           <DialogDescription>
