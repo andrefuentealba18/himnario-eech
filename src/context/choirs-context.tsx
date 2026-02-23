@@ -28,7 +28,7 @@ const removeUndefined = (obj: Record<string, any>): Record<string, any> => {
 interface ChoirsContextType {
   choirs: Choir[];
   pendingChoirs: Choir[];
-  addChoir: (newChoirData: Omit<Choir, 'id'>) => Promise<{ success: boolean; error?: string }>;
+  addChoir: (newChoirData: Omit<Choir, 'id'>) => void;
   addChoirs: (newChoirsData: Omit<Choir, 'id'>[]) => void;
   deleteChoir: (choirId: string) => void;
   updateChoir: (choirId: string, newChoirData: Omit<Choir, 'id'>) => Promise<{ success: boolean; error?: string }>;
@@ -60,12 +60,16 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     return rawChoirs ? [...rawChoirs].filter(c => c.status === 'pending').sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)) : [];
   }, [rawChoirs]);
   
-  const addChoir = useCallback(async (newChoirData: Omit<Choir, 'id'>): Promise<{ success: boolean; error?: string }> => {
-    if (!firestore) return { success: false, error: 'firestore_unavailable' };
+  const addChoir = useCallback((newChoirData: Omit<Choir, 'id'>) => {
+    if (!firestore) {
+      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo conectar a la base de datos.' });
+      return;
+    }
     const id = slugify(newChoirData.title);
     
     if ((rawChoirs || []).some(p => p.id === id)) {
-      return { success: false, error: 'duplicate' };
+      toast({ variant: 'destructive', title: 'Error', description: 'Ya existe un coro con ese título.' });
+      return;
     }
 
     const docRef = doc(firestore, 'choirs', id);
@@ -76,6 +80,9 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     };
     
     setDoc(docRef, removeUndefined(dataToSave))
+      .then(() => {
+        toast({ title: 'Coro Enviado a Revisión', description: `El coro "${newChoirData.title}" ha sido enviado.` });
+      })
       .catch((error) => {
         console.error("Error adding choir:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -83,9 +90,9 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
           operation: 'create',
           requestResourceData: dataToSave
         }));
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo enviar el coro.' });
       });
-    return { success: true };
-  }, [firestore, rawChoirs]);
+  }, [firestore, rawChoirs, toast]);
 
   const addChoirs = useCallback((newChoirsData: Omit<Choir, 'id'>[]) => {
     if (!firestore) return;

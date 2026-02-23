@@ -6,7 +6,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { musicalKeys } from '@/lib/musical-keys';
 import type { YouthChoir } from '@/lib/youth-choirs';
-import { useToast } from '@/hooks/use-toast';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -45,11 +44,10 @@ type FormData = z.infer<typeof youthChoirSchema>;
 interface AddSingleYouthChoirDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onYouthChoirAdded: (choir: Omit<YouthChoir, 'id'>) => Promise<{ success: boolean; error?: string }>;
+  onYouthChoirAdded: (choir: Omit<YouthChoir, 'id'>) => void;
 }
 
 export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdded }: AddSingleYouthChoirDialogProps) {
-  const { toast } = useToast();
   const form = useForm<FormData>({
     resolver: zodResolver(youthChoirSchema),
     defaultValues: {
@@ -65,14 +63,9 @@ export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdde
     }
   }, [open, form]);
 
-  async function onSubmit(values: FormData) {
-    const result = await onYouthChoirAdded(values);
-    if(result.success) {
-      toast({ title: 'Alabanza Enviada a Revisión', description: `La alabanza "${values.title}" ha sido enviada.` });
-      onOpenChange(false);
-    } else {
-      toast({ variant: 'destructive', title: 'Error', description: result.error === 'duplicate' ? 'Ya existe una alabanza con ese título.' : 'No se pudo enviar la alabanza.' });
-    }
+  function onSubmit(values: FormData) {
+    onYouthChoirAdded(values);
+    onOpenChange(false);
   }
 
   return (

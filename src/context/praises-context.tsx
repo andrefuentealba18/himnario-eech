@@ -28,7 +28,7 @@ const removeUndefined = (obj: Record<string, any>): Record<string, any> => {
 interface PraisesContextType {
   praises: Praise[];
   pendingPraises: Praise[];
-  addPraise: (newPraiseData: Omit<Praise, 'id'>) => Promise<{ success: boolean; error?: string }>;
+  addPraise: (newPraiseData: Omit<Praise, 'id'>) => void;
   addPraises: (newPraisesData: Omit<Praise, 'id'>[]) => void;
   deletePraise: (praiseId: string) => void;
   updatePraise: (praiseId: string, newPraiseData: Omit<Praise, 'id'>) => Promise<{ success: boolean; error?: string }>;
@@ -60,12 +60,16 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     return rawPraises ? [...rawPraises].filter(p => p.status === 'pending').sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)) : [];
   }, [rawPraises]);
   
-  const addPraise = useCallback(async (newPraiseData: Omit<Praise, 'id'>): Promise<{ success: boolean; error?: string }> => {
-    if (!firestore) return { success: false, error: 'firestore_unavailable' };
+  const addPraise = useCallback((newPraiseData: Omit<Praise, 'id'>) => {
+    if (!firestore) {
+      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo conectar a la base de datos.' });
+      return;
+    }
     const id = slugify(newPraiseData.title);
     
     if ((rawPraises || []).some(p => p.id === id)) {
-      return { success: false, error: 'duplicate' };
+      toast({ variant: 'destructive', title: 'Error', description: 'Ya existe una alabanza con ese título.' });
+      return;
     }
 
     const docRef = doc(firestore, 'praises', id);
@@ -76,6 +80,9 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     };
 
     setDoc(docRef, removeUndefined(dataToSave))
+      .then(() => {
+        toast({ title: 'Alabanza Enviada a Revisión', description: `La alabanza "${newPraiseData.title}" ha sido enviada.` });
+      })
       .catch((error) => {
         console.error("Error adding praise:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -83,9 +90,9 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
           operation: 'create',
           requestResourceData: dataToSave
         }));
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo enviar la alabanza.' });
       });
-    return { success: true };
-  }, [firestore, rawPraises]);
+  }, [firestore, rawPraises, toast]);
 
   const addPraises = useCallback((newPraisesData: Omit<Praise, 'id'>[]) => {
     if (!firestore) return;

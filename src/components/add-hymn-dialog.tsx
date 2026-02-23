@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import type { Hymn } from '@/lib/hymns';
+import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -130,11 +131,13 @@ interface AddHymnDialogProps {
 
 export function AddHymnDialog({ open, onOpenChange, onHymnsAdded }: AddHymnDialogProps) {
   const [text, setText] = useState('');
+  const [isParsing, setIsParsing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     if (open) {
       setText('');
+      setIsParsing(false);
     }
   }, [open]);
 
@@ -149,19 +152,24 @@ export function AddHymnDialog({ open, onOpenChange, onHymnsAdded }: AddHymnDialo
         return;
     }
     
-    const parsedHymns = parseHymns(text);
+    setIsParsing(true);
     
-    if (parsedHymns.length > 0) {
-        onHymnsAdded(parsedHymns);
-    } else {
-        toast({
-            variant: "destructive",
-            title: 'Formato Incorrecto',
-            description: 'No se pudieron procesar los himnos. Asegúrate que cada himno empiece con un número y un título.',
-        });
-    }
-    
-    onOpenChange(false);
+    setTimeout(() => {
+      const parsedHymns = parseHymns(text);
+      
+      if (parsedHymns.length > 0) {
+          onHymnsAdded(parsedHymns);
+      } else {
+          toast({
+              variant: "destructive",
+              title: 'Formato Incorrecto',
+              description: 'No se pudieron procesar los himnos. Asegúrate que cada himno empiece con un número y un título.',
+          });
+      }
+      
+      setIsParsing(false);
+      onOpenChange(false);
+    }, 10);
   }
 
   return (
@@ -182,10 +190,14 @@ export function AddHymnDialog({ open, onOpenChange, onHymnsAdded }: AddHymnDialo
                   className="h-64 min-h-[10rem]"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
+                  disabled={isParsing}
                 />
             </div>
             <DialogFooter>
-              <Button type="submit">Guardar Himnos</Button>
+              <Button type="submit" disabled={isParsing}>
+                {isParsing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isParsing ? 'Procesando...' : 'Guardar Himnos'}
+              </Button>
             </DialogFooter>
         </form>
       </DialogContent>

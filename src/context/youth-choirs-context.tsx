@@ -28,7 +28,7 @@ const removeUndefined = (obj: Record<string, any>): Record<string, any> => {
 interface YouthChoirsContextType {
   youthChoirs: YouthChoir[];
   pendingYouthChoirs: YouthChoir[];
-  addYouthChoir: (newYouthChoirData: Omit<YouthChoir, 'id'>) => Promise<{ success: boolean; error?: string }>;
+  addYouthChoir: (newYouthChoirData: Omit<YouthChoir, 'id'>) => void;
   addYouthChoirs: (newYouthChoirsData: Omit<YouthChoir, 'id'>[]) => void;
   deleteYouthChoir: (youthChoirId: string) => void;
   updateYouthChoir: (youthChoirId: string, newYouthChoirData: Omit<YouthChoir, 'id'>) => Promise<{ success: boolean; error?: string }>;
@@ -60,12 +60,16 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     return rawYouthChoirs ? [...rawYouthChoirs].filter(yc => yc.status === 'pending').sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)) : [];
   }, [rawYouthChoirs]);
   
-  const addYouthChoir = useCallback(async (newYouthChoirData: Omit<YouthChoir, 'id'>): Promise<{ success: boolean; error?: string }> => {
-    if (!firestore) return { success: false, error: 'firestore_unavailable' };
+  const addYouthChoir = useCallback((newYouthChoirData: Omit<YouthChoir, 'id'>) => {
+    if (!firestore) {
+      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo conectar a la base de datos.' });
+      return;
+    }
     const id = slugify(newYouthChoirData.title);
     
     if ((rawYouthChoirs || []).some(p => p.id === id)) {
-      return { success: false, error: 'duplicate' };
+      toast({ variant: 'destructive', title: 'Error', description: 'Ya existe una alabanza con ese título.' });
+      return;
     }
 
     const docRef = doc(firestore, 'youth-choirs', id);
@@ -76,6 +80,9 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     };
 
     setDoc(docRef, removeUndefined(dataToSave))
+      .then(() => {
+        toast({ title: 'Alabanza Enviada a Revisión', description: `La alabanza "${newYouthChoirData.title}" ha sido enviada.` });
+      })
       .catch((error) => {
         console.error("Error adding youth choir:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -83,9 +90,9 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
           operation: 'create',
           requestResourceData: dataToSave
         }));
+        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo enviar la alabanza.' });
       });
-    return { success: true };
-  }, [firestore, rawYouthChoirs]);
+  }, [firestore, rawYouthChoirs, toast]);
 
   const addYouthChoirs = useCallback((newYouthChoirsData: Omit<YouthChoir, 'id'>[]) => {
     if (!firestore) return;

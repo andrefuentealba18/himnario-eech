@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import type { YouthChoir } from '@/lib/youth-choirs';
+import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -80,29 +81,37 @@ interface AddYouthChoirsDialogProps {
 
 export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded }: AddYouthChoirsDialogProps) {
   const [text, setText] = useState('');
+  const [isParsing, setIsParsing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     if (open) {
       setText('');
+      setIsParsing(false);
     }
   }, [open]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const parsed = parseSongs(text);
-    
-    if (parsed.length > 0) {
-        onYouthChoirsAdded(parsed);
-    } else {
-        toast({
-            variant: "destructive",
-            title: 'Formato Incorrecto',
-            description: 'No se pudieron procesar las alabanzas. Asegúrate que el título de cada alabanza esté completamente en mayúsculas.',
-        });
-    }
-    
-    onOpenChange(false);
+
+    setIsParsing(true);
+
+    setTimeout(() => {
+      const parsed = parseSongs(text);
+      
+      if (parsed.length > 0) {
+          onYouthChoirsAdded(parsed);
+      } else {
+          toast({
+              variant: "destructive",
+              title: 'Formato Incorrecto',
+              description: 'No se pudieron procesar las alabanzas. Asegúrate que el título de cada alabanza esté completamente en mayúsculas.',
+          });
+      }
+      
+      setIsParsing(false);
+      onOpenChange(false);
+    }, 10);
   }
 
   return (
@@ -123,10 +132,14 @@ export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded }:
                   className="h-64 min-h-[10rem]" 
                   value={text}
                   onChange={(e) => setText(e.target.value)}
+                  disabled={isParsing}
                 />
             </div>
             <DialogFooter>
-              <Button type="submit">Enviar a Revisión</Button>
+              <Button type="submit" disabled={isParsing}>
+                {isParsing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isParsing ? 'Procesando...' : 'Enviar a Revisión'}
+              </Button>
             </DialogFooter>
         </form>
       </DialogContent>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import type { Praise } from '@/lib/praises';
+import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -81,11 +82,13 @@ interface AddPraisesDialogProps {
 
 export function AddPraisesDialog({ open, onOpenChange, onPraisesAdded }: AddPraisesDialogProps) {
   const [text, setText] = useState('');
+  const [isParsing, setIsParsing] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     if (open) {
       setText('');
+      setIsParsing(false);
     }
   }, [open]);
 
@@ -99,20 +102,25 @@ export function AddPraisesDialog({ open, onOpenChange, onPraisesAdded }: AddPrai
         });
         return;
     }
+
+    setIsParsing(true);
     
-    const parsedPraises = parsePraises(text);
-    
-    if (parsedPraises.length > 0) {
-        onPraisesAdded(parsedPraises);
-    } else {
-        toast({
-            variant: "destructive",
-            title: 'Formato Incorrecto',
-            description: 'No se pudieron procesar las alabanzas. Asegúrate que el título de cada alabanza esté completamente en mayúsculas.',
-        });
-    }
-    
-    onOpenChange(false);
+    setTimeout(() => {
+      const parsedPraises = parsePraises(text);
+      
+      if (parsedPraises.length > 0) {
+          onPraisesAdded(parsedPraises);
+      } else {
+          toast({
+              variant: "destructive",
+              title: 'Formato Incorrecto',
+              description: 'No se pudieron procesar las alabanzas. Asegúrate que el título de cada alabanza esté completamente en mayúsculas.',
+          });
+      }
+
+      setIsParsing(false);
+      onOpenChange(false);
+    }, 10);
   }
 
   return (
@@ -133,10 +141,14 @@ export function AddPraisesDialog({ open, onOpenChange, onPraisesAdded }: AddPrai
                   className="h-64 min-h-[10rem]"
                   value={text}
                   onChange={(e) => setText(e.target.value)}
+                  disabled={isParsing}
                 />
             </div>
             <DialogFooter>
-              <Button type="submit">Enviar a Revisión</Button>
+              <Button type="submit" disabled={isParsing}>
+                {isParsing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isParsing ? 'Procesando...' : 'Enviar a Revisión'}
+              </Button>
             </DialogFooter>
         </form>
       </DialogContent>

@@ -20,7 +20,7 @@ const removeUndefined = (obj: Record<string, any>): Record<string, any> => {
 
 interface HymnsContextType {
   hymns: Hymn[];
-  addHymn: (newHymnData: Omit<Hymn, 'id'>) => Promise<{ success: boolean; error?: string }>;
+  addHymn: (newHymnData: Omit<Hymn, 'id'>) => void;
   addHymns: (newHymnsData: Omit<Hymn, 'id'>[]) => void;
   updateHymn: (hymnNumber: number, newHymnData: Omit<Hymn, 'id' | 'number'>) => Promise<{ success: boolean; error?: string }>;
   deleteHymn: (hymnNumber: number) => void;
@@ -85,28 +85,35 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
     migrateData();
   }, [isLoaded, rawHymns, firestore, toast]);
 
-  const addHymn = useCallback(async (newHymnData: Omit<Hymn, 'id'>): Promise<{ success: boolean; error?: string }> => {
-    if (!firestore) return { success: false, error: 'firestore_unavailable' };
+  const addHymn = useCallback((newHymnData: Omit<Hymn, 'id'>) => {
+    if (!firestore) {
+      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo conectar a la base de datos.' });
+      return;
+    }
 
     const hymnsMap = new Map(hymns.map(h => [h.number, h]));
     if (hymnsMap.has(newHymnData.number)) {
-      return { success: false, error: 'duplicate' };
+      toast({ variant: 'destructive', title: 'Error al agregar', description: 'Ya existe un himno con ese número.' });
+      return;
     }
     
     const docRef = doc(firestore, 'hymns', newHymnData.number.toString());
     const dataToSave = removeUndefined(newHymnData);
     
     setDoc(docRef, dataToSave, { merge: true })
+      .then(() => {
+        toast({ title: 'Himno Agregado', description: `El himno #${newHymnData.number} "${newHymnData.title}" ha sido guardado.` });
+      })
       .catch((error) => {
+        console.error("Error adding hymn:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
             path: docRef.path,
             operation: 'create',
             requestResourceData: dataToSave
         }));
+        toast({ variant: 'destructive', title: 'Error al guardar', description: 'No se pudo guardar el himno.' });
       });
-      
-    return { success: true };
-  }, [firestore, hymns]);
+  }, [firestore, hymns, toast]);
 
   const addHymns = useCallback((newHymnsData: Omit<Hymn, 'id'>[]) => {
     if (!firestore) return;
