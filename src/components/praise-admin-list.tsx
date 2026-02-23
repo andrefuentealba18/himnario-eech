@@ -103,6 +103,9 @@ export function PraiseAdminList() {
                     {praise.tone || 'Indefinido'}
                 </Badge>
               </EditToneDialog>
+              {praise.speed && (
+                <Badge variant="secondary" className="capitalize flex-shrink-0">{praise.speed}</Badge>
+              )}
             </div>
             <div className="flex gap-2 flex-shrink-0">
               <EditPraiseDialog praise={praise} onPraiseUpdated={handleUpdate(praise.id)}>
@@ -122,3 +125,5 @@ export function PraiseAdminList() {
     </div>
   );
 }
+
+    

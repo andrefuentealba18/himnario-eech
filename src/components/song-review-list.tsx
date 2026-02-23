@@ -121,7 +121,7 @@ export function SongReviewList() {
             </div>
             <CardDescription>
               Tonalidad: {song.tone || 'No especificada'}
-              {song.category === 'choir' && `, Velocidad: ${(song as Choir).speed || 'No especificada'}`}
+              {(song.category === 'choir' || song.category === 'praise') && `, Velocidad: ${(song as Choir | Praise).speed || 'No especificada'}`}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -157,3 +157,5 @@ export function SongReviewList() {
     </div>
   );
 }
+
+    

@@ -3,6 +3,7 @@ export type Praise = {
   title: string;
   lyrics: string;
   tone?: string;
+  speed?: 'Rapido' | 'Lento';
   status?: 'pending' | 'approved';
   createdAt?: any; // Firestore Timestamp
 };
@@ -10,3 +11,5 @@ export type Praise = {
 // The actual data is now managed by the usePraises hook in `src/hooks/use-praises.ts`
 // which uses localStorage.
 export const praises: Praise[] = [];
+
+    

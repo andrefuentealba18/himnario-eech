@@ -12,6 +12,7 @@ import { EditToneDialog } from './edit-tone-dialog';
 import { useFontSize } from '@/hooks/use-font-size';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 const slugify = (text: string): string =>
   text.toString().toLowerCase()
@@ -136,11 +137,16 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
         </Button>
         <div className="text-center px-4 overflow-hidden flex-1">
             <h1 className="font-bold font-headline text-lg truncate mb-1">{praise.title}</h1>
-            <EditToneDialog song={praise} onToneUpdated={handleToneUpdate}>
-              <Button variant="outline" size="sm" className="h-auto px-2 py-0.5 text-xs">
-                {praise.tone || 'Tonalidad: Indefinida'}
-              </Button>
-            </EditToneDialog>
+            <div className="flex items-center justify-center gap-2">
+                <EditToneDialog song={praise} onToneUpdated={handleToneUpdate}>
+                  <Button variant="outline" size="sm" className="h-auto px-2 py-0.5 text-xs">
+                    {praise.tone || 'Tonalidad: Indefinida'}
+                  </Button>
+                </EditToneDialog>
+                {praise.speed && (
+                    <Badge variant="secondary" className="text-xs capitalize">{praise.speed}</Badge>
+                )}
+            </div>
         </div>
         <div className="w-10" />
       </header>
@@ -176,3 +182,5 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     </div>
   );
 }
+
+    
