@@ -22,12 +22,11 @@ interface ChoirListClientProps {
 
 export function ChoirListClient({ choirs }: ChoirListClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTab, setActiveTab] = useState('all');
+  const [activeTab, setActiveTab] = useState('rapidos');
 
   const filteredChoirs = useMemo(() => {
     let listToFilter = choirs;
 
-    // Filter by tab
     if (activeTab === 'rapidos') {
       listToFilter = choirs.filter(choir => choir.speed === 'Rapido');
     } else if (activeTab === 'lentos') {
@@ -71,12 +70,11 @@ export function ChoirListClient({ choirs }: ChoirListClientProps) {
       </div>
       
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-5 h-auto">
-          <TabsTrigger value="all">Todos</TabsTrigger>
-          <TabsTrigger value="rapidos">Rápidos</TabsTrigger>
-          <TabsTrigger value="lentos">Lentos</TabsTrigger>
-          <TabsTrigger value="mayores">Mayores</TabsTrigger>
-          <TabsTrigger value="menores">Menores</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 h-auto">
+          <TabsTrigger value="rapidos" className="data-[state=active]:bg-chart-1 data-[state=active]:text-white">Rápidos</TabsTrigger>
+          <TabsTrigger value="lentos" className="data-[state=active]:bg-chart-2 data-[state=active]:text-white">Lentos</TabsTrigger>
+          <TabsTrigger value="mayores" className="data-[state=active]:bg-chart-4 data-[state=active]:text-foreground">Mayores</TabsTrigger>
+          <TabsTrigger value="menores" className="data-[state=active]:bg-chart-5 data-[state=active]:text-foreground">Menores</TabsTrigger>
         </TabsList>
       </Tabs>
 
