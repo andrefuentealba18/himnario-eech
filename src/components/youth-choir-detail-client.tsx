@@ -3,7 +3,7 @@
 import type { YouthChoir } from '@/lib/youth-choirs';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ZoomIn, ZoomOut, Music2 } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { YouthChoirAdminActions } from './youth-choir-admin-actions';
@@ -138,7 +138,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
           </Link>
         </Button>
         <div className="text-center px-2 overflow-hidden flex-1">
-            <h1 className="font-headline text-2xl font-bold text-primary truncate">{youthChoir.title}</h1>
+            <h1 className="font-headline text-xl font-bold text-primary truncate">{youthChoir.title}</h1>
             <div className="mt-2">
                 <EditToneDialog song={youthChoir} onToneUpdated={handleToneUpdate}>
                 <Button variant="outline" size="sm" className="h-auto px-3 py-1 text-xs rounded-full">

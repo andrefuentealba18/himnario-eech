@@ -8,7 +8,7 @@ import { useFavorites } from '@/hooks/use-favorites';
 import { useFontSize } from '@/hooks/use-font-size';
 import { Button } from '@/components/ui/button';
 import { HymnAdminActions } from '@/components/hymn-admin-actions';
-import { Star, ChevronLeft, ZoomIn, ZoomOut, Music2 } from 'lucide-react';
+import { Star, ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { useCallback } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -119,7 +119,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
           </Link>
         </Button>
         <div className="text-center px-2 overflow-hidden flex-1">
-            <h1 className="font-headline text-2xl font-bold text-primary truncate">{hymn.title}</h1>
+            <h1 className="font-headline text-xl font-bold text-primary truncate">{hymn.title}</h1>
             <div className="flex items-center justify-center gap-2 mt-2">
                 <p className="text-sm font-semibold text-muted-foreground px-3 py-1 bg-muted rounded-full">
                   Himno Nº {hymn.number}

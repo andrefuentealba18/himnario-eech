@@ -3,7 +3,7 @@
 import type { Praise } from '@/lib/praises';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ZoomIn, ZoomOut, Music2 } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
 import { usePraises } from '@/context/praises-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PraiseAdminActions } from './praise-admin-actions';
@@ -146,7 +146,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
             </Link>
             </Button>
             <div className="text-center px-2 overflow-hidden flex-1">
-                <h1 className="font-headline text-2xl font-bold text-primary truncate">{praise.title}</h1>
+                <h1 className="font-headline text-xl font-bold text-primary truncate">{praise.title}</h1>
                 <div className="flex items-center justify-center gap-2 mt-2">
                     <EditToneDialog song={praise} onToneUpdated={handleToneUpdate}>
                         <Button variant="outline" size="sm" className="h-auto px-3 py-1 text-xs rounded-full">
