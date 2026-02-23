@@ -72,13 +72,50 @@ export function ChoirListClient({ choirs }: ChoirListClientProps) {
           <TabsTrigger value="lentos" className="data-[state=active]:bg-chart-2 data-[state=active]:text-white">Lentos</TabsTrigger>
         </TabsList>
       </Tabs>
-
-      <ChoirRoll choirs={filteredChoirs} />
+      
+      {activeTab === 'all' ? (
+        <SimpleChoirRoll choirs={filteredChoirs} />
+      ) : (
+        <GroupedChoirRoll choirs={filteredChoirs} />
+      )}
     </div>
   );
 }
 
-function ChoirRoll({ choirs }: { choirs: Choir[] }) {
+function SimpleChoirRoll({ choirs }: { choirs: Choir[] }) {
+  if (choirs.length === 0) {
+    return (
+      <div className="text-center text-muted-foreground py-10">
+        <p>No hay coros para mostrar.</p>
+        <p className="text-sm">Prueba a cambiar los filtros o agrega un coro nuevo.</p>
+      </div>
+    );
+  }
+
+  return (
+    <ScrollArea className="h-[calc(100vh-13rem)] pr-4">
+        <div className="flex flex-col">
+        {choirs.map((choir) => (
+            <Link
+                href={`/choirs/${choir.id}`}
+                key={choir.id}
+                className="flex items-center gap-4 p-3 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
+            >
+                <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
+                    <span className="font-medium truncate">{choir.title}</span>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        {choir.speed && <Badge variant="outline" className="capitalize">{choir.speed}</Badge>}
+                        {choir.tone && <Badge variant="outline">{choir.tone}</Badge>}
+                    </div>
+                </div>
+            </Link>
+        ))}
+        </div>
+    </ScrollArea>
+  );
+}
+
+function GroupedChoirRoll({ choirs }: { choirs: Choir[] }) {
   const groupedChoirs = useMemo(() => {
     const groups: Record<string, Choir[]> = {};
 

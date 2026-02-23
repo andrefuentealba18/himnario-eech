@@ -73,12 +73,49 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
         </TabsList>
       </Tabs>
 
-      <PraiseRoll praises={filteredPraises} />
+      {activeTab === 'all' ? (
+        <SimplePraiseRoll praises={filteredPraises} />
+      ) : (
+        <GroupedPraiseRoll praises={filteredPraises} />
+      )}
     </div>
   );
 }
 
-function PraiseRoll({ praises }: { praises: Praise[] }) {
+function SimplePraiseRoll({ praises }: { praises: Praise[] }) {
+  if (praises.length === 0) {
+    return (
+      <div className="text-center text-muted-foreground py-10">
+        <p>No hay alabanzas para mostrar.</p>
+        <p className="text-sm">Prueba a cambiar los filtros o agrega una alabanza nueva.</p>
+      </div>
+    );
+  }
+
+  return (
+    <ScrollArea className="h-[calc(100vh-13rem)] pr-4">
+        <div className="flex flex-col">
+        {praises.map((praise) => (
+            <Link
+                href={`/praises/${praise.id}`}
+                key={praise.id}
+                className="flex items-center gap-4 p-3 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
+            >
+                <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
+                    <span className="font-medium truncate">{praise.title}</span>
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                        {praise.speed && <Badge variant="outline" className="capitalize">{praise.speed}</Badge>}
+                        {praise.tone && <Badge variant="outline">{praise.tone}</Badge>}
+                    </div>
+                </div>
+            </Link>
+        ))}
+        </div>
+    </ScrollArea>
+  );
+}
+
+function GroupedPraiseRoll({ praises }: { praises: Praise[] }) {
   const groupedPraises = useMemo(() => {
     const groups: Record<string, Praise[]> = {};
 
