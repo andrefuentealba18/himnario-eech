@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo } from 'react';
@@ -7,7 +8,7 @@ import { useYouthChoirs } from '@/context/youth-choirs-context';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Trash2 } from 'lucide-react';
+import { Trash2, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 import { normalizeSearchTerm } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -31,9 +32,9 @@ type Song = {
 };
 
 const categoryLabels = {
-  'praise': 'Alabanza',
+  'praise': 'Alabanza General',
   'choir': 'Coro',
-  'youth-choir': 'Coro Juventud',
+  'youth-choir': 'Agrupación',
 };
 
 const categoryHrefs = {
@@ -62,10 +63,13 @@ export function DuplicateSongsManager() {
   const duplicateGroups = useMemo(() => {
     const groups: { [key: string]: Song[] } = {};
     allSongs.forEach(song => {
-      if (!groups[song.normalizedTitle]) {
-        groups[song.normalizedTitle] = [];
+      // El ID de grupo incluye la categoría para que NO marque como duplicado
+      // canciones que están en categorías distintas (ej. Alabanza vs Agrupación)
+      const groupKey = `${song.category}-${song.normalizedTitle}`;
+      if (!groups[groupKey]) {
+        groups[groupKey] = [];
       }
-      groups[song.normalizedTitle].push(song);
+      groups[groupKey].push(song);
     });
 
     return Object.values(groups)
@@ -98,44 +102,49 @@ export function DuplicateSongsManager() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Gestionar Canciones Duplicadas</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <AlertCircle className="h-5 w-5 text-yellow-500" />
+          Limpieza de Duplicados (Por Categoría)
+        </CardTitle>
         <CardDescription>
-          Aquí se muestran las canciones (alabanzas, coros, etc.) que tienen el mismo título. Puedes revisarlas y eliminar las que no necesites.
+          Solo se muestran canciones repetidas <strong>dentro de la misma sección</strong>. Puedes tener la misma canción en Alabanzas y Agrupaciones sin problemas.
         </CardDescription>
       </CardHeader>
       <CardContent>
         {!isLoaded ? (
-            <p>Cargando canciones...</p>
+            <p className="text-center py-4">Cargando canciones...</p>
         ) : duplicateGroups.length > 0 ? (
           <div className="space-y-4">
             {duplicateGroups.map((group, index) => (
-              <div key={index} className="p-4 border rounded-lg">
-                <h3 className="font-semibold text-lg mb-2">{group[0].title}</h3>
+              <div key={index} className="p-4 border rounded-lg bg-yellow-50/30 border-yellow-100">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-bold text-lg">{group[0].title}</h3>
+                  <Badge variant="outline" className="bg-white">{categoryLabels[group[0].category]}</Badge>
+                </div>
                 <div className="space-y-2">
                   {group.map(song => (
-                    <div key={`${song.category}-${song.id}`} className="flex items-center justify-between p-2 rounded-md bg-muted/50">
+                    <div key={`${song.category}-${song.id}`} className="flex items-center justify-between p-3 rounded-md bg-background border shadow-sm">
                       <div className="flex items-center gap-3">
-                         <Badge variant="secondary">{categoryLabels[song.category]}</Badge>
-                         <Link href={`${categoryHrefs[song.category]}${song.id}?from=admin`} className="underline hover:text-primary">
-                            Ver canción
+                         <Link href={`${categoryHrefs[song.category]}${song.id}?from=admin`} className="text-sm font-medium text-primary hover:underline">
+                            Ver contenido
                          </Link>
                       </div>
                       <AlertDialog>
                           <AlertDialogTrigger asChild>
-                             <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                             <Button variant="ghost" size="icon" className="text-destructive hover:bg-destructive/10">
                                 <Trash2 className="h-4 w-4" />
                              </Button>
                           </AlertDialogTrigger>
                           <AlertDialogContent>
                             <AlertDialogHeader>
-                              <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                              <AlertDialogTitle>¿Eliminar este duplicado?</AlertDialogTitle>
                               <AlertDialogDescription>
-                                Esta acción eliminará permanentemente la canción "{song.title}" de la categoría "{categoryLabels[song.category]}".
+                                Se borrará definitivamente la versión de "{song.title}" en la categoría "{categoryLabels[song.category]}".
                               </AlertDialogDescription>
                             </AlertDialogHeader>
                             <AlertDialogFooter>
                               <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleDelete(song)}>
+                              <AlertDialogAction onClick={() => handleDelete(song)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                                 Sí, eliminar
                               </AlertDialogAction>
                             </AlertDialogFooter>
@@ -148,7 +157,10 @@ export function DuplicateSongsManager() {
             ))}
           </div>
         ) : (
-          <p className="text-green-600 font-semibold">¡Felicidades! No se encontraron canciones duplicadas.</p>
+          <div className="text-center py-8 bg-green-50 rounded-xl border border-green-100">
+            <p className="text-green-700 font-bold text-lg">¡Base de datos limpia!</p>
+            <p className="text-green-600/80 text-sm">No se encontraron canciones duplicadas dentro de las mismas categorías.</p>
+          </div>
         )}
       </CardContent>
     </Card>
