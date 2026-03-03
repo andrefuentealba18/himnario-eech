@@ -132,7 +132,7 @@ export function AdminPanel() {
                           Puedes configurar una "Alerta de Presupuesto" de $1 USD. Esto no significa que vas a pagar, sino que Google te enviará un correo electrónico si el uso de la app llega a generar aunque sea un centavo de costo.
                         </p>
                         <p className="bg-primary/5 p-2 rounded border border-primary/10 text-primary font-medium">
-                          <span className="font-bold uppercase mr-1">Acción:</span> Entra a la Consola de Firebase > Facturación y pon una alerta mínima para estar tranquilo.
+                          <span className="font-bold uppercase mr-1">Acción:</span> Entra a la Consola de Firebase &gt; Facturación y pon una alerta mínima para estar tranquilo.
                         </p>
                       </AccordionContent>
                     </AccordionItem>
