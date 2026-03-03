@@ -4,7 +4,7 @@
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { Choir } from '@/lib/choirs';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc, query } from 'firebase/firestore';
+import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 const slugify = (text: string): string =>
@@ -54,6 +54,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
 
   const choirs = useMemo(() => {
     if (!allData) return [];
+    // MOSTRAR: Las aprobadas O las que no tienen estado (los 200+ coros originales)
     return allData
       .filter(c => c.status === 'approved' || !c.status)
       .sort((a, b) => a.title.localeCompare(b.title));
@@ -78,7 +79,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     const docRef = doc(firestore, 'choirs', id);
     const dataToSave = { 
         ...newChoirData,
-        status: 'approved' as const, // Aprobación directa
+        status: 'approved' as const, // Aprobación directa para visibilidad inmediata
         createdAt: serverTimestamp() 
     };
     

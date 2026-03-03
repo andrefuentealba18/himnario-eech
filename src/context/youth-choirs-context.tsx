@@ -4,7 +4,7 @@
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { YouthChoir } from '@/lib/youth-choirs';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc, query } from 'firebase/firestore';
+import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 const slugify = (text: string): string =>
@@ -54,6 +54,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
 
   const youthChoirs = useMemo(() => {
     if (!allData) return [];
+    // MOSTRAR: Las aprobadas O las que no tienen estado (originales)
     return allData
       .filter(yc => yc.status === 'approved' || !yc.status)
       .sort((a, b) => a.title.localeCompare(b.title));
