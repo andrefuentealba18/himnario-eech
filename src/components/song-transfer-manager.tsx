@@ -11,19 +11,27 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
-import { ArrowRight, Loader2 } from 'lucide-react';
+import { ArrowRight, Loader2, Copy, Move } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
 import type { Praise } from '@/lib/praises';
 import type { Choir } from '@/lib/choirs';
-import type { YouthChoir } from '@/lib/youth-choirs';
+import type { YouthChoir, GroupType } from '@/lib/youth-choirs';
 
-type Song = Praise | Choir | YouthChoir;
 type Category = 'praises' | 'choirs' | 'youth-choirs';
 
 const categoryLabels: Record<Category, string> = {
   'praises': 'Alabanzas',
   'choirs': 'Coros',
-  'youth-choirs': 'Coro Juventud',
+  'youth-choirs': 'Agrupaciones',
 };
+
+const groups: GroupType[] = [
+  "Coro Juventud",
+  "Grupo Ciclista",
+  "Departamento Infantil",
+  "Clase Dorcas",
+  "Departamento Juvenil"
+];
 
 export function SongTransferManager() {
   const { praises, addPraise, deletePraise, isLoaded: praisesLoaded } = usePraises();
@@ -33,8 +41,10 @@ export function SongTransferManager() {
 
   const [sourceCategory, setSourceCategory] = useState<Category | ''>('');
   const [destinationCategory, setDestinationCategory] = useState<Category | ''>('');
+  const [targetGroup, setTargetGroup] = useState<GroupType>("Coro Juventud");
   const [selectedSongs, setSelectedSongs] = useState<Set<string>>(new Set());
   const [isTransferring, setIsTransferring] = useState(false);
+  const [keepSource, setKeepSource] = useState(false); // Default to move (delete source)
 
   const isLoaded = praisesLoaded && choirsLoaded && youthChoirsLoaded;
 
@@ -80,29 +90,38 @@ export function SongTransferManager() {
     let duplicateCount = 0;
     let errorCount = 0;
 
-    const songsToMove = sourceSongs.filter(s => selectedSongs.has(s.id));
+    const songsToProcess = sourceSongs.filter(s => selectedSongs.has(s.id));
 
-    for (const song of songsToMove) {
+    for (const song of songsToProcess) {
       try {
         let addResult: { success: boolean };
 
-        // Add to destination
+        // Preparamos los datos base
+        const baseData = {
+          title: song.title,
+          lyrics: song.lyrics,
+          tone: song.tone,
+        };
+
+        // Añadir al destino
         if (destinationCategory === 'praises') {
-          addResult = await addPraise({ title: song.title, lyrics: song.lyrics, tone: song.tone });
+          addResult = await addPraise(baseData);
         } else if (destinationCategory === 'choirs') {
-          addResult = await addChoir({ title: song.title, lyrics: song.lyrics, tone: song.tone, speed: (song as Choir).speed });
-        } else { // youth-choirs
-          addResult = await addYouthChoir({ title: song.title, lyrics: song.lyrics, tone: song.tone });
+          addResult = await addChoir({ ...baseData, speed: (song as any).speed });
+        } else { // youth-choirs (Agrupaciones)
+          addResult = await addYouthChoir({ ...baseData, group: targetGroup });
         }
         
         if (addResult.success) {
-          // Delete from source if add was successful
-          if (sourceCategory === 'praises') {
-            await deletePraise(song.id);
-          } else if (sourceCategory === 'choirs') {
-            await deleteChoir(song.id);
-          } else { // youth-choirs
-            await deleteYouthChoir(song.id);
+          // Si no queremos mantener el origen (es un traspaso real), borramos
+          if (!keepSource) {
+            if (sourceCategory === 'praises') {
+              await deletePraise(song.id);
+            } else if (sourceCategory === 'choirs') {
+              await deleteChoir(song.id);
+            } else { // youth-choirs
+              await deleteYouthChoir(song.id);
+            }
           }
           successCount++;
         } else {
@@ -110,7 +129,7 @@ export function SongTransferManager() {
         }
       } catch(e) {
         errorCount++;
-        console.error(`Failed to transfer song: ${song.title}`, e);
+        console.error(`Error al procesar canción: ${song.title}`, e);
       }
     }
     
@@ -118,69 +137,106 @@ export function SongTransferManager() {
     setSelectedSongs(new Set());
 
     toast({
-      title: "Transferencia Completada",
-      description: `${successCount} canciones movidas. ${duplicateCount} duplicados omitidos. ${errorCount} errores.`,
+      title: keepSource ? "Copia Finalizada" : "Traspaso Completado",
+      description: `${successCount} canciones procesadas. ${duplicateCount} duplicados omitidos. ${errorCount} errores.`,
     });
   };
   
   const isSelectAllChecked = sourceSongs.length > 0 && selectedSongs.size === sourceSongs.length;
   const isSelectAllIndeterminate = selectedSongs.size > 0 && selectedSongs.size < sourceSongs.length;
 
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Traspasar Canciones</CardTitle>
+        <CardTitle>Traspasar o Copiar Canciones</CardTitle>
         <CardDescription>
-          Mueve canciones de una categoría a otra. Las canciones se eliminarán de la categoría de origen y se añadirán a la de destino.
+          Mueve canciones entre categorías. Puedes elegir mantener el original o moverlo definitivamente.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="flex-1 space-y-2">
-            <Label htmlFor="source-category">Desde</Label>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-muted/30 rounded-lg gap-4">
+          <div className="flex items-center gap-3">
+            {keepSource ? <Copy className="h-5 w-5 text-primary" /> : <Move className="h-5 w-5 text-primary" />}
+            <div>
+              <p className="font-medium text-sm">{keepSource ? "Modo: Copiar" : "Modo: Traspasar"}</p>
+              <p className="text-xs text-muted-foreground">
+                {keepSource ? "Las canciones se mantendrán en la categoría actual." : "Las canciones se eliminarán del origen al terminar."}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center space-x-2">
+            <Label htmlFor="mode-switch" className="text-xs">Mantener en origen</Label>
+            <Switch 
+              id="mode-switch" 
+              checked={keepSource} 
+              onCheckedChange={setKeepSource} 
+              disabled={isTransferring}
+            />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="source-category">Origen</Label>
             <Select value={sourceCategory} onValueChange={(v) => setSourceCategory(v as Category)} disabled={isTransferring}>
               <SelectTrigger id="source-category">
                 <SelectValue placeholder="Seleccionar origen..." />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(categoryLabels)
-                    .map(([key, label]) => (
-                        <SelectItem key={key} value={key} disabled={key === destinationCategory}>{label}</SelectItem>
+                {Object.entries(categoryLabels).map(([key, label]) => (
+                  <SelectItem key={key} value={key}>{label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
           
-          <div className="pt-6">
+          <div className="hidden md:flex pt-6">
             <ArrowRight className="h-5 w-5 text-muted-foreground" />
           </div>
 
-          <div className="flex-1 space-y-2">
-            <Label htmlFor="destination-category">Hacia</Label>
+          <div className="space-y-2">
+            <Label htmlFor="destination-category">Destino</Label>
              <Select value={destinationCategory} onValueChange={(v) => setDestinationCategory(v as Category)} disabled={isTransferring}>
               <SelectTrigger id="destination-category">
                 <SelectValue placeholder="Seleccionar destino..." />
               </SelectTrigger>
               <SelectContent>
-                {Object.entries(categoryLabels)
-                    .map(([key, label]) => (
-                        <SelectItem key={key} value={key} disabled={key === sourceCategory}>{label}</SelectItem>
+                {Object.entries(categoryLabels).map(([key, label]) => (
+                  <SelectItem key={key} value={key}>{label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
           </div>
         </div>
 
+        {destinationCategory === 'youth-choirs' && (
+          <div className="p-4 border border-primary/20 bg-primary/5 rounded-lg space-y-2 animate-in fade-in slide-in-from-top-2">
+            <Label htmlFor="target-group" className="text-primary font-semibold">Seleccionar Agrupación de Destino</Label>
+            <Select value={targetGroup} onValueChange={(v) => setTargetGroup(v as GroupType)} disabled={isTransferring}>
+              <SelectTrigger id="target-group" className="bg-background">
+                <SelectValue placeholder="¿A qué agrupación?" />
+              </SelectTrigger>
+              <SelectContent>
+                {groups.map(g => (
+                  <SelectItem key={g} value={g}>{g}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        )}
+
         {sourceCategory && (
           <div>
-            <Label>Canciones en "{categoryLabels[sourceCategory]}"</Label>
+            <div className="flex justify-between items-end mb-2">
+              <Label>Canciones en "{categoryLabels[sourceCategory]}"</Label>
+              <span className="text-xs text-muted-foreground">{selectedSongs.size} seleccionadas</span>
+            </div>
             <ScrollArea className="h-64 w-full rounded-md border mt-2">
                 <div className="p-4">
                     {!isLoaded ? <p>Cargando...</p> : (
                         sourceSongs.length > 0 ? (
                             <>
-                                <div className="flex items-center space-x-2 pb-2 border-b mb-2">
+                                <div className="flex items-center space-x-2 pb-2 border-b mb-2 sticky top-0 bg-background z-10">
                                   <Checkbox
                                     id="select-all"
                                     checked={isSelectAllChecked ? true : isSelectAllIndeterminate ? 'indeterminate' : false}
@@ -192,36 +248,50 @@ export function SongTransferManager() {
                                     htmlFor="select-all"
                                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                   >
-                                    Seleccionar todo ({selectedSongs.size} / {sourceSongs.length})
+                                    Seleccionar todo ({sourceSongs.length})
                                   </label>
                                 </div>
-                                {sourceSongs.map(song => (
-                                    <div key={song.id} className="flex items-center space-x-2 py-1">
-                                        <Checkbox
-                                            id={song.id}
-                                            checked={selectedSongs.has(song.id)}
-                                            onCheckedChange={(checked) => handleSongSelect(song.id, !!checked)}
-                                            disabled={isTransferring}
-                                        />
-                                        <label htmlFor={song.id} className="text-sm w-full truncate">
-                                            {song.title}
-                                        </label>
-                                    </div>
-                                ))}
+                                <div className="space-y-1">
+                                  {sourceSongs.map(song => (
+                                      <div key={song.id} className="flex items-center space-x-2 py-1.5 px-2 rounded-md hover:bg-muted/50 transition-colors">
+                                          <Checkbox
+                                              id={song.id}
+                                              checked={selectedSongs.has(song.id)}
+                                              onCheckedChange={(checked) => handleSongSelect(song.id, !!checked)}
+                                              disabled={isTransferring}
+                                          />
+                                          <label htmlFor={song.id} className="text-sm w-full truncate cursor-pointer">
+                                              {song.title}
+                                              {sourceCategory === 'youth-choirs' && (
+                                                <span className="ml-2 text-[10px] text-muted-foreground opacity-70">
+                                                  ({(song as YouthChoir).group})
+                                                </span>
+                                              )}
+                                          </label>
+                                      </div>
+                                  ))}
+                                </div>
                             </>
-                        ) : <p className="text-sm text-muted-foreground">No hay canciones en esta categoría.</p>
+                        ) : <p className="text-sm text-muted-foreground text-center py-10">No hay canciones en esta categoría.</p>
                     )}
                 </div>
             </ScrollArea>
           </div>
         )}
 
-        <div className="flex justify-end">
+        <div className="flex justify-end gap-3">
+            <Button 
+                variant="outline"
+                onClick={() => { setSourceCategory(''); setDestinationCategory(''); setSelectedSongs(new Set()); }}
+                disabled={isTransferring || (!sourceCategory && !destinationCategory)}
+            >
+              Limpiar
+            </Button>
             <Button 
                 onClick={handleTransfer}
                 disabled={!sourceCategory || !destinationCategory || selectedSongs.size === 0 || isTransferring}>
                 {isTransferring && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Traspasar ({selectedSongs.size})
+                {keepSource ? "Copiar" : "Traspasar"} ({selectedSongs.size})
             </Button>
         </div>
       </CardContent>
