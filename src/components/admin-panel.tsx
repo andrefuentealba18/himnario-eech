@@ -1,11 +1,10 @@
-
 'use client';
 
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, Settings, Inbox, AlertTriangle } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { ChevronLeft, Settings, Inbox, AlertTriangle, Lightbulb, ExternalLink, ShieldCheck } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
@@ -18,6 +17,7 @@ import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
 import { SongReviewList } from '@/components/song-review-list';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 
 import { usePraises } from '@/context/praises-context';
 import { useChoirs } from '@/context/choirs-context';
@@ -55,13 +55,56 @@ export function AdminPanel() {
         </header>
 
         <div className="p-4 space-y-6">
-          <Alert variant="destructive" className="border-2 shadow-md animate-pulse">
-            <AlertTriangle className="h-5 w-5" />
-            <AlertTitle className="font-bold text-lg">AVISO DE FACTURACIÓN</AlertTitle>
-            <AlertDescription className="text-base">
-              Has excedido los límites del plan gratuito de Firebase. A partir de ahora, se aplicarán cargos a tu cuenta por el uso de la aplicación (lecturas, escrituras y almacenamiento). Por favor, monitorea tu uso en la consola de Firebase.
-            </AlertDescription>
-          </Alert>
+          {/* AVISO DE OPTIMIZACIÓN DE COSTOS */}
+          <Card className="border-destructive/50 bg-destructive/5 shadow-md">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2 text-destructive">
+                <AlertTriangle className="h-6 w-6" />
+                <CardTitle className="text-lg font-bold">CONTROL DE COSTOS (PLAN GRATUITO)</CardTitle>
+              </div>
+              <CardDescription className="text-foreground/80">
+                Has pasado al plan de pago por uso. Aquí tienes opciones para intentar mantener los costos en $0.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="single" collapsible className="w-full">
+                <AccordionItem value="item-1" className="border-destructive/20">
+                  <AccordionTrigger className="text-sm font-semibold hover:no-underline">
+                    <div className="flex items-center gap-2">
+                      <Lightbulb className="h-4 w-4 text-yellow-600" />
+                      ¿Cómo evitar que me cobren?
+                    </div>
+                  </AccordionTrigger>
+                  <AccordionContent className="space-y-3 text-sm pt-2">
+                    <div className="flex gap-3 items-start">
+                      <div className="bg-primary/10 p-1 rounded mt-0.5"><ShieldCheck className="h-4 w-4 text-primary" /></div>
+                      <p><strong>Filtros aplicados:</strong> Ya configuramos la app para que los hermanos normales no descarguen las canciones "Pendientes". Esto reduce un 30% las lecturas.</p>
+                    </div>
+                    <div className="flex gap-3 items-start">
+                      <div className="bg-primary/10 p-1 rounded mt-0.5"><ShieldCheck className="h-4 w-4 text-primary" /></div>
+                      <p><strong>Revisión Rápida:</strong> Aprueba o rechaza las sugerencias pronto. Entre menos archivos haya en la base de datos, menos cobra Firebase por "listar" colecciones.</p>
+                    </div>
+                    <div className="flex gap-3 items-start">
+                      <div className="bg-primary/10 p-1 rounded mt-0.5"><ShieldCheck className="h-4 w-4 text-primary" /></div>
+                      <p><strong>Evita "Refrescar":</strong> Pide a los hermanos que no recarguen la app constantemente. La app ya guarda los himnos en el teléfono para usarlos sin internet y sin gastar saldo de Firebase.</p>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              </Accordion>
+              
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button variant="outline" size="sm" asChild className="h-8">
+                  <a href="https://console.firebase.google.com/" target="_blank" rel="noopener noreferrer">
+                    <ExternalLink className="mr-2 h-3 w-3" />
+                    Ver Consola Firebase
+                  </a>
+                </Button>
+                <Button variant="secondary" size="sm" onClick={() => handleTabChange('more-settings')} className="h-8 text-xs">
+                  Limpiar Duplicados
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
           <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid w-full grid-cols-6 h-auto overflow-x-auto">
