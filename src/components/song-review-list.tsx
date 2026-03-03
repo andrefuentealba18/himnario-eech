@@ -29,7 +29,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
-import { Check, Edit, Trash2 } from 'lucide-react';
+import { Check, Edit, Trash2, Loader2, Inbox } from 'lucide-react';
 import { EditPraiseDialog } from './edit-praise-dialog';
 import { EditChoirDialog } from './edit-choir-dialog';
 import { EditYouthChoirDialog } from './edit-youth-choir-dialog';
@@ -37,7 +37,7 @@ import { EditYouthChoirDialog } from './edit-youth-choir-dialog';
 type PendingSong = (Praise | Choir | YouthChoir) & { category: 'praise' | 'choir' | 'youth-choir' };
 
 const categoryLabels = {
-  praise: 'Alabanza',
+  praise: 'Alabanza General',
   choir: 'Coro',
   'youth-choir': 'Agrupación',
 };
@@ -47,16 +47,23 @@ export function SongReviewList() {
   const { pendingChoirs, approveChoir, deleteChoir, updateChoir, isLoaded: choirsLoaded } = useChoirs();
   const { pendingYouthChoirs, approveYouthChoir, deleteYouthChoir, updateYouthChoir, isLoaded: youthChoirsLoaded } = useYouthChoirs();
 
-  const isLoaded = praisesLoaded && choirsLoaded && youthChoirsLoaded;
+  const anyLoading = !praisesLoaded || !choirsLoaded || !youthChoirsLoaded;
+  const allLoaded = praisesLoaded && choirsLoaded && youthChoirsLoaded;
 
   const allPendingSongs: PendingSong[] = useMemo(() => {
-    if (!isLoaded) return [];
-    return [
+    const list = [
       ...pendingPraises.map(s => ({ ...s, category: 'praise' as const })),
       ...pendingChoirs.map(s => ({ ...s, category: 'choir' as const })),
       ...pendingYouthChoirs.map(s => ({ ...s, category: 'youth-choir' as const })),
-    ].sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
-  }, [pendingPraises, pendingChoirs, pendingYouthChoirs, isLoaded]);
+    ];
+
+    // Ordenar por fecha de creación (más recientes primero)
+    return list.sort((a, b) => {
+      const timeA = a.createdAt?.toMillis?.() || a.createdAt?.seconds * 1000 || Date.now();
+      const timeB = b.createdAt?.toMillis?.() || b.createdAt?.seconds * 1000 || Date.now();
+      return timeB - timeA;
+    });
+  }, [pendingPraises, pendingChoirs, pendingYouthChoirs]);
 
   const handleApprove = (song: PendingSong) => {
     if (song.category === 'praise') approvePraise(song.id);
@@ -82,84 +89,134 @@ export function SongReviewList() {
     if (song.category === 'praise') {
         return (
             <EditPraiseDialog praise={song as Praise} onPraiseUpdated={onUpdate as any}>
-                <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4" /> Modificar</Button>
+                <Button variant="outline" size="sm" className="h-9"><Edit className="mr-2 h-4 w-4" /> Modificar</Button>
             </EditPraiseDialog>
         );
     }
     if (song.category === 'choir') {
         return (
             <EditChoirDialog choir={song as Choir} onChoirUpdated={onUpdate as any}>
-                <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4" /> Modificar</Button>
+                <Button variant="outline" size="sm" className="h-9"><Edit className="mr-2 h-4 w-4" /> Modificar</Button>
             </EditChoirDialog>
         );
     }
     if (song.category === 'youth-choir') {
         return (
             <EditYouthChoirDialog youthChoir={song as YouthChoir} onYouthChoirUpdated={onUpdate as any}>
-                <Button variant="outline" size="sm"><Edit className="mr-2 h-4 w-4" /> Modificar</Button>
+                <Button variant="outline" size="sm" className="h-9"><Edit className="mr-2 h-4 w-4" /> Modificar</Button>
             </EditYouthChoirDialog>
         );
     }
     return null;
   }
 
-  if (!isLoaded) {
-    return <p className="text-center py-10">Cargando canciones para revisar...</p>;
-  }
-
   if (allPendingSongs.length === 0) {
-    return <p className="text-muted-foreground text-center py-10">No hay canciones nuevas pendientes de revisión.</p>;
+    if (anyLoading) {
+      return (
+        <div className="flex flex-col items-center justify-center py-20 space-y-4">
+          <Loader2 className="h-10 w-10 text-primary animate-spin" />
+          <p className="text-muted-foreground animate-pulse text-sm">Consultando base de datos en tiempo real...</p>
+          <div className="flex gap-2">
+            {!praisesLoaded && <Badge variant="outline">Alabanzas...</Badge>}
+            {!choirsLoaded && <Badge variant="outline">Coros...</Badge>}
+            {!youthChoirsLoaded && <Badge variant="outline">Agrupaciones...</Badge>}
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
+        <div className="bg-muted p-6 rounded-full">
+          <Inbox className="h-12 w-12 text-muted-foreground/50" />
+        </div>
+        <div>
+          <h3 className="text-xl font-bold">¡Bandeja de entrada vacía!</h3>
+          <p className="text-muted-foreground max-w-xs mx-auto">No hay canciones nuevas esperando revisión en este momento.</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-4">
-      {allPendingSongs.map(song => (
-        <Card key={song.id}>
-          <CardHeader>
-            <div className="flex justify-between items-start">
-              <CardTitle className="text-lg">{song.title}</CardTitle>
-              <div className="flex flex-col items-end gap-1">
-                <Badge variant="secondary">{categoryLabels[song.category]}</Badge>
-                {song.category === 'youth-choir' && (
-                  <Badge variant="outline" className="text-[10px] whitespace-nowrap">{(song as YouthChoir).group}</Badge>
-                )}
+    <div className="space-y-6">
+      {anyLoading && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/30 p-2 rounded-md justify-center italic">
+          <Loader2 className="h-3 w-3 animate-spin" />
+          Sincronizando actualizaciones...
+        </div>
+      )}
+      
+      <div className="grid gap-4">
+        {allPendingSongs.map(song => (
+          <Card key={song.id} className="border-l-4 border-l-yellow-500 shadow-sm hover:shadow-md transition-shadow">
+            <CardHeader className="pb-3">
+              <div className="flex justify-between items-start">
+                <div className="space-y-1">
+                  <CardTitle className="text-xl font-bold text-foreground leading-tight">{song.title}</CardTitle>
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-none">
+                      {categoryLabels[song.category]}
+                    </Badge>
+                    {song.category === 'youth-choir' && (
+                      <Badge variant="outline" className="border-primary/30 text-primary">{(song as YouthChoir).group}</Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded font-mono">
+                  {song.id.substring(0, 8)}
+                </div>
               </div>
-            </div>
-            <CardDescription>
-              Tonalidad: {song.tone || 'No especificada'}
-              {(song.category === 'choir' || song.category === 'praise') && `, Velocidad: ${(song as Choir | Praise).speed || 'No especificada'}`}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <p className="whitespace-pre-wrap text-sm p-4 bg-muted rounded-md max-h-48 overflow-y-auto">
-              {song.lyrics}
-            </p>
-          </CardContent>
-          <CardFooter className="flex justify-end gap-2">
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm"><Trash2 className="mr-2 h-4 w-4" /> Rechazar</Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
-                  <AlertDialogDescription>Esta acción eliminará permanentemente la canción "{song.title}".</AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                  <AlertDialogAction onClick={() => handleDelete(song)}>Sí, rechazar</AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+              <CardDescription className="pt-2 text-xs flex items-center gap-3">
+                <span className="flex items-center gap-1 font-medium text-foreground/70">
+                  Tonalidad: <span className="text-primary font-bold">{song.tone || 'Indefinida'}</span>
+                </span>
+                {(song.category === 'choir' || (song as any).speed) && (
+                  <span className="flex items-center gap-1 font-medium text-foreground/70">
+                    Velocidad: <span className="text-primary font-bold">{(song as any).speed || '---'}</span>
+                  </span>
+                )}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pb-4">
+              <div className="relative group">
+                <p className="whitespace-pre-wrap text-sm p-4 bg-muted/50 rounded-lg max-h-60 overflow-y-auto font-body leading-relaxed border border-transparent group-hover:border-primary/20 transition-colors">
+                  {song.lyrics}
+                </p>
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-between gap-2 bg-muted/20 py-3 px-6 rounded-b-lg border-t">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10">
+                    <Trash2 className="mr-2 h-4 w-4" /> Rechazar
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>¿Eliminar contribución?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Si rechazas esta canción, se borrará permanentemente de la base de datos.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleDelete(song)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                      Sí, eliminar permanentemente
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
 
-            {renderEditDialog(song)}
-
-            <Button size="sm" onClick={() => handleApprove(song)}>
-              <Check className="mr-2 h-4 w-4" /> Aprobar
-            </Button>
-          </CardFooter>
-        </Card>
-      ))}
+              <div className="flex gap-2">
+                {renderEditDialog(song)}
+                <Button size="sm" onClick={() => handleApprove(song)} className="bg-green-600 hover:bg-green-700 shadow-sm">
+                  <Check className="mr-2 h-4 w-4" /> Aprobar y Publicar
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

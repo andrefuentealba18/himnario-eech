@@ -54,7 +54,6 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
 
   const praises = useMemo(() => {
     if (!allData) return [];
-    // MOSTRAR: Las aprobadas O las que no tienen estado (originales)
     return allData
       .filter(p => p.status === 'approved' || !p.status)
       .sort((a, b) => a.title.localeCompare(b.title));
@@ -64,28 +63,33 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     if (!allData) return [];
     return allData
       .filter(p => p.status === 'pending')
-      .sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+      .sort((a, b) => {
+        const tA = a.createdAt?.toMillis?.() || a.createdAt?.seconds * 1000 || 0;
+        const tB = b.createdAt?.toMillis?.() || b.createdAt?.seconds * 1000 || 0;
+        return tB - tA;
+      });
   }, [allData]);
   
   const addPraise = useCallback(async (newPraiseData: Omit<Praise, 'id'>) => {
     if (!firestore) return { success: false };
     const id = slugify(newPraiseData.title);
     
-    if (praises.some(p => p.id === id) || pendingPraises.some(p => p.id === id)) {
-      toast({ variant: 'destructive', title: 'Error', description: 'Ya existe una alabanza con ese título.' });
+    const existingIds = new Set(allData?.map(p => p.id) || []);
+    if (existingIds.has(id)) {
+      toast({ variant: 'destructive', title: 'Ya existe', description: 'Esta alabanza ya está en la lista o en revisión.' });
       return { success: false };
     }
 
     const docRef = doc(firestore, 'praises', id);
     const dataToSave = { 
         ...newPraiseData,
-        status: 'pending' as const, // Enviar a revisión
+        status: 'pending' as const,
         createdAt: serverTimestamp() 
     };
 
     try {
       await setDoc(docRef, removeUndefined(dataToSave));
-      toast({ title: 'Enviada a Revisión', description: `"${newPraiseData.title}" ha sido enviada para revisión.` });
+      toast({ title: 'Enviada a Revisión', description: `"${newPraiseData.title}" ha sido enviada.` });
       return { success: true };
     } catch (error) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -95,26 +99,22 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
       }));
       return { success: false };
     }
-  }, [firestore, praises, pendingPraises, toast]);
+  }, [firestore, allData, toast]);
 
   const addPraises = useCallback((newPraisesData: Omit<Praise, 'id'>[]) => {
     if (!firestore) return;
     
     const batch = writeBatch(firestore);
     let addedCount = 0;
-    let duplicates = 0;
-    
-    const existingIds = new Set([...praises.map(p => p.id), ...pendingPraises.map(p => p.id)]);
+    const existingIds = new Set(allData?.map(p => p.id) || []);
 
     for (const praiseData of newPraisesData) {
       const id = slugify(praiseData.title);
-      if (existingIds.has(id)) {
-        duplicates++;
-      } else {
+      if (!existingIds.has(id)) {
         const docRef = doc(firestore, 'praises', id);
         const dataToSave = { 
             ...praiseData,
-            status: 'pending' as const, // Enviar a revisión
+            status: 'pending' as const,
             createdAt: serverTimestamp() 
         };
         batch.set(docRef, removeUndefined(dataToSave));
@@ -126,37 +126,39 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     if (addedCount > 0) {
       batch.commit()
         .then(() => {
-          toast({ title: 'Enviadas a Revisión', description: `Se han enviado ${addedCount} alabanzas para revisión.` });
+          toast({ title: 'Lote Enviado', description: `Se enviaron ${addedCount} alabanzas a revisión.` });
         })
         .catch(() => {
-          toast({ variant: 'destructive', title: 'Error al Enviar', description: 'No se pudieron guardar las alabanzas.' });
+          toast({ variant: 'destructive', title: 'Error', description: 'No se pudieron guardar las alabanzas.' });
         });
     }
-  }, [firestore, praises, pendingPraises, toast]);
+  }, [firestore, allData, toast]);
 
   const approvePraise = useCallback((praiseId: string) => {
     if (!firestore) return;
     const docRef = doc(firestore, 'praises', praiseId);
     updateDoc(docRef, { status: 'approved' })
+      .then(() => toast({ title: 'Alabanza Aprobada' }))
       .catch((error) => {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'update' }));
       });
-  }, [firestore]);
+  }, [firestore, toast]);
 
   const deletePraise = useCallback((praiseId: string) => {
     if (!firestore) return;
     const docRef = doc(firestore, 'praises', praiseId);
     deleteDoc(docRef)
+      .then(() => toast({ title: 'Elemento eliminado' }))
       .catch((error) => {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));
       });
-  }, [firestore]);
+  }, [firestore, toast]);
   
   const updatePraise = useCallback(async (praiseId: string, newPraiseData: Omit<Praise, 'id'>): Promise<{ success: boolean; error?: string }> => {
     if (!firestore) return { success: false, error: 'firestore_unavailable' };
     const newId = slugify(newPraiseData.title);
     
-    if (newId !== praiseId && (praises.some(p => p.id === newId) || pendingPraises.some(p => p.id === newId))) {
+    if (newId !== praiseId && allData?.some(p => p.id === newId)) {
       return { success: false, error: 'duplicate' };
     }
 
@@ -173,7 +175,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         await setDoc(oldDocRef, dataToSave, { merge: true }).catch(e => console.error(e));
     }
     return { success: true };
-  }, [firestore, praises, pendingPraises]);
+  }, [firestore, allData]);
 
   const getPraiseById = useCallback((id: string): Praise | undefined => {
     return allData?.find(p => p.id === id);
