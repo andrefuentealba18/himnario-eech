@@ -54,7 +54,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
 
   const choirs = useMemo(() => {
     if (!allData) return [];
-    // MOSTRAR: Las aprobadas O las que no tienen estado (los 200+ coros originales)
+    // MOSTRAR: Las aprobadas O las que no tienen estado (originales)
     return allData
       .filter(c => c.status === 'approved' || !c.status)
       .sort((a, b) => a.title.localeCompare(b.title));
@@ -79,13 +79,13 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     const docRef = doc(firestore, 'choirs', id);
     const dataToSave = { 
         ...newChoirData,
-        status: 'approved' as const, // Aprobación directa para visibilidad inmediata
+        status: 'pending' as const, // Enviar a revisión
         createdAt: serverTimestamp() 
     };
     
     try {
       await setDoc(docRef, removeUndefined(dataToSave));
-      toast({ title: 'Coro Guardado', description: `"${newChoirData.title}" ha sido agregado.` });
+      toast({ title: 'Enviado a Revisión', description: `"${newChoirData.title}" ha sido enviado para revisión.` });
       return { success: true };
     } catch (error) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -114,7 +114,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
         const docRef = doc(firestore, 'choirs', id);
         const dataToSave = { 
             ...choirData,
-            status: 'approved' as const,
+            status: 'pending' as const, // Enviar a revisión
             createdAt: serverTimestamp() 
         };
         batch.set(docRef, removeUndefined(dataToSave));
@@ -126,7 +126,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     if (addedCount > 0) {
       batch.commit()
         .then(() => {
-          toast({ title: 'Coros Agregados', description: `Se han agregado ${addedCount} coros correctamente.` });
+          toast({ title: 'Enviados a Revisión', description: `Se han enviado ${addedCount} coros para revisión.` });
         })
         .catch(() => {
           toast({ variant: 'destructive', title: 'Error al Enviar', description: 'No se pudieron guardar los coros.' });

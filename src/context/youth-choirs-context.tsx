@@ -79,13 +79,13 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     const docRef = doc(firestore, 'youth-choirs', id);
     const dataToSave = { 
         ...newYouthChoirData,
-        status: 'approved' as const, // Aprobación directa
+        status: 'pending' as const, // Volver a enviar a revisión como solicitado
         createdAt: serverTimestamp() 
     };
 
     try {
       await setDoc(docRef, removeUndefined(dataToSave));
-      toast({ title: 'Alabanza Guardada', description: `"${newYouthChoirData.title}" ha sido agregada.` });
+      toast({ title: 'Enviado a Revisión', description: `"${newYouthChoirData.title}" ha sido enviada para ser revisada.` });
       return { success: true };
     } catch (error) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -114,7 +114,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
         const docRef = doc(firestore, 'youth-choirs', id);
         const dataToSave = { 
             ...youthChoirData,
-            status: 'approved' as const,
+            status: 'pending' as const, // Volver a enviar a revisión
             createdAt: serverTimestamp() 
         };
         batch.set(docRef, removeUndefined(dataToSave));
@@ -126,7 +126,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     if (addedCount > 0) {
       batch.commit()
         .then(() => {
-          toast({ title: 'Alabanzas Agregadas', description: `Se han agregado ${addedCount} alabanzas correctamente.` });
+          toast({ title: 'Enviadas a Revisión', description: `Se han enviado ${addedCount} alabanzas para revisión.` });
         })
         .catch(() => {
           toast({ variant: 'destructive', title: 'Error al Enviar', description: 'No se pudieron guardar las alabanzas.' });

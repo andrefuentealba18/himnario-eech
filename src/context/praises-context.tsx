@@ -4,7 +4,7 @@
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { Praise } from '@/lib/praises';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc, query } from 'firebase/firestore';
+import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 const slugify = (text: string): string =>
@@ -44,8 +44,6 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   
-  // Obtenemos toda la colección para manejar el filtrado por estado localmente
-  // Esto asegura que las canciones antiguas (sin el campo 'status') vuelvan a aparecer
   const praisesCollection = useMemoFirebase(() => 
     firestore ? collection(firestore, 'praises') : null
   , [firestore]);
@@ -56,7 +54,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
 
   const praises = useMemo(() => {
     if (!allData) return [];
-    // MOSTRAR: Las aprobadas O las que no tienen estado (tus 560 canciones originales)
+    // MOSTRAR: Las aprobadas O las que no tienen estado (originales)
     return allData
       .filter(p => p.status === 'approved' || !p.status)
       .sort((a, b) => a.title.localeCompare(b.title));
@@ -81,13 +79,13 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     const docRef = doc(firestore, 'praises', id);
     const dataToSave = { 
         ...newPraiseData,
-        status: 'approved' as const, // Guardar como aprobada por defecto para que aparezca altiro
+        status: 'pending' as const, // Enviar a revisión
         createdAt: serverTimestamp() 
     };
 
     try {
       await setDoc(docRef, removeUndefined(dataToSave));
-      toast({ title: 'Alabanza Guardada', description: `"${newPraiseData.title}" ha sido agregada.` });
+      toast({ title: 'Enviada a Revisión', description: `"${newPraiseData.title}" ha sido enviada para revisión.` });
       return { success: true };
     } catch (error) {
       errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -116,7 +114,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         const docRef = doc(firestore, 'praises', id);
         const dataToSave = { 
             ...praiseData,
-            status: 'approved' as const, // Importar como aprobadas directamente
+            status: 'pending' as const, // Enviar a revisión
             createdAt: serverTimestamp() 
         };
         batch.set(docRef, removeUndefined(dataToSave));
@@ -128,7 +126,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     if (addedCount > 0) {
       batch.commit()
         .then(() => {
-          toast({ title: 'Alabanzas Agregadas', description: `Se han agregado ${addedCount} alabanzas correctamente.` });
+          toast({ title: 'Enviadas a Revisión', description: `Se han enviado ${addedCount} alabanzas para revisión.` });
         })
         .catch(() => {
           toast({ variant: 'destructive', title: 'Error al Enviar', description: 'No se pudieron guardar las alabanzas.' });
