@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useMemo } from 'react';
@@ -38,7 +39,7 @@ type PendingSong = (Praise | Choir | YouthChoir) & { category: 'praise' | 'choir
 const categoryLabels = {
   praise: 'Alabanza',
   choir: 'Coro',
-  'youth-choir': 'Coro Juventud',
+  'youth-choir': 'Agrupación',
 };
 
 export function SongReviewList() {
@@ -103,11 +104,11 @@ export function SongReviewList() {
   }
 
   if (!isLoaded) {
-    return <p>Cargando canciones para revisar...</p>;
+    return <p className="text-center py-10">Cargando canciones para revisar...</p>;
   }
 
   if (allPendingSongs.length === 0) {
-    return <p className="text-muted-foreground">No hay canciones nuevas pendientes de revisión.</p>;
+    return <p className="text-muted-foreground text-center py-10">No hay canciones nuevas pendientes de revisión.</p>;
   }
 
   return (
@@ -116,8 +117,13 @@ export function SongReviewList() {
         <Card key={song.id}>
           <CardHeader>
             <div className="flex justify-between items-start">
-              <CardTitle>{song.title}</CardTitle>
-              <Badge variant="secondary">{categoryLabels[song.category]}</Badge>
+              <CardTitle className="text-lg">{song.title}</CardTitle>
+              <div className="flex flex-col items-end gap-1">
+                <Badge variant="secondary">{categoryLabels[song.category]}</Badge>
+                {song.category === 'youth-choir' && (
+                  <Badge variant="outline" className="text-[10px] whitespace-nowrap">{(song as YouthChoir).group}</Badge>
+                )}
+              </div>
             </div>
             <CardDescription>
               Tonalidad: {song.tone || 'No especificada'}
@@ -157,5 +163,3 @@ export function SongReviewList() {
     </div>
   );
 }
-
-    

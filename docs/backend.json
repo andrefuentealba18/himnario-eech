@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "Hymn": {
@@ -112,29 +113,41 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "YouthChoir",
       "type": "object",
-      "description": "Represents a single youth choir song, including its title, lyrics and tone.",
+      "description": "Represents a single song from church groups (Alabanzas de Agrupaciones).",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the YouthChoir entity (slug of the title)."
+          "description": "Unique identifier for the song entity (slug of the title)."
         },
         "title": {
           "type": "string",
-          "description": "The official title of the youth choir song."
+          "description": "The official title of the song."
         },
         "lyrics": {
           "type": "string",
-          "description": "The complete text of the youth choir song's lyrics."
+          "description": "The complete text of the song's lyrics."
         },
         "tone": {
           "type": "string",
-          "description": "The musical key of the youth choir song."
+          "description": "The musical key of the song."
+        },
+        "group": {
+          "type": "string",
+          "description": "The specific church group this song belongs to.",
+          "enum": [
+            "Coro Juventud",
+            "Grupo Ciclista",
+            "Departamento Infantil",
+            "Clase Dorcas",
+            "Departamento Juvenil"
+          ]
         }
       },
       "required": [
         "id",
         "title",
-        "lyrics"
+        "lyrics",
+        "group"
       ]
     },
     "Repertoire": {
@@ -329,11 +342,11 @@
           "schema": {
             "$ref": "#/backend/entities/YouthChoir"
           },
-          "description": "Stores all public youth choir song data.",
+          "description": "Stores all public group songs (Agrupaciones).",
           "params": [
             {
               "name": "youthChoirId",
-              "description": "The unique identifier for a specific youth choir song."
+              "description": "The unique identifier for a specific group song."
             }
           ]
         }
@@ -391,8 +404,6 @@
         }
       }
     ],
-    "reasoning": "The Himnario EECH Móvil application's data structure is designed to be secure, scalable, and debuggable by strictly adhering to the core design principles and mandated strategies. The primary goal is to ensure Authorization Independence, debuggability, and support for QAPs (Queries as Permissions).\n\n1.  **Hymns (`/hymns/{hymnId}`):**\n    *   **Authorization Independence & QAPs:** This collection stores all public hymn data. Since all hymns are publicly accessible and read-only for all users, there are no authorization dependencies on parent documents or complex access rules. Any user can `get()` a specific hymn or `list()` all hymns, making `list` operations inherently secure without filtering, thus fulfilling the QAP mandate.\n    *   **Structural Segregation:** All documents in this collection share the same security posture (public read-only), simplifying security rules to `allow read: true;`.\n\n2.  **User Profiles (`/users/{userId}`):**\n    *   **Authorization Independence:** Each `UserProfile` document is identified by the `{userId}` in the path, which directly corresponds to `request.auth.uid`. The `UserProfile` entity itself also includes an `id` field which will store the same `userId`. This denormalization ensures that authorization can be checked directly against the document's `id` field (`resource.data.id == request.auth.uid`) or the path parameter (`userId == request.auth.uid`), eliminating any need for `get()` calls to other collections for ownership verification. This makes rules atomic and easy to debug.\n    *   **QAPs:** `list` operations on `/users` are not permitted; instead, users only `get()` their specific profile (`/users/{request.auth.uid}`). This ensures that unauthorized users cannot enumerate profiles, and the data remains private to the owner.\n    *   **Access Modeling:** This uses the 'Private Data: Path-Based ownership' pattern, providing strong isolation for user-specific data.\n\n3.  **Favorite Hymns (`/users/{userId}/favoriteHymns/{favoriteHymnId}`):**\n    *   **Authorization Independence & QAPs:** This subcollection stores hymns favorited by a specific user. The `{userId}` in the path ensures that only the authenticated user (`request.auth.uid`) can access their own favorites. Crucially, each `FavoriteHymn` document *denormalizes* the `userProfileId` field, which matches the `userId` in the path and `request.auth.uid`. This explicit ownership within each document means that rules can verify `resource.data.userProfileId == request.auth.uid` without resorting to `get()` calls on the parent `UserProfile` document. This allows for atomic writes (e.g., adding a favorite hymn without needing to first read the user profile) and simplifies debugging.\n    *   `list` operations on `/users/{userId}/favoriteHymns` are secure because the path wildcards ensure only the authenticated user can list *their own* favorites, fulfilling the QAP mandate.\n    *   **Access Modeling:** This follows the 'Hierarchical Paths for User-Owned Data' pattern, extending the user's private data domain with related entities.\n\nBy implementing this structure, security rules will be concise (e.g., `allow read, write: request.auth.uid == userId;` or `request.auth.uid == resource.data.ownerId;`), easy to understand, and highly performant as they avoid expensive `get()` calls. Structural segregation ensures homogeneous security postures within collections, further simplifying rule management."
+    "reasoning": "The application structure is updated to support church groups (Agrupaciones) by adding a category field to the youth-choirs entity."
   }
 }
-
-    

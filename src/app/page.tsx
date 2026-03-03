@@ -1,7 +1,7 @@
+
 import Link from 'next/link';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Music, Book, Users, Mic, Church, ListMusic } from 'lucide-react';
+import { Music, Book, Users, Mic, Church, Library } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { GlobalSearch } from '@/components/global-search';
 
@@ -40,7 +40,7 @@ export default function HomePage() {
                   <Card className="transition-all duration-300 hover:shadow-primary/20 hover:shadow-lg hover:-translate-y-1 hover:border-primary/50">
                     <CardContent className="flex flex-col items-center justify-center p-6 space-y-2">
                       <Book className="h-10 w-10 text-primary transition-transform duration-300 group-hover:scale-110" />
-                      <span className="font-semibold text-lg font-body">Himnos</span>
+                      <span className="font-semibold text-lg font-body text-center leading-tight">Himnos</span>
                     </CardContent>
                   </Card>
                 </Link>
@@ -50,7 +50,7 @@ export default function HomePage() {
                   <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-foreground/20">
                     <CardContent className="flex flex-col items-center justify-center p-6 space-y-2">
                       <Music className="h-10 w-10 text-foreground/80 transition-transform duration-300 group-hover:scale-110 group-hover:text-primary" />
-                      <span className="font-semibold text-lg font-body">Alabanzas</span>
+                      <span className="font-semibold text-lg font-body text-center leading-tight">Alabanzas</span>
                     </CardContent>
                   </Card>
                 </Link>
@@ -60,7 +60,7 @@ export default function HomePage() {
                   <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-foreground/20">
                     <CardContent className="flex flex-col items-center justify-center p-6 space-y-2">
                       <Mic className="h-10 w-10 text-foreground/80 transition-transform duration-300 group-hover:scale-110 group-hover:text-primary" />
-                      <span className="font-semibold text-lg font-body">Coros</span>
+                      <span className="font-semibold text-lg font-body text-center leading-tight">Coros</span>
                     </CardContent>
                   </Card>
                 </Link>
@@ -69,8 +69,8 @@ export default function HomePage() {
                 <Link href="/youth-choirs" className="group block">
                   <Card className="transition-all duration-300 hover:shadow-lg hover:-translate-y-1 hover:border-foreground/20">
                     <CardContent className="flex flex-col items-center justify-center p-6 space-y-2">
-                      <Users className="h-10 w-10 text-foreground/80 transition-transform duration-300 group-hover:scale-110 group-hover:text-primary" />
-                      <span className="font-semibold text-lg font-body">Coro Juventud</span>
+                      <Library className="h-10 w-10 text-foreground/80 transition-transform duration-300 group-hover:scale-110 group-hover:text-primary" />
+                      <span className="font-semibold text-lg font-body text-center leading-tight">Alabanzas de Agrupaciones</span>
                     </CardContent>
                   </Card>
                 </Link>
@@ -79,12 +79,6 @@ export default function HomePage() {
             
             <footer className="text-center text-sm text-muted-foreground pt-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '1.1s' }}>
               <div className="flex justify-center items-center gap-4">
-                <Button asChild variant="ghost">
-                  <Link href="/repertoire">
-                    <ListMusic className="mr-2 h-4 w-4" />
-                    Arma tu repertorio
-                  </Link>
-                </Button>
                 <SettingsDialog />
               </div>
               <p className="mt-2">Iglesia Ejército Evangélico de Chile</p>

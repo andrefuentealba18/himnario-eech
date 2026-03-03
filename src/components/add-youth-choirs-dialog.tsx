@@ -1,7 +1,8 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
-import type { YouthChoir } from '@/lib/youth-choirs';
+import type { YouthChoir, GroupType } from '@/lib/youth-choirs';
 import { Loader2 } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
@@ -16,8 +17,15 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
-function parseSongs(text: string): Omit<YouthChoir, 'id'>[] {
+function parseSongs(text: string, group: GroupType): Omit<YouthChoir, 'id'>[] {
     const songs: Omit<YouthChoir, 'id'>[] = [];
     if (!text || text.trim() === '') {
         return songs;
@@ -59,7 +67,7 @@ function parseSongs(text: string): Omit<YouthChoir, 'id'>[] {
                 }
             }
 
-            currentSong = { title: trimmedLine, lyrics: '' };
+            currentSong = { title: trimmedLine, lyrics: '', group };
             currentLyrics = [];
         } else {
             if (currentSong) {
@@ -82,27 +90,35 @@ interface AddYouthChoirsDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onYouthChoirsAdded: (youthChoirs: Omit<YouthChoir, 'id'>[]) => void;
+  initialGroup?: GroupType;
 }
 
-export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded }: AddYouthChoirsDialogProps) {
+export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded, initialGroup }: AddYouthChoirsDialogProps) {
   const [text, setText] = useState('');
   const [isParsing, setIsParsing] = useState(false);
+  const [group, setGroup] = useState<GroupType>("Coro Juventud");
   const { toast } = useToast();
 
   useEffect(() => {
     if (open) {
       setText('');
       setIsParsing(false);
+      setGroup(initialGroup || "Coro Juventud");
     }
-  }, [open]);
+  }, [open, initialGroup]);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
+    if (!text.trim()) {
+      toast({ variant: "destructive", title: "Campo vacío", description: "El texto de las alabanzas es requerido." });
+      return;
+    }
+
     setIsParsing(true);
 
     setTimeout(() => {
-      const parsed = parseSongs(text);
+      const parsed = parseSongs(text, group);
       
       if (parsed.length > 0) {
           onYouthChoirsAdded(parsed);
@@ -123,12 +139,27 @@ export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded }:
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg" onCloseAutoFocus={(e) => { e.preventDefault(); onOpenChange(false); }}>
         <DialogHeader>
-          <DialogTitle>Agregar Varias Alabanzas (Coro Juventud)</DialogTitle>
+          <DialogTitle>Agregar Varias Alabanzas</DialogTitle>
           <DialogDescription>
-            Pega el texto de varias alabanzas. Cada una debe comenzar con su título escrito completamente en MAYÚSCULAS. Serán enviadas a revisión.
+            Selecciona la agrupación y pega el texto de varias alabanzas. Cada una debe comenzar con su título escrito completamente en MAYÚSCULAS.
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
+            <div className="space-y-2">
+                <Label htmlFor="group-select">Agrupación</Label>
+                <Select value={group} onValueChange={(v) => setGroup(v as GroupType)} disabled={isParsing}>
+                  <SelectTrigger id="group-select">
+                    <SelectValue placeholder="Selecciona la agrupación" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Coro Juventud">Coro Juventud</SelectItem>
+                    <SelectItem value="Grupo Ciclista">Grupo Ciclista</SelectItem>
+                    <SelectItem value="Departamento Infantil">Departamento Infantil</SelectItem>
+                    <SelectItem value="Clase Dorcas">Clase Dorcas</SelectItem>
+                    <SelectItem value="Departamento Juvenil">Departamento Juvenil</SelectItem>
+                  </SelectContent>
+                </Select>
+            </div>
             <div className="space-y-2">
                 <Label htmlFor="youth-choir-bulk-text">Texto de las alabanzas</Label>
                 <Textarea 

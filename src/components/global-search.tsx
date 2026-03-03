@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useMemo, useEffect } from 'react';
@@ -10,7 +11,7 @@ import { normalizeSearchTerm } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverAnchor } from '@/components/ui/popover';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Music, Book, Users, Mic, Search, Loader2 } from 'lucide-react';
+import { Music, Book, Users, Mic, Search, Loader2, Library } from 'lucide-react';
 
 type Song = {
   id: string | number;
@@ -19,20 +20,21 @@ type Song = {
   tone?: string;
   number?: number;
   type: 'hymn' | 'praise' | 'choir' | 'youth-choir';
+  groupLabel?: string;
 };
 
 const categoryIcons = {
   hymn: <Book className="h-5 w-5 text-muted-foreground" />,
   praise: <Music className="h-5 w-5 text-muted-foreground" />,
   choir: <Mic className="h-5 w-5 text-muted-foreground" />,
-  'youth-choir': <Users className="h-5 w-5 text-muted-foreground" />,
+  'youth-choir': <Library className="h-5 w-5 text-muted-foreground" />,
 };
 
 const categoryLabels = {
   hymn: 'Himno',
   praise: 'Alabanza',
   choir: 'Coro',
-  'youth-choir': 'Coro Juventud',
+  'youth-choir': 'Agrupación',
 };
 
 const categoryHrefs = {
@@ -60,7 +62,7 @@ export function GlobalSearch() {
       ...hymns.map(h => ({ ...h, id: h.number, type: 'hymn' as const })),
       ...praises.map(p => ({ ...p, type: 'praise' as const })),
       ...choirs.map(c => ({ ...c, type: 'choir' as const })),
-      ...youthChoirs.map(yc => ({ ...yc, type: 'youth-choir' as const }))
+      ...youthChoirs.map(yc => ({ ...yc, type: 'youth-choir' as const, groupLabel: yc.group }))
     ];
   }, [hymns, praises, choirs, youthChoirs, isLoaded]);
 
@@ -74,12 +76,14 @@ export function GlobalSearch() {
       const normalizedTitle = normalizeSearchTerm(song.title);
       const normalizedLyrics = normalizeSearchTerm(song.lyrics);
       const normalizedTone = song.tone ? normalizeSearchTerm(song.tone) : '';
+      const normalizedGroup = song.groupLabel ? normalizeSearchTerm(song.groupLabel) : '';
       
       return (
         normalizedTitle.includes(normalizedSearch) ||
         (song.number && song.number.toString().includes(normalizedSearch)) ||
         normalizedLyrics.includes(normalizedSearch) ||
-        normalizedTone.includes(normalizedSearch)
+        normalizedTone.includes(normalizedSearch) ||
+        normalizedGroup.includes(normalizedSearch)
       );
     }).slice(0, 50); // Limit results to avoid performance issues
   }, [searchTerm, allSongs]);
@@ -108,7 +112,7 @@ export function GlobalSearch() {
                     {isLoaded ? null : <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground animate-spin" />}
                     <Input
                         type="search"
-                        placeholder="Buscar himnos, coros, alabanzas..."
+                        placeholder="Buscar himnos, coros, agrupaciones..."
                         className="pl-10 w-full text-base h-12 rounded-full shadow-lg"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -131,9 +135,11 @@ export function GlobalSearch() {
                                     onClick={() => handleSelectSong(song)}
                                 >
                                     {categoryIcons[song.type]}
-                                    <div className="flex-1 overflow-hidden">
+                                    <div className="flex-1 overflow-hidden text-left">
                                         <p className="font-medium truncate">{song.title}</p>
-                                        <p className="text-xs text-muted-foreground capitalize">{song.type === 'hymn' ? `Himno #${song.number}` : categoryLabels[song.type]}</p>
+                                        <p className="text-xs text-muted-foreground capitalize">
+                                          {song.type === 'hymn' ? `Himno #${song.number}` : song.groupLabel || categoryLabels[song.type]}
+                                        </p>
                                     </div>
                                 </div>
                             ))

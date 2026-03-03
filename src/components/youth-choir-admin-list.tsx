@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -9,6 +10,7 @@ import { useYouthChoirs } from '@/context/youth-choirs-context';
 import { EditYouthChoirDialog } from './edit-youth-choir-dialog';
 import { Input } from '@/components/ui/input';
 import { normalizeSearchTerm } from '@/lib/utils';
+import { Badge } from './ui/badge';
 
 export function YouthChoirAdminList() {
   const { youthChoirs, deleteYouthChoir, updateYouthChoir, isLoaded } = useYouthChoirs();
@@ -21,7 +23,8 @@ export function YouthChoirAdminList() {
       return youthChoirs;
     }
     return youthChoirs.filter(youthChoir =>
-      normalizeSearchTerm(youthChoir.title).includes(normalizedSearch)
+      normalizeSearchTerm(youthChoir.title).includes(normalizedSearch) ||
+      normalizeSearchTerm(youthChoir.group).includes(normalizedSearch)
     );
   }, [searchTerm, youthChoirs]);
 
@@ -53,12 +56,12 @@ export function YouthChoirAdminList() {
 
 
   if (!isLoaded) {
-    return <p className="text-muted-foreground">Cargando alabanzas...</p>;
+    return <p className="text-muted-foreground text-center py-10">Cargando alabanzas...</p>;
   }
 
   if (youthChoirs.length === 0) {
     return (
-        <p className="text-muted-foreground">No hay alabanzas para mostrar. Agrégalas desde la sección correspondiente.</p>
+        <p className="text-muted-foreground text-center py-10">No hay alabanzas para mostrar. Agrégalas desde la sección correspondiente.</p>
     )
   }
 
@@ -68,7 +71,7 @@ export function YouthChoirAdminList() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar por título..."
+          placeholder="Buscar por título o agrupación..."
           className="pl-10 w-full"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -76,11 +79,12 @@ export function YouthChoirAdminList() {
       </div>
       <div className="flex flex-col gap-2">
         {filteredYouthChoirs.map((youthChoir) => (
-          <div key={youthChoir.id} className="flex items-center justify-between p-3 border rounded-lg">
-            <div>
-              <span className="font-medium">{youthChoir.title}</span>
+          <div key={youthChoir.id} className="flex items-center justify-between p-3 border rounded-lg gap-2">
+            <div className="flex-1 min-w-0 overflow-hidden">
+              <span className="font-medium truncate block">{youthChoir.title}</span>
+              <Badge variant="outline" className="text-[10px] h-5">{youthChoir.group}</Badge>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 flex-shrink-0">
               <EditYouthChoirDialog youthChoir={youthChoir} onYouthChoirUpdated={handleUpdate(youthChoir.id)}>
                 <Button variant="outline" size="icon">
                   <Edit className="h-4 w-4" />

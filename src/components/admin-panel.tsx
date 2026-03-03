@@ -1,3 +1,4 @@
+
 'use client';
 
 import Link from 'next/link';
@@ -54,18 +55,18 @@ export function AdminPanel() {
 
         <div className="p-4">
           <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
-              <TabsTrigger value="review">
-                <Inbox className="mr-2 h-4 w-4" />
+            <TabsList className="grid w-full grid-cols-6 h-auto overflow-x-auto">
+              <TabsTrigger value="review" className="text-xs sm:text-sm">
+                <Inbox className="mr-1 h-4 w-4 hidden sm:inline" />
                 Revisiones
-                {pendingCount > 0 && <Badge className="ml-2">{pendingCount}</Badge>}
+                {pendingCount > 0 && <Badge className="ml-1 px-1 h-5 min-w-5">{pendingCount}</Badge>}
               </TabsTrigger>
-              <TabsTrigger value="hymns">Himnos</TabsTrigger>
-              <TabsTrigger value="praises">Alabanzas</TabsTrigger>
-              <TabsTrigger value="choirs">Coros</TabsTrigger>
-              <TabsTrigger value="youth-choirs">Coro Juventud</TabsTrigger>
-              <TabsTrigger value="more-settings">
-                <Settings className="mr-2 h-4 w-4" />
+              <TabsTrigger value="hymns" className="text-xs sm:text-sm">Himnos</TabsTrigger>
+              <TabsTrigger value="praises" className="text-xs sm:text-sm">Alabanzas</TabsTrigger>
+              <TabsTrigger value="choirs" className="text-xs sm:text-sm">Coros</TabsTrigger>
+              <TabsTrigger value="youth-choirs" className="text-xs sm:text-sm">Agrup.</TabsTrigger>
+              <TabsTrigger value="more-settings" className="text-xs sm:text-sm">
+                <Settings className="mr-1 h-4 w-4 hidden sm:inline" />
                 Más
               </TabsTrigger>
             </TabsList>
@@ -112,7 +113,7 @@ export function AdminPanel() {
             <TabsContent value="youth-choirs">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Gestionar Alabanza Coro Juventud</CardTitle>
+                    <CardTitle>Gestionar Alabanza Agrupaciones</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <YouthChoirAdminList />

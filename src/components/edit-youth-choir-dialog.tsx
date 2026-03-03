@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -39,6 +40,7 @@ const youthChoirSchema = z.object({
   title: z.string().min(1, 'El título es requerido.'),
   tone: z.string().optional(),
   lyrics: z.string().min(1, 'La letra es requerida.'),
+  group: z.enum(["Coro Juventud", "Grupo Ciclista", "Departamento Infantil", "Clase Dorcas", "Departamento Juvenil"]),
 });
 
 type FormData = z.infer<typeof youthChoirSchema>;
@@ -59,6 +61,7 @@ export function EditYouthChoirDialog({ children, youthChoir, onYouthChoirUpdated
       title: youthChoir.title,
       tone: youthChoir.tone,
       lyrics: youthChoir.lyrics,
+      group: youthChoir.group,
     },
   });
   
@@ -68,6 +71,7 @@ export function EditYouthChoirDialog({ children, youthChoir, onYouthChoirUpdated
         title: youthChoir.title,
         tone: youthChoir.tone || '',
         lyrics: youthChoir.lyrics,
+        group: youthChoir.group,
       });
     }
   }, [youthChoir, form, open]);
@@ -86,13 +90,37 @@ export function EditYouthChoirDialog({ children, youthChoir, onYouthChoirUpdated
       </DialogTrigger>
       <DialogContent className="sm:max-w-lg" onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Editar Alabanza (Coro Juventud)</DialogTitle>
+          <DialogTitle>Editar Alabanza</DialogTitle>
           <DialogDescription>
-            Modifica los detalles de la alabanza.
+            Modifica los detalles de la alabanza de agrupación.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+            <FormField
+              control={form.control}
+              name="group"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Agrupación</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona la agrupación" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Coro Juventud">Coro Juventud</SelectItem>
+                      <SelectItem value="Grupo Ciclista">Grupo Ciclista</SelectItem>
+                      <SelectItem value="Departamento Infantil">Departamento Infantil</SelectItem>
+                      <SelectItem value="Clase Dorcas">Clase Dorcas</SelectItem>
+                      <SelectItem value="Departamento Juvenil">Departamento Juvenil</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="title"

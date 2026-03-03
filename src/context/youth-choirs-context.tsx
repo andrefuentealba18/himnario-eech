@@ -1,3 +1,4 @@
+
 "use client";
 
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
@@ -14,7 +15,6 @@ const slugify = (text: string): string =>
     .replace(/^-+/, '')
     .replace(/-+$/, '');
 
-// Helper to remove undefined values from an object, which Firestore doesn't support.
 const removeUndefined = (obj: Record<string, any>): Record<string, any> => {
   const newObj: Record<string, any> = {};
   Object.keys(obj).forEach((key) => {
@@ -84,7 +84,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
         toast({ title: 'Alabanza Enviada', description: 'Será revisada por un administrador.' });
       })
       .catch((error) => {
-        console.error("Error adding youth choir:", error);
+        console.error("Error adding group song:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
           path: docRef.path,
           operation: 'create',
@@ -126,7 +126,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
           toast({ title: 'Alabanzas Enviadas', description: `${addedCount} alabanzas enviadas a revisión. Se omitieron ${duplicates} duplicados.` });
         })
         .catch((error) => {
-          console.error("Error adding youth choirs in batch:", error);
+          console.error("Error adding group songs in batch:", error);
           toast({ variant: 'destructive', title: 'Error al Enviar', description: 'No se pudieron enviar las alabanzas.' });
         });
     } else {
@@ -142,7 +142,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
         toast({ title: 'Alabanza Aprobada', description: `La alabanza ahora es visible para todos.` });
       })
       .catch((error) => {
-        console.error("Error approving youth choir:", error);
+        console.error("Error approving group song:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'update' }));
         toast({ variant: 'destructive', title: 'Error', description: 'No se pudo aprobar la alabanza.' });
       });
@@ -156,7 +156,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
         toast({ title: 'Alabanza Eliminada', description: 'La alabanza se ha eliminado de la lista.' });
       })
       .catch((error) => {
-        console.error("Error deleting youth choir:", error);
+        console.error("Error deleting group song:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));
         toast({ variant: 'destructive', title: 'Error al eliminar', description: 'No se pudo eliminar la alabanza.' });
       });
@@ -174,7 +174,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     const dataToSave = removeUndefined(newYouthChoirData);
     
     const handleError = (error: any) => {
-      console.error("Error updating youth choir:", error);
+      console.error("Error updating group song:", error);
       errorEmitter.emit('permission-error', new FirestorePermissionError({
         path: oldDocRef.path,
         operation: 'update',
@@ -214,7 +214,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
       batch.set(docRef, removeUndefined(dataWithStatus));
     });
   
-    batch.commit().catch(error => console.error("Error restoring youth choirs:", error));
+    batch.commit().catch(error => console.error("Error restoring group songs:", error));
   }, [firestore, rawYouthChoirs]);
 
   const value = { youthChoirs, pendingYouthChoirs, addYouthChoir, addYouthChoirs, approveYouthChoir, deleteYouthChoir, updateYouthChoir, getYouthChoirById, restoreYouthChoirs, isLoaded };

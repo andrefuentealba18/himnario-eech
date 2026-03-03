@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect } from 'react';
@@ -5,7 +6,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { musicalKeys } from '@/lib/musical-keys';
-import type { YouthChoir } from '@/lib/youth-choirs';
+import type { YouthChoir, GroupType } from '@/lib/youth-choirs';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -37,6 +38,9 @@ const youthChoirSchema = z.object({
   title: z.string().min(1, 'El título es requerido.'),
   tone: z.string().optional(),
   lyrics: z.string().min(1, 'La letra es requerida.'),
+  group: z.enum(["Coro Juventud", "Grupo Ciclista", "Departamento Infantil", "Clase Dorcas", "Departamento Juvenil"], {
+    required_error: "Debes seleccionar una agrupación."
+  }),
 });
 
 type FormData = z.infer<typeof youthChoirSchema>;
@@ -45,23 +49,30 @@ interface AddSingleYouthChoirDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onYouthChoirAdded: (choir: Omit<YouthChoir, 'id'>) => void;
+  initialGroup?: GroupType;
 }
 
-export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdded }: AddSingleYouthChoirDialogProps) {
+export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdded, initialGroup }: AddSingleYouthChoirDialogProps) {
   const form = useForm<FormData>({
     resolver: zodResolver(youthChoirSchema),
     defaultValues: {
       title: '',
       tone: '',
       lyrics: '',
+      group: initialGroup || "Coro Juventud",
     },
   });
 
   useEffect(() => {
     if (open) {
-      form.reset();
+      form.reset({
+        title: '',
+        tone: '',
+        lyrics: '',
+        group: initialGroup || "Coro Juventud",
+      });
     }
-  }, [open, form]);
+  }, [open, form, initialGroup]);
 
   function onSubmit(values: FormData) {
     onYouthChoirAdded(values);
@@ -72,13 +83,37 @@ export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdde
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg" onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Agregar Nueva Alabanza (Coro Juventud)</DialogTitle>
+          <DialogTitle>Agregar Nueva Alabanza</DialogTitle>
           <DialogDescription>
-            Completa los detalles para agregar una nueva alabanza. Será enviada a revisión.
+            Completa los detalles para agregar una nueva alabanza de agrupación. Será enviada para revisión.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 py-4">
+            <FormField
+              control={form.control}
+              name="group"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Agrupación</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Selecciona la agrupación" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Coro Juventud">Coro Juventud</SelectItem>
+                      <SelectItem value="Grupo Ciclista">Grupo Ciclista</SelectItem>
+                      <SelectItem value="Departamento Infantil">Departamento Infantil</SelectItem>
+                      <SelectItem value="Clase Dorcas">Clase Dorcas</SelectItem>
+                      <SelectItem value="Departamento Juvenil">Departamento Juvenil</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="title"
