@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, Settings, Inbox } from 'lucide-react';
+import { ChevronLeft, Settings, Inbox, AlertTriangle } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
@@ -17,6 +17,7 @@ import { SongTransferManager } from '@/components/song-transfer-manager';
 import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
 import { SongReviewList } from '@/components/song-review-list';
 import { Badge } from '@/components/ui/badge';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 
 import { usePraises } from '@/context/praises-context';
 import { useChoirs } from '@/context/choirs-context';
@@ -53,7 +54,15 @@ export function AdminPanel() {
           <div className="w-10"></div> {/* Spacer */}
         </header>
 
-        <div className="p-4">
+        <div className="p-4 space-y-6">
+          <Alert variant="destructive" className="border-2 shadow-md animate-pulse">
+            <AlertTriangle className="h-5 w-5" />
+            <AlertTitle className="font-bold text-lg">AVISO DE FACTURACIÓN</AlertTitle>
+            <AlertDescription className="text-base">
+              Has excedido los límites del plan gratuito de Firebase. A partir de ahora, se aplicarán cargos a tu cuenta por el uso de la aplicación (lecturas, escrituras y almacenamiento). Por favor, monitorea tu uso en la consola de Firebase.
+            </AlertDescription>
+          </Alert>
+
           <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid w-full grid-cols-6 h-auto overflow-x-auto">
               <TabsTrigger value="review" className="text-xs sm:text-sm">
