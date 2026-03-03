@@ -4,6 +4,7 @@ export type Hymn = {
   title: string;
   lyrics: string;
   tone?: string;
+  createdAt?: any; // Firestore Timestamp
 };
 
 // The actual data is now managed by the useHymns hook in `src/context/hymns-context.tsx`

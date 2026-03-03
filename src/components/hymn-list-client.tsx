@@ -15,6 +15,14 @@ interface HymnListClientProps {
   hymns: Hymn[];
 }
 
+const isNewSong = (createdAt: any) => {
+  if (!createdAt) return false;
+  const date = createdAt.toDate ? createdAt.toDate() : new Date(createdAt);
+  const now = new Date();
+  const diffInDays = (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24);
+  return diffInDays < 7;
+};
+
 export function HymnListClient({ hymns }: HymnListClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
@@ -109,7 +117,12 @@ function HymnRoll({ hymns }: { hymns: Hymn[] }) {
             >
                 <span className="font-bold text-primary w-8 text-center">{hymn.number}</span>
                 <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
-                    <span className="font-medium truncate">{hymn.title}</span>
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      <span className="font-medium truncate">{hymn.title}</span>
+                      {isNewSong(hymn.createdAt) && (
+                        <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[10px] py-0 px-1.5 h-5 flex-shrink-0">NEW</Badge>
+                      )}
+                    </div>
                     {hymn.tone && <Badge variant="outline" className="flex-shrink-0">{hymn.tone}</Badge>}
                 </div>
             </Link>

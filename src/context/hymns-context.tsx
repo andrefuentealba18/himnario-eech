@@ -4,7 +4,7 @@ import { createContext, useContext, useEffect, useCallback, ReactNode, useMemo }
 import type { Hymn } from '@/lib/hymns';
 import { hymns as initialHymnsData } from '@/lib/hymns-initial';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, doc, setDoc, deleteDoc, writeBatch } from 'firebase/firestore';
+import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 // Helper to remove undefined values from an object, which Firestore doesn't support.
@@ -98,7 +98,10 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
     }
     
     const docRef = doc(firestore, 'hymns', newHymnData.number.toString());
-    const dataToSave = removeUndefined(newHymnData);
+    const dataToSave = removeUndefined({
+      ...newHymnData,
+      createdAt: serverTimestamp()
+    });
     
     setDoc(docRef, dataToSave, { merge: true })
       .then(() => {
@@ -130,6 +133,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
             title: hymn.title,
             lyrics: hymn.lyrics,
             tone: hymn.tone,
+            createdAt: serverTimestamp()
         };
         batch.set(docRef, removeUndefined(dataToSave), { merge: true });
         if (hymnsMap.has(hymn.number)) {
@@ -202,6 +206,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
           title: hymn.title,
           lyrics: hymn.lyrics,
           tone: hymn.tone,
+          createdAt: serverTimestamp()
       };
       batch.set(docRef, removeUndefined(dataToSave));
     });

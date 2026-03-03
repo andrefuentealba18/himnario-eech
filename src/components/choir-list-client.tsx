@@ -20,6 +20,14 @@ interface ChoirListClientProps {
   choirs: Choir[];
 }
 
+const isNewSong = (createdAt: any) => {
+  if (!createdAt) return false;
+  const date = createdAt.toDate ? createdAt.toDate() : new Date(createdAt);
+  const now = new Date();
+  const diffInDays = (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24);
+  return diffInDays < 7;
+};
+
 export function ChoirListClient({ choirs }: ChoirListClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState('all');
@@ -102,7 +110,12 @@ function SimpleChoirRoll({ choirs }: { choirs: Choir[] }) {
                 className="flex items-center gap-4 p-3 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
             >
                 <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
-                    <span className="font-medium truncate">{choir.title}</span>
+                    <div className="flex items-center gap-2 overflow-hidden">
+                      <span className="font-medium truncate">{choir.title}</span>
+                      {isNewSong(choir.createdAt) && (
+                        <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[10px] py-0 px-1.5 h-5 flex-shrink-0">NEW</Badge>
+                      )}
+                    </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
                         {choir.speed && <Badge variant="outline" className="capitalize">{choir.speed}</Badge>}
                         {choir.tone && <Badge variant="outline">{choir.tone}</Badge>}
@@ -168,7 +181,12 @@ function GroupedChoirRoll({ choirs }: { choirs: Choir[] }) {
                                     className="flex items-center gap-4 p-3 -mx-2 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
                                 >
                                     <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
-                                        <span className="font-medium truncate">{choir.title}</span>
+                                        <div className="flex items-center gap-2 overflow-hidden">
+                                          <span className="font-medium truncate">{choir.title}</span>
+                                          {isNewSong(choir.createdAt) && (
+                                            <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[10px] py-0 px-1.5 h-5 flex-shrink-0">NEW</Badge>
+                                          )}
+                                        </div>
                                         <div className="flex items-center gap-2 flex-shrink-0">
                                             {choir.speed && <Badge variant="outline" className="capitalize hidden sm:inline-flex">{choir.speed}</Badge>}
                                         </div>
