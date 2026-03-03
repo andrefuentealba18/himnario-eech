@@ -29,7 +29,7 @@ export function AdminPanel() {
   const router = useRouter();
   const pathname = usePathname();
   const tab = searchParams.get('tab') || 'review';
-  const [showRoadmap, setShowRoadmap] = useState(true);
+  const [showRoadmap, setShowRoadmap] = useState(false);
 
   const { pendingPraises } = usePraises();
   const { pendingChoirs } = useChoirs();
