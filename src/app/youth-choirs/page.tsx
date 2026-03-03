@@ -64,12 +64,11 @@ export default function YouthChoirsIndexPage() {
               <Button 
                 variant="ghost" 
                 size="icon" 
-                onClick={() => selectedGroup ? setSelectedGroup(null) : null}
-                asChild={!selectedGroup}
+                asChild
                 className="absolute left-2 top-1/2 -translate-y-1/2"
               >
                   {selectedGroup ? (
-                    <button>
+                    <button onClick={() => setSelectedGroup(null)} type="button">
                       <ChevronLeft className="h-6 w-6" />
                       <span className="sr-only">Volver al menú</span>
                     </button>
