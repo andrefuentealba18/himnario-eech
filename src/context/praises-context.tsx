@@ -1,9 +1,10 @@
+
 "use client";
 
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { Praise } from '@/lib/praises';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc, query, where } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
 const slugify = (text: string): string =>
@@ -14,7 +15,6 @@ const slugify = (text: string): string =>
     .replace(/^-+/, '')
     .replace(/-+$/, '');
 
-// Helper to remove undefined values from an object, which Firestore doesn't support.
 const removeUndefined = (obj: Record<string, any>): Record<string, any> => {
   const newObj: Record<string, any> = {};
   Object.keys(obj).forEach((key) => {
@@ -44,30 +44,35 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
   const { toast } = useToast();
   
-  const praisesCollectionRef = useMemoFirebase(() => 
-    firestore ? collection(firestore, 'praises') : null
+  // OPTIMIZACIÓN DE COSTO: Solo pedir las aprobadas para la lista general
+  const approvedPraisesQuery = useMemoFirebase(() => 
+    firestore ? query(collection(firestore, 'praises'), where('status', '==', 'approved')) : null
+  , [firestore]);
+
+  // Solo pedir las pendientes cuando sea necesario (aunque aquí las cargamos, el filtro 'where' ahorra lecturas si el volumen de pendientes es bajo)
+  const pendingPraisesQuery = useMemoFirebase(() => 
+    firestore ? query(collection(firestore, 'praises'), where('status', '==', 'pending')) : null
   , [firestore]);
   
-  const { data: rawPraises, isLoading: isLoadingFromHook } = useCollection<Praise>(praisesCollectionRef);
+  const { data: approvedData, isLoading: isLoadingApproved } = useCollection<Praise>(approvedPraisesQuery);
+  const { data: pendingData, isLoading: isLoadingPending } = useCollection<Praise>(pendingPraisesQuery);
 
-  const isLoaded = !!firestore && !isLoadingFromHook;
+  const isLoaded = !!firestore && !isLoadingApproved;
 
   const praises = useMemo(() => {
-    return rawPraises ? [...rawPraises].filter(p => p.status !== 'pending').sort((a, b) => a.title.localeCompare(b.title)) : [];
-  }, [rawPraises]);
+    return approvedData ? [...approvedData].sort((a, b) => a.title.localeCompare(b.title)) : [];
+  }, [approvedData]);
   
   const pendingPraises = useMemo(() => {
-    return rawPraises ? [...rawPraises].filter(p => p.status === 'pending').sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)) : [];
-  }, [rawPraises]);
+    return pendingData ? [...pendingData].sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0)) : [];
+  }, [pendingData]);
   
   const addPraise = useCallback((newPraiseData: Omit<Praise, 'id'>) => {
-    if (!firestore) {
-      toast({ variant: 'destructive', title: 'Error', description: 'No se pudo conectar a la base de datos.' });
-      return;
-    }
+    if (!firestore) return;
     const id = slugify(newPraiseData.title);
     
-    if ((rawPraises || []).some(p => p.id === id)) {
+    // Verificar duplicados localmente primero para evitar escrituras fallidas costosas
+    if (praises.some(p => p.id === id) || pendingPraises.some(p => p.id === id)) {
       toast({ variant: 'destructive', title: 'Error', description: 'Ya existe una alabanza con ese título.' });
       return;
     }
@@ -84,15 +89,13 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         toast({ title: 'Alabanza Enviada', description: 'Será revisada por un administrador.' });
       })
       .catch((error) => {
-        console.error("Error adding praise:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
           path: docRef.path,
           operation: 'create',
           requestResourceData: dataToSave
         }));
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo enviar la alabanza.' });
       });
-  }, [firestore, rawPraises, toast]);
+  }, [firestore, praises, pendingPraises, toast]);
 
   const addPraises = useCallback((newPraisesData: Omit<Praise, 'id'>[]) => {
     if (!firestore) return;
@@ -101,11 +104,11 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     let addedCount = 0;
     let duplicates = 0;
     
-    const existingTitles = new Set((rawPraises || []).map(p => p.id));
+    const existingIds = new Set([...praises.map(p => p.id), ...pendingPraises.map(p => p.id)]);
 
     for (const praiseData of newPraisesData) {
       const id = slugify(praiseData.title);
-      if (existingTitles.has(id)) {
+      if (existingIds.has(id)) {
         duplicates++;
       } else {
         const docRef = doc(firestore, 'praises', id);
@@ -116,7 +119,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         };
         batch.set(docRef, removeUndefined(dataToSave));
         addedCount++;
-        existingTitles.add(id);
+        existingIds.add(id);
       }
     }
     
@@ -125,84 +128,62 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         .then(() => {
           toast({ title: 'Alabanzas Enviadas', description: `${addedCount} alabanzas enviadas a revisión. Se omitieron ${duplicates} duplicados.` });
         })
-        .catch((error) => {
-          console.error("Error adding praises in batch:", error);
+        .catch(() => {
           toast({ variant: 'destructive', title: 'Error al Enviar', description: 'No se pudieron enviar las alabanzas.' });
         });
-    } else {
-      toast({ title: 'No se agregaron alabanzas', description: `Se encontraron ${duplicates} duplicados.` });
     }
-  }, [firestore, rawPraises, toast]);
+  }, [firestore, praises, pendingPraises, toast]);
 
   const approvePraise = useCallback((praiseId: string) => {
     if (!firestore) return;
     const docRef = doc(firestore, 'praises', praiseId);
     updateDoc(docRef, { status: 'approved' })
-      .then(() => {
-        toast({ title: 'Alabanza Aprobada', description: `La alabanza ahora es visible para todos.` });
-      })
       .catch((error) => {
-        console.error("Error approving praise:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'update' }));
-        toast({ variant: 'destructive', title: 'Error', description: 'No se pudo aprobar la alabanza.' });
       });
-  }, [firestore, toast]);
+  }, [firestore]);
 
   const deletePraise = useCallback((praiseId: string) => {
     if (!firestore) return;
     const docRef = doc(firestore, 'praises', praiseId);
     deleteDoc(docRef)
-      .then(() => {
-        toast({ title: 'Alabanza Eliminada', description: 'La alabanza se ha eliminado de la lista.' });
-      })
       .catch((error) => {
-        console.error("Error deleting praise:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));
-        toast({ variant: 'destructive', title: 'Error al eliminar', description: 'No se pudo eliminar la alabanza.' });
       });
-  }, [firestore, toast]);
+  }, [firestore]);
   
   const updatePraise = useCallback(async (praiseId: string, newPraiseData: Omit<Praise, 'id'>): Promise<{ success: boolean; error?: string }> => {
     if (!firestore) return { success: false, error: 'firestore_unavailable' };
     const newId = slugify(newPraiseData.title);
     
-    if (newId !== praiseId && (rawPraises || []).some(p => p.id === newId)) {
+    if (newId !== praiseId && (praises.some(p => p.id === newId) || pendingPraises.some(p => p.id === newId))) {
       return { success: false, error: 'duplicate' };
     }
 
     const oldDocRef = doc(firestore, 'praises', praiseId);
     const dataToSave = removeUndefined(newPraiseData);
 
-    const handleError = (error: any) => {
-      console.error("Error updating praise:", error);
-      errorEmitter.emit('permission-error', new FirestorePermissionError({
-        path: oldDocRef.path,
-        operation: 'update',
-        requestResourceData: dataToSave
-      }));
-    };
-    
     if (newId !== praiseId) {
         const newDocRef = doc(firestore, 'praises', newId);
         const batch = writeBatch(firestore);
         batch.delete(oldDocRef);
         batch.set(newDocRef, dataToSave);
-        batch.commit().catch(handleError);
+        await batch.commit().catch(e => console.error(e));
     } else {
-        setDoc(oldDocRef, dataToSave, { merge: true }).catch(handleError);
+        await setDoc(oldDocRef, dataToSave, { merge: true }).catch(e => console.error(e));
     }
     return { success: true };
-  }, [firestore, rawPraises]);
+  }, [firestore, praises, pendingPraises]);
 
   const getPraiseById = useCallback((id: string): Praise | undefined => {
-    return (rawPraises || []).find(p => p.id === id);
-  }, [rawPraises]);
+    return praises.find(p => p.id === id) || pendingPraises.find(p => p.id === id);
+  }, [praises, pendingPraises]);
 
   const restorePraises = useCallback((praisesToRestore: Omit<Praise, 'id'>[]) => {
     if (!firestore) return;
     const batch = writeBatch(firestore);
 
-    (rawPraises || []).forEach(praise => {
+    [...praises, ...pendingPraises].forEach(praise => {
       const docRef = doc(firestore, 'praises', praise.id);
       batch.delete(docRef);
     });
@@ -215,7 +196,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     });
 
     batch.commit().catch(error => console.error("Error restoring praises:", error));
-  }, [firestore, rawPraises]);
+  }, [firestore, praises, pendingPraises]);
 
   const value = { praises, pendingPraises, addPraise, addPraises, deletePraise, updatePraise, approvePraise, getPraiseById, restorePraises, isLoaded };
 
