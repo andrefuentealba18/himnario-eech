@@ -35,6 +35,14 @@ export default function YouthChoirsIndexPage() {
   const [isMultiYouthChoirDialogOpen, setMultiYouthChoirDialogOpen] = useState(false);
   const { toast } = useToast();
 
+  const countsByGroup = useMemo(() => {
+    const counts: Record<string, number> = {};
+    youthChoirs.forEach(yc => {
+      counts[yc.group] = (counts[yc.group] || 0) + 1;
+    });
+    return counts;
+  }, [youthChoirs]);
+
   const filteredByGroup = useMemo(() => {
     if (!selectedGroup) return [];
     return youthChoirs.filter(yc => yc.group === selectedGroup);
@@ -61,24 +69,21 @@ export default function YouthChoirsIndexPage() {
       <main className="flex flex-col items-center bg-background min-h-screen">
         <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
           <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm p-2 border-b flex items-center justify-center relative h-14">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                asChild
-                className="absolute left-2 top-1/2 -translate-y-1/2"
-              >
+              <div className="absolute left-2 top-1/2 -translate-y-1/2">
                   {selectedGroup ? (
-                    <button onClick={() => setSelectedGroup(null)} type="button">
+                    <Button variant="ghost" size="icon" onClick={() => setSelectedGroup(null)}>
                       <ChevronLeft className="h-6 w-6" />
                       <span className="sr-only">Volver al menú</span>
-                    </button>
+                    </Button>
                   ) : (
-                    <Link href="/">
-                        <ChevronLeft className="h-6 w-6" />
-                        <span className="sr-only">Volver</span>
-                    </Link>
+                    <Button variant="ghost" size="icon" asChild>
+                      <Link href="/">
+                          <ChevronLeft className="h-6 w-6" />
+                          <span className="sr-only">Volver</span>
+                      </Link>
+                    </Button>
                   )}
-              </Button>
+              </div>
               <div className="flex items-center gap-3">
                 <h1 className="text-xl font-bold font-headline text-foreground truncate max-w-[180px]">
                   {selectedGroup || "Agrupaciones"}
@@ -130,7 +135,7 @@ export default function YouthChoirsIndexPage() {
                       <div className="flex-1">
                         <h3 className="font-bold text-lg">{group.name}</h3>
                         <p className="text-sm text-muted-foreground">
-                          {youthChoirs.filter(yc => yc.group === group.name).length} canciones guardadas
+                          {countsByGroup[group.name] || 0} canciones guardadas
                         </p>
                       </div>
                       <ChevronDown className="h-5 w-5 text-muted-foreground -rotate-90" />

@@ -6,6 +6,7 @@ export type YouthChoir = {
   title: string;
   lyrics: string;
   tone?: string;
+  speed?: 'Rapido' | 'Lento';
   group: GroupType;
   status?: 'pending' | 'approved';
   createdAt?: any; // Firestore Timestamp

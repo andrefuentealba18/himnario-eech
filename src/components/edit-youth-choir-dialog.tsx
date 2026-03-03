@@ -39,6 +39,7 @@ import {
 const youthChoirSchema = z.object({
   title: z.string().min(1, 'El título es requerido.'),
   tone: z.string().optional(),
+  speed: z.string().optional(),
   lyrics: z.string().min(1, 'La letra es requerida.'),
   group: z.enum(["Coro Juventud", "Grupo Ciclista", "Departamento Infantil", "Clase Dorcas", "Departamento Juvenil"]),
 });
@@ -59,7 +60,8 @@ export function EditYouthChoirDialog({ children, youthChoir, onYouthChoirUpdated
     resolver: zodResolver(youthChoirSchema),
     defaultValues: {
       title: youthChoir.title,
-      tone: youthChoir.tone,
+      tone: youthChoir.tone || '',
+      speed: youthChoir.speed || '',
       lyrics: youthChoir.lyrics,
       group: youthChoir.group,
     },
@@ -70,6 +72,7 @@ export function EditYouthChoirDialog({ children, youthChoir, onYouthChoirUpdated
       form.reset({
         title: youthChoir.title,
         tone: youthChoir.tone || '',
+        speed: youthChoir.speed || '',
         lyrics: youthChoir.lyrics,
         group: youthChoir.group,
       });
@@ -78,7 +81,7 @@ export function EditYouthChoirDialog({ children, youthChoir, onYouthChoirUpdated
 
 
   function onSubmit(values: FormData) {
-    onYouthChoirUpdated(values);
+    onYouthChoirUpdated(values as Omit<YouthChoir, 'id'>);
     setOpen(false);
     onSaveComplete?.();
   }
@@ -134,28 +137,51 @@ export function EditYouthChoirDialog({ children, youthChoir, onYouthChoirUpdated
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="tone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Notas (Tonalidad)</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecciona una tonalidad" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {musicalKeys.map(key => (
-                        <SelectItem key={key} value={key}>{key}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="tone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Notas (Tonalidad)</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona una tonalidad" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {musicalKeys.map(key => (
+                            <SelectItem key={key} value={key}>{key}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="speed"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Velocidad</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecciona velocidad" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          <SelectItem value="Rapido">Rápido (Avivamiento)</SelectItem>
+                          <SelectItem value="Lento">Lento (Meditación)</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+            </div>
             <FormField
               control={form.control}
               name="lyrics"

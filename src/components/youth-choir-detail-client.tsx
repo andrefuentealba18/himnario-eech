@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { YouthChoir } from '@/lib/youth-choirs';
@@ -12,6 +13,7 @@ import { EditToneDialog } from './edit-tone-dialog';
 import { useFontSize } from '@/hooks/use-font-size';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { Badge } from '@/components/ui/badge';
 
 const slugify = (text: string): string =>
   text.toString().toLowerCase()
@@ -139,12 +141,15 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
         </Button>
         <div className="text-center px-2 overflow-hidden flex-1">
             <h1 className="font-headline text-lg font-bold text-primary truncate">{youthChoir.title}</h1>
-            <div className="mt-2">
+            <div className="flex items-center justify-center gap-2 mt-2">
                 <EditToneDialog song={youthChoir} onToneUpdated={handleToneUpdate}>
                 <Button variant="outline" size="sm" className="h-auto px-3 py-1 text-xs rounded-full">
                     {youthChoir.tone || 'Tonalidad'}
                 </Button>
                 </EditToneDialog>
+                {youthChoir.speed && (
+                    <Badge variant="secondary" className="text-xs capitalize rounded-full px-3 py-1">{youthChoir.speed}</Badge>
+                )}
             </div>
         </div>
         <div className="w-12 h-12" />
