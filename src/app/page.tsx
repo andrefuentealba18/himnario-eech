@@ -107,7 +107,7 @@ export default function HomePage() {
                 
                 <div className="space-y-1">
                   <p className="text-[9px] text-muted-foreground/80 font-medium uppercase tracking-widest">
-                    © 2025 Todos los derechos reservados
+                    © 2026 Todos los derechos reservados
                   </p>
                   <p className="text-[11px] text-primary/60 italic font-bold">
                     "Alabaré a Jehová en mi vida"
