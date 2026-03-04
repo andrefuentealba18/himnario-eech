@@ -47,56 +47,55 @@ const navigationItems = [
 export default function HomePage() {
   return (
     <div className="relative min-h-screen w-full bg-background text-foreground overflow-x-hidden">
-      {/* Fondo Animado Mejorado */}
+      {/* Fondo Animado con Esferas de Luz */}
       <div className="fixed inset-0 -z-20 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(var(--primary),0.05),transparent_50%)]" />
-        <div className="absolute top-[-10%] -left-[10%] w-[50%] h-[50%] bg-primary/10 rounded-full filter blur-[120px] animate-pulse-slow" />
-        <div className="absolute bottom-[-10%] -right-[10%] w-[60%] h-[60%] bg-chart-5/10 rounded-full filter blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-[-10%] -left-[10%] w-[70%] h-[70%] bg-primary/10 rounded-full filter blur-[120px] animate-pulse-slow" />
+        <div className="absolute bottom-[-10%] -right-[10%] w-[80%] h-[80%] bg-chart-5/10 rounded-full filter blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
         <main className="container max-w-4xl mx-auto flex-1 flex flex-col items-center justify-center p-4 md:p-8">
           
-          {/* Hero Section */}
+          {/* Sección Hero con Icono Flotante */}
           <header className="w-full text-center space-y-6 mb-12 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="inline-flex items-center justify-center p-4 bg-primary/10 rounded-3xl mb-4 shadow-inner">
-              <Church className="h-12 w-12 text-primary" />
+            <div className="inline-flex items-center justify-center p-5 bg-primary/10 rounded-[2.5rem] mb-4 shadow-inner animate-float">
+              <Church className="h-14 w-14 text-primary" />
             </div>
-            <div className="space-y-2">
-              <h1 className="text-5xl md:text-7xl font-bold font-headline text-primary tracking-tight leading-none">
+            <div className="space-y-3">
+              <h1 className="text-6xl md:text-8xl font-bold font-headline text-primary tracking-tighter leading-none">
                 Himnario <span className="text-foreground">EECH</span>
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground font-body max-w-md mx-auto leading-relaxed">
-                Tu cancionero espiritual digital. <br className="hidden md:block" />
-                ¿Qué deseas cantar hoy para el Señor?
+              <p className="text-lg md:text-2xl text-muted-foreground font-body max-w-md mx-auto leading-tight font-medium">
+                Tu cancionero espiritual digital.
               </p>
             </div>
           </header>
 
-          {/* Buscador Global con Sombra */}
+          {/* Buscador Global Estilizado */}
           <div className="w-full max-w-2xl mb-12 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-            <div className="bg-background/40 backdrop-blur-xl p-2 rounded-full shadow-2xl border border-primary/10">
+            <div className="bg-background/60 backdrop-blur-2xl p-2 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-primary/10">
               <GlobalSearch />
             </div>
           </div>
           
-          {/* Grid de Navegación */}
+          {/* Cuadrícula de Navegación (Botones tipo Card) */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full">
             {navigationItems.map((item) => (
               <div key={item.title} className="opacity-0 animate-fade-in-up" style={{ animationDelay: item.delay }}>
                 <Link href={item.href} className="group block h-full">
-                  <Card className="h-full border-primary/5 bg-background/60 backdrop-blur-md transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-2 group-active:scale-95 overflow-hidden relative">
-                    {/* Decoración de fondo de la tarjeta */}
-                    <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${item.color} rounded-full -mr-16 -mt-16 blur-2xl opacity-50 group-hover:opacity-100 transition-opacity`} />
+                  <Card className="h-full border-primary/10 bg-background/40 backdrop-blur-md transition-all duration-500 hover:shadow-[0_30px_60px_-15px_rgba(var(--primary),0.2)] hover:-translate-y-2 group-active:scale-95 overflow-hidden relative border-2">
+                    {/* Resplandor interno en hover */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                     
-                    <CardContent className="relative z-10 flex items-center p-6 gap-5">
-                      <div className={`p-4 rounded-2xl bg-gradient-to-br ${item.color} shadow-sm group-hover:scale-110 transition-transform duration-500`}>
-                        <item.icon className={`h-8 w-8 ${item.iconColor}`} />
+                    <CardContent className="relative z-10 flex items-center p-8 gap-6">
+                      <div className={`p-5 rounded-3xl bg-gradient-to-br ${item.color} shadow-lg group-hover:scale-110 transition-transform duration-500 border border-white/20`}>
+                        <item.icon className={`h-10 w-10 ${item.iconColor}`} />
                       </div>
                       <div className="flex-1 space-y-1">
-                        <h3 className="font-bold text-xl font-headline flex items-center group-hover:text-primary transition-colors">
+                        <h3 className="font-bold text-2xl font-headline flex items-center group-hover:text-primary transition-colors">
                           {item.title}
-                          <ArrowRight className="h-4 w-4 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary" />
+                          <ArrowRight className="h-5 w-5 ml-2 opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary" />
                         </h3>
                         <p className="text-sm text-muted-foreground font-body leading-tight">
                           {item.description}
@@ -109,14 +108,14 @@ export default function HomePage() {
             ))}
           </div>
           
-          {/* Footer Animado */}
-          <footer className="w-full text-center py-12 space-y-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '1.1s' }}>
-            <div className="h-px w-24 bg-gradient-to-r from-transparent via-primary/20 to-transparent mx-auto mb-6" />
+          {/* Footer Elegante */}
+          <footer className="w-full text-center py-16 space-y-6 opacity-0 animate-fade-in-up" style={{ animationDelay: '1.1s' }}>
+            <div className="h-px w-32 bg-gradient-to-r from-transparent via-primary/30 to-transparent mx-auto" />
             <div className="flex flex-col items-center gap-4">
               <SettingsDialog />
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-muted-foreground uppercase tracking-widest">Iglesia Ejército Evangélico de Chile</p>
-                <p className="text-xs text-muted-foreground/60 italic">"Alabaré a Jehová en mi vida; Cantaré salmos a mi Dios mientras viva."</p>
+              <div className="space-y-2">
+                <p className="text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">Iglesia Ejército Evangélico de Chile</p>
+                <p className="text-sm text-primary/60 italic font-medium">"Alabaré a Jehová en mi vida; Cantaré salmos a mi Dios mientras viva."</p>
               </div>
             </div>
           </footer>
