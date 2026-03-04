@@ -121,16 +121,16 @@ export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSi
               name="speed"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Velocidad</FormLabel>
+                  <FormLabel>Tipo de Coro</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Selecciona una velocidad" />
+                        <SelectValue placeholder="Selecciona el tipo de coro" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Rapido">Rápido (Avivamiento)</SelectItem>
-                      <SelectItem value="Lento">Lento (Meditación)</SelectItem>
+                      <SelectItem value="Rapido">Avivamiento (Rápido)</SelectItem>
+                      <SelectItem value="Lento">Meditación (Lento)</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />

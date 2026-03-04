@@ -152,7 +152,9 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
                   </Button>
                 </EditToneDialog>
                  {choir.speed && (
-                    <Badge variant="secondary" className="text-xs capitalize rounded-full px-3 py-1">{choir.speed}</Badge>
+                    <Badge variant="secondary" className="text-xs capitalize rounded-full px-3 py-1">
+                      {choir.speed === 'Rapido' ? 'Avivamiento' : 'Meditación'}
+                    </Badge>
                 )}
             </div>
         </div>

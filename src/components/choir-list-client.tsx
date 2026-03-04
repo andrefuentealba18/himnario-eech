@@ -76,8 +76,8 @@ export function ChoirListClient({ choirs }: ChoirListClientProps) {
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-3 h-auto">
           <TabsTrigger value="all" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Todos</TabsTrigger>
-          <TabsTrigger value="rapidos" className="data-[state=active]:bg-chart-1 data-[state=active]:text-white">Rápidos</TabsTrigger>
-          <TabsTrigger value="lentos" className="data-[state=active]:bg-chart-2 data-[state=active]:text-white">Lentos</TabsTrigger>
+          <TabsTrigger value="rapidos" className="data-[state=active]:bg-chart-1 data-[state=active]:text-white">Avivamiento</TabsTrigger>
+          <TabsTrigger value="lentos" className="data-[state=active]:bg-chart-2 data-[state=active]:text-white">Meditación</TabsTrigger>
         </TabsList>
       </Tabs>
       
@@ -117,7 +117,7 @@ function SimpleChoirRoll({ choirs }: { choirs: Choir[] }) {
                       )}
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">
-                        {choir.speed && <Badge variant="outline" className="capitalize">{choir.speed}</Badge>}
+                        {choir.speed && <Badge variant="outline" className="capitalize">{choir.speed === 'Rapido' ? 'Avivamiento' : 'Meditación'}</Badge>}
                         {choir.tone && <Badge variant="outline">{choir.tone}</Badge>}
                     </div>
                 </div>
@@ -188,7 +188,7 @@ function GroupedChoirRoll({ choirs }: { choirs: Choir[] }) {
                                           )}
                                         </div>
                                         <div className="flex items-center gap-2 flex-shrink-0">
-                                            {choir.speed && <Badge variant="outline" className="capitalize hidden sm:inline-flex">{choir.speed}</Badge>}
+                                            {choir.speed && <Badge variant="outline" className="capitalize hidden sm:inline-flex">{choir.speed === 'Rapido' ? 'Avivamiento' : 'Meditación'}</Badge>}
                                         </div>
                                     </div>
                                 </Link>
