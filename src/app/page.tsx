@@ -55,49 +55,49 @@ export default function HomePage() {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <main className="container max-w-3xl mx-auto flex-1 flex flex-col items-center justify-center p-4 md:p-6">
+        <main className="container max-w-2xl mx-auto flex-1 flex flex-col items-center justify-center p-4 md:p-6">
           
-          {/* Sección Hero con Icono Flotante */}
-          <header className="w-full text-center space-y-4 mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
-            <div className="inline-flex items-center justify-center p-4 bg-primary/10 rounded-[2rem] mb-2 shadow-inner animate-float">
-              <Church className="h-10 w-10 text-primary" />
+          {/* Sección Hero más compacta */}
+          <header className="w-full text-center space-y-3 mb-6 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            <div className="inline-flex items-center justify-center p-3 bg-primary/10 rounded-2xl mb-1 shadow-inner animate-float">
+              <Church className="h-8 w-8 text-primary" />
             </div>
-            <div className="space-y-1">
-              <h1 className="text-5xl md:text-7xl font-bold font-headline text-primary tracking-tighter leading-none">
+            <div className="space-y-0.5">
+              <h1 className="text-4xl md:text-6xl font-bold font-headline text-primary tracking-tighter leading-none">
                 Himnario <span className="text-foreground">EECH</span>
               </h1>
-              <p className="text-base md:text-xl text-muted-foreground font-body max-w-md mx-auto leading-tight font-medium">
+              <p className="text-sm md:text-lg text-muted-foreground font-body max-w-xs mx-auto leading-tight font-medium">
                 Tu cancionero espiritual digital.
               </p>
             </div>
           </header>
 
           {/* Buscador Global Estilizado */}
-          <div className="w-full max-w-xl mb-10 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-            <div className="bg-background/60 backdrop-blur-2xl p-1.5 rounded-full shadow-[0_15px_40px_rgba(0,0,0,0.08)] border border-primary/10">
+          <div className="w-full max-w-lg mb-8 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+            <div className="bg-background/60 backdrop-blur-2xl p-1 rounded-full shadow-[0_10px_30px_rgba(0,0,0,0.05)] border border-primary/10">
               <GlobalSearch />
             </div>
           </div>
           
-          {/* Cuadrícula de Navegación (Botones tipo Card más compactos) */}
-          <div className="grid grid-cols-2 gap-4 w-full">
+          {/* Cuadrícula de Navegación más Compacta */}
+          <div className="grid grid-cols-2 gap-3 w-full">
             {navigationItems.map((item) => (
               <div key={item.title} className="opacity-0 animate-fade-in-up" style={{ animationDelay: item.delay }}>
                 <Link href={item.href} className="group block h-full">
-                  <Card className="h-full border-primary/5 bg-background/40 backdrop-blur-md transition-all duration-500 hover:shadow-[0_20px_40px_-10px_rgba(var(--primary),0.15)] hover:-translate-y-1 group-active:scale-95 overflow-hidden relative border-2">
+                  <Card className="h-full border-primary/5 bg-background/40 backdrop-blur-md transition-all duration-500 hover:shadow-[0_15px_30px_-10px_rgba(var(--primary),0.15)] hover:-translate-y-0.5 group-active:scale-95 overflow-hidden relative border-2">
                     {/* Resplandor interno en hover */}
                     <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                     
-                    <CardContent className="relative z-10 flex flex-col items-center sm:flex-row sm:items-center p-5 sm:p-6 gap-4 text-center sm:text-left">
-                      <div className={`p-3.5 rounded-2xl bg-gradient-to-br ${item.color} shadow-md group-hover:scale-110 transition-transform duration-500 border border-white/20 shrink-0`}>
-                        <item.icon className={`h-7 w-7 ${item.iconColor}`} />
+                    <CardContent className="relative z-10 flex flex-col items-center sm:flex-row sm:items-center p-3 sm:p-4 gap-3 text-center sm:text-left">
+                      <div className={`p-2.5 rounded-xl bg-gradient-to-br ${item.color} shadow-sm group-hover:scale-105 transition-transform duration-500 border border-white/20 shrink-0`}>
+                        <item.icon className={`h-6 w-6 ${item.iconColor}`} />
                       </div>
-                      <div className="flex-1 space-y-0.5 overflow-hidden">
-                        <h3 className="font-bold text-lg font-headline flex items-center justify-center sm:justify-start group-hover:text-primary transition-colors">
+                      <div className="flex-1 space-y-0 overflow-hidden">
+                        <h3 className="font-bold text-base sm:text-lg font-headline flex items-center justify-center sm:justify-start group-hover:text-primary transition-colors leading-tight">
                           <span className="truncate">{item.title}</span>
-                          <ArrowRight className="h-4 w-4 ml-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary hidden sm:inline-block" />
+                          <ArrowRight className="h-3.5 w-3.5 ml-1.5 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300 text-primary hidden sm:inline-block" />
                         </h3>
-                        <p className="text-xs text-muted-foreground font-body leading-tight truncate">
+                        <p className="text-[10px] sm:text-xs text-muted-foreground font-body leading-tight truncate">
                           {item.description}
                         </p>
                       </div>
@@ -109,13 +109,13 @@ export default function HomePage() {
           </div>
           
           {/* Footer Elegante */}
-          <footer className="w-full text-center py-12 space-y-4 opacity-0 animate-fade-in-up" style={{ animationDelay: '1.1s' }}>
-            <div className="h-px w-24 bg-gradient-to-r from-transparent via-primary/20 to-transparent mx-auto" />
-            <div className="flex flex-col items-center gap-3">
+          <footer className="w-full text-center py-8 space-y-3 opacity-0 animate-fade-in-up" style={{ animationDelay: '1.1s' }}>
+            <div className="h-px w-16 bg-gradient-to-r from-transparent via-primary/20 to-transparent mx-auto" />
+            <div className="flex flex-col items-center gap-2">
               <SettingsDialog />
-              <div className="space-y-1">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Iglesia Ejército Evangélico de Chile</p>
-                <p className="text-xs text-primary/60 italic font-medium">"Alabaré a Jehová en mi vida"</p>
+              <div className="space-y-0.5">
+                <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.2em]">Iglesia Ejército Evangélico de Chile</p>
+                <p className="text-[11px] text-primary/60 italic font-medium">"Alabaré a Jehová en mi vida"</p>
               </div>
             </div>
           </footer>
