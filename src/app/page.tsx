@@ -100,16 +100,16 @@ export default function HomePage() {
               
               <div className="space-y-3 px-4">
                 <div className="space-y-1">
-                  <p className="text-xs md:text-sm font-bold text-slate-600 uppercase tracking-[0.2em]">
+                  <p className="text-[10px] md:text-[11px] font-bold text-slate-500 uppercase tracking-[0.25em] leading-relaxed">
                     Iglesia Ejército Evangélico de Chile
                   </p>
                 </div>
                 
                 <div className="space-y-1">
-                  <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">
+                  <p className="text-[9px] text-muted-foreground/80 font-medium uppercase tracking-widest">
                     © 2025 Todos los derechos reservados
                   </p>
-                  <p className="text-xs text-primary/70 italic font-bold">
+                  <p className="text-[11px] text-primary/60 italic font-bold">
                     "Alabaré a Jehová en mi vida"
                   </p>
                 </div>
