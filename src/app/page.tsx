@@ -41,11 +41,17 @@ const navigationItems = [
 
 export default function HomePage() {
   return (
-    <div className="relative min-h-screen w-full bg-slate-50/50 text-foreground overflow-x-hidden font-body">
-      {/* Fondo Animado Muy Sutil */}
+    <div className="relative min-h-screen w-full bg-white text-foreground overflow-x-hidden font-body">
+      {/* Fondo Animado Mejorado */}
       <div className="fixed inset-0 -z-20 overflow-hidden">
-        <div className="absolute top-[-10%] -left-[10%] w-[70%] h-[70%] bg-primary/5 rounded-full filter blur-[120px] animate-pulse-slow" />
-        <div className="absolute bottom-[-10%] -right-[10%] w-[80%] h-[80%] bg-blue-500/5 rounded-full filter blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
+        {/* Capa de Patrón Institucional */}
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:32px_32px] opacity-40" />
+        
+        {/* Esferas de Color con Animación Orgánica */}
+        <div className="absolute top-[-10%] -left-[10%] w-[70%] h-[70%] bg-blue-400/10 rounded-full filter blur-[120px] animate-pulse-slow" />
+        <div className="absolute bottom-[-10%] -right-[10%] w-[80%] h-[80%] bg-primary/10 rounded-full filter blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-[20%] right-[-5%] w-[45%] h-[45%] bg-indigo-400/10 rounded-full filter blur-[100px] animate-pulse-slow" style={{ animationDelay: '4s' }} />
+        <div className="absolute bottom-[15%] left-[5%] w-[50%] h-[50%] bg-violet-400/10 rounded-full filter blur-[110px] animate-pulse-slow" style={{ animationDelay: '1s' }} />
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
@@ -76,7 +82,7 @@ export default function HomePage() {
             {navigationItems.map((item) => (
               <div key={item.title} className="animate-in fade-in zoom-in-95 duration-500" style={{ animationDelay: item.delay }}>
                 <Link href={item.href} className="group block h-full">
-                  <Card className="h-full border-slate-200/60 bg-white hover:bg-slate-50 transition-all duration-300 hover:shadow-md hover:-translate-y-1 active:scale-95 overflow-hidden relative shadow-sm border-2">
+                  <Card className="h-full border-slate-200/60 bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-300 hover:shadow-md hover:-translate-y-1 active:scale-95 overflow-hidden relative shadow-sm border-2">
                     <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[150px]">
                       <div className={`p-4 rounded-2xl ${item.color} mb-4 group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
                         <item.icon className={`h-7 w-7 ${item.iconColor}`} />
