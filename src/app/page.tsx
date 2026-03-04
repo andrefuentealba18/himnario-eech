@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Music, Book, Mic, Church, Library } from 'lucide-react';
@@ -103,9 +102,6 @@ export default function HomePage() {
                 <div className="space-y-1">
                   <p className="text-xs md:text-sm font-bold text-slate-600 uppercase tracking-[0.2em]">
                     Iglesia Ejército Evangélico de Chile
-                  </p>
-                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">
-                    Misión con Carácter Institucional • Chile
                   </p>
                 </div>
                 
