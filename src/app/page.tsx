@@ -67,7 +67,7 @@ export default function HomePage() {
                 Himnario <span className="text-foreground">EECH</span>
               </h1>
               <p className="text-sm md:text-lg text-muted-foreground font-body max-w-xs mx-auto leading-tight font-medium">
-                Tu cancionero espiritual digital.
+                Tu cancionero digital.
               </p>
             </div>
           </header>
