@@ -21,11 +21,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import type { GroupType } from '@/lib/youth-choirs';
 
 const groups: { name: GroupType; icon: any; color: string; iconColor: string }[] = [
-  { name: "Coro Juventud", icon: Users, color: "bg-blue-50", iconColor: "text-blue-600" },
-  { name: "Grupo Ciclista", icon: Bike, color: "bg-green-50", iconColor: "text-green-600" },
-  { name: "Departamento Infantil", icon: Baby, color: "bg-rose-50", iconColor: "text-rose-600" },
-  { name: "Clase Dorcas", icon: UserCircle, color: "bg-purple-50", iconColor: "text-purple-600" },
-  { name: "Departamento Juvenil", icon: Users, color: "bg-orange-50", iconColor: "text-orange-600" },
+  { name: "Coro Juventud", icon: Users, color: "bg-blue-100", iconColor: "text-blue-600" },
+  { name: "Grupo Ciclista", icon: Bike, color: "bg-green-100", iconColor: "text-green-600" },
+  { name: "Departamento Infantil", icon: Baby, color: "bg-rose-100", iconColor: "text-rose-600" },
+  { name: "Clase Dorcas", icon: UserCircle, color: "bg-purple-100", iconColor: "text-purple-600" },
+  { name: "Departamento Juvenil", icon: Users, color: "bg-orange-100", iconColor: "text-orange-600" },
 ];
 
 export default function YouthChoirsIndexPage() {
@@ -121,29 +121,29 @@ export default function YouthChoirsIndexPage() {
                 <p className="animate-pulse text-sm">Cargando alabanzas...</p>
               </div>
             ) : !selectedGroup ? (
-              <div className="space-y-6 py-2">
-                <div className="text-center space-y-1 mb-2">
-                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Selecciona Categoría</p>
-                  <div className="h-0.5 w-6 bg-primary/20 mx-auto rounded-full" />
+              <div className="space-y-8 py-4">
+                <div className="text-center space-y-2">
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.25em]">Selecciona Categoría</p>
+                  <div className="h-1 w-8 bg-primary/30 mx-auto rounded-full" />
                 </div>
                 
-                <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto">
+                <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
                   {groups.map((group, index) => (
                     <Card 
                       key={group.name} 
-                      className="cursor-pointer border-slate-200/60 bg-white hover:bg-slate-50 transition-all duration-300 active:scale-95 shadow-sm group overflow-hidden"
+                      className="cursor-pointer border-slate-200 bg-white hover:bg-slate-50 transition-all duration-300 active:scale-95 shadow-sm hover:shadow-md group overflow-hidden border-2"
                       onClick={() => setSelectedGroup(group.name)}
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
-                      <CardContent className="p-3 flex flex-col items-center text-center gap-2">
-                        <div className={`p-2 rounded-xl ${group.color} transition-transform duration-300 group-hover:scale-110 shadow-inner`}>
-                          <group.icon className={`h-4 w-4 ${group.iconColor}`} />
+                      <CardContent className="p-6 flex flex-col items-center text-center gap-4">
+                        <div className={`p-4 rounded-2xl ${group.color} transition-transform duration-500 group-hover:scale-110 shadow-inner`}>
+                          <group.icon className={`h-8 w-8 ${group.iconColor}`} />
                         </div>
-                        <div className="min-w-0">
-                          <h3 className="font-bold text-[11px] text-slate-800 leading-tight uppercase tracking-tight">{group.name}</h3>
-                          <p className="text-[9px] text-muted-foreground font-medium mt-0.5">
+                        <div className="space-y-1">
+                          <h3 className="font-bold text-sm text-slate-800 leading-tight uppercase tracking-tight">{group.name}</h3>
+                          <Badge variant="secondary" className="text-[10px] font-bold px-2 py-0 h-5">
                             {countsByGroup[group.name] || 0} cantos
-                          </p>
+                          </Badge>
                         </div>
                       </CardContent>
                     </Card>
