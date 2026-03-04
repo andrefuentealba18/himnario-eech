@@ -29,7 +29,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
-import { Check, Edit, Trash2, Loader2, Inbox } from 'lucide-react';
+import { Check, Edit, Trash2, Loader2, Inbox, RefreshCw } from 'lucide-react';
 import { EditPraiseDialog } from './edit-praise-dialog';
 import { EditChoirDialog } from './edit-choir-dialog';
 import { EditYouthChoirDialog } from './edit-youth-choir-dialog';
@@ -47,8 +47,7 @@ export function SongReviewList() {
   const { pendingChoirs, approveChoir, deleteChoir, updateChoir, isLoaded: choirsLoaded } = useChoirs();
   const { pendingYouthChoirs, approveYouthChoir, deleteYouthChoir, updateYouthChoir, isLoaded: youthChoirsLoaded } = useYouthChoirs();
 
-  const anyLoading = !praisesLoaded || !choirsLoaded || !youthChoirsLoaded;
-  const allLoaded = praisesLoaded && choirsLoaded && youthChoirsLoaded;
+  const isAnyLoading = !praisesLoaded || !choirsLoaded || !youthChoirsLoaded;
 
   const allPendingSongs: PendingSong[] = useMemo(() => {
     const list = [
@@ -111,16 +110,11 @@ export function SongReviewList() {
   }
 
   if (allPendingSongs.length === 0) {
-    if (anyLoading) {
+    if (isAnyLoading) {
       return (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">
           <Loader2 className="h-10 w-10 text-primary animate-spin" />
-          <p className="text-muted-foreground animate-pulse text-sm">Consultando base de datos en tiempo real...</p>
-          <div className="flex gap-2">
-            {!praisesLoaded && <Badge variant="outline">Alabanzas...</Badge>}
-            {!choirsLoaded && <Badge variant="outline">Coros...</Badge>}
-            {!youthChoirsLoaded && <Badge variant="outline">Agrupaciones...</Badge>}
-          </div>
+          <p className="text-muted-foreground animate-pulse text-sm font-medium">Sincronizando con la nube...</p>
         </div>
       );
     }
@@ -130,7 +124,7 @@ export function SongReviewList() {
           <Inbox className="h-12 w-12 text-muted-foreground/50" />
         </div>
         <div>
-          <h3 className="text-xl font-bold">¡Bandeja de entrada vacía!</h3>
+          <h3 className="text-xl font-bold">¡Todo al día!</h3>
           <p className="text-muted-foreground max-w-xs mx-auto">No hay canciones nuevas esperando revisión en este momento.</p>
         </div>
       </div>
@@ -139,10 +133,10 @@ export function SongReviewList() {
 
   return (
     <div className="space-y-6">
-      {anyLoading && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground bg-muted/30 p-2 rounded-md justify-center italic">
-          <Loader2 className="h-3 w-3 animate-spin" />
-          Sincronizando actualizaciones...
+      {isAnyLoading && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/5 p-2 rounded-md justify-center border border-primary/10">
+          <RefreshCw className="h-3 w-3 animate-spin" />
+          Actualizando lista en tiempo real...
         </div>
       )}
       

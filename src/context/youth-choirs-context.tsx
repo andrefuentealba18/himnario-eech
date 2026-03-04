@@ -63,12 +63,15 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     if (!allData) return [];
     return allData
       .filter(yc => yc.status === 'pending')
-      .sort((a, b) => (b.createdAt?.toMillis() || 0) - (a.createdAt?.toMillis() || 0));
+      .sort((a, b) => {
+        const tA = a.createdAt?.toMillis?.() || a.createdAt?.seconds * 1000 || Date.now();
+        const tB = b.createdAt?.toMillis?.() || b.createdAt?.seconds * 1000 || Date.now();
+        return tB - tA;
+      });
   }, [allData]);
   
   const addYouthChoir = useCallback(async (newYouthChoirData: Omit<YouthChoir, 'id'>) => {
     if (!firestore) return { success: false };
-    // ID único basado en GRUPO + TÍTULO para evitar colisiones entre departamentos
     const id = slugify(`${newYouthChoirData.group}-${newYouthChoirData.title}`);
     
     if (allData?.some(p => p.id === id)) {
@@ -83,18 +86,17 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
         createdAt: serverTimestamp() 
     };
 
-    try {
-      await setDoc(docRef, removeUndefined(dataToSave));
-      toast({ title: 'Enviado a Revisión', description: `"${newYouthChoirData.title}" ha sido enviada para ser revisada.` });
-      return { success: true };
-    } catch (error) {
-      errorEmitter.emit('permission-error', new FirestorePermissionError({
-        path: docRef.path,
-        operation: 'create',
-        requestResourceData: dataToSave
-      }));
-      return { success: false };
-    }
+    setDoc(docRef, removeUndefined(dataToSave))
+      .catch((error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'create',
+          requestResourceData: dataToSave
+        }));
+      });
+
+    toast({ title: 'Enviado a Revisión', description: `"${newYouthChoirData.title}" ha sido enviada.` });
+    return { success: true };
   }, [firestore, allData, toast]);
 
   const addYouthChoirs = useCallback((newYouthChoirsData: Omit<YouthChoir, 'id'>[]) => {
@@ -102,7 +104,6 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     
     const batch = writeBatch(firestore);
     let addedCount = 0;
-    
     const existingIds = new Set(allData?.map(p => p.id) || []);
 
     for (const youthChoirData of newYouthChoirsData) {
@@ -135,19 +136,21 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     if (!firestore) return;
     const docRef = doc(firestore, 'youth-choirs', youthChoirId);
     updateDoc(docRef, { status: 'approved' })
+      .then(() => toast({ title: 'Alabanza Aprobada' }))
       .catch((error) => {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'update' }));
       });
-  }, [firestore]);
+  }, [firestore, toast]);
 
   const deleteYouthChoir = useCallback((youthChoirId: string) => {
     if (!firestore) return;
     const docRef = doc(firestore, 'youth-choirs', youthChoirId);
     deleteDoc(docRef)
+      .then(() => toast({ title: 'Alabanza eliminada' }))
       .catch((error) => {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));
       });
-  }, [firestore]);
+  }, [firestore, toast]);
   
   const updateYouthChoir = useCallback(async (youthChoirId: string, newYouthChoirData: Omit<YouthChoir, 'id'>): Promise<{ success: boolean; error?: string }> => {
     if (!firestore) return { success: false, error: 'firestore_unavailable' };
@@ -165,9 +168,9 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
         const batch = writeBatch(firestore);
         batch.delete(oldDocRef);
         batch.set(newDocRef, dataToSave);
-        await batch.commit().catch(e => console.error(e));
+        batch.commit().catch(e => console.error(e));
     } else {
-        await setDoc(oldDocRef, dataToSave, { merge: true }).catch(e => console.error(e));
+        setDoc(oldDocRef, dataToSave, { merge: true }).catch(e => console.error(e));
     }
     return { success: true };
   }, [firestore, allData]);

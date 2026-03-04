@@ -64,8 +64,8 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     return allData
       .filter(p => p.status === 'pending')
       .sort((a, b) => {
-        const tA = a.createdAt?.toMillis?.() || a.createdAt?.seconds * 1000 || 0;
-        const tB = b.createdAt?.toMillis?.() || b.createdAt?.seconds * 1000 || 0;
+        const tA = a.createdAt?.toMillis?.() || a.createdAt?.seconds * 1000 || Date.now();
+        const tB = b.createdAt?.toMillis?.() || b.createdAt?.seconds * 1000 || Date.now();
         return tB - tA;
       });
   }, [allData]);
@@ -74,8 +74,8 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     if (!firestore) return { success: false };
     const id = slugify(newPraiseData.title);
     
-    const existingIds = new Set(allData?.map(p => p.id) || []);
-    if (existingIds.has(id)) {
+    // Check if it already exists locally to avoid obvious duplicates
+    if (allData?.some(p => p.id === id)) {
       toast({ variant: 'destructive', title: 'Ya existe', description: 'Esta alabanza ya está en la lista o en revisión.' });
       return { success: false };
     }
@@ -87,18 +87,18 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         createdAt: serverTimestamp() 
     };
 
-    try {
-      await setDoc(docRef, removeUndefined(dataToSave));
-      toast({ title: 'Enviada a Revisión', description: `"${newPraiseData.title}" ha sido enviada.` });
-      return { success: true };
-    } catch (error) {
-      errorEmitter.emit('permission-error', new FirestorePermissionError({
-        path: docRef.path,
-        operation: 'create',
-        requestResourceData: dataToSave
-      }));
-      return { success: false };
-    }
+    // NO await here - Non-blocking write
+    setDoc(docRef, removeUndefined(dataToSave))
+      .catch((error) => {
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'create',
+          requestResourceData: dataToSave
+        }));
+      });
+
+    toast({ title: 'Enviada a Revisión', description: `"${newPraiseData.title}" ha sido enviada.` });
+    return { success: true };
   }, [firestore, allData, toast]);
 
   const addPraises = useCallback((newPraisesData: Omit<Praise, 'id'>[]) => {
@@ -170,9 +170,9 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         const batch = writeBatch(firestore);
         batch.delete(oldDocRef);
         batch.set(newDocRef, dataToSave);
-        await batch.commit().catch(e => console.error(e));
+        batch.commit().catch(e => console.error(e));
     } else {
-        await setDoc(oldDocRef, dataToSave, { merge: true }).catch(e => console.error(e));
+        setDoc(oldDocRef, dataToSave, { merge: true }).catch(e => console.error(e));
     }
     return { success: true };
   }, [firestore, allData]);
