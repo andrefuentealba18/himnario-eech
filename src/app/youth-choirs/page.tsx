@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from 'react';
 import { YouthChoirListClient } from '@/components/youth-choir-list-client';
-import { Users, ChevronLeft, Plus, ChevronDown, Music, Baby, Bike, UserCircle, Library, ChevronRight } from 'lucide-react';
+import { Users, ChevronLeft, Plus, Baby, Bike, UserCircle, Library } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AddSingleYouthChoirDialog } from '@/components/add-single-youth-choir-dialog';
@@ -85,22 +85,22 @@ export default function YouthChoirsIndexPage() {
                   )}
               </div>
               <div className="flex items-center gap-3 px-10">
-                <h1 className="text-lg font-bold font-headline text-foreground truncate">
+                <h1 className="text-base font-bold font-headline text-foreground truncate">
                   {selectedGroup || "Agrupaciones"}
                 </h1>
                 {selectedGroup && (
-                  <Badge variant="secondary" className="text-sm font-semibold px-2 h-6">
+                  <Badge variant="secondary" className="text-xs font-semibold px-2 h-5">
                     {filteredByGroup.length}
                   </Badge>
                 )}
-                {!selectedGroup && <Library className="h-6 w-6 text-primary" />}
+                {!selectedGroup && <Library className="h-5 w-5 text-primary" />}
               </div>
               <div className="absolute right-2 top-1/2 -translate-y-1/2">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-8">
-                        <Plus className="mr-1 h-3.5 w-3.5" />
-                        <span className="hidden xs:inline">Agregar</span>
+                      <Button variant="outline" size="sm" className="h-8 px-2 text-xs">
+                        <Plus className="mr-1 h-3 w-3" />
+                        Agregar
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -118,38 +118,37 @@ export default function YouthChoirsIndexPage() {
           <div className="p-4 flex-1 overflow-auto">
             {!isLoaded ? (
               <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-                <p className="animate-pulse">Cargando alabanzas...</p>
+                <p className="animate-pulse text-sm">Cargando alabanzas...</p>
               </div>
             ) : !selectedGroup ? (
-              <div className="grid gap-3 py-2">
-                <div className="text-center space-y-1 mb-4">
-                  <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Selecciona una categoría</p>
-                  <div className="h-1 w-8 bg-primary/20 mx-auto rounded-full" />
+              <div className="space-y-6 py-2">
+                <div className="text-center space-y-1 mb-2">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em]">Selecciona Categoría</p>
+                  <div className="h-0.5 w-6 bg-primary/20 mx-auto rounded-full" />
                 </div>
                 
-                {groups.map((group, index) => (
-                  <Card 
-                    key={group.name} 
-                    className="cursor-pointer border-slate-200/60 bg-white hover:bg-slate-50/50 transition-all duration-300 active:scale-[0.98] shadow-sm group"
-                    onClick={() => setSelectedGroup(group.name)}
-                    style={{ animationDelay: `${index * 0.05}s` }}
-                  >
-                    <CardContent className="p-4 flex items-center gap-4">
-                      <div className={`p-2.5 rounded-xl ${group.color} transition-transform duration-300 group-hover:scale-110`}>
-                        <group.icon className={`h-5 w-5 ${group.iconColor}`} />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="font-bold text-base text-slate-800">{group.name}</h3>
-                        <p className="text-xs text-muted-foreground font-medium">
-                          {countsByGroup[group.name] || 0} canciones
-                        </p>
-                      </div>
-                      <div className="p-1.5 rounded-full bg-slate-50 group-hover:bg-primary/10 transition-colors">
-                        <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
+                <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto">
+                  {groups.map((group, index) => (
+                    <Card 
+                      key={group.name} 
+                      className="cursor-pointer border-slate-200/60 bg-white hover:bg-slate-50 transition-all duration-300 active:scale-95 shadow-sm group overflow-hidden"
+                      onClick={() => setSelectedGroup(group.name)}
+                      style={{ animationDelay: `${index * 0.05}s` }}
+                    >
+                      <CardContent className="p-3 flex flex-col items-center text-center gap-2">
+                        <div className={`p-2 rounded-xl ${group.color} transition-transform duration-300 group-hover:scale-110 shadow-inner`}>
+                          <group.icon className={`h-4 w-4 ${group.iconColor}`} />
+                        </div>
+                        <div className="min-w-0">
+                          <h3 className="font-bold text-[11px] text-slate-800 leading-tight uppercase tracking-tight">{group.name}</h3>
+                          <p className="text-[9px] text-muted-foreground font-medium mt-0.5">
+                            {countsByGroup[group.name] || 0} cantos
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
               </div>
             ) : (
               <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
