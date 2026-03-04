@@ -42,8 +42,8 @@ const navigationItems = [
 
 export default function HomePage() {
   return (
-    <div className="relative min-h-screen w-full bg-slate-50/50 text-foreground overflow-x-hidden">
-      {/* Fondo Animado Muy Sutil para Profesionalismo */}
+    <div className="relative min-h-screen w-full bg-slate-50/50 text-foreground overflow-x-hidden font-body">
+      {/* Fondo Animado Muy Sutil */}
       <div className="fixed inset-0 -z-20 overflow-hidden">
         <div className="absolute top-[-10%] -left-[10%] w-[70%] h-[70%] bg-primary/5 rounded-full filter blur-[120px] animate-pulse-slow" />
         <div className="absolute bottom-[-10%] -right-[10%] w-[80%] h-[80%] bg-blue-500/5 rounded-full filter blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
@@ -61,8 +61,8 @@ export default function HomePage() {
               <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight text-slate-900">
                 Himnario <span className="text-primary">EECH</span>
               </h1>
-              <p className="text-sm md:text-base text-muted-foreground font-medium tracking-wide uppercase">
-                CANCIONERO DIGITAL
+              <p className="text-xs md:text-sm text-muted-foreground font-bold tracking-[0.3em] uppercase">
+                Cancionero Digital
               </p>
             </div>
           </header>
@@ -72,17 +72,17 @@ export default function HomePage() {
             <GlobalSearch />
           </div>
           
-          {/* Cuadrícula 2x2 Estilo Oficial */}
+          {/* Cuadrícula 2x2 Oficial */}
           <div className="grid grid-cols-2 gap-4 w-full max-w-lg">
             {navigationItems.map((item) => (
               <div key={item.title} className="animate-in fade-in zoom-in-95 duration-500" style={{ animationDelay: item.delay }}>
                 <Link href={item.href} className="group block h-full">
                   <Card className="h-full border-slate-200/60 bg-white hover:bg-slate-50 transition-all duration-300 hover:shadow-md hover:-translate-y-1 active:scale-95 overflow-hidden relative shadow-sm border-2">
-                    <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[160px]">
+                    <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[150px]">
                       <div className={`p-4 rounded-2xl ${item.color} mb-4 group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
-                        <item.icon className={`h-8 w-8 ${item.iconColor}`} />
+                        <item.icon className={`h-7 w-7 ${item.iconColor}`} />
                       </div>
-                      <h3 className="font-bold text-sm md:text-base font-body text-slate-800 group-hover:text-primary transition-colors leading-tight px-2">
+                      <h3 className="font-bold text-xs md:text-sm uppercase tracking-wider font-body text-slate-800 group-hover:text-primary transition-colors leading-tight px-2">
                         {item.title}
                       </h3>
                     </CardContent>
@@ -92,14 +92,31 @@ export default function HomePage() {
             ))}
           </div>
           
-          {/* Footer Elegante */}
-          <footer className="w-full text-center mt-12 py-6 space-y-4 animate-in fade-in duration-1000 delay-500">
-            <div className="h-px w-12 bg-slate-200 mx-auto" />
-            <div className="flex flex-col items-center gap-3">
+          {/* Footer Institucional y Elegante */}
+          <footer className="w-full text-center mt-12 pb-10 space-y-6 animate-in fade-in duration-1000 delay-500">
+            <div className="h-px w-16 bg-slate-300/50 mx-auto" />
+            
+            <div className="flex flex-col items-center gap-4">
               <SettingsDialog />
-              <div className="space-y-1">
-                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Ejército Evangélico de Chile</p>
-                <p className="text-[12px] text-primary/70 italic font-medium">"Alabaré a Jehová en mi vida"</p>
+              
+              <div className="space-y-3 px-4">
+                <div className="space-y-1">
+                  <p className="text-xs md:text-sm font-bold text-slate-600 uppercase tracking-[0.2em]">
+                    Iglesia Ejército Evangélico de Chile
+                  </p>
+                  <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">
+                    Misión con Carácter Institucional • Chile
+                  </p>
+                </div>
+                
+                <div className="space-y-1">
+                  <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-tighter">
+                    © 2025 Todos los derechos reservados
+                  </p>
+                  <p className="text-xs text-primary/70 italic font-bold">
+                    "Alabaré a Jehová en mi vida"
+                  </p>
+                </div>
               </div>
             </div>
           </footer>
