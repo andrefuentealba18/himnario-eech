@@ -72,13 +72,10 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
   
   const addYouthChoir = useCallback(async (newYouthChoirData: Omit<YouthChoir, 'id'>) => {
     if (!firestore) return { success: false };
-    const id = slugify(`${newYouthChoirData.group}-${newYouthChoirData.title}`);
     
-    if (allData?.some(p => p.id === id)) {
-      toast({ variant: 'destructive', title: 'Error', description: `Esta alabanza ya existe en el grupo ${newYouthChoirData.group}.` });
-      return { success: false };
-    }
-
+    // ID único basado en grupo + título + tiempo para evitar esperas de validación
+    const id = `${slugify(newYouthChoirData.group)}-${slugify(newYouthChoirData.title)}-${Date.now().toString().slice(-4)}`;
+    
     const docRef = doc(firestore, 'youth-choirs', id);
     const dataToSave = { 
         ...newYouthChoirData,
@@ -95,30 +92,26 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
         }));
       });
 
-    toast({ title: 'Enviado a Revisión', description: `"${newYouthChoirData.title}" ha sido enviada.` });
+    toast({ title: 'Enviado a Revisión', description: `La alabanza de ${newYouthChoirData.group} ha sido enviada.` });
     return { success: true };
-  }, [firestore, allData, toast]);
+  }, [firestore, toast]);
 
   const addYouthChoirs = useCallback((newYouthChoirsData: Omit<YouthChoir, 'id'>[]) => {
     if (!firestore) return;
     
     const batch = writeBatch(firestore);
     let addedCount = 0;
-    const existingIds = new Set(allData?.map(p => p.id) || []);
 
     for (const youthChoirData of newYouthChoirsData) {
-      const id = slugify(`${youthChoirData.group}-${youthChoirData.title}`);
-      if (!existingIds.has(id)) {
-        const docRef = doc(firestore, 'youth-choirs', id);
-        const dataToSave = { 
-            ...youthChoirData,
-            status: 'pending' as const,
-            createdAt: serverTimestamp() 
-        };
-        batch.set(docRef, removeUndefined(dataToSave));
-        addedCount++;
-        existingIds.add(id);
-      }
+      const id = `${slugify(youthChoirData.group)}-${slugify(youthChoirData.title)}-${Date.now().toString().slice(-4)}-${addedCount}`;
+      const docRef = doc(firestore, 'youth-choirs', id);
+      const dataToSave = { 
+          ...youthChoirData,
+          status: 'pending' as const,
+          createdAt: serverTimestamp() 
+      };
+      batch.set(docRef, removeUndefined(dataToSave));
+      addedCount++;
     }
     
     if (addedCount > 0) {
@@ -130,7 +123,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
           toast({ variant: 'destructive', title: 'Error al Enviar', description: 'No se pudieron guardar las alabanzas.' });
         });
     }
-  }, [firestore, allData, toast]);
+  }, [firestore, toast]);
 
   const approveYouthChoir = useCallback((youthChoirId: string) => {
     if (!firestore) return;
@@ -146,7 +139,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     if (!firestore) return;
     const docRef = doc(firestore, 'youth-choirs', youthChoirId);
     deleteDoc(docRef)
-      .then(() => toast({ title: 'Alabanza eliminada' }))
+      .then(() => toast({ title: 'Alabanza eliminada de revisión' }))
       .catch((error) => {
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));
       });
@@ -154,26 +147,12 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
   
   const updateYouthChoir = useCallback(async (youthChoirId: string, newYouthChoirData: Omit<YouthChoir, 'id'>): Promise<{ success: boolean; error?: string }> => {
     if (!firestore) return { success: false, error: 'firestore_unavailable' };
-    const newId = slugify(`${newYouthChoirData.group}-${newYouthChoirData.title}`);
-
-    if (newId !== youthChoirId && allData?.some(p => p.id === newId)) {
-      return { success: false, error: 'duplicate' };
-    }
-
-    const oldDocRef = doc(firestore, 'youth-choirs', youthChoirId);
-    const dataToSave = removeUndefined(newYouthChoirData);
     
-    if (newId !== youthChoirId) {
-        const newDocRef = doc(firestore, 'youth-choirs', newId);
-        const batch = writeBatch(firestore);
-        batch.delete(oldDocRef);
-        batch.set(newDocRef, dataToSave);
-        batch.commit().catch(e => console.error(e));
-    } else {
-        setDoc(oldDocRef, dataToSave, { merge: true }).catch(e => console.error(e));
-    }
+    const docRef = doc(firestore, 'youth-choirs', youthChoirId);
+    setDoc(docRef, removeUndefined(newYouthChoirData), { merge: true }).catch(e => console.error(e));
+    
     return { success: true };
-  }, [firestore, allData]);
+  }, [firestore]);
 
   const getYouthChoirById = useCallback((id: string): YouthChoir | undefined => {
     return allData?.find(p => p.id === id);

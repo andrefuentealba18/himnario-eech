@@ -47,16 +47,16 @@ export function SongReviewList() {
   const { pendingChoirs, approveChoir, deleteChoir, updateChoir, isLoaded: choirsLoaded } = useChoirs();
   const { pendingYouthChoirs, approveYouthChoir, deleteYouthChoir, updateYouthChoir, isLoaded: youthChoirsLoaded } = useYouthChoirs();
 
-  const isAnyLoading = !praisesLoaded || !choirsLoaded || !youthChoirsLoaded;
-
+  // Consolidamos todo lo que ya ha llegado, sin importar si otras categorías siguen cargando
   const allPendingSongs: PendingSong[] = useMemo(() => {
-    const list = [
+    const list: PendingSong[] = [
       ...pendingPraises.map(s => ({ ...s, category: 'praise' as const })),
       ...pendingChoirs.map(s => ({ ...s, category: 'choir' as const })),
       ...pendingYouthChoirs.map(s => ({ ...s, category: 'youth-choir' as const })),
     ];
 
-    // Ordenar por fecha de creación (más recientes primero)
+    // Ordenar por fecha: lo más nuevo arriba. 
+    // Usamos el ID como fallback de tiempo si el createdAt aún no llega del servidor
     return list.sort((a, b) => {
       const timeA = a.createdAt?.toMillis?.() || a.createdAt?.seconds * 1000 || Date.now();
       const timeB = b.createdAt?.toMillis?.() || b.createdAt?.seconds * 1000 || Date.now();
@@ -109,12 +109,14 @@ export function SongReviewList() {
     return null;
   }
 
+  const isAnyLoading = !praisesLoaded || !choirsLoaded || !youthChoirsLoaded;
+
   if (allPendingSongs.length === 0) {
     if (isAnyLoading) {
       return (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">
           <Loader2 className="h-10 w-10 text-primary animate-spin" />
-          <p className="text-muted-foreground animate-pulse text-sm font-medium">Sincronizando con la nube...</p>
+          <p className="text-muted-foreground animate-pulse text-sm font-medium">Buscando nuevas alabanzas...</p>
         </div>
       );
     }
@@ -124,7 +126,7 @@ export function SongReviewList() {
           <Inbox className="h-12 w-12 text-muted-foreground/50" />
         </div>
         <div>
-          <h3 className="text-xl font-bold">¡Todo al día!</h3>
+          <h3 className="text-xl font-bold">¡Bandeja vacía!</h3>
           <p className="text-muted-foreground max-w-xs mx-auto">No hay canciones nuevas esperando revisión en este momento.</p>
         </div>
       </div>
@@ -136,13 +138,13 @@ export function SongReviewList() {
       {isAnyLoading && (
         <div className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/5 p-2 rounded-md justify-center border border-primary/10">
           <RefreshCw className="h-3 w-3 animate-spin" />
-          Actualizando lista en tiempo real...
+          Sincronizando con la nube en tiempo real...
         </div>
       )}
       
       <div className="grid gap-4">
         {allPendingSongs.map(song => (
-          <Card key={song.id} className="border-l-4 border-l-yellow-500 shadow-sm hover:shadow-md transition-shadow">
+          <Card key={song.id} className="border-l-4 border-l-yellow-500 shadow-sm hover:shadow-md transition-shadow animate-in fade-in slide-in-from-left-2 duration-300">
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
@@ -157,16 +159,16 @@ export function SongReviewList() {
                   </div>
                 </div>
                 <div className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded font-mono">
-                  {song.id.substring(0, 8)}
+                  ID: {song.id.substring(0, 6)}
                 </div>
               </div>
               <CardDescription className="pt-2 text-xs flex items-center gap-3">
                 <span className="flex items-center gap-1 font-medium text-foreground/70">
-                  Tonalidad: <span className="text-primary font-bold">{song.tone || 'Indefinida'}</span>
+                  Nota: <span className="text-primary font-bold">{song.tone || '---'}</span>
                 </span>
                 {(song.category === 'choir' || (song as any).speed) && (
                   <span className="flex items-center gap-1 font-medium text-foreground/70">
-                    Velocidad: <span className="text-primary font-bold">{(song as any).speed || '---'}</span>
+                    Ritmo: <span className="text-primary font-bold">{(song as any).speed || '---'}</span>
                   </span>
                 )}
               </CardDescription>
@@ -189,13 +191,13 @@ export function SongReviewList() {
                   <AlertDialogHeader>
                     <AlertDialogTitle>¿Eliminar contribución?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Si rechazas esta canción, se borrará permanentemente de la base de datos.
+                      Esta acción borrará permanentemente esta sugerencia de la base de datos.
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancelar</AlertDialogCancel>
                     <AlertDialogAction onClick={() => handleDelete(song)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
-                      Sí, eliminar permanentemente
+                      Eliminar
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -204,7 +206,7 @@ export function SongReviewList() {
               <div className="flex gap-2">
                 {renderEditDialog(song)}
                 <Button size="sm" onClick={() => handleApprove(song)} className="bg-green-600 hover:bg-green-700 shadow-sm">
-                  <Check className="mr-2 h-4 w-4" /> Aprobar y Publicar
+                  <Check className="mr-2 h-4 w-4" /> Aprobar
                 </Button>
               </div>
             </CardFooter>
