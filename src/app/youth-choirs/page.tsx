@@ -3,7 +3,7 @@
 
 import { useState, useMemo } from 'react';
 import { YouthChoirListClient } from '@/components/youth-choir-list-client';
-import { Users, ChevronLeft, Plus, ChevronDown, Music, Baby, Bike, UserCircle, Library } from 'lucide-react';
+import { Users, ChevronLeft, Plus, ChevronDown, Music, Baby, Bike, UserCircle, Library, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { AddSingleYouthChoirDialog } from '@/components/add-single-youth-choir-dialog';
@@ -20,12 +20,12 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import type { GroupType } from '@/lib/youth-choirs';
 
-const groups: { name: GroupType; icon: any; color: string }[] = [
-  { name: "Coro Juventud", icon: Users, color: "text-blue-500 bg-blue-50" },
-  { name: "Grupo Ciclista", icon: Bike, color: "text-green-500 bg-green-50" },
-  { name: "Departamento Infantil", icon: Baby, color: "text-pink-500 bg-pink-50" },
-  { name: "Clase Dorcas", icon: UserCircle, color: "text-purple-500 bg-purple-50" },
-  { name: "Departamento Juvenil", icon: Users, color: "text-orange-500 bg-orange-50" },
+const groups: { name: GroupType; icon: any; color: string; iconColor: string }[] = [
+  { name: "Coro Juventud", icon: Users, color: "bg-blue-50", iconColor: "text-blue-600" },
+  { name: "Grupo Ciclista", icon: Bike, color: "bg-green-50", iconColor: "text-green-600" },
+  { name: "Departamento Infantil", icon: Baby, color: "bg-rose-50", iconColor: "text-rose-600" },
+  { name: "Clase Dorcas", icon: UserCircle, color: "bg-purple-50", iconColor: "text-purple-600" },
+  { name: "Departamento Juvenil", icon: Users, color: "bg-orange-50", iconColor: "text-orange-600" },
 ];
 
 export default function YouthChoirsIndexPage() {
@@ -84,27 +84,26 @@ export default function YouthChoirsIndexPage() {
                     </Button>
                   )}
               </div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-xl font-bold font-headline text-foreground truncate max-w-[180px]">
+              <div className="flex items-center gap-3 px-10">
+                <h1 className="text-lg font-bold font-headline text-foreground truncate">
                   {selectedGroup || "Agrupaciones"}
                 </h1>
                 {selectedGroup && (
-                  <Badge variant="secondary" className="text-base font-semibold px-2">
+                  <Badge variant="secondary" className="text-sm font-semibold px-2 h-6">
                     {filteredByGroup.length}
                   </Badge>
                 )}
-                {!selectedGroup ? <Library className="h-7 w-7 text-primary" /> : <Music className="h-7 w-7 text-primary" />}
+                {!selectedGroup && <Library className="h-6 w-6 text-primary" />}
               </div>
               <div className="absolute right-2 top-1/2 -translate-y-1/2">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <Plus className="mr-1 h-4 w-4" />
-                        Agregar
-                        <ChevronDown className="ml-1 h-4 w-4" />
+                      <Button variant="outline" size="sm" className="h-8">
+                        <Plus className="mr-1 h-3.5 w-3.5" />
+                        <span className="hidden xs:inline">Agregar</span>
                       </Button>
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
+                    <DropdownMenuContent align="end">
                       <DropdownMenuItem onSelect={(e) => { e.preventDefault(); setSingleYouthChoirDialogOpen(true); }}>
                         Agregar una alabanza
                       </DropdownMenuItem>
@@ -118,33 +117,44 @@ export default function YouthChoirsIndexPage() {
 
           <div className="p-4 flex-1 overflow-auto">
             {!isLoaded ? (
-              <p className="text-center py-10">Cargando alabanzas...</p>
+              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                <p className="animate-pulse">Cargando alabanzas...</p>
+              </div>
             ) : !selectedGroup ? (
-              <div className="grid gap-4 py-4">
-                <p className="text-muted-foreground text-center mb-2">Selecciona una agrupación para ver sus alabanzas:</p>
-                {groups.map((group) => (
+              <div className="grid gap-3 py-2">
+                <div className="text-center space-y-1 mb-4">
+                  <p className="text-sm font-bold text-slate-500 uppercase tracking-widest">Selecciona una categoría</p>
+                  <div className="h-1 w-8 bg-primary/20 mx-auto rounded-full" />
+                </div>
+                
+                {groups.map((group, index) => (
                   <Card 
                     key={group.name} 
-                    className="cursor-pointer hover:shadow-md transition-all active:scale-[0.98]"
+                    className="cursor-pointer border-slate-200/60 bg-white hover:bg-slate-50/50 transition-all duration-300 active:scale-[0.98] shadow-sm group"
                     onClick={() => setSelectedGroup(group.name)}
+                    style={{ animationDelay: `${index * 0.05}s` }}
                   >
-                    <CardContent className="p-6 flex items-center gap-4">
-                      <div className={`p-3 rounded-full ${group.color}`}>
-                        <group.icon className="h-6 w-6" />
+                    <CardContent className="p-4 flex items-center gap-4">
+                      <div className={`p-2.5 rounded-xl ${group.color} transition-transform duration-300 group-hover:scale-110`}>
+                        <group.icon className={`h-5 w-5 ${group.iconColor}`} />
                       </div>
-                      <div className="flex-1">
-                        <h3 className="font-bold text-lg">{group.name}</h3>
-                        <p className="text-sm text-muted-foreground">
-                          {countsByGroup[group.name] || 0} canciones guardadas
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-base text-slate-800">{group.name}</h3>
+                        <p className="text-xs text-muted-foreground font-medium">
+                          {countsByGroup[group.name] || 0} canciones
                         </p>
                       </div>
-                      <ChevronDown className="h-5 w-5 text-muted-foreground -rotate-90" />
+                      <div className="p-1.5 rounded-full bg-slate-50 group-hover:bg-primary/10 transition-colors">
+                        <ChevronRight className="h-4 w-4 text-slate-400 group-hover:text-primary transition-colors" />
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
               </div>
             ) : (
-              <YouthChoirListClient youthChoirs={filteredByGroup} />
+              <div className="animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <YouthChoirListClient youthChoirs={filteredByGroup} />
+              </div>
             )}
           </div>
         </div>
