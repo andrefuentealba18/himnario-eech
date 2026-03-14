@@ -160,6 +160,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
         <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/20 rounded-full filter blur-3xl opacity-50 animate-pulse-slow" />
         <div className="absolute -bottom-1/4 -right-1/4 w-3/4 h-3/4 bg-chart-4/20 rounded-full filter blur-3xl opacity-40 animate-pulse-slow" style={{ animationDelay: '2s' }} />
       </div>
+      
       <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-24 no-print">
         <Button variant="ghost" size="icon" asChild className="h-12 w-12">
           <Link href={backHref}>
@@ -167,16 +168,18 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
             <span className="sr-only">Volver</span>
           </Link>
         </Button>
+        
         <div className="flex-1 flex flex-col items-center justify-center overflow-hidden px-2">
-            <div className="w-full flex items-center justify-center relative min-h-[32px]">
-                <h1 className="font-headline text-lg font-bold text-primary truncate max-w-[80%] text-center">
+            <div className="flex items-center justify-center gap-4 max-w-full">
+                <h1 className="font-headline text-lg font-bold text-primary truncate text-center">
                   {youthChoir.title}
                 </h1>
                 <Button 
+                  type="button"
                   variant="ghost" 
                   size="icon" 
                   onClick={() => window.print()} 
-                  className="h-8 w-8 text-primary/60 hover:text-primary absolute right-0"
+                  className="h-8 w-8 text-primary/60 hover:text-primary shrink-0"
                 >
                   <Printer className="h-5 w-5" />
                 </Button>
