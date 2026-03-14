@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -26,9 +25,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Settings, Moon, Sun } from 'lucide-react';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
+import { Settings, ShieldCheck } from 'lucide-react';
 
 const passwordSchema = z.object({
   password: z.string().min(1, 'La contraseña es requerida.'),
@@ -36,31 +33,8 @@ const passwordSchema = z.object({
 
 export function SettingsDialog() {
   const [open, setOpen] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-
-  useEffect(() => {
-    // Detectar preferencia de sistema o guardada
-    const savedTheme = localStorage.getItem('theme');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setIsDarkMode(true);
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
-
-  const toggleDarkMode = (checked: boolean) => {
-    setIsDarkMode(checked);
-    if (checked) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
-  };
 
   const form = useForm<z.infer<typeof passwordSchema>>({
     resolver: zodResolver(passwordSchema),
@@ -90,37 +64,27 @@ export function SettingsDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost">
+        <Button variant="ghost" size="sm" className="text-slate-400 hover:text-primary transition-colors">
           <Settings className="mr-2 h-4 w-4" />
           Configuración
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg" onCloseAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent className="sm:max-w-md" onCloseAutoFocus={(e) => e.preventDefault()}>
         <DialogHeader>
-          <DialogTitle>Preferencias y Acceso</DialogTitle>
+          <DialogTitle>Acceso Administrativo</DialogTitle>
           <DialogDescription>
-            Configura la apariencia de la app o accede al panel administrativo.
+            Ingresa la contraseña para acceder al panel de gestión de alabanzas.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="py-6 border-y space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label className="text-base font-bold">Modo Oscuro</Label>
-              <p className="text-xs text-muted-foreground">Cambia el tema para descansar la vista.</p>
-            </div>
-            <div className="flex items-center gap-2">
-              {isDarkMode ? <Moon className="h-4 w-4 text-primary" /> : <Sun className="h-4 w-4 text-yellow-500" />}
-              <Switch checked={isDarkMode} onCheckedChange={toggleDarkMode} />
-            </div>
+        <div className="space-y-6 py-4">
+          <div className="flex flex-col items-center justify-center p-6 bg-primary/5 rounded-2xl border border-primary/10">
+            <ShieldCheck className="h-12 w-12 text-primary mb-2" />
+            <p className="text-xs text-center text-muted-foreground">
+              Esta sección es exclusiva para los encargados del cancionero.
+            </p>
           </div>
-        </div>
 
-        <div className="space-y-4 pt-4">
-          <div className="text-center space-y-1 mb-4">
-            <h4 className="text-sm font-bold uppercase tracking-widest text-primary/60">Administración</h4>
-            <p className="text-xs text-muted-foreground">Requiere contraseña para cambios en la base de datos.</p>
-          </div>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -128,16 +92,23 @@ export function SettingsDialog() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Contraseña de Acceso</FormLabel>
+                    <FormLabel className="sr-only">Contraseña</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} className="text-center tracking-widest" />
+                      <Input 
+                        type="password" 
+                        placeholder="Ingresa la contraseña" 
+                        {...field} 
+                        className="text-center tracking-[0.5em] font-bold h-12"
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <DialogFooter>
-                <Button type="submit" className="w-full">Acceder al Panel</Button>
+                <Button type="submit" className="w-full h-12 text-base font-bold shadow-lg shadow-primary/20">
+                  Entrar al Panel
+                </Button>
               </DialogFooter>
             </form>
           </Form>
