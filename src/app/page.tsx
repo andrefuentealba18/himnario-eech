@@ -43,16 +43,30 @@ const navigationItems = [
 export default function HomePage() {
   return (
     <div className="relative min-h-screen w-full bg-background text-foreground overflow-x-hidden font-body transition-colors duration-1000">
-      {/* Fondo Animado Mejorado */}
+      {/* Fondo Animado Ultra-Llamativo */}
       <div className="fixed inset-0 -z-20 overflow-hidden bg-background">
-        {/* Capa de Patrón Institucional */}
-        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] dark:bg-[radial-gradient(#1e293b_1px,transparent_1px)] [background-size:32px_32px] opacity-40" />
+        {/* Capa de Patrón Geométrico Sofisticado */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
         
-        {/* Esferas de Color con Animación Orgánica */}
-        <div className="absolute top-[-10%] -left-[10%] w-[70%] h-[70%] bg-blue-400/15 dark:bg-blue-600/10 rounded-full filter blur-[120px] animate-pulse-slow" />
-        <div className="absolute bottom-[-10%] -right-[10%] w-[80%] h-[80%] bg-primary/15 dark:bg-primary/10 rounded-full filter blur-[120px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-[20%] right-[-5%] w-[45%] h-[45%] bg-indigo-400/15 dark:bg-indigo-600/10 rounded-full filter blur-[100px] animate-pulse-slow" style={{ animationDelay: '4s' }} />
-        <div className="absolute bottom-[15%] left-[5%] w-[50%] h-[50%] bg-violet-400/15 dark:bg-violet-600/10 rounded-full filter blur-[110px] animate-pulse-slow" style={{ animationDelay: '1s' }} />
+        {/* Malla de Gradientes Dinámicos (Aurora Effect) */}
+        <div className="absolute -top-[10%] -left-[10%] w-[120%] h-[120%] blur-[120px] opacity-60 dark:opacity-40">
+          <div className="absolute top-[10%] left-[10%] w-[40%] h-[40%] bg-blue-400/40 dark:bg-blue-600/20 rounded-full animate-pulse-slow" />
+          <div className="absolute top-[40%] right-[10%] w-[50%] h-[50%] bg-indigo-500/30 dark:bg-primary/20 rounded-full animate-pulse-slow" style={{ animationDelay: '3s' }} />
+          <div className="absolute bottom-[10%] left-[20%] w-[45%] h-[45%] bg-violet-400/40 dark:bg-violet-600/20 rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
+          <div className="absolute top-[20%] left-[50%] w-[30%] h-[30%] bg-cyan-300/30 dark:bg-cyan-600/10 rounded-full animate-pulse-slow" style={{ animationDelay: '4.5s' }} />
+        </div>
+
+        {/* Efecto de Destellos (Sparkles) */}
+        <div className="absolute inset-0 opacity-40 pointer-events-none">
+          <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-white rounded-full animate-pulse shadow-[0_0_8px_white]" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-white rounded-full animate-pulse shadow-[0_0_8px_white]" style={{ animationDelay: '1.2s' }} />
+          <div className="absolute bottom-1/4 left-1/2 w-1.5 h-1.5 bg-white rounded-full animate-pulse shadow-[0_0_10px_white]" style={{ animationDelay: '2.5s' }} />
+          <div className="absolute top-2/3 left-1/3 w-1 h-1 bg-white rounded-full animate-pulse shadow-[0_0_8px_white]" style={{ animationDelay: '3.1s' }} />
+          <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-white rounded-full animate-pulse shadow-[0_0_8px_white]" style={{ animationDelay: '0.8s' }} />
+        </div>
+
+        {/* Viñeta de Profundidad */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,hsl(var(--background))_90%)]" />
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
