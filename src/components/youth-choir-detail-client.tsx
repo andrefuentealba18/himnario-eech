@@ -1,9 +1,10 @@
+
 "use client";
 
 import type { YouthChoir } from '@/lib/youth-choirs';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut, Share2 } from 'lucide-react';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { YouthChoirAdminActions } from './youth-choir-admin-actions';
@@ -109,6 +110,13 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
     return await handleUpdate({ ...restOfYouthChoir, tone: newTone });
   }, [youthChoir, handleUpdate]);
 
+  const handleShare = useCallback(() => {
+    if (!youthChoir) return;
+    const text = `*Alabanza (${youthChoir.group}): ${youthChoir.title}*\n\n${youthChoir.lyrics}\n\n_Enviado desde Himnario EECH Móvil_`;
+    const shareUrl = `whatsapp://send?text=${encodeURIComponent(text)}`;
+    window.open(shareUrl, '_blank');
+  }, [youthChoir]);
+
   useEffect(() => {
     if (isYouthChoirsLoaded && !youthChoir) {
       return;
@@ -179,6 +187,10 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
               <span className="sr-only">Reducir texto</span>
             </Button>
             <YouthChoirAdminActions youthChoir={youthChoir} onDelete={handleDelete} onUpdate={handleUpdate} />
+            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700 hover:bg-green-50">
+              <Share2 className="h-5 w-5" />
+              <span className="sr-only">Compartir en WhatsApp</span>
+            </Button>
             <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10">
               <ZoomIn className="h-5 w-5" />
               <span className="sr-only">Aumentar texto</span>

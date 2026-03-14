@@ -1,8 +1,10 @@
+
 import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Music, Book, Mic, Church, Library } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { GlobalSearch } from '@/components/global-search';
+import { FeaturedHymn } from '@/components/featured-hymn';
 
 const navigationItems = [
   {
@@ -30,7 +32,7 @@ const navigationItems = [
     delay: "0.4s"
   },
   {
-    title: "Alabanzas de Agrupaciones",
+    title: "Agrupaciones",
     href: "/youth-choirs",
     icon: Library,
     color: "bg-orange-50",
@@ -58,7 +60,7 @@ export default function HomePage() {
         <main className="container max-w-2xl mx-auto flex-1 flex flex-col items-center justify-center p-6">
           
           {/* Header Institucional */}
-          <header className="w-full text-center space-y-2 mb-10 animate-in fade-in slide-in-from-top-4 duration-700">
+          <header className="w-full text-center space-y-2 mb-8 animate-in fade-in slide-in-from-top-4 duration-700">
             <div className="inline-flex items-center justify-center p-4 bg-white rounded-3xl mb-4 shadow-sm border border-slate-100 animate-float">
               <Church className="h-10 w-10 text-primary" />
             </div>
@@ -73,9 +75,12 @@ export default function HomePage() {
           </header>
 
           {/* Buscador Global Moderno */}
-          <div className="w-full max-w-lg mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+          <div className="w-full max-w-lg mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
             <GlobalSearch />
           </div>
+
+          {/* Himno del Día */}
+          <FeaturedHymn />
           
           {/* Cuadrícula 2x2 Oficial */}
           <div className="grid grid-cols-2 gap-4 w-full max-w-lg">
@@ -83,11 +88,11 @@ export default function HomePage() {
               <div key={item.title} className="animate-in fade-in zoom-in-95 duration-500" style={{ animationDelay: item.delay }}>
                 <Link href={item.href} className="group block h-full">
                   <Card className="h-full border-slate-200/60 bg-white/80 backdrop-blur-sm hover:bg-white transition-all duration-300 hover:shadow-md hover:-translate-y-1 active:scale-95 overflow-hidden relative shadow-sm border-2">
-                    <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[150px]">
+                    <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[140px]">
                       <div className={`p-4 rounded-2xl ${item.color} mb-4 group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
                         <item.icon className={`h-7 w-7 ${item.iconColor}`} />
                       </div>
-                      <h3 className="font-bold text-xs md:text-sm uppercase tracking-wider font-body text-slate-800 group-hover:text-primary transition-colors leading-tight px-2">
+                      <h3 className="font-bold text-[10px] md:text-xs uppercase tracking-wider font-body text-slate-800 group-hover:text-primary transition-colors leading-tight px-2">
                         {item.title}
                       </h3>
                     </CardContent>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Hymn } from '@/lib/hymns';
@@ -8,7 +9,7 @@ import { useFavorites } from '@/hooks/use-favorites';
 import { useFontSize } from '@/hooks/use-font-size';
 import { Button } from '@/components/ui/button';
 import { HymnAdminActions } from '@/components/hymn-admin-actions';
-import { Star, ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
+import { Star, ChevronLeft, ZoomIn, ZoomOut, Share2 } from 'lucide-react';
 import { useCallback } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -97,6 +98,13 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
     return await handleUpdate({ ...restOfHymn, tone: newTone });
   }, [hymn, handleUpdate]);
 
+  const handleShare = useCallback(() => {
+    if (!hymn) return;
+    const text = `*Himno #${hymn.number}: ${hymn.title}*\n\n${hymn.lyrics}\n\n_Enviado desde Himnario EECH Móvil_`;
+    const shareUrl = `whatsapp://send?text=${encodeURIComponent(text)}`;
+    window.open(shareUrl, '_blank');
+  }, [hymn]);
+
   if (!isHymnsLoaded || !hymn) {
     return <HymnDetailSkeleton />;
   }
@@ -163,6 +171,10 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
               <span className="sr-only">Reducir texto</span>
             </Button>
             <HymnAdminActions hymn={hymn} onDelete={handleDelete} onUpdate={handleUpdate} />
+            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700 hover:bg-green-50">
+              <Share2 className="h-5 w-5" />
+              <span className="sr-only">Compartir en WhatsApp</span>
+            </Button>
             <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10">
               <ZoomIn className="h-5 w-5" />
               <span className="sr-only">Aumentar texto</span>

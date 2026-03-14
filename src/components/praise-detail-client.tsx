@@ -1,9 +1,10 @@
+
 "use client";
 
 import type { Praise } from '@/lib/praises';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ZoomIn, ZoomOut } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut, Share2 } from 'lucide-react';
 import { usePraises } from '@/context/praises-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PraiseAdminActions } from './praise-admin-actions';
@@ -35,9 +36,7 @@ const fontSizes = [
   'text-4xl',  // 36px
   'text-5xl',  // 48px
   'text-6xl',  // 60px
-  'text-7xl',  // 72px,
-  'text-8xl',
-  'text-9xl',
+  'text-7xl',  // 72px
 ];
 
 function PraiseDetailSkeleton() {
@@ -113,6 +112,13 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     const { id, ...restOfPraise } = praise;
     return await handleUpdate({ ...restOfPraise, tone: newTone });
   }, [praise, handleUpdate]);
+
+  const handleShare = useCallback(() => {
+    if (!praise) return;
+    const text = `*Alabanza: ${praise.title}*\n\n${praise.lyrics}\n\n_Enviado desde Himnario EECH Móvil_`;
+    const shareUrl = `whatsapp://send?text=${encodeURIComponent(text)}`;
+    window.open(shareUrl, '_blank');
+  }, [praise]);
   
   useEffect(() => {
     if (isPraisesLoaded && !praise) {
@@ -184,6 +190,10 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
               <span className="sr-only">Reducir texto</span>
             </Button>
             <PraiseAdminActions praise={praise} onUpdate={handleUpdate} onDelete={handleDelete} />
+            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700 hover:bg-green-50">
+              <Share2 className="h-5 w-5" />
+              <span className="sr-only">Compartir en WhatsApp</span>
+            </Button>
             <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10">
               <ZoomIn className="h-5 w-5" />
               <span className="sr-only">Aumentar texto</span>
