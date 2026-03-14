@@ -147,6 +147,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
             </Button>
             <div className="text-center px-2 overflow-hidden flex-1">
                 <div className="flex items-center justify-center gap-2">
+                    <h1 className="font-headline text-lg font-bold text-primary truncate">{praise.title}</h1>
                     <Button 
                       variant="ghost" 
                       size="icon" 
@@ -155,7 +156,6 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
                     >
                       <Printer className="h-5 w-5" />
                     </Button>
-                    <h1 className="font-headline text-lg font-bold text-primary truncate">{praise.title}</h1>
                 </div>
                 <div className="flex items-center justify-center gap-2 mt-2">
                     <EditToneDialog song={praise} onToneUpdated={handleToneUpdate}>
