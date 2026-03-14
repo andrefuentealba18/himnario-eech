@@ -145,7 +145,6 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
         </Button>
         <div className="text-center px-2 overflow-hidden flex-1">
             <div className="flex items-center justify-center gap-2">
-                <h1 className="font-headline text-lg font-bold text-primary truncate">{choir.title}</h1>
                 <Button 
                   variant="ghost" 
                   size="icon" 
@@ -154,6 +153,7 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
                 >
                   <Printer className="h-5 w-5" />
                 </Button>
+                <h1 className="font-headline text-lg font-bold text-primary truncate">{choir.title}</h1>
             </div>
             <div className="flex items-center justify-center gap-2 mt-2">
                 <EditToneDialog song={choir} onToneUpdated={handleToneUpdate}>

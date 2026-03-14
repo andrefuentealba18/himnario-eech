@@ -120,7 +120,6 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
         </Button>
         <div className="text-center px-2 overflow-hidden flex-1">
             <div className="flex items-center justify-center gap-2">
-                <h1 className="font-headline text-lg font-bold text-primary truncate">{hymn.title}</h1>
                 <Button 
                   variant="ghost" 
                   size="icon" 
@@ -129,6 +128,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
                 >
                   <Printer className="h-5 w-5" />
                 </Button>
+                <h1 className="font-headline text-lg font-bold text-primary truncate">{hymn.title}</h1>
             </div>
             <div className="flex items-center justify-center gap-2 mt-2">
                 <p className="text-sm font-semibold text-muted-foreground px-3 py-1 bg-muted rounded-full">
