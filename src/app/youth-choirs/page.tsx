@@ -20,10 +20,11 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import type { GroupType } from '@/lib/youth-choirs';
+import { cn } from '@/lib/utils';
 
 const groups: { name: GroupType; icon?: any; imageUrl?: string; color: string; iconColor?: string }[] = [
   { name: "Coro Juventud", icon: Users, color: "bg-blue-100", iconColor: "text-blue-600" },
-  { name: "Grupo Ciclista", imageUrl: "https://i.postimg.cc/QtWZZ88d/Imagen1.png", color: "bg-green-100" },
+  { name: "Grupo Ciclista", imageUrl: "https://i.postimg.cc/QtWZZ88d/Imagen1.png", color: "bg-transparent" },
   { name: "Departamento Infantil", icon: Baby, color: "bg-rose-100", iconColor: "text-rose-600" },
   { name: "Clase Dorcas", icon: UserCircle, color: "bg-purple-100", iconColor: "text-purple-600" },
   { name: "Departamento Juvenil", icon: Users, color: "bg-orange-100", iconColor: "text-orange-600" },
@@ -137,14 +138,18 @@ export default function YouthChoirsIndexPage() {
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <CardContent className="p-6 flex flex-col items-center text-center gap-4">
-                        <div className={`p-4 rounded-2xl ${group.color} transition-transform duration-500 group-hover:scale-110 shadow-inner w-16 h-16 flex items-center justify-center overflow-hidden`}>
+                        <div className={cn(
+                          "transition-transform duration-500 group-hover:scale-110 flex items-center justify-center overflow-hidden",
+                          group.imageUrl ? "w-24 h-24 p-0" : `w-16 h-16 p-4 rounded-2xl shadow-inner ${group.color}`
+                        )}>
                           {group.imageUrl ? (
                             <Image 
                               src={group.imageUrl} 
                               alt={group.name} 
-                              width={40} 
-                              height={40} 
+                              width={96} 
+                              height={96} 
                               className="object-contain w-full h-full"
+                              priority
                               data-ai-hint="group logo"
                             />
                           ) : (
