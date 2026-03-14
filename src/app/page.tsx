@@ -4,7 +4,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Music, Book, Mic, Church, Library } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { GlobalSearch } from '@/components/global-search';
-import { FeaturedHymn } from '@/components/featured-hymn';
 
 const navigationItems = [
   {
@@ -75,12 +74,9 @@ export default function HomePage() {
           </header>
 
           {/* Buscador Global Moderno */}
-          <div className="w-full max-w-lg mb-6 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+          <div className="w-full max-w-lg mb-10 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
             <GlobalSearch />
           </div>
-
-          {/* Himno del Día */}
-          <FeaturedHymn />
           
           {/* Cuadrícula 2x2 Oficial */}
           <div className="grid grid-cols-2 gap-4 w-full max-w-lg">
