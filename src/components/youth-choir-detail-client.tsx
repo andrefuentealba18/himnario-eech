@@ -3,6 +3,7 @@
 
 import type { YouthChoir } from '@/lib/youth-choirs';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut, Share2 } from 'lucide-react';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
@@ -38,6 +39,11 @@ const fontSizes = [
   'text-6xl',  // 60px
   'text-7xl',  // 72px
 ];
+
+const groupLogos: Record<string, string> = {
+  "Grupo Ciclista": "https://i.postimg.cc/QtWZZ88d/Imagen1.png",
+  "Coro Juventud": "https://i.postimg.cc/bvk974Xp/IMG_2532.jpg",
+};
 
 function YouthChoirDetailSkeleton() {
     return (
@@ -82,6 +88,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
   const backHref = from === 'admin' ? '/admin?tab=more-settings' : '/youth-choirs';
 
   const youthChoir = getYouthChoirById(youthChoirId);
+  const groupLogo = youthChoir ? groupLogos[youthChoir.group] : null;
 
   const handleDelete = useCallback(() => {
     if (!youthChoir) return;
@@ -167,8 +174,22 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
         <div className="w-12 h-12" />
       </header>
 
-      <main className="flex-1 py-8 px-4 flex flex-col justify-center items-center">
-        <div className="w-full max-w-3xl bg-background/60 backdrop-blur-lg border rounded-2xl p-6 sm:p-10 shadow-xl">
+      <main className="flex-1 py-8 px-4 flex flex-col justify-center items-center relative overflow-hidden">
+        
+        {/* Marca de agua transparente del logo de la agrupación */}
+        {groupLogo && (
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 opacity-[0.05] dark:opacity-[0.03]">
+            <Image 
+              src={groupLogo} 
+              alt="Watermark" 
+              width={400} 
+              height={400} 
+              className="object-contain"
+            />
+          </div>
+        )}
+
+        <div className="w-full max-w-3xl bg-background/60 backdrop-blur-lg border rounded-2xl p-6 sm:p-10 shadow-xl relative">
           <div className={`font-body leading-loose text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
             {youthChoir.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
               const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
@@ -178,6 +199,33 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
                 </p>
               );
             })}
+          </div>
+
+          {/* Diseño bonito al final de la letra */}
+          <div className="mt-12 pt-8 border-t border-primary/10 flex flex-col items-center space-y-4">
+            {groupLogo && (
+              <div className="relative w-16 h-16 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+                <Image 
+                  src={groupLogo} 
+                  alt={youthChoir.group} 
+                  fill 
+                  className="object-contain"
+                />
+              </div>
+            )}
+            <div className="text-center">
+              <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground/60">
+                Alabanza de Agrupación
+              </p>
+              <p className="text-xs font-headline italic font-bold text-primary/40 mt-1">
+                {youthChoir.group}
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="h-px w-8 bg-gradient-to-r from-transparent to-primary/20" />
+              <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
+              <div className="h-px w-8 bg-gradient-to-l from-transparent to-primary/20" />
+            </div>
           </div>
         </div>
       </main>
