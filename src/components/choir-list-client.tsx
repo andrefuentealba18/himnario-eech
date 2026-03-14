@@ -1,7 +1,8 @@
+
 "use client";
 
 import type { Choir } from '@/lib/choirs';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useDeferredValue } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -30,35 +31,35 @@ const isNewSong = (createdAt: any) => {
 
 export function ChoirListClient({ choirs }: ChoirListClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const deferredSearchTerm = useDeferredValue(searchTerm);
   const [activeTab, setActiveTab] = useState('all');
 
+  // Indexar para búsqueda rápida
+  const indexedChoirs = useMemo(() => {
+    return choirs.map(c => ({
+      ...c,
+      _searchIndex: normalizeSearchTerm(`${c.title} ${c.lyrics} ${c.tone || ''}`)
+    }));
+  }, [choirs]);
+
   const filteredChoirs = useMemo(() => {
-    let listToFilter = choirs;
+    let listToFilter = indexedChoirs;
 
     if (activeTab === 'rapidos') {
-      listToFilter = choirs.filter(choir => choir.speed === 'Rapido');
+      listToFilter = indexedChoirs.filter(choir => choir.speed === 'Rapido');
     } else if (activeTab === 'lentos') {
-      listToFilter = choirs.filter(choir => choir.speed === 'Lento');
+      listToFilter = indexedChoirs.filter(choir => choir.speed === 'Lento');
     }
 
-    const normalizedSearch = normalizeSearchTerm(searchTerm);
+    const term = deferredSearchTerm.trim();
+    const normalizedSearch = normalizeSearchTerm(term);
 
     if (!normalizedSearch) {
       return listToFilter;
     }
 
-    return listToFilter.filter(choir => {
-        const normalizedTitle = normalizeSearchTerm(choir.title);
-        const normalizedLyrics = normalizeSearchTerm(choir.lyrics);
-        const normalizedTone = choir.tone ? normalizeSearchTerm(choir.tone) : '';
-        
-        return (
-            normalizedTitle.includes(normalizedSearch) ||
-            normalizedLyrics.includes(normalizedSearch) ||
-            normalizedTone.includes(normalizedSearch)
-        );
-    });
-  }, [searchTerm, choirs, activeTab]);
+    return listToFilter.filter(choir => choir._searchIndex.includes(normalizedSearch));
+  }, [deferredSearchTerm, indexedChoirs, activeTab]);
 
   return (
     <div className="space-y-4">
@@ -90,7 +91,7 @@ export function ChoirListClient({ choirs }: ChoirListClientProps) {
   );
 }
 
-function SimpleChoirRoll({ choirs }: { choirs: Choir[] }) {
+function SimpleChoirRoll({ choirs }: { choirs: (Choir & { _searchIndex?: string })[] }) {
   if (choirs.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-10">
@@ -128,9 +129,9 @@ function SimpleChoirRoll({ choirs }: { choirs: Choir[] }) {
   );
 }
 
-function GroupedChoirRoll({ choirs }: { choirs: Choir[] }) {
+function GroupedChoirRoll({ choirs }: { choirs: (Choir & { _searchIndex?: string })[] }) {
   const groupedChoirs = useMemo(() => {
-    const groups: Record<string, Choir[]> = {};
+    const groups: Record<string, typeof choirs> = {};
 
     choirs.forEach(choir => {
       const tone = choir.tone || 'Tonalidad no especificada';

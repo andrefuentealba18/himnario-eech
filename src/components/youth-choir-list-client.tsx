@@ -2,7 +2,7 @@
 "use client";
 
 import type { YouthChoir } from '@/lib/youth-choirs';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useDeferredValue } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -31,35 +31,35 @@ const isNewSong = (createdAt: any) => {
 
 export function YouthChoirListClient({ youthChoirs }: YouthChoirListClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const deferredSearchTerm = useDeferredValue(searchTerm);
   const [activeTab, setActiveTab] = useState('all');
 
+  // Indexar para búsqueda rápida
+  const indexedYouthChoirs = useMemo(() => {
+    return youthChoirs.map(yc => ({
+      ...yc,
+      _searchIndex: normalizeSearchTerm(`${yc.title} ${yc.lyrics} ${yc.tone || ''} ${yc.group}`)
+    }));
+  }, [youthChoirs]);
+
   const filteredYouthChoirs = useMemo(() => {
-    let listToFilter = youthChoirs;
+    let listToFilter = indexedYouthChoirs;
 
     if (activeTab === 'rapidos') {
-      listToFilter = youthChoirs.filter(yc => yc.speed === 'Rapido');
+      listToFilter = indexedYouthChoirs.filter(yc => yc.speed === 'Rapido');
     } else if (activeTab === 'lentos') {
-      listToFilter = youthChoirs.filter(yc => yc.speed === 'Lento');
+      listToFilter = indexedYouthChoirs.filter(yc => yc.speed === 'Lento');
     }
 
-    const normalizedSearch = normalizeSearchTerm(searchTerm);
+    const term = deferredSearchTerm.trim();
+    const normalizedSearch = normalizeSearchTerm(term);
 
     if (!normalizedSearch) {
       return listToFilter;
     }
 
-    return listToFilter.filter(praise => {
-        const normalizedTitle = normalizeSearchTerm(praise.title);
-        const normalizedLyrics = normalizeSearchTerm(praise.lyrics);
-        const normalizedTone = praise.tone ? normalizeSearchTerm(praise.tone) : '';
-
-        return (
-          normalizedTitle.includes(normalizedSearch) ||
-          normalizedLyrics.includes(normalizedSearch) ||
-          normalizedTone.includes(normalizedSearch)
-        );
-    });
-  }, [searchTerm, youthChoirs, activeTab]);
+    return listToFilter.filter(yc => yc._searchIndex.includes(normalizedSearch));
+  }, [deferredSearchTerm, indexedYouthChoirs, activeTab]);
 
   return (
     <div className="space-y-4">
@@ -91,7 +91,7 @@ export function YouthChoirListClient({ youthChoirs }: YouthChoirListClientProps)
   );
 }
 
-function SimpleYouthChoirRoll({ youthChoirs }: { youthChoirs: YouthChoir[] }) {
+function SimpleYouthChoirRoll({ youthChoirs }: { youthChoirs: (YouthChoir & { _searchIndex?: string })[] }) {
   if (youthChoirs.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-10">
@@ -129,9 +129,9 @@ function SimpleYouthChoirRoll({ youthChoirs }: { youthChoirs: YouthChoir[] }) {
   );
 }
 
-function GroupedYouthChoirRoll({ youthChoirs }: { youthChoirs: YouthChoir[] }) {
+function GroupedYouthChoirRoll({ youthChoirs }: { youthChoirs: (YouthChoir & { _searchIndex?: string })[] }) {
   const grouped = useMemo(() => {
-    const groups: Record<string, YouthChoir[]> = {};
+    const groups: Record<string, typeof youthChoirs> = {};
 
     youthChoirs.forEach(yc => {
       const tone = yc.tone || 'Tonalidad no especificada';

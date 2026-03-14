@@ -1,7 +1,8 @@
+
 "use client";
 
 import type { Hymn } from '@/lib/hymns';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useDeferredValue } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -25,35 +26,34 @@ const isNewSong = (createdAt: any) => {
 
 export function HymnListClient({ hymns }: HymnListClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const deferredSearchTerm = useDeferredValue(searchTerm);
   const [activeTab, setActiveTab] = useState('all');
   const { favorites, isLoaded } = useFavorites();
 
+  // Indexar himnos para búsqueda rápida
+  const indexedHymns = useMemo(() => {
+    return hymns.map(h => ({
+      ...h,
+      _searchIndex: normalizeSearchTerm(`${h.title} ${h.number} ${h.lyrics} ${h.tone || ''}`)
+    }));
+  }, [hymns]);
+
   const filteredHymns = useMemo(() => {
-    const normalizedSearch = normalizeSearchTerm(searchTerm);
+    const term = deferredSearchTerm.trim();
+    const normalizedSearch = normalizeSearchTerm(term);
     
-    let listToFilter = hymns;
+    let listToFilter = indexedHymns;
     if (activeTab === 'favorites') {
       if (!isLoaded) return [];
-      listToFilter = hymns.filter(hymn => favorites.has(hymn.number));
+      listToFilter = indexedHymns.filter(hymn => favorites.has(hymn.number));
     }
 
     if (!normalizedSearch) {
       return listToFilter;
     }
 
-    return listToFilter.filter(hymn => {
-        const normalizedTitle = normalizeSearchTerm(hymn.title);
-        const normalizedLyrics = normalizeSearchTerm(hymn.lyrics);
-        const normalizedTone = hymn.tone ? normalizeSearchTerm(hymn.tone) : '';
-        
-        return (
-            normalizedTitle.includes(normalizedSearch) ||
-            hymn.number.toString().includes(normalizedSearch) ||
-            normalizedLyrics.includes(normalizedSearch) ||
-            normalizedTone.includes(normalizedSearch)
-        );
-    });
-  }, [searchTerm, hymns, activeTab, favorites, isLoaded]);
+    return listToFilter.filter(hymn => hymn._searchIndex.includes(normalizedSearch));
+  }, [deferredSearchTerm, indexedHymns, activeTab, favorites, isLoaded]);
 
   return (
     <div className="space-y-4">
@@ -97,7 +97,7 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
   );
 }
 
-function HymnRoll({ hymns }: { hymns: Hymn[] }) {
+function HymnRoll({ hymns }: { hymns: (Hymn & { _searchIndex?: string })[] }) {
   if (hymns.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-10">

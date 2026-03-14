@@ -1,7 +1,8 @@
+
 "use client";
 
 import type { Praise } from '@/lib/praises';
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useDeferredValue } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
@@ -30,35 +31,35 @@ const isNewSong = (createdAt: any) => {
 
 export function PraiseListClient({ praises }: PraiseListClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
+  const deferredSearchTerm = useDeferredValue(searchTerm);
   const [activeTab, setActiveTab] = useState('all');
 
+  // Indexar para búsqueda rápida
+  const indexedPraises = useMemo(() => {
+    return praises.map(p => ({
+      ...p,
+      _searchIndex: normalizeSearchTerm(`${p.title} ${p.lyrics} ${p.tone || ''}`)
+    }));
+  }, [praises]);
+
   const filteredPraises = useMemo(() => {
-    let listToFilter = praises;
+    let listToFilter = indexedPraises;
 
     if (activeTab === 'rapidos') {
-      listToFilter = praises.filter(praise => praise.speed === 'Rapido');
+      listToFilter = indexedPraises.filter(praise => praise.speed === 'Rapido');
     } else if (activeTab === 'lentos') {
-      listToFilter = praises.filter(praise => praise.speed === 'Lento');
+      listToFilter = indexedPraises.filter(praise => praise.speed === 'Lento');
     }
 
-    const normalizedSearch = normalizeSearchTerm(searchTerm);
+    const term = deferredSearchTerm.trim();
+    const normalizedSearch = normalizeSearchTerm(term);
 
     if (!normalizedSearch) {
       return listToFilter;
     }
 
-    return listToFilter.filter(praise => {
-        const normalizedTitle = normalizeSearchTerm(praise.title);
-        const normalizedLyrics = normalizeSearchTerm(praise.lyrics);
-        const normalizedTone = praise.tone ? normalizeSearchTerm(praise.tone) : '';
-        
-        return (
-            normalizedTitle.includes(normalizedSearch) ||
-            normalizedLyrics.includes(normalizedSearch) ||
-            normalizedTone.includes(normalizedSearch)
-        );
-    });
-  }, [searchTerm, praises, activeTab]);
+    return listToFilter.filter(praise => praise._searchIndex.includes(normalizedSearch));
+  }, [deferredSearchTerm, indexedPraises, activeTab]);
 
   return (
     <div className="space-y-4">
@@ -90,7 +91,7 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
   );
 }
 
-function SimplePraiseRoll({ praises }: { praises: Praise[] }) {
+function SimplePraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: string })[] }) {
   if (praises.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-10">
@@ -128,9 +129,9 @@ function SimplePraiseRoll({ praises }: { praises: Praise[] }) {
   );
 }
 
-function GroupedPraiseRoll({ praises }: { praises: Praise[] }) {
+function GroupedPraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: string })[] }) {
   const groupedPraises = useMemo(() => {
-    const groups: Record<string, Praise[]> = {};
+    const groups: Record<string, typeof praises> = {};
 
     praises.forEach(praise => {
       const tone = praise.tone || 'Tonalidad no especificada';

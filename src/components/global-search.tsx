@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useDeferredValue } from 'react';
 import { useRouter } from 'next/navigation';
 import { useHymns } from '@/context/hymns-context';
 import { usePraises } from '@/context/praises-context';
@@ -21,6 +21,7 @@ type Song = {
   number?: number;
   type: 'hymn' | 'praise' | 'choir' | 'youth-choir';
   groupLabel?: string;
+  _searchIndex?: string;
 };
 
 const categoryIcons = {
@@ -47,6 +48,7 @@ const categoryHrefs = {
 export function GlobalSearch() {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  const deferredSearchTerm = useDeferredValue(searchTerm);
   const [isOpen, setIsOpen] = useState(false);
 
   const { hymns, isLoaded: hymnsLoaded } = useHymns();
@@ -56,37 +58,31 @@ export function GlobalSearch() {
 
   const isLoaded = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded;
 
+  // Pre-calcular el índice de búsqueda para cada canción una sola vez al cargar los datos
   const allSongs: Song[] = useMemo(() => {
     if (!isLoaded) return [];
-    return [
+    const base = [
       ...hymns.map(h => ({ ...h, id: h.number, type: 'hymn' as const })),
       ...praises.map(p => ({ ...p, type: 'praise' as const })),
       ...choirs.map(c => ({ ...c, type: 'choir' as const })),
       ...youthChoirs.map(yc => ({ ...yc, type: 'youth-choir' as const, groupLabel: yc.group }))
     ];
+
+    return base.map(song => ({
+      ...song,
+      _searchIndex: normalizeSearchTerm(`${song.title} ${song.number || ''} ${song.lyrics} ${song.tone || ''} ${song.groupLabel || ''}`)
+    }));
   }, [hymns, praises, choirs, youthChoirs, isLoaded]);
 
   const filteredSongs = useMemo(() => {
-    if (!searchTerm) return [];
+    const term = deferredSearchTerm.trim();
+    if (term.length < 2) return [];
 
-    const normalizedSearch = normalizeSearchTerm(searchTerm);
-    if (normalizedSearch.length < 2) return [];
-
-    return allSongs.filter(song => {
-      const normalizedTitle = normalizeSearchTerm(song.title);
-      const normalizedLyrics = normalizeSearchTerm(song.lyrics);
-      const normalizedTone = song.tone ? normalizeSearchTerm(song.tone) : '';
-      const normalizedGroup = song.groupLabel ? normalizeSearchTerm(song.groupLabel) : '';
-      
-      return (
-        normalizedTitle.includes(normalizedSearch) ||
-        (song.number && song.number.toString().includes(normalizedSearch)) ||
-        normalizedLyrics.includes(normalizedSearch) ||
-        normalizedTone.includes(normalizedSearch) ||
-        normalizedGroup.includes(normalizedSearch)
-      );
-    }).slice(0, 50); // Limit results to avoid performance issues
-  }, [searchTerm, allSongs]);
+    const normalizedSearch = normalizeSearchTerm(term);
+    return allSongs.filter(song => 
+      song._searchIndex?.includes(normalizedSearch)
+    ).slice(0, 50);
+  }, [deferredSearchTerm, allSongs]);
 
   useEffect(() => {
     if (searchTerm.length > 1) {
