@@ -43,37 +43,41 @@ const navigationItems = [
 export default function HomePage() {
   return (
     <div className="relative min-h-screen w-full bg-background text-foreground overflow-x-hidden font-body transition-colors duration-1000">
-      {/* Fondo Animado Ultra-Llamativo */}
-      <div className="fixed inset-0 -z-20 overflow-hidden bg-background">
-        {/* Capa de Patrón Geométrico Sofisticado */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] opacity-30" />
+      {/* Fondo Artístico Ultra-Creativo */}
+      <div className="fixed inset-0 -z-20 overflow-hidden bg-white dark:bg-background">
         
-        {/* Malla de Gradientes Dinámicos (Aurora Effect) con Colores Mejorados */}
-        <div className="absolute -top-[10%] -left-[10%] w-[120%] h-[120%] blur-[120px] opacity-70 dark:opacity-50">
-          {/* Azul Profundo */}
-          <div className="absolute top-[5%] left-[10%] w-[45%] h-[45%] bg-blue-600/40 dark:bg-blue-900/30 rounded-full animate-pulse-slow" />
+        {/* Capa 1: Patrón de Micro-Puntos Elegante (Textura de Papel Fino) */}
+        <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] opacity-40 dark:opacity-10" />
+        
+        {/* Capa 2: Malla de Colores "Amanecer Celestial" (Mesh Gradient mejorado) */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Azul Cielo - Esquina Superior Izquierda */}
+          <div className="absolute -top-[10%] -left-[10%] w-[60%] h-[60%] bg-sky-200/40 dark:bg-blue-900/30 blur-[120px] rounded-full animate-pulse-slow" />
           
-          {/* Amatista / Violeta */}
-          <div className="absolute top-[35%] right-[5%] w-[55%] h-[55%] bg-fuchsia-500/25 dark:bg-purple-800/20 rounded-full animate-pulse-slow" style={{ animationDelay: '3s' }} />
+          {/* Oro Suave / Ámbar - Centro Derecha */}
+          <div className="absolute top-[20%] -right-[5%] w-[50%] h-[50%] bg-amber-100/30 dark:bg-amber-600/10 blur-[100px] rounded-full animate-pulse-slow" style={{ animationDelay: '2s' }} />
           
-          {/* Oro Celestial / Ámbar */}
-          <div className="absolute bottom-[5%] left-[15%] w-[50%] h-[50%] bg-amber-400/20 dark:bg-amber-600/15 rounded-full animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
+          {/* Rosa Etéreo - Parte Inferior */}
+          <div className="absolute -bottom-[10%] left-[20%] w-[70%] h-[50%] bg-rose-100/30 dark:bg-purple-900/20 blur-[130px] rounded-full animate-pulse-slow" style={{ animationDelay: '4s' }} />
           
-          {/* Turquesa / Esmeralda */}
-          <div className="absolute top-[15%] left-[45%] w-[35%] h-[35%] bg-teal-400/20 dark:bg-emerald-700/10 rounded-full animate-pulse-slow" style={{ animationDelay: '4.5s' }} />
+          {/* Verde Menta / Turquesa - Esquina Superior Derecha */}
+          <div className="absolute -top-[5%] right-[15%] w-[40%] h-[40%] bg-emerald-50/40 dark:bg-teal-900/10 blur-[90px] rounded-full animate-pulse-slow" style={{ animationDelay: '1s' }} />
         </div>
 
-        {/* Efecto de Destellos (Sparkles) */}
-        <div className="absolute inset-0 opacity-50 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-1 h-1 bg-white rounded-full animate-pulse shadow-[0_0_8px_white]" style={{ animationDelay: '0.5s' }} />
-          <div className="absolute top-1/3 right-1/4 w-1 h-1 bg-white rounded-full animate-pulse shadow-[0_0_8px_white]" style={{ animationDelay: '1.2s' }} />
-          <div className="absolute bottom-1/4 left-1/2 w-1.5 h-1.5 bg-white rounded-full animate-pulse shadow-[0_0_10px_white]" style={{ animationDelay: '2.5s' }} />
-          <div className="absolute top-2/3 left-1/3 w-1 h-1 bg-white rounded-full animate-pulse shadow-[0_0_8px_white]" style={{ animationDelay: '3.1s' }} />
-          <div className="absolute top-1/2 right-1/3 w-1 h-1 bg-white rounded-full animate-pulse shadow-[0_0_8px_white]" style={{ animationDelay: '0.8s' }} />
+        {/* Capa 3: Destellos de Luz (Partículas mágicas) */}
+        <div className="absolute inset-0 opacity-100">
+          {/* Partícula 1 */}
+          <div className="absolute top-1/4 left-[15%] w-2 h-2 bg-blue-400/20 dark:bg-white rounded-full blur-[1px] animate-float" style={{ animationDuration: '7s' }} />
+          {/* Partícula 2 */}
+          <div className="absolute top-1/3 right-[10%] w-1.5 h-1.5 bg-amber-400/20 dark:bg-white rounded-full blur-[1px] animate-float" style={{ animationDuration: '9s', animationDelay: '1s' }} />
+          {/* Partícula 3 */}
+          <div className="absolute bottom-1/4 left-1/2 w-3 h-3 bg-rose-400/10 dark:bg-white rounded-full blur-[2px] animate-float" style={{ animationDuration: '11s', animationDelay: '2s' }} />
+          {/* Partícula 4 */}
+          <div className="absolute top-[10%] left-[45%] w-1 h-1 bg-sky-400/30 dark:bg-white rounded-full blur-[0.5px] animate-float" style={{ animationDuration: '6s', animationDelay: '0.5s' }} />
         </div>
 
-        {/* Viñeta de Profundidad para mayor enfoque central */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,hsl(var(--background))_95%)]" />
+        {/* Capa 4: Viñeta Radial para Enfoque Central */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(255,255,255,0.4)_70%,white_100%)] dark:bg-[radial-gradient(circle_at_center,transparent_0%,hsl(var(--background))_95%)]" />
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
@@ -84,65 +88,71 @@ export default function HomePage() {
 
         <main className="container max-w-2xl mx-auto flex-1 flex flex-col items-center justify-center p-6">
           
-          {/* Header Institucional */}
-          <header className="w-full text-center space-y-2 mb-8 animate-in fade-in slide-in-from-top-4 duration-1000">
-            <div className="inline-flex items-center justify-center p-4 bg-card rounded-3xl mb-4 shadow-sm border border-slate-100 dark:border-white/5 animate-float backdrop-blur-md">
-              <Church className="h-10 w-10 text-primary dark:text-blue-400" />
+          {/* Header Institucional con Efecto de Vidrio */}
+          <header className="w-full text-center space-y-2 mb-10 animate-in fade-in slide-in-from-top-4 duration-1000">
+            <div className="inline-flex items-center justify-center p-5 bg-white/40 dark:bg-card/60 backdrop-blur-xl rounded-[2.5rem] mb-6 shadow-xl shadow-blue-500/5 border border-white/60 dark:border-white/5 animate-float transition-all duration-1000">
+              <Church className="h-12 w-12 text-primary dark:text-blue-400 drop-shadow-sm" />
             </div>
             <div className="space-y-1">
-              <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tight text-foreground">
-                Himnario <span className="text-primary dark:text-blue-400">EECH</span>
+              <h1 className="text-4xl md:text-6xl font-bold font-headline tracking-tighter text-slate-900 dark:text-foreground">
+                Himnario <span className="text-primary dark:text-blue-400 bg-clip-text">EECH</span>
               </h1>
-              <p className="text-xs md:text-sm text-muted-foreground font-bold tracking-[0.3em] uppercase opacity-80">
-                Cancionero Digital
-              </p>
+              <div className="flex items-center justify-center gap-3">
+                <div className="h-px w-8 bg-slate-300 dark:bg-white/20" />
+                <p className="text-[10px] md:text-xs text-slate-500 dark:text-muted-foreground font-black tracking-[0.4em] uppercase">
+                  Cancionero Digital
+                </p>
+                <div className="h-px w-8 bg-slate-300 dark:bg-white/20" />
+              </div>
             </div>
           </header>
 
-          {/* Buscador Global Moderno */}
-          <div className="w-full max-w-lg mb-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-150">
+          {/* Buscador Global Moderno con Sombra Suave */}
+          <div className="w-full max-w-lg mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-150">
             <GlobalSearch />
           </div>
           
-          {/* Cuadrícula 2x2 Oficial */}
-          <div className="grid grid-cols-2 gap-4 w-full max-w-lg">
+          {/* Cuadrícula 2x2 Oficial con Hover Premium */}
+          <div className="grid grid-cols-2 gap-5 w-full max-w-lg">
             {navigationItems.map((item) => (
               <div key={item.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: item.delay }}>
                 <Link href={item.href} className="group block h-full">
-                  <Card className="h-full border-slate-200/60 dark:border-white/5 bg-card/60 dark:bg-white/[0.03] backdrop-blur-xl hover:bg-card transition-all duration-500 hover:shadow-xl dark:hover:shadow-blue-500/10 hover:-translate-y-1 active:scale-95 overflow-hidden relative shadow-sm border-2">
-                    <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[140px]">
-                      <div className={`p-4 rounded-2xl ${item.color} mb-4 group-hover:scale-110 transition-transform duration-500 shadow-inner`}>
-                        <item.icon className={`h-7 w-7 ${item.iconColor}`} />
+                  <Card className="h-full border-white/80 dark:border-white/5 bg-white/50 dark:bg-white/[0.03] backdrop-blur-2xl hover:bg-white/80 dark:hover:bg-card transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 active:scale-95 overflow-hidden relative shadow-md border-2">
+                    <CardContent className="flex flex-col items-center justify-center p-8 text-center h-full min-h-[160px]">
+                      <div className={`p-5 rounded-[1.5rem] ${item.color} mb-5 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-inner`}>
+                        <item.icon className={`h-8 w-8 ${item.iconColor}`} />
                       </div>
-                      <h3 className="font-bold text-[10px] md:text-xs uppercase tracking-wider font-body text-foreground group-hover:text-primary dark:group-hover:text-blue-400 transition-colors leading-tight px-2">
+                      <h3 className="font-black text-[11px] md:text-xs uppercase tracking-widest font-body text-slate-700 dark:text-foreground group-hover:text-primary dark:group-hover:text-blue-400 transition-colors leading-tight px-2">
                         {item.title}
                       </h3>
                     </CardContent>
+                    {/* Brillo decorativo en hover */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
                   </Card>
                 </Link>
               </div>
             ))}
           </div>
           
-          {/* Footer Institucional */}
-          <footer className="w-full text-center mt-12 pb-10 space-y-6 animate-in fade-in duration-1000 delay-500">
-            <div className="h-px w-16 bg-slate-300/50 dark:bg-white/10 mx-auto" />
+          {/* Footer Institucional Refinado */}
+          <footer className="w-full text-center mt-16 pb-10 space-y-8 animate-in fade-in duration-1000 delay-500">
+            <div className="h-px w-24 bg-gradient-to-r from-transparent via-slate-300 dark:via-white/10 to-transparent mx-auto" />
             
-            <div className="flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center gap-6">
               <SettingsDialog />
               
-              <div className="space-y-3 px-4">
+              <div className="space-y-4 px-4">
                 <div className="space-y-1">
-                  <p className="text-[10px] md:text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.25em] leading-relaxed">
+                  <p className="text-[10px] md:text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em] leading-relaxed">
                     Iglesia Ejército Evangélico de Chile
                   </p>
                 </div>
                 
-                <div className="space-y-1">
-                  <p className="text-[9px] text-muted-foreground/80 font-medium uppercase tracking-widest">
-                    © 2026 Todos los derechos reservados
+                <div className="space-y-2">
+                  <p className="text-[9px] text-slate-400/60 dark:text-muted-foreground/40 font-bold uppercase tracking-widest">
+                    © 2026 • Servir con Alegría
                   </p>
-                  <p className="text-[11px] text-primary/60 dark:text-blue-400/60 italic font-bold">
+                  <p className="text-sm font-headline italic font-bold text-primary/40 dark:text-blue-400/30">
                     "Alabaré a Jehová en mi vida"
                   </p>
                 </div>
