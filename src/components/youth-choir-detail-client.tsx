@@ -3,7 +3,6 @@
 
 import type { YouthChoir } from '@/lib/youth-choirs';
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut, Share2 } from 'lucide-react';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
@@ -15,7 +14,6 @@ import { useFontSize } from '@/hooks/use-font-size';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
 
 const slugify = (text: string): string =>
   text.toString().toLowerCase()
@@ -84,8 +82,6 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
   const backHref = from === 'admin' ? '/admin?tab=more-settings' : '/youth-choirs';
 
   const youthChoir = getYouthChoirById(youthChoirId);
-
-  const isCiclista = youthChoir?.group === 'Grupo Ciclista';
 
   const handleDelete = useCallback(() => {
     if (!youthChoir) return;
@@ -162,7 +158,9 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
                 </Button>
                 </EditToneDialog>
                 {youthChoir.speed && (
-                    <Badge variant="secondary" className="text-xs capitalize rounded-full px-3 py-1">{youthChoir.speed}</Badge>
+                    <Badge variant="secondary" className="text-xs capitalize rounded-full px-3 py-1">
+                      {youthChoir.speed === 'Rapido' ? 'Avivamiento' : 'Meditación'}
+                    </Badge>
                 )}
             </div>
         </div>
@@ -170,62 +168,16 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
       </header>
 
       <main className="flex-1 py-8 px-4 flex flex-col justify-center items-center">
-        <div className={cn(
-          "w-full max-w-3xl bg-background/60 backdrop-blur-lg border rounded-2xl shadow-xl overflow-hidden transition-all duration-500",
-          isCiclista && "bg-white dark:bg-slate-950 border-emerald-500/20 shadow-emerald-500/10 border-2"
-        )}>
-          {/* Header especial para Grupo Ciclista */}
-          {isCiclista && (
-            <div className="bg-emerald-50 dark:bg-emerald-900/20 p-6 flex flex-col items-center border-b border-emerald-500/10">
-              <div className="relative w-20 h-20 mb-4 animate-float">
-                <Image 
-                  src="https://i.postimg.cc/QtWZZ88d/Imagen1.png" 
-                  alt="Logo Grupo Ciclista" 
-                  fill 
-                  className="object-contain"
-                  data-ai-hint="cyclist logo"
-                />
-              </div>
-              <div className="text-center">
-                <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-[0.3em] mb-1">
-                  Alabanza Agrupación
+        <div className="w-full max-w-3xl bg-background/60 backdrop-blur-lg border rounded-2xl p-6 sm:p-10 shadow-xl">
+          <div className={`font-body leading-loose text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
+            {youthChoir.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
+              const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
+              return (
+                <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-semibold' : ''}`}>
+                  {paragraph}
                 </p>
-                <h2 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-                  GRUPO CICLISTA EECH
-                </h2>
-              </div>
-            </div>
-          )}
-
-          <div className={cn(
-            "p-6 sm:p-10",
-            isCiclista ? "font-body text-slate-900 dark:text-slate-100" : "font-body"
-          )}>
-            <div className={`leading-loose text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
-              {youthChoir.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
-                const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
-                return (
-                  <p 
-                    key={pIndex} 
-                    className={cn(
-                      "whitespace-pre-wrap mb-8",
-                      isChorus && "font-bold text-emerald-700 dark:text-emerald-400 italic",
-                      isCiclista && "tracking-tight"
-                    )}
-                  >
-                    {paragraph}
-                  </p>
-                );
-              })}
-            </div>
-            
-            {isCiclista && (
-              <div className="mt-10 pt-6 border-t border-emerald-500/10 text-center">
-                <p className="text-[9px] font-bold text-emerald-600/40 uppercase tracking-widest">
-                  "Pedaleando con Cristo en el corazón"
-                </p>
-              </div>
-            )}
+              );
+            })}
           </div>
         </div>
       </main>
