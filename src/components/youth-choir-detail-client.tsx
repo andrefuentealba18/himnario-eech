@@ -176,15 +176,16 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
 
       <main className="flex-1 py-8 px-4 flex flex-col justify-center items-center relative overflow-hidden">
         
-        {/* Marca de agua transparente del logo de la agrupación */}
+        {/* Marca de agua transparente a COLOR del logo de la agrupación */}
         {groupLogo && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 opacity-[0.05] dark:opacity-[0.03]">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 opacity-[0.12] dark:opacity-[0.08]">
             <Image 
               src={groupLogo} 
               alt="Watermark" 
-              width={400} 
-              height={400} 
-              className="object-contain"
+              width={600} 
+              height={600} 
+              className="object-contain scale-110 sm:scale-100"
+              priority
             />
           </div>
         )}
@@ -204,7 +205,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
           {/* Diseño bonito al final de la letra */}
           <div className="mt-12 pt-8 border-t border-primary/10 flex flex-col items-center space-y-4">
             {groupLogo && (
-              <div className="relative w-16 h-16 grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+              <div className="relative w-16 h-16 hover:scale-110 transition-all duration-700">
                 <Image 
                   src={groupLogo} 
                   alt={youthChoir.group} 
@@ -214,17 +215,14 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
               </div>
             )}
             <div className="text-center">
-              <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-muted-foreground/60">
-                Alabanza de Agrupación
-              </p>
-              <p className="text-xs font-headline italic font-bold text-primary/40 mt-1">
+              <p className="text-sm font-headline italic font-bold text-primary mt-1">
                 {youthChoir.group}
               </p>
             </div>
             <div className="flex items-center gap-2">
-              <div className="h-px w-8 bg-gradient-to-r from-transparent to-primary/20" />
-              <div className="w-1.5 h-1.5 rounded-full bg-primary/20" />
-              <div className="h-px w-8 bg-gradient-to-l from-transparent to-primary/20" />
+              <div className="h-px w-12 bg-gradient-to-r from-transparent to-primary/30" />
+              <div className="w-2 h-2 rounded-full bg-primary/30" />
+              <div className="h-px w-12 bg-gradient-to-l from-transparent to-primary/30" />
             </div>
           </div>
         </div>
