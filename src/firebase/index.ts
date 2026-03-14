@@ -3,7 +3,7 @@
 import { firebaseConfig } from '@/firebase/config';
 import { initializeApp, getApps, getApp, type FirebaseApp } from 'firebase/app';
 import { getAuth, type Auth } from 'firebase/auth';
-import { getFirestore, enableIndexedDbPersistence, type Firestore } from 'firebase/firestore';
+import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, type Firestore } from 'firebase/firestore';
 
 // Define a singleton object to hold the initialized services
 const services = (() => {
@@ -14,18 +14,12 @@ const services = (() => {
     app = getApp();
   }
 
-  const firestoreInstance = getFirestore(app);
-
-  // Attempt to enable persistence. This might fail if another tab has it enabled.
-  enableIndexedDbPersistence(firestoreInstance).catch((err) => {
-    if (err.code == 'failed-precondition') {
-      // This is a normal scenario in a multi-tab environment.
-      // console.warn('Multiple tabs open, persistence can only be enabled in one tab at a time.');
-    } else if (err.code == 'unimplemented') {
-      console.warn(
-        'The current browser does not support all of the features required to enable persistence.'
-      );
-    }
+  // Modern way to enable persistence using persistentLocalCache
+  // This resolves the 'indexedDbLocalCache' not found error
+  const firestoreInstance = initializeFirestore(app, {
+    localCache: persistentLocalCache({
+      tabManager: persistentSingleTabManager()
+    })
   });
 
   const authInstance = getAuth(app);

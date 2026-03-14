@@ -1,3 +1,4 @@
+
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
@@ -5,7 +6,7 @@ import { Music, Book, Mic, Library } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { GlobalSearch } from '@/components/global-search';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { PlaceHolderImages } from '@/app/lib/placeholder-images';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const navigationItems = [
   {
@@ -43,7 +44,8 @@ const navigationItems = [
 ];
 
 export default function HomePage() {
-  const insigniaUrl = PlaceHolderImages.find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
+  // Aseguramos que PlaceHolderImages exista antes de llamar a .find()
+  const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
 
   return (
     <div className="relative min-h-screen w-full bg-background text-foreground overflow-x-hidden font-body transition-colors duration-1000">
