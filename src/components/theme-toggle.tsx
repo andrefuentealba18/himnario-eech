@@ -39,13 +39,15 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-      className="rounded-full w-10 h-10 bg-white/20 dark:bg-slate-800/20 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 shadow-sm hover:bg-white/40 dark:hover:bg-slate-800/40 transition-all duration-300 group"
+      className="rounded-full w-12 h-12 bg-white/20 dark:bg-white/[0.05] backdrop-blur-xl border border-slate-200/50 dark:border-white/10 shadow-lg dark:shadow-blue-500/20 hover:bg-white/40 dark:hover:bg-white/[0.1] transition-all duration-500 group"
     >
-      {theme === 'dark' ? (
-        <Sun className="h-5 w-5 text-yellow-400 group-hover:rotate-45 transition-transform duration-500" />
-      ) : (
-        <Moon className="h-5 w-5 text-primary group-hover:-rotate-12 transition-transform duration-500" />
-      )}
+      <div className="relative w-6 h-6 flex items-center justify-center">
+        {theme === 'dark' ? (
+          <Sun className="h-6 w-6 text-yellow-400 group-hover:rotate-90 transition-transform duration-700 animate-in zoom-in-50 spin-in-90" />
+        ) : (
+          <Moon className="h-6 w-6 text-primary group-hover:-rotate-45 transition-transform duration-700 animate-in zoom-in-50 spin-in-180" />
+        )}
+      </div>
       <span className="sr-only">Cambiar tema</span>
     </Button>
   );
