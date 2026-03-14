@@ -23,7 +23,7 @@ import type { GroupType } from '@/lib/youth-choirs';
 import { cn } from '@/lib/utils';
 
 const groups: { name: GroupType; icon?: any; imageUrl?: string; color: string; iconColor?: string }[] = [
-  { name: "Coro Juventud", icon: Users, color: "bg-blue-100", iconColor: "text-blue-600" },
+  { name: "Coro Juventud", imageUrl: "https://i.postimg.cc/bvk974Xp/IMG_2532.jpg", color: "bg-transparent" },
   { name: "Grupo Ciclista", imageUrl: "https://i.postimg.cc/QtWZZ88d/Imagen1.png", color: "bg-transparent" },
   { name: "Departamento Infantil", icon: Baby, color: "bg-rose-100", iconColor: "text-rose-600" },
   { name: "Clase Dorcas", icon: UserCircle, color: "bg-purple-100", iconColor: "text-purple-600" },

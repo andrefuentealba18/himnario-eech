@@ -12,6 +12,12 @@
       "description": "Logo oficial del Grupo Ciclista EECH",
       "imageUrl": "https://i.postimg.cc/QtWZZ88d/Imagen1.png",
       "imageHint": "cyclist logo"
+    },
+    {
+      "id": "coro-juventud-logo",
+      "description": "Insignia oficial del Coro Juventud EECH",
+      "imageUrl": "https://i.postimg.cc/bvk974Xp/IMG_2532.jpg",
+      "imageHint": "choir logo"
     }
   ]
 }
