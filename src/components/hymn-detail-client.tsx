@@ -118,9 +118,9 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
             <span className="sr-only">Volver</span>
           </Link>
         </Button>
-        <div className="text-center px-2 overflow-hidden flex-1">
-            <div className="flex items-center justify-center gap-4">
-                <h1 className="font-headline text-lg font-bold text-primary truncate">{hymn.title}</h1>
+        <div className="text-center px-4 overflow-hidden flex-1">
+            <div className="flex items-center justify-center gap-10">
+                <h1 className="font-headline text-lg font-bold text-primary truncate flex-1">{hymn.title}</h1>
                 <Button 
                   variant="ghost" 
                   size="icon" 
