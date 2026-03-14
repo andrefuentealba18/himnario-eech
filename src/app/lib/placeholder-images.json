@@ -1,0 +1,11 @@
+
+{
+  "placeholderImages": [
+    {
+      "id": "eech-insignia",
+      "description": "Insignia oficial del Ejército Evangélico de Chile",
+      "imageUrl": "https://picsum.photos/seed/eech-seal/200/200",
+      "imageHint": "church emblem"
+    }
+  ]
+}
