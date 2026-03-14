@@ -3,8 +3,9 @@
 
 import { useState, useMemo } from 'react';
 import { YouthChoirListClient } from '@/components/youth-choir-list-client';
-import { Users, ChevronLeft, Plus, Baby, Bike, UserCircle, Library } from 'lucide-react';
+import { Users, ChevronLeft, Plus, Baby, UserCircle, Library } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { AddSingleYouthChoirDialog } from '@/components/add-single-youth-choir-dialog';
 import { AddYouthChoirsDialog } from '@/components/add-youth-choirs-dialog';
@@ -20,9 +21,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import type { GroupType } from '@/lib/youth-choirs';
 
-const groups: { name: GroupType; icon: any; color: string; iconColor: string }[] = [
+const groups: { name: GroupType; icon?: any; imageUrl?: string; color: string; iconColor?: string }[] = [
   { name: "Coro Juventud", icon: Users, color: "bg-blue-100", iconColor: "text-blue-600" },
-  { name: "Grupo Ciclista", icon: Bike, color: "bg-green-100", iconColor: "text-green-600" },
+  { name: "Grupo Ciclista", imageUrl: "https://i.postimg.cc/QtWZZ88d/Imagen1.png", color: "bg-green-100" },
   { name: "Departamento Infantil", icon: Baby, color: "bg-rose-100", iconColor: "text-rose-600" },
   { name: "Clase Dorcas", icon: UserCircle, color: "bg-purple-100", iconColor: "text-purple-600" },
   { name: "Departamento Juvenil", icon: Users, color: "bg-orange-100", iconColor: "text-orange-600" },
@@ -136,8 +137,19 @@ export default function YouthChoirsIndexPage() {
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <CardContent className="p-6 flex flex-col items-center text-center gap-4">
-                        <div className={`p-4 rounded-2xl ${group.color} transition-transform duration-500 group-hover:scale-110 shadow-inner`}>
-                          <group.icon className={`h-8 w-8 ${group.iconColor}`} />
+                        <div className={`p-4 rounded-2xl ${group.color} transition-transform duration-500 group-hover:scale-110 shadow-inner w-16 h-16 flex items-center justify-center overflow-hidden`}>
+                          {group.imageUrl ? (
+                            <Image 
+                              src={group.imageUrl} 
+                              alt={group.name} 
+                              width={40} 
+                              height={40} 
+                              className="object-contain w-full h-full"
+                              data-ai-hint="group logo"
+                            />
+                          ) : (
+                            <group.icon className={`h-8 w-8 ${group.iconColor}`} />
+                          )}
                         </div>
                         <div className="space-y-1">
                           <h3 className="font-bold text-sm text-slate-800 leading-tight uppercase tracking-tight">{group.name}</h3>

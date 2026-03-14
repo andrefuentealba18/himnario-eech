@@ -1,3 +1,4 @@
+
 {
   "placeholderImages": [
     {
@@ -5,6 +6,12 @@
       "description": "Insignia oficial del Ejército Evangélico de Chile",
       "imageUrl": "https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg",
       "imageHint": "church emblem"
+    },
+    {
+      "id": "grupo-ciclista-logo",
+      "description": "Logo oficial del Grupo Ciclista EECH",
+      "imageUrl": "https://i.postimg.cc/QtWZZ88d/Imagen1.png",
+      "imageHint": "cyclist logo"
     }
   ]
 }
