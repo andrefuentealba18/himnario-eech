@@ -1,10 +1,9 @@
-
 "use client";
 
 import type { Choir } from '@/lib/choirs';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ZoomIn, ZoomOut, Printer } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut, Printer, Mic } from 'lucide-react';
 import { useChoirs } from '@/context/choirs-context';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ChoirAdminActions } from './choir-admin-actions';
@@ -115,8 +114,6 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
 
   useEffect(() => {
     if (isChoirsLoaded && !choir) {
-      // If data is loaded but the specific choir is not found.
-      // router.push('/404');
       return;
     }
     
@@ -131,6 +128,36 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
+      {/* Elementos exclusivos para impresión */}
+      <div className="print-watermark">
+        <svg viewBox="0 0 400 400" className="w-full h-full fill-current text-slate-300">
+          <path d="M200 20 L350 80 V250 C350 320 200 380 200 380 C200 380 50 320 50 250 V80 L200 20Z" fill="none" stroke="currentColor" strokeWidth="2" />
+          <text x="200" y="320" textAnchor="middle" className="text-2xl font-bold uppercase tracking-widest" fill="currentColor">Ejército Evangélico</text>
+          <text x="200" y="345" textAnchor="middle" className="text-xl font-bold uppercase tracking-widest" fill="currentColor">de Chile</text>
+          <path d="M150 150 L200 100 L250 150 L200 200 Z" fill="currentColor" opacity="0.5" />
+        </svg>
+      </div>
+
+      <div className="print-header-oficial">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-full border-2 border-slate-200 flex items-center justify-center p-2">
+            <Mic className="w-10 h-10 text-slate-400" />
+          </div>
+          <div className="space-y-0.5">
+            <p className="text-sm font-bold uppercase text-slate-600">Coros de Avivamiento</p>
+            <p className="text-xs text-slate-500">Ejército Evangélico de Chile</p>
+            <p className="text-[10px] text-slate-400">Cancionero Digital Oficial</p>
+            <div className="h-0.5 w-full bg-gradient-to-r from-red-400 via-white to-blue-400 mt-1" />
+          </div>
+        </div>
+        <div className="ml-auto text-right">
+          <div className="relative inline-block px-4">
+            <span className="text-5xl font-serif text-slate-400 leading-none">C</span>
+            <div className="h-px w-full bg-slate-300 mt-1" />
+          </div>
+        </div>
+      </div>
+
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 no-print">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-chart-5/10 animate-fade-in" />
         <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/20 rounded-full filter blur-3xl opacity-50 animate-pulse-slow" />

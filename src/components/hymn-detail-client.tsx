@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { Hymn } from '@/lib/hymns';
@@ -9,7 +8,7 @@ import { useFavorites } from '@/hooks/use-favorites';
 import { useFontSize } from '@/hooks/use-font-size';
 import { Button } from '@/components/ui/button';
 import { HymnAdminActions } from '@/components/hymn-admin-actions';
-import { Star, ChevronLeft, ZoomIn, ZoomOut, Printer } from 'lucide-react';
+import { Star, ChevronLeft, ZoomIn, ZoomOut, Printer, Church } from 'lucide-react';
 import { useCallback } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -106,6 +105,36 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
+      {/* Elementos exclusivos para impresión */}
+      <div className="print-watermark">
+        <svg viewBox="0 0 400 400" className="w-full h-full fill-current text-slate-300">
+          <path d="M200 20 L350 80 V250 C350 320 200 380 200 380 C200 380 50 320 50 250 V80 L200 20Z" fill="none" stroke="currentColor" strokeWidth="2" />
+          <text x="200" y="320" textAnchor="middle" className="text-2xl font-bold uppercase tracking-widest" fill="currentColor">Ejército Evangélico</text>
+          <text x="200" y="345" textAnchor="middle" className="text-xl font-bold uppercase tracking-widest" fill="currentColor">de Chile</text>
+          <path d="M150 150 L200 100 L250 150 L200 200 Z" fill="currentColor" opacity="0.5" />
+        </svg>
+      </div>
+
+      <div className="print-header-oficial">
+        <div className="flex items-center gap-4">
+          <div className="w-16 h-16 rounded-full border-2 border-slate-200 flex items-center justify-center p-2">
+            <Church className="w-10 h-10 text-slate-400" />
+          </div>
+          <div className="space-y-0.5">
+            <p className="text-sm font-bold uppercase text-slate-600">Ejército Evangélico de Chile</p>
+            <p className="text-xs text-slate-500">Cancionero Digital Oficial</p>
+            <p className="text-[10px] text-slate-400">Templo Las Torres - Concepción</p>
+            <div className="h-0.5 w-full bg-gradient-to-r from-red-400 via-white to-blue-400 mt-1" />
+          </div>
+        </div>
+        <div className="ml-auto text-right">
+          <div className="relative inline-block px-4">
+            <span className="text-5xl font-serif text-slate-400 leading-none">{hymn.number}</span>
+            <div className="h-px w-full bg-slate-300 mt-1" />
+          </div>
+        </div>
+      </div>
+
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 no-print">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-chart-5/10 animate-fade-in" />
         <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/20 rounded-full filter blur-3xl opacity-50 animate-pulse-slow" />
@@ -154,7 +183,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
         {/* Título solo para impresión */}
         <div className="hidden print:block text-center mb-10 w-full">
           <h1 className="text-3xl font-bold uppercase tracking-tight mb-2">{hymn.title}</h1>
-          <p className="text-lg font-medium text-gray-600">Himno Nº {hymn.number} {hymn.tone ? `• ${hymn.tone}` : ''}</p>
+          <p className="text-lg font-medium text-gray-600">Himno {hymn.tone ? `• ${hymn.tone}` : ''}</p>
           <div className="h-1 w-24 bg-gray-200 mx-auto mt-4 rounded-full" />
         </div>
 
