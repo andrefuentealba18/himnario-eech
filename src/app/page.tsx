@@ -5,6 +5,7 @@ import { Music, Book, Mic, Library } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { GlobalSearch } from '@/components/global-search';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { PlaceHolderImages } from '@/app/lib/placeholder-images';
 
 const navigationItems = [
   {
@@ -42,6 +43,8 @@ const navigationItems = [
 ];
 
 export default function HomePage() {
+  const insigniaUrl = PlaceHolderImages.find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
+
   return (
     <div className="relative min-h-screen w-full bg-background text-foreground overflow-x-hidden font-body transition-colors duration-1000">
       {/* Fondo Artístico Ultra-Creativo */}
@@ -82,8 +85,8 @@ export default function HomePage() {
             <div className="relative inline-flex items-center justify-center p-1.5 bg-gradient-to-tr from-amber-400 via-yellow-200 to-yellow-600 rounded-full mb-6 shadow-2xl shadow-amber-500/30 animate-float transition-all duration-1000">
               <div className="bg-white dark:bg-slate-900 rounded-full p-1.5 overflow-hidden flex items-center justify-center w-24 h-24 md:w-28 md:h-28">
                 <Image 
-                  src="https://picsum.photos/seed/eech-logo/400/400" 
-                  alt="Insignia EECH" 
+                  src={insigniaUrl} 
+                  alt="Insignia EECH Oficial" 
                   width={112} 
                   height={112} 
                   className="rounded-full object-cover w-full h-full"
