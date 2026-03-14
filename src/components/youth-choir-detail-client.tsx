@@ -201,30 +201,6 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
               );
             })}
           </div>
-
-          {/* Diseño bonito al final de la letra */}
-          <div className="mt-12 pt-8 border-t border-primary/10 flex flex-col items-center space-y-4">
-            {groupLogo && (
-              <div className="relative w-16 h-16 hover:scale-110 transition-all duration-700">
-                <Image 
-                  src={groupLogo} 
-                  alt={youthChoir.group} 
-                  fill 
-                  className="object-contain"
-                />
-              </div>
-            )}
-            <div className="text-center">
-              <p className="text-sm font-headline italic font-bold text-primary mt-1">
-                {youthChoir.group}
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="h-px w-12 bg-gradient-to-r from-transparent to-primary/30" />
-              <div className="w-2 h-2 rounded-full bg-primary/30" />
-              <div className="h-px w-12 bg-gradient-to-l from-transparent to-primary/30" />
-            </div>
-          </div>
         </div>
       </main>
 
