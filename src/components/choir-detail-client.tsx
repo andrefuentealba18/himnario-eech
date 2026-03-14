@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Choir } from '@/lib/choirs';
@@ -59,7 +60,7 @@ function ChoirDetailSkeleton() {
                     <Skeleton className="h-6 w-4/6 mx-auto mb-8" />
                     <Skeleton className="h-24 w-full rounded-lg" />
                     <Skeleton className="h-6 w-full" />
-                    <Skeleton className="h-6 w-4/6 mx-auto" />
+                    <Skeleton className="h-6 w-5/6 mx-auto" />
                 </div>
             </main>
             <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4">
@@ -143,14 +144,16 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
             <span className="sr-only">Volver</span>
           </Link>
         </Button>
-        <div className="text-center px-4 overflow-hidden flex-1">
-            <div className="flex items-center justify-center gap-10">
-                <h1 className="font-headline text-lg font-bold text-primary truncate flex-1">{choir.title}</h1>
+        <div className="flex-1 flex flex-col items-center justify-center overflow-hidden px-2">
+            <div className="w-full flex items-center justify-center relative min-h-[32px]">
+                <h1 className="font-headline text-lg font-bold text-primary truncate max-w-[80%] text-center">
+                  {choir.title}
+                </h1>
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={() => window.print()} 
-                  className="h-8 w-8 text-primary/60 hover:text-primary flex-shrink-0"
+                  className="h-8 w-8 text-primary/60 hover:text-primary absolute right-0"
                 >
                   <Printer className="h-5 w-5" />
                 </Button>

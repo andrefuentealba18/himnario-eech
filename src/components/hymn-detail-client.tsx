@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Hymn } from '@/lib/hymns';
@@ -118,24 +119,26 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
             <span className="sr-only">Volver</span>
           </Link>
         </Button>
-        <div className="text-center px-4 overflow-hidden flex-1">
-            <div className="flex items-center justify-center gap-10">
-                <h1 className="font-headline text-lg font-bold text-primary truncate flex-1">{hymn.title}</h1>
+        <div className="flex-1 flex flex-col items-center justify-center overflow-hidden px-2">
+            <div className="w-full flex items-center justify-center relative min-h-[32px]">
+                <h1 className="font-headline text-lg font-bold text-primary truncate max-w-[80%] text-center">
+                  {hymn.title}
+                </h1>
                 <Button 
                   variant="ghost" 
                   size="icon" 
                   onClick={() => window.print()} 
-                  className="h-8 w-8 text-primary/60 hover:text-primary flex-shrink-0"
+                  className="h-8 w-8 text-primary/60 hover:text-primary absolute right-0"
                 >
                   <Printer className="h-5 w-5" />
                 </Button>
             </div>
             <div className="flex items-center justify-center gap-2 mt-2">
-                <p className="text-sm font-semibold text-muted-foreground px-3 py-1 bg-muted rounded-full">
+                <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground px-2 py-0.5 bg-muted rounded-full">
                   Himno Nº {hymn.number}
                 </p>
                 <EditToneDialog song={hymn} onToneUpdated={handleToneUpdate}>
-                  <Button variant="outline" size="sm" className="h-auto px-3 py-1 text-xs rounded-full">
+                  <Button variant="outline" size="sm" className="h-auto px-2 py-0.5 text-[10px] sm:text-xs rounded-full">
                     {hymn.tone || 'Tonalidad'}
                   </Button>
                 </EditToneDialog>

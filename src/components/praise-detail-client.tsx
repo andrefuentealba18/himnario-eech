@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Praise } from '@/lib/praises';
@@ -145,14 +146,16 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
                 <span className="sr-only">Volver</span>
             </Link>
             </Button>
-            <div className="text-center px-4 overflow-hidden flex-1">
-                <div className="flex items-center justify-center gap-10">
-                    <h1 className="font-headline text-lg font-bold text-primary truncate flex-1">{praise.title}</h1>
+            <div className="flex-1 flex flex-col items-center justify-center overflow-hidden px-2">
+                <div className="w-full flex items-center justify-center relative min-h-[32px]">
+                    <h1 className="font-headline text-lg font-bold text-primary truncate max-w-[80%] text-center">
+                      {praise.title}
+                    </h1>
                     <Button 
                       variant="ghost" 
                       size="icon" 
                       onClick={() => window.print()} 
-                      className="h-8 w-8 text-primary/60 hover:text-primary flex-shrink-0"
+                      className="h-8 w-8 text-primary/60 hover:text-primary absolute right-0"
                     >
                       <Printer className="h-5 w-5" />
                     </Button>
