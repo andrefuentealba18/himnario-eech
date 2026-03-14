@@ -1,4 +1,3 @@
-
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
@@ -81,13 +80,13 @@ export default function HomePage() {
           {/* Header Institucional con la Insignia Oficial */}
           <header className="w-full text-center space-y-2 mb-10 animate-in fade-in slide-in-from-top-4 duration-1000">
             <div className="relative inline-flex items-center justify-center p-1.5 bg-gradient-to-tr from-amber-400 via-yellow-200 to-yellow-600 rounded-full mb-6 shadow-2xl shadow-amber-500/30 animate-float transition-all duration-1000">
-              <div className="bg-white dark:bg-slate-900 rounded-full p-1.5 overflow-hidden">
+              <div className="bg-white dark:bg-slate-900 rounded-full p-1.5 overflow-hidden flex items-center justify-center w-24 h-24 md:w-28 md:h-28">
                 <Image 
-                  src="https://picsum.photos/seed/eech-seal/400/400" 
-                  alt="Ejército Evangélico de Chile" 
-                  width={96} 
-                  height={96} 
-                  className="rounded-full object-contain"
+                  src="https://picsum.photos/seed/eech-logo/400/400" 
+                  alt="Insignia EECH" 
+                  width={112} 
+                  height={112} 
+                  className="rounded-full object-cover w-full h-full"
                   priority
                   data-ai-hint="church emblem"
                 />
