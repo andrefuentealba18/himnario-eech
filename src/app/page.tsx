@@ -125,7 +125,7 @@ export default function HomePage() {
             ))}
           </div>
 
-          {/* Sección de Recientes - Movida abajo de los botones */}
+          {/* Sección de Recientes */}
           {recentsLoaded && recents.length > 0 && (
             <div className="w-full max-w-lg mb-10 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-300">
               <div className="flex items-center gap-2 mb-4 px-1">
@@ -163,7 +163,7 @@ export default function HomePage() {
               <SettingsDialog />
               <div className="space-y-2">
                 <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">
-                  Iglesia Ejército Evangélico de Chile
+                  Iglesia Ejército Evangélico de Chile | 2026 Todos los derechos reservados
                 </p>
                 <p className="text-sm font-headline italic font-bold text-primary/40 dark:text-blue-400/30">
                   "Alabaré a Jehová en mi vida"
