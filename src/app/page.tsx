@@ -162,11 +162,11 @@ export default function HomePage() {
             <div className="flex flex-col items-center gap-6">
               <SettingsDialog />
               <div className="space-y-2">
-                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">
-                  Iglesia Ejército Evangélico de Chile | 2026 Todos los derechos reservados
-                </p>
                 <p className="text-sm font-headline italic font-bold text-primary/40 dark:text-blue-400/30">
                   "Alabaré a Jehová en mi vida"
+                </p>
+                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">
+                  Iglesia Ejército Evangélico de Chile | 2026 Todos los derechos reservados
                 </p>
               </div>
             </div>
