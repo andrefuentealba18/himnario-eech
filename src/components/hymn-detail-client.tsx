@@ -7,10 +7,11 @@ import { useRouter } from 'next/navigation';
 import { useHymns } from '@/context/hymns-context';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useFontSize } from '@/hooks/use-font-size';
+import { useRecents } from '@/hooks/use-recents';
 import { Button } from '@/components/ui/button';
 import { HymnAdminActions } from '@/components/hymn-admin-actions';
 import { Star, ChevronLeft, ZoomIn, ZoomOut, Share2 } from 'lucide-react';
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
@@ -20,15 +21,7 @@ interface HymnDetailClientProps {
 }
 
 const fontSizes = [
-  'text-base', // 16px
-  'text-lg',   // 18px
-  'text-xl',   // 20px
-  'text-2xl',  // 24px
-  'text-3xl',  // 30px
-  'text-4xl',  // 36px
-  'text-5xl',  // 48px
-  'text-6xl',  // 60px
-  'text-7xl',  // 72px
+  'text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl',
 ];
 
 function HymnDetailSkeleton() {
@@ -51,17 +44,8 @@ function HymnDetailSkeleton() {
           <Skeleton className="h-6 w-5/6 mx-auto" />
           <Skeleton className="h-6 w-4/6 mx-auto mb-8" />
           <Skeleton className="h-24 w-full rounded-lg" />
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-5/6 mx-auto" />
         </div>
       </main>
-      <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4">
-        <div className="flex items-center justify-center gap-2 bg-background/80 backdrop-blur-sm border rounded-full shadow-lg p-2">
-            <Skeleton className="h-12 w-12 rounded-full" />
-            <Skeleton className="h-14 w-14 rounded-full" />
-            <Skeleton className="h-12 w-12 rounded-full" />
-         </div>
-      </footer>
     </div>
   );
 }
@@ -71,9 +55,21 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
   const { getHymnById, deleteHymn, updateHymn, isLoaded: isHymnsLoaded } = useHymns();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
   const { isFavorite, toggleFavorite, isLoaded: isFavoritesLoaded } = useFavorites();
+  const { addRecent } = useRecents();
   const { toast } = useToast();
   
   const hymn = getHymnById(hymnId);
+
+  useEffect(() => {
+    if (hymn) {
+      addRecent({
+        id: hymn.number,
+        title: hymn.title,
+        type: 'hymn',
+        number: hymn.number
+      });
+    }
+  }, [hymn, addRecent]);
 
   const handleDelete = useCallback(() => {
     if (!hymn) return;
@@ -109,14 +105,12 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
     return <HymnDetailSkeleton />;
   }
 
-  const isFav = isFavoritesLoaded && isFavorite(hymn.number);
+  const isFav = isFavoritesLoaded && isFavorite(hymn.number, 'hymn');
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
       <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-chart-5/10 animate-fade-in" />
-        <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/20 rounded-full filter blur-3xl opacity-50 animate-pulse-slow" />
-        <div className="absolute -bottom-1/4 -right-1/4 w-3/4 h-3/4 bg-chart-4/20 rounded-full filter blur-3xl opacity-40 animate-pulse-slow" style={{ animationDelay: '2s' }} />
       </div>
 
       <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-24">
@@ -143,7 +137,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
             </div>
         </div>
 
-        <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number)} disabled={!isFavoritesLoaded} className="h-12 w-12">
+        <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number, 'hymn')} disabled={!isFavoritesLoaded} className="h-12 w-12">
           <Star className={`h-7 w-7 transition-all duration-300 transform-gpu ${isFav ? 'fill-yellow-400 text-yellow-400 scale-125' : 'text-foreground/70'}`} />
           <span className="sr-only">Marcar como favorito</span>
         </Button>
@@ -168,16 +162,13 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
          <div className="flex items-center justify-center gap-2 bg-background/80 backdrop-blur-sm border rounded-full shadow-lg p-2">
             <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-10 w-10">
               <ZoomOut className="h-5 w-5" />
-              <span className="sr-only">Reducir texto</span>
             </Button>
             <HymnAdminActions hymn={hymn} onDelete={handleDelete} onUpdate={handleUpdate} />
-            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700 hover:bg-green-50">
+            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700">
               <Share2 className="h-5 w-5" />
-              <span className="sr-only">Compartir en WhatsApp</span>
             </Button>
             <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10">
               <ZoomIn className="h-5 w-5" />
-              <span className="sr-only">Aumentar texto</span>
             </Button>
          </div>
       </footer>

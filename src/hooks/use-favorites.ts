@@ -1,49 +1,59 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
 
-const FAVORITES_KEY = 'himnario_favorites';
+const FAVORITES_KEY = 'himnario_favorites_v2';
+const LEGACY_FAVORITES_KEY = 'himnario_favorites';
+
+export type FavoriteItem = {
+  id: string | number;
+  type: 'hymn' | 'praise' | 'choir' | 'youth-choir';
+};
 
 export function useFavorites() {
-  const [favorites, setFavorites] = useState<Set<number>>(new Set());
+  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
   const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     try {
-      const storedFavorites = localStorage.getItem(FAVORITES_KEY);
-      if (storedFavorites) {
-        setFavorites(new Set(JSON.parse(storedFavorites)));
+      const stored = localStorage.getItem(FAVORITES_KEY);
+      if (stored) {
+        setFavorites(JSON.parse(stored));
+      } else {
+        // Migración de favoritos antiguos (solo himnos)
+        const legacy = localStorage.getItem(LEGACY_FAVORITES_KEY);
+        if (legacy) {
+          const legacyIds: number[] = JSON.parse(legacy);
+          const migrated: FavoriteItem[] = legacyIds.map(id => ({ id, type: 'hymn' }));
+          setFavorites(migrated);
+          localStorage.setItem(FAVORITES_KEY, JSON.stringify(migrated));
+        }
       }
     } catch (error) {
-      console.error("No se pudieron cargar los favoritos desde localStorage", error);
+      console.error("Error cargando favoritos", error);
     }
     setIsLoaded(true);
   }, []);
 
   useEffect(() => {
     if (isLoaded) {
-      try {
-        localStorage.setItem(FAVORITES_KEY, JSON.stringify(Array.from(favorites)));
-      } catch (error) {
-        console.error("No se pudieron guardar los favoritos en localStorage", error);
-      }
+      localStorage.setItem(FAVORITES_KEY, JSON.stringify(favorites));
     }
   }, [favorites, isLoaded]);
 
-  const toggleFavorite = useCallback((hymnNumber: number) => {
-    setFavorites(prevFavorites => {
-      const newFavorites = new Set(prevFavorites);
-      if (newFavorites.has(hymnNumber)) {
-        newFavorites.delete(hymnNumber);
-      } else {
-        newFavorites.add(hymnNumber);
+  const toggleFavorite = useCallback((id: string | number, type: FavoriteItem['type']) => {
+    setFavorites(prev => {
+      const index = prev.findIndex(f => f.id === id && f.type === type);
+      if (index >= 0) {
+        return prev.filter((_, i) => i !== index);
       }
-      return newFavorites;
+      return [...prev, { id, type }];
     });
   }, []);
 
-  const isFavorite = useCallback((hymnNumber: number) => {
-    return favorites.has(hymnNumber);
+  const isFavorite = useCallback((id: string | number, type: FavoriteItem['type']) => {
+    return favorites.some(f => f.id === id && f.type === type);
   }, [favorites]);
 
   return { favorites, toggleFavorite, isFavorite, isLoaded };

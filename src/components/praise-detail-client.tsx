@@ -4,8 +4,10 @@
 import type { Praise } from '@/lib/praises';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ZoomIn, ZoomOut, Share2 } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star } from 'lucide-react';
 import { usePraises } from '@/context/praises-context';
+import { useFavorites } from '@/hooks/use-favorites';
+import { useRecents } from '@/hooks/use-recents';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { PraiseAdminActions } from './praise-admin-actions';
 import { useCallback, useEffect } from 'react';
@@ -28,15 +30,7 @@ interface PraiseDetailClientProps {
 }
 
 const fontSizes = [
-  'text-base', // 16px
-  'text-lg',   // 18px
-  'text-xl',   // 20px
-  'text-2xl',  // 24px
-  'text-3xl',  // 30px
-  'text-4xl',  // 36px
-  'text-5xl',  // 48px
-  'text-6xl',  // 60px
-  'text-7xl',  // 72px
+  'text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl',
 ];
 
 function PraiseDetailSkeleton() {
@@ -46,10 +40,6 @@ function PraiseDetailSkeleton() {
                 <Skeleton className="h-12 w-12 rounded-full" />
                 <div className="flex-1 px-4 text-center">
                     <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
-                    <div className="flex items-center justify-center gap-2 mt-2">
-                        <Skeleton className="h-6 w-24 rounded-full" />
-                        <Skeleton className="h-6 w-24 rounded-full" />
-                    </div>
                 </div>
                 <div className="w-12 h-12" />
             </header>
@@ -57,19 +47,9 @@ function PraiseDetailSkeleton() {
                 <div className="space-y-8 text-center">
                     <Skeleton className="h-6 w-full" />
                     <Skeleton className="h-6 w-5/6 mx-auto" />
-                    <Skeleton className="h-6 w-4/6 mx-auto mb-8" />
                     <Skeleton className="h-24 w-full rounded-lg" />
-                    <Skeleton className="h-6 w-full" />
-                    <Skeleton className="h-6 w-5/6 mx-auto" />
                 </div>
             </main>
-            <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4">
-              <div className="flex items-center justify-center gap-2 bg-background/80 backdrop-blur-sm border rounded-full shadow-lg p-2">
-                <Skeleton className="h-12 w-12 rounded-full" />
-                <Skeleton className="h-14 w-14 rounded-full" />
-                <Skeleton className="h-12 w-12 rounded-full" />
-              </div>
-            </footer>
         </div>
     );
 }
@@ -78,6 +58,8 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { getPraiseById, deletePraise, updatePraise, isLoaded: isPraisesLoaded } = usePraises();
+  const { isFavorite, toggleFavorite, isLoaded: isFavoritesLoaded } = useFavorites();
+  const { addRecent } = useRecents();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
   const { toast } = useToast();
 
@@ -85,6 +67,16 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
   const backHref = from === 'admin' ? '/admin?tab=more-settings' : '/praises';
 
   const praise = getPraiseById(praiseId);
+
+  useEffect(() => {
+    if (praise) {
+      addRecent({
+        id: praise.id,
+        title: praise.title,
+        type: 'praise'
+      });
+    }
+  }, [praise, addRecent]);
 
   const handleDelete = useCallback(() => {
     if (!praise) return;
@@ -102,7 +94,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
           router.replace(`/praises/${newId}`);
        }
     } else {
-      toast({ variant: 'destructive', title: 'Error al actualizar', description: result.error === 'duplicate' ? 'Ya existe una alabanza con ese título.' : 'No se pudo guardar el cambio.' });
+      toast({ variant: 'destructive', title: 'Error al actualizar', description: 'No se pudo guardar el cambio.' });
     }
     return result;
   }, [praise, updatePraise, router, toast]);
@@ -120,26 +112,16 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     window.open(shareUrl, '_blank');
   }, [praise]);
   
-  useEffect(() => {
-    if (isPraisesLoaded && !praise) {
-      return;
-    }
-    
-    if (praise && praiseId !== praise.id) {
-        router.replace(`/praises/${praise.id}`);
-    }
-  }, [praise, praiseId, router, isPraisesLoaded]);
-
   if (!isPraisesLoaded || !praise) {
     return <PraiseDetailSkeleton />;
   }
+
+  const isFav = isFavoritesLoaded && isFavorite(praise.id, 'praise');
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-chart-5/10 animate-fade-in" />
-            <div className="absolute -top-1/4 -left-1/4 w-1/2 h-1/2 bg-primary/20 rounded-full filter blur-3xl opacity-50 animate-pulse-slow" />
-            <div className="absolute -bottom-1/4 -right-1/4 w-3/4 h-3/4 bg-chart-4/20 rounded-full filter blur-3xl opacity-40 animate-pulse-slow" style={{ animationDelay: '2s' }} />
         </div>
 
         <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-24">
@@ -165,7 +147,11 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
                     )}
                 </div>
             </div>
-            <div className="w-12 h-12" />
+            
+            <Button variant="ghost" size="icon" onClick={() => toggleFavorite(praise.id, 'praise')} disabled={!isFavoritesLoaded} className="h-12 w-12">
+              <Star className={`h-7 w-7 transition-all duration-300 transform-gpu ${isFav ? 'fill-yellow-400 text-yellow-400 scale-125' : 'text-foreground/70'}`} />
+              <span className="sr-only">Marcar como favorito</span>
+            </Button>
         </header>
 
       <main className="flex-1 py-8 px-4 flex flex-col justify-center items-center">
@@ -187,16 +173,13 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
            <div className="flex items-center justify-center gap-2 bg-background/80 backdrop-blur-sm border rounded-full shadow-lg p-2">
             <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-10 w-10">
               <ZoomOut className="h-5 w-5" />
-              <span className="sr-only">Reducir texto</span>
             </Button>
             <PraiseAdminActions praise={praise} onUpdate={handleUpdate} onDelete={handleDelete} />
-            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700 hover:bg-green-50">
+            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700">
               <Share2 className="h-5 w-5" />
-              <span className="sr-only">Compartir en WhatsApp</span>
             </Button>
             <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10">
               <ZoomIn className="h-5 w-5" />
-              <span className="sr-only">Aumentar texto</span>
             </Button>
          </div>
       </footer>

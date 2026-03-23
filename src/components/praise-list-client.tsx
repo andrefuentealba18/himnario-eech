@@ -5,10 +5,11 @@ import type { Praise } from '@/lib/praises';
 import { useState, useMemo, useDeferredValue } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
-import { Search } from 'lucide-react';
+import { Search, List, Star } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useFavorites } from '@/hooks/use-favorites';
 import {
   Accordion,
   AccordionContent,
@@ -33,8 +34,9 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const deferredSearchTerm = useDeferredValue(searchTerm);
   const [activeTab, setActiveTab] = useState('all');
+  const [filterTab, setFilterTab] = useState('all');
+  const { isFavorite, isLoaded: favsLoaded } = useFavorites();
 
-  // Indexar para búsqueda rápida
   const indexedPraises = useMemo(() => {
     return praises.map(p => ({
       ...p,
@@ -45,10 +47,14 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
   const filteredPraises = useMemo(() => {
     let listToFilter = indexedPraises;
 
-    if (activeTab === 'rapidos') {
-      listToFilter = indexedPraises.filter(praise => praise.speed === 'Rapido');
-    } else if (activeTab === 'lentos') {
-      listToFilter = indexedPraises.filter(praise => praise.speed === 'Lento');
+    if (activeTab === 'favorites') {
+      listToFilter = indexedPraises.filter(p => isFavorite(p.id, 'praise'));
+    }
+
+    if (filterTab === 'rapidos') {
+      listToFilter = listToFilter.filter(praise => praise.speed === 'Rapido');
+    } else if (filterTab === 'lentos') {
+      listToFilter = listToFilter.filter(praise => praise.speed === 'Lento');
     }
 
     const term = deferredSearchTerm.trim();
@@ -59,7 +65,7 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
     }
 
     return listToFilter.filter(praise => praise._searchIndex.includes(normalizedSearch));
-  }, [deferredSearchTerm, indexedPraises, activeTab]);
+  }, [deferredSearchTerm, indexedPraises, activeTab, filterTab, isFavorite]);
 
   return (
     <div className="space-y-4">
@@ -73,16 +79,29 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
-      
+
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="grid w-full grid-cols-3 h-auto">
-          <TabsTrigger value="all" className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">Todos</TabsTrigger>
-          <TabsTrigger value="rapidos" className="data-[state=active]:bg-chart-1 data-[state=active]:text-white">Rápidos</TabsTrigger>
-          <TabsTrigger value="lentos" className="data-[state=active]:bg-chart-2 data-[state=active]:text-white">Lentos</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="all">
+            <List className="mr-2 h-4 w-4" />
+            Todos
+          </TabsTrigger>
+          <TabsTrigger value="favorites">
+            <Star className="mr-2 h-4 w-4" />
+            Favoritos
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
+      
+      <Tabs value={filterTab} onValueChange={setFilterTab}>
+        <TabsList className="grid w-full grid-cols-3 h-auto text-[10px]">
+          <TabsTrigger value="all">Todos</TabsTrigger>
+          <TabsTrigger value="rapidos">Rápidos</TabsTrigger>
+          <TabsTrigger value="lentos">Lentos</TabsTrigger>
         </TabsList>
       </Tabs>
 
-      {activeTab === 'all' ? (
+      {filterTab === 'all' ? (
         <SimplePraiseRoll praises={filteredPraises} />
       ) : (
         <GroupedPraiseRoll praises={filteredPraises} />
@@ -96,13 +115,12 @@ function SimplePraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: str
     return (
       <div className="text-center text-muted-foreground py-10">
         <p>No hay alabanzas para mostrar.</p>
-        <p className="text-sm">Prueba a cambiar los filtros o agrega una alabanza nueva.</p>
       </div>
     );
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-13rem)] pr-4">
+    <ScrollArea className="h-[calc(100vh-16rem)] pr-4">
         <div className="flex flex-col">
         {praises.map((praise) => (
             <Link
@@ -112,14 +130,14 @@ function SimplePraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: str
             >
                 <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
                     <div className="flex items-center gap-2 overflow-hidden">
-                      <span className="font-medium truncate">{praise.title}</span>
+                      <span className="font-medium truncate text-sm">{praise.title}</span>
                       {isNewSong(praise.createdAt) && (
-                        <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[10px] py-0 px-1.5 h-5 flex-shrink-0">NEW</Badge>
+                        <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[8px] py-0 px-1 h-4 flex-shrink-0">NEW</Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                        {praise.speed && <Badge variant="outline" className="capitalize">{praise.speed}</Badge>}
-                        {praise.tone && <Badge variant="outline">{praise.tone}</Badge>}
+                    <div className="flex items-center gap-1 flex-shrink-0 scale-90">
+                        {praise.speed && <Badge variant="outline" className="capitalize text-[8px]">{praise.speed}</Badge>}
+                        {praise.tone && <Badge variant="outline" className="text-[8px]">{praise.tone}</Badge>}
                     </div>
                 </div>
             </Link>
@@ -132,45 +150,31 @@ function SimplePraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: str
 function GroupedPraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: string })[] }) {
   const groupedPraises = useMemo(() => {
     const groups: Record<string, typeof praises> = {};
-
     praises.forEach(praise => {
       const tone = praise.tone || 'Tonalidad no especificada';
-      if (!groups[tone]) {
-        groups[tone] = [];
-      }
+      if (!groups[tone]) groups[tone] = [];
       groups[tone].push(praise);
     });
-
-    return Object.keys(groups)
-      .sort((a, b) => {
-        if (a === 'Tonalidad no especificada') return 1;
-        if (b === 'Tonalidad no especificada') return -1;
-        return a.localeCompare(b);
-      })
-      .map(tone => ({
-        tone,
-        praises: groups[tone],
-      }));
+    return Object.keys(groups).sort().map(tone => ({ tone, praises: groups[tone] }));
   }, [praises]);
 
   if (praises.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-10">
         <p>No hay alabanzas para mostrar.</p>
-        <p className="text-sm">Prueba a cambiar los filtros o agrega una alabanza nueva.</p>
       </div>
     );
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-13rem)] pr-4">
+    <ScrollArea className="h-[calc(100vh-16rem)] pr-4">
         <Accordion type="multiple" className="w-full">
             {groupedPraises.map(({ tone, praises: praiseList }) => (
                 <AccordionItem value={tone} key={tone}>
-                    <AccordionTrigger className="text-base font-semibold hover:no-underline">
+                    <AccordionTrigger className="text-sm font-semibold hover:no-underline">
                         <div className="flex items-center gap-3">
                            {tone}
-                           <Badge variant="secondary">{praiseList.length}</Badge>
+                           <Badge variant="secondary" className="text-[10px]">{praiseList.length}</Badge>
                         </div>
                     </AccordionTrigger>
                     <AccordionContent>
@@ -179,19 +183,9 @@ function GroupedPraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: st
                                 <Link
                                     href={`/praises/${praise.id}`}
                                     key={praise.id}
-                                    className="flex items-center gap-4 p-3 -mx-2 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
+                                    className="flex items-center gap-4 p-2 -mx-2 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
                                 >
-                                    <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
-                                        <div className="flex items-center gap-2 overflow-hidden">
-                                          <span className="font-medium truncate">{praise.title}</span>
-                                          {isNewSong(praise.createdAt) && (
-                                            <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[10px] py-0 px-1.5 h-5 flex-shrink-0">NEW</Badge>
-                                          )}
-                                        </div>
-                                        <div className="flex items-center gap-2 flex-shrink-0">
-                                            {praise.speed && <Badge variant="outline" className="capitalize hidden sm:inline-flex">{praise.speed}</Badge>}
-                                        </div>
-                                    </div>
+                                    <span className="text-xs font-medium truncate">{praise.title}</span>
                                 </Link>
                             ))}
                         </div>
