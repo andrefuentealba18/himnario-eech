@@ -106,7 +106,26 @@ export default function HomePage() {
             <GlobalSearch />
           </div>
 
-          {/* Sección de Recientes */}
+          <div className="grid grid-cols-2 gap-5 w-full max-w-lg mb-10">
+            {navigationItems.map((item) => (
+              <div key={item.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: item.delay }}>
+                <Link href={item.href} className="group block h-full">
+                  <Card className="h-full border-white/80 dark:border-white/5 bg-white/50 dark:bg-white/[0.03] backdrop-blur-2xl hover:bg-white/80 dark:hover:bg-card transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 active:scale-95 overflow-hidden relative shadow-md border-2">
+                    <CardContent className="flex flex-col items-center justify-center p-8 text-center h-full min-h-[160px]">
+                      <div className={`p-5 rounded-[1.5rem] ${item.color} mb-5 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-inner`}>
+                        <item.icon className={`h-8 w-8 ${item.iconColor}`} />
+                      </div>
+                      <h3 className="font-black text-[11px] md:text-xs uppercase tracking-widest font-body text-slate-700 dark:text-foreground group-hover:text-primary dark:group-hover:text-blue-400 transition-colors leading-tight px-2">
+                        {item.title}
+                      </h3>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </div>
+            ))}
+          </div>
+
+          {/* Sección de Recientes - Movida abajo de los botones */}
           {recentsLoaded && recents.length > 0 && (
             <div className="w-full max-w-lg mb-10 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-300">
               <div className="flex items-center gap-2 mb-4 px-1">
@@ -137,25 +156,6 @@ export default function HomePage() {
               </div>
             </div>
           )}
-          
-          <div className="grid grid-cols-2 gap-5 w-full max-w-lg">
-            {navigationItems.map((item) => (
-              <div key={item.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: item.delay }}>
-                <Link href={item.href} className="group block h-full">
-                  <Card className="h-full border-white/80 dark:border-white/5 bg-white/50 dark:bg-white/[0.03] backdrop-blur-2xl hover:bg-white/80 dark:hover:bg-card transition-all duration-500 hover:shadow-2xl hover:shadow-blue-500/10 hover:-translate-y-2 active:scale-95 overflow-hidden relative shadow-md border-2">
-                    <CardContent className="flex flex-col items-center justify-center p-8 text-center h-full min-h-[160px]">
-                      <div className={`p-5 rounded-[1.5rem] ${item.color} mb-5 group-hover:scale-110 group-hover:rotate-3 transition-all duration-500 shadow-inner`}>
-                        <item.icon className={`h-8 w-8 ${item.iconColor}`} />
-                      </div>
-                      <h3 className="font-black text-[11px] md:text-xs uppercase tracking-widest font-body text-slate-700 dark:text-foreground group-hover:text-primary dark:group-hover:text-blue-400 transition-colors leading-tight px-2">
-                        {item.title}
-                      </h3>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </div>
-            ))}
-          </div>
           
           <footer className="w-full text-center mt-16 pb-10 space-y-8 animate-in fade-in duration-1000 delay-500">
             <div className="h-px w-24 bg-gradient-to-r from-transparent via-slate-300 dark:via-white/10 to-transparent mx-auto" />
