@@ -14,9 +14,20 @@ export const metadata: Metadata = {
   },
   appleWebApp: {
     capable: true,
-    statusBarStyle: 'default',
+    statusBarStyle: 'black-translucent',
     title: 'Himnario EECH',
+    startupImage: 'https://i.postimg.cc/FsY3twc6/images.png',
   },
+  other: {
+    'mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-capable': 'yes',
+    'application-name': 'Himnario EECH',
+    'apple-mobile-web-app-title': 'Himnario EECH',
+    'theme-color': '#3b82f6',
+    'msapplication-navbutton-color': '#3b82f6',
+    'apple-mobile-web-app-status-bar-style': 'black-translucent',
+    'msapplication-starturl': '/',
+  }
 };
 
 export const viewport: Viewport = {
