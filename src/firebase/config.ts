@@ -1,8 +1,3 @@
-export const firebaseConfig = {
-  "projectId": "studio-2357028373-46846",
-  "appId": "1:622069481217:web:ec29c3033f426a8f91e500",
-  "apiKey": "AIzaSyB3HCqxHqzZim4GRvwBS4oui8X2P5g1sZE",
-  "authDomain": "studio-2357028373-46846.firebaseapp.com",
-  "measurementId": "",
-  "messagingSenderId": "622069481217"
-};
+import firebaseAppletConfig from './firebase-applet-config.json';
+
+export const firebaseConfig = firebaseAppletConfig;

@@ -58,12 +58,13 @@ export function useDoc<T = any>(
         setError(null); 
         setIsLoading(false);
       },
-      (error: FirestoreError) => {
+      (err: FirestoreError) => {
         const contextualError = new FirestorePermissionError({
           operation: 'get',
           path: memoizedDocRef.path,
         })
 
+        console.error('Firestore document listen error:', err, contextualError);
         setError(contextualError)
         setData(null)
         setIsLoading(false)

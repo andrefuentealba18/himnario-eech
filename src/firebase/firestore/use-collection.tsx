@@ -73,7 +73,7 @@ export function useCollection<T = any>(
         setError(null);
         setIsLoading(false);
       },
-      (error: FirestoreError) => {
+      (err: FirestoreError) => {
         const path: string =
           memoizedTargetRefOrQuery.type === 'collection'
             ? (memoizedTargetRefOrQuery as CollectionReference).path
@@ -84,6 +84,7 @@ export function useCollection<T = any>(
           path,
         })
 
+        console.error('Firestore collection listen error:', err, contextualError);
         setError(contextualError)
         setData(null)
         setIsLoading(false)
