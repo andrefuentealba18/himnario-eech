@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -6,6 +5,7 @@ import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Music, Book, Mic, Library } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
+import { InstallPWAButton } from '@/components/install-pwa-button';
 import { GlobalSearch } from '@/components/global-search';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -118,14 +118,22 @@ export default function HomePage() {
           <footer className="w-full text-center mt-16 pb-10 space-y-8 animate-in fade-in duration-1000 delay-500">
             <div className="h-px w-24 bg-gradient-to-r from-transparent via-slate-300 dark:via-white/10 to-transparent mx-auto" />
             <div className="flex flex-col items-center gap-6">
-              <SettingsDialog />
+              <div className="flex items-center justify-center gap-2">
+                <InstallPWAButton />
+                <SettingsDialog />
+              </div>
               <div className="space-y-2">
                 <p className="text-sm font-headline italic font-bold text-primary/40 dark:text-blue-400/30">
                   "Alabaré a Jehová en mi vida"
                 </p>
-                <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">
-                  Iglesia Ejército Evangélico de Chile | 2026 Todos los derechos reservados
-                </p>
+                <div className="space-y-1">
+                  <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">
+                    Iglesia Ejército Evangélico de Chile
+                  </p>
+                  <p className="text-[10px] font-black text-slate-400/60 dark:text-slate-500/60 uppercase tracking-[0.3em]">
+                    2026 Todos los derechos reservados
+                  </p>
+                </div>
               </div>
             </div>
           </footer>
