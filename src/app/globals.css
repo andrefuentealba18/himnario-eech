@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -60,17 +61,17 @@
 /* Animaciones Personalizadas */
 @keyframes float {
   0% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
+  50% { transform: translateY(-10px); }
   100% { transform: translateY(0px); }
 }
 
 .animate-float {
-  animation: float 5s ease-in-out infinite;
+  animation: float 6s ease-in-out infinite;
 }
 
 @keyframes pulse-slow {
-  0%, 100% { opacity: 0.1; transform: scale(1); }
-  50% { opacity: 0.25; transform: scale(1.15); }
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.1); }
 }
 
 .animate-pulse-slow {
@@ -78,11 +79,11 @@
 }
 
 @keyframes aura-flow {
-  0% { transform: translate(-10%, -10%) rotate(0deg); }
-  50% { transform: translate(10%, 10%) rotate(180deg); }
-  100% { transform: translate(-10%, -10%) rotate(360deg); }
+  0% { transform: translate(-5%, -5%) rotate(0deg); }
+  50% { transform: translate(5%, 5%) rotate(180deg); }
+  100% { transform: translate(-5%, -5%) rotate(360deg); }
 }
 
 .animate-aura {
-  animation: aura-flow 25s linear infinite;
+  animation: aura-flow 30s linear infinite;
 }
