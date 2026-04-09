@@ -1,4 +1,3 @@
-
 "use client";
 
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
@@ -73,9 +72,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   const addPraise = useCallback(async (newPraiseData: Omit<Praise, 'id'>) => {
     if (!firestore) return { success: false };
     
-    // Generamos un ID único pero legible para evitar colisiones en revisión
     const id = `${slugify(newPraiseData.title)}-${Date.now().toString().slice(-4)}`;
-    
     const docRef = doc(firestore, 'praises', id);
     const dataToSave = { 
         ...newPraiseData,
@@ -83,9 +80,9 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         createdAt: serverTimestamp() 
     };
 
-    // Envío inmediato sin esperar al servidor
     setDoc(docRef, removeUndefined(dataToSave))
       .catch((error) => {
+        console.error("Error adding praise:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
           path: docRef.path,
           operation: 'create',
@@ -120,7 +117,8 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         .then(() => {
           toast({ title: 'Lote Enviado', description: `Se enviaron ${addedCount} alabanzas a revisión.` });
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error("Error bulk adding praises:", error);
           toast({ variant: 'destructive', title: 'Error', description: 'No se pudieron guardar las alabanzas.' });
         });
     }
@@ -132,6 +130,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     updateDoc(docRef, { status: 'approved' })
       .then(() => toast({ title: 'Alabanza Aprobada' }))
       .catch((error) => {
+        console.error("Error approving praise:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'update' }));
       });
   }, [firestore, toast]);
@@ -142,6 +141,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     deleteDoc(docRef)
       .then(() => toast({ title: 'Eliminado de revisión' }))
       .catch((error) => {
+        console.error("Error deleting praise:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));
       });
   }, [firestore, toast]);
@@ -150,9 +150,13 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     if (!firestore) return { success: false, error: 'firestore_unavailable' };
     
     const docRef = doc(firestore, 'praises', praiseId);
-    setDoc(docRef, removeUndefined(newPraiseData), { merge: true }).catch(e => console.error(e));
-    
-    return { success: true };
+    try {
+      await setDoc(docRef, removeUndefined(newPraiseData), { merge: true });
+      return { success: true };
+    } catch (error) {
+      console.error("Error updating praise:", error);
+      return { success: false, error: 'update_failed' };
+    }
   }, [firestore]);
 
   const getPraiseById = useCallback((id: string): Praise | undefined => {
