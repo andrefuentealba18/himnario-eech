@@ -1,4 +1,3 @@
-
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
@@ -28,6 +27,7 @@ export const metadata: Metadata = {
     'msapplication-navbutton-color': '#3b82f6',
     'apple-mobile-web-app-status-bar-style': 'black-translucent',
     'msapplication-starturl': '/',
+    'format-detection': 'telephone=no',
   }
 };
 
@@ -37,6 +37,7 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: '#3b82f6',
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({
@@ -50,7 +51,8 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
-        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="font-body antialiased">
         <FirebaseClientProvider>

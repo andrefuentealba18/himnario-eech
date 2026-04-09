@@ -1,4 +1,3 @@
-
 import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
@@ -26,12 +25,13 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: 'any'
       },
     ],
-    categories: ['education', 'lifestyle', 'music'],
+    categories: ['education', 'lifestyle', 'music', 'books'],
     screenshots: [
       {
         src: 'https://i.postimg.cc/FsY3twc6/images.png',
         sizes: '512x512',
-        type: 'image/png'
+        type: 'image/png',
+        label: 'Pantalla de Inicio'
       }
     ]
   };
