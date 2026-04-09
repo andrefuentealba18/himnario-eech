@@ -211,7 +211,9 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
       batch.set(docRef, removeUndefined(dataToSave));
     });
 
-    batch.commit().catch(error => console.error("Error restoring hymns:", error));
+    batch.commit().catch(error => {
+      console.error("Error restoring hymns:", error);
+    });
   }, [firestore, hymns]);
 
   const value = { hymns, addHymn, addHymns, updateHymn, deleteHymn, getHymnById, restoreHymns, isLoaded };
