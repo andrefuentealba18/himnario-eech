@@ -1,7 +1,9 @@
+
 "use client";
 
-import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
+import { createContext, useContext, useCallback, ReactNode, useMemo, useEffect } from 'react';
 import type { YouthChoir } from '@/lib/youth-choirs';
+import { initialYouthChoirs } from '@/lib/youth-choirs-initial';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -68,6 +70,27 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
         return tB - tA;
       });
   }, [allData]);
+
+  useEffect(() => {
+    if (isLoaded && allData?.length === 0) {
+      const migrationFlag = 'youth_choirs_migrated_v1';
+      if (localStorage.getItem(migrationFlag)) return;
+
+      console.log('Migrating initial youth choirs...');
+      const batch = writeBatch(firestore!);
+      initialYouthChoirs.forEach((yc) => {
+        const id = slugify(`${yc.group}-${yc.title}`);
+        const docRef = doc(firestore!, 'youth-choirs', id);
+        batch.set(docRef, removeUndefined({ ...yc, status: 'approved', createdAt: serverTimestamp() }));
+      });
+
+      batch.commit()
+        .then(() => {
+          localStorage.setItem(migrationFlag, 'true');
+        })
+        .catch((error) => console.error("Error migrating youth choirs:", error));
+    }
+  }, [isLoaded, allData, firestore]);
   
   const addYouthChoir = useCallback(async (newYouthChoirData: Omit<YouthChoir, 'id'>) => {
     if (!firestore) return { success: false };
@@ -139,7 +162,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     if (!firestore) return;
     const docRef = doc(firestore, 'youth-choirs', youthChoirId);
     deleteDoc(docRef)
-      .then(() => toast({ title: 'Alabanza eliminada de revisión' }))
+      .then(() => toast({ title: 'Alabanza eliminada' }))
       .catch((error) => {
         console.error("Error deleting youth choir:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));

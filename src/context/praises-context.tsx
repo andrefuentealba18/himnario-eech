@@ -1,7 +1,9 @@
+
 "use client";
 
-import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
+import { createContext, useContext, useCallback, ReactNode, useMemo, useEffect } from 'react';
 import type { Praise } from '@/lib/praises';
+import { initialPraises } from '@/lib/praises-initial';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -68,6 +70,27 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         return tB - tA;
       });
   }, [allData]);
+
+  useEffect(() => {
+    if (isLoaded && allData?.length === 0) {
+      const migrationFlag = 'praises_migrated_v1';
+      if (localStorage.getItem(migrationFlag)) return;
+
+      console.log('Migrating initial praises...');
+      const batch = writeBatch(firestore!);
+      initialPraises.forEach((praise) => {
+        const id = slugify(praise.title);
+        const docRef = doc(firestore!, 'praises', id);
+        batch.set(docRef, removeUndefined({ ...praise, status: 'approved', createdAt: serverTimestamp() }));
+      });
+
+      batch.commit()
+        .then(() => {
+          localStorage.setItem(migrationFlag, 'true');
+        })
+        .catch((error) => console.error("Error migrating praises:", error));
+    }
+  }, [isLoaded, allData, firestore]);
   
   const addPraise = useCallback(async (newPraiseData: Omit<Praise, 'id'>) => {
     if (!firestore) return { success: false };
@@ -90,7 +113,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         }));
       });
 
-    toast({ title: 'Enviada a Revisión', description: `"${newPraiseData.title}" aparecerá en el panel de administrador.` });
+    toast({ title: 'Enviada a Revisión', description: `"${newPraiseData.title}" ha sido enviada.` });
     return { success: true };
   }, [firestore, toast]);
 
@@ -139,7 +162,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     if (!firestore) return;
     const docRef = doc(firestore, 'praises', praiseId);
     deleteDoc(docRef)
-      .then(() => toast({ title: 'Eliminado de revisión' }))
+      .then(() => toast({ title: 'Alabanza eliminada' }))
       .catch((error) => {
         console.error("Error deleting praise:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));

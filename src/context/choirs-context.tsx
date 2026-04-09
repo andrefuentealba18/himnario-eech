@@ -1,7 +1,9 @@
+
 "use client";
 
-import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
+import { createContext, useContext, useCallback, ReactNode, useMemo, useEffect } from 'react';
 import type { Choir } from '@/lib/choirs';
+import { initialChoirs } from '@/lib/choirs-initial';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
@@ -68,6 +70,27 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
         return tB - tA;
       });
   }, [allData]);
+
+  useEffect(() => {
+    if (isLoaded && allData?.length === 0) {
+      const migrationFlag = 'choirs_migrated_v1';
+      if (localStorage.getItem(migrationFlag)) return;
+
+      console.log('Migrating initial choirs...');
+      const batch = writeBatch(firestore!);
+      initialChoirs.forEach((choir) => {
+        const id = slugify(choir.title);
+        const docRef = doc(firestore!, 'choirs', id);
+        batch.set(docRef, removeUndefined({ ...choir, status: 'approved', createdAt: serverTimestamp() }));
+      });
+
+      batch.commit()
+        .then(() => {
+          localStorage.setItem(migrationFlag, 'true');
+        })
+        .catch((error) => console.error("Error migrating choirs:", error));
+    }
+  }, [isLoaded, allData, firestore]);
   
   const addChoir = useCallback(async (newChoirData: Omit<Choir, 'id'>) => {
     if (!firestore) return { success: false };
@@ -140,7 +163,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     if (!firestore) return;
     const docRef = doc(firestore, 'choirs', choirId);
     deleteDoc(docRef)
-      .then(() => toast({ title: 'Coro eliminado de revisión' }))
+      .then(() => toast({ title: 'Coro eliminado' }))
       .catch((error) => {
         console.error("Error deleting choir:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));
