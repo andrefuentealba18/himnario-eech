@@ -1,8 +1,7 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
-import { Download, Smartphone, Share, PlusSquare, Monitor } from "lucide-react";
+import { Download, Smartphone, Share, PlusSquare, Monitor, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,6 +11,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
 
 export function InstallPWAButton() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -120,6 +120,18 @@ export function InstallPWAButton() {
           <div className="bg-amber-50 dark:bg-amber-900/10 p-3 rounded-lg border border-amber-100 dark:border-amber-900/20">
             <p className="text-[10px] text-amber-700 dark:text-amber-400 text-center leading-relaxed">
               <strong>Nota:</strong> Una vez instalada, el logo de la Iglesia aparecerá junto a tus otras aplicaciones y el himnario se abrirá sin barras de navegación.
+            </p>
+          </div>
+
+          <Separator className="opacity-50" />
+
+          <div className="flex flex-col items-center justify-center gap-2 opacity-60">
+            <div className="flex items-center gap-1.5 text-primary">
+              <ShieldCheck className="h-3 w-3" />
+              <span className="text-[9px] font-black uppercase tracking-tighter">Software Protegido</span>
+            </div>
+            <p className="text-[8px] font-bold text-center leading-tight uppercase tracking-[0.1em] text-slate-500 max-w-[200px]">
+              PATENTADO POR PABLO FB, EN EL CUAL ESTÁN TODOS LOS DERECHOS RESERVADOS
             </p>
           </div>
         </div>
