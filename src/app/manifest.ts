@@ -1,10 +1,11 @@
+
 import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
     name: 'Himnario EECH Móvil',
     short_name: 'Himnario EECH',
-    description: 'Cancionero Digital del Ejercito Evangélico de Chile',
+    description: 'Cancionero Digital Oficial del Ejercito Evangélico de Chile. Alabanzas, Coros e Himnos.',
     start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
@@ -25,5 +26,13 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: 'any'
       },
     ],
+    categories: ['education', 'lifestyle', 'music'],
+    screenshots: [
+      {
+        src: 'https://i.postimg.cc/FsY3twc6/images.png',
+        sizes: '512x512',
+        type: 'image/png'
+      }
+    ]
   };
 }
