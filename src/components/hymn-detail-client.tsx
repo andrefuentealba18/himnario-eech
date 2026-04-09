@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { Hymn } from '@/lib/hymns';
@@ -108,12 +107,14 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
   const isFav = isFavoritesLoaded && isFavorite(hymn.number, 'hymn');
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-chart-5/10 animate-fade-in" />
+    <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
+      {/* Fondo Innovador Animado */}
+      <div className="fixed inset-0 -z-10 pointer-events-none">
+        <div className="absolute top-0 right-0 w-[120%] h-[120%] bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.08)_0%,transparent_60%)] animate-aura" />
+        <div className="absolute bottom-0 left-0 w-[120%] h-[120%] bg-[radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.05)_0%,transparent_60%)] animate-aura" style={{ animationDuration: '20s' }} />
       </div>
 
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-24">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md p-2 border-b h-24">
         <Button variant="ghost" size="icon" asChild className="h-12 w-12">
           <Link href="/hymns">
             <ChevronLeft className="h-7 w-7" />
@@ -126,11 +127,11 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
               {hymn.title}
             </h1>
             <div className="flex items-center justify-center gap-2 mt-2">
-                <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground px-2 py-0.5 bg-muted rounded-full">
+                <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground px-2 py-0.5 bg-white/50 backdrop-blur-sm rounded-full border">
                   Himno Nº {hymn.number}
                 </p>
                 <EditToneDialog song={hymn} onToneUpdated={handleToneUpdate}>
-                  <Button variant="outline" size="sm" className="h-auto px-2 py-0.5 text-[10px] sm:text-xs rounded-full">
+                  <Button variant="outline" size="sm" className="h-auto px-2 py-0.5 text-[10px] sm:text-xs rounded-full bg-white/50 backdrop-blur-sm">
                     {hymn.tone || 'Tonalidad'}
                   </Button>
                 </EditToneDialog>
@@ -144,12 +145,12 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
       </header>
 
       <main className="flex-1 py-8 px-4 flex flex-col justify-center items-center">
-        <div className="w-full max-w-3xl bg-background/60 backdrop-blur-lg border rounded-2xl p-6 sm:p-10 shadow-xl">
+        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-6 sm:p-10 shadow-2xl animate-in fade-in zoom-in-95 duration-1000">
           <div className={`font-body leading-loose text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
             {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
               const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
               return (
-                <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-semibold' : ''}`}>
+                <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-black text-primary dark:text-blue-400' : 'text-foreground/90'}`}>
                   {paragraph}
                 </p>
               );
@@ -158,16 +159,16 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
         </div>
       </main>
       
-      <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4">
-         <div className="flex items-center justify-center gap-2 bg-background/80 backdrop-blur-sm border rounded-full shadow-lg p-2">
-            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-10 w-10">
+      <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4 pb-8">
+         <div className="flex items-center justify-center gap-2 bg-background/60 backdrop-blur-xl border border-white/50 rounded-full shadow-2xl p-2 animate-in slide-in-from-bottom-4 duration-1000">
+            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-10 w-10 bg-white/50">
               <ZoomOut className="h-5 w-5" />
             </Button>
             <HymnAdminActions hymn={hymn} onDelete={handleDelete} onUpdate={handleUpdate} />
-            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700">
+            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700 bg-white/50">
               <Share2 className="h-5 w-5" />
             </Button>
-            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10">
+            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10 bg-white/50">
               <ZoomIn className="h-5 w-5" />
             </Button>
          </div>

@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { YouthChoir } from '@/lib/youth-choirs';
@@ -124,12 +123,14 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
   const isFav = isFavoritesLoaded && isFavorite(youthChoir.id, 'youth-choir');
 
   return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-chart-5/10 animate-fade-in" />
+    <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
+      {/* Fondo Innovador Animado */}
+      <div className="fixed inset-0 -z-10 pointer-events-none">
+        <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-background to-chart-5/5" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)] animate-aura" />
       </div>
       
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-24">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md p-2 border-b h-24">
         <Button variant="ghost" size="icon" asChild className="h-12 w-12">
           <Link href={backHref}>
             <ChevronLeft className="h-7 w-7" />
@@ -143,12 +144,12 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
             </h1>
             <div className="flex items-center justify-center gap-2 mt-2">
                 <EditToneDialog song={youthChoir} onToneUpdated={handleToneUpdate}>
-                <Button variant="outline" size="sm" className="h-auto px-3 py-1 text-xs rounded-full">
+                <Button variant="outline" size="sm" className="h-auto px-3 py-1 text-xs rounded-full bg-white/50 backdrop-blur-sm">
                     {youthChoir.tone || 'Tonalidad'}
                 </Button>
                 </EditToneDialog>
                 {youthChoir.speed && (
-                    <Badge variant="secondary" className="text-xs capitalize rounded-full px-3 py-1">
+                    <Badge variant="secondary" className="text-xs capitalize rounded-full px-3 py-1 bg-white/50 backdrop-blur-sm">
                       {youthChoir.speed === 'Rapido' ? 'Avivamiento' : 'Meditación'}
                     </Badge>
                 )}
@@ -161,26 +162,26 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
         </Button>
       </header>
 
-      <main className="flex-1 py-8 px-4 flex flex-col justify-center items-center relative overflow-hidden">
+      <main className="flex-1 py-8 px-4 flex flex-col justify-center items-center relative">
         {groupLogo && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 opacity-[0.12] dark:opacity-[0.08]">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 opacity-[0.15] dark:opacity-[0.1] scale-110 sm:scale-100">
             <Image 
               src={groupLogo} 
               alt="Watermark" 
               width={600} 
               height={600} 
-              className="object-contain scale-110 sm:scale-100"
+              className="object-contain animate-float"
               priority
             />
           </div>
         )}
 
-        <div className="w-full max-w-3xl bg-background/60 backdrop-blur-lg border rounded-2xl p-6 sm:p-10 shadow-xl relative">
+        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-6 sm:p-10 shadow-2xl animate-in fade-in zoom-in-95 duration-1000">
           <div className={`font-body leading-loose text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
             {youthChoir.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
               const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
               return (
-                <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-semibold' : ''}`}>
+                <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-black text-primary dark:text-blue-400' : 'text-foreground/90'}`}>
                   {paragraph}
                 </p>
               );
@@ -189,16 +190,16 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
         </div>
       </main>
 
-      <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4">
-           <div className="flex items-center justify-center gap-2 bg-background/80 backdrop-blur-sm border rounded-full shadow-lg p-2">
-            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-10 w-10">
+      <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4 pb-8">
+           <div className="flex items-center justify-center gap-2 bg-background/60 backdrop-blur-xl border border-white/50 rounded-full shadow-2xl p-2 animate-in slide-in-from-bottom-4 duration-1000">
+            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-10 w-10 bg-white/50">
               <ZoomOut className="h-5 w-5" />
             </Button>
             <YouthChoirAdminActions youthChoir={youthChoir} onDelete={handleDelete} onUpdate={handleUpdate} />
-            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700">
+            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700 bg-white/50">
               <Share2 className="h-5 w-5" />
             </Button>
-            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10">
+            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10 bg-white/50">
               <ZoomIn className="h-5 w-5" />
             </Button>
          </div>
