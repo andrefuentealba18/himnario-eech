@@ -76,9 +76,9 @@ export default function HomePage() {
       <div className="relative z-10 flex flex-col min-h-screen">
         <div className="absolute top-4 right-4 md:top-6 md:right-6 animate-in fade-in zoom-in duration-1000 flex items-center gap-2">
           {isFullySynced && (
-            <Badge variant="outline" className="bg-white/50 backdrop-blur-md border-green-200 text-green-600 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400 gap-1.5 py-1.5 px-3 rounded-full animate-in fade-in slide-in-from-right-4 duration-1000">
-              <CheckCircle2 className="h-3.5 w-3.5" />
-              <span className="text-[10px] font-bold uppercase tracking-wider">Modo Offline Listo</span>
+            <Badge variant="outline" className="bg-white/50 backdrop-blur-md border-green-200 text-green-600 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400 gap-1 py-0.5 px-2 rounded-full animate-in fade-in slide-in-from-right-4 duration-1000 scale-90 sm:scale-100">
+              <CheckCircle2 className="h-3 w-3" />
+              <span className="text-[9px] font-bold uppercase tracking-tight">Offline Listo</span>
             </Badge>
           )}
           <ThemeToggle />
