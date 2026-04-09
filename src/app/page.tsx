@@ -3,12 +3,17 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { Music, Book, Mic, Library } from 'lucide-react';
+import { Music, Book, Mic, Library, WifiOff, CheckCircle2 } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { InstallPWAButton } from '@/components/install-pwa-button';
 import { GlobalSearch } from '@/components/global-search';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { useHymns } from '@/context/hymns-context';
+import { usePraises } from '@/context/praises-context';
+import { useChoirs } from '@/context/choirs-context';
+import { useYouthChoirs } from '@/context/youth-choirs-context';
+import { Badge } from '@/components/ui/badge';
 
 const navigationItems = [
   {
@@ -46,6 +51,13 @@ const navigationItems = [
 ];
 
 export default function HomePage() {
+  const { isLoaded: hymnsLoaded } = useHymns();
+  const { isLoaded: praisesLoaded } = usePraises();
+  const { isLoaded: choirsLoaded } = useChoirs();
+  const { isLoaded: youthChoirsLoaded } = useYouthChoirs();
+
+  const isFullySynced = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded;
+
   const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
 
   return (
@@ -62,7 +74,13 @@ export default function HomePage() {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
-        <div className="absolute top-4 right-4 md:top-6 md:right-6 animate-in fade-in zoom-in duration-1000">
+        <div className="absolute top-4 right-4 md:top-6 md:right-6 animate-in fade-in zoom-in duration-1000 flex items-center gap-2">
+          {isFullySynced && (
+            <Badge variant="outline" className="bg-white/50 backdrop-blur-md border-green-200 text-green-600 dark:bg-green-500/10 dark:border-green-500/20 dark:text-green-400 gap-1.5 py-1.5 px-3 rounded-full animate-in fade-in slide-in-from-right-4 duration-1000">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+              <span className="text-[10px] font-bold uppercase tracking-wider">Modo Offline Listo</span>
+            </Badge>
+          )}
           <ThemeToggle />
         </div>
 
@@ -114,6 +132,13 @@ export default function HomePage() {
               </div>
             ))}
           </div>
+          
+          {!isFullySynced && (
+            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] animate-pulse mb-4">
+              <WifiOff className="h-3 w-3" />
+              Sincronizando para uso sin internet...
+            </div>
+          )}
           
           <footer className="w-full text-center mt-16 pb-10 space-y-8 animate-in fade-in duration-1000 delay-500">
             <div className="h-px w-24 bg-gradient-to-r from-transparent via-slate-300 dark:via-white/10 to-transparent mx-auto" />

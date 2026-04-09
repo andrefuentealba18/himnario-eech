@@ -14,8 +14,8 @@ const services = (() => {
     app = getApp();
   }
 
-  // Modern way to enable persistence using persistentLocalCache
-  // This resolves the 'indexedDbLocalCache' not found error
+  // Configuración de persistencia avanzada para uso OFFLINE total
+  // Utilizamos persistentLocalCache para asegurar que los datos se guarden en IndexedDB
   const firestoreInstance = initializeFirestore(app, {
     localCache: persistentLocalCache({
       tabManager: persistentSingleTabManager()
