@@ -115,7 +115,7 @@
 /* Animaciones Fluidas */
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(1deg); }
+  50% { transform: translateY(-15px) rotate(1.5deg); }
 }
 
 .animate-float {
@@ -151,25 +151,24 @@
   animation: aura-slow 15s ease-in-out infinite;
 }
 
-@keyframes gradient-move {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+@keyframes loading-beam {
+  0% { transform: translateX(-100%); opacity: 0; }
+  20% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { transform: translateX(250%); opacity: 0; }
 }
 
-.animate-gradient-move {
-  background-size: 200% 200%;
-  animation: gradient-move 10s ease infinite;
+.animate-loading-beam {
+  animation: loading-beam 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-/* Transiciones Cinematográficas */
 @keyframes title-reveal {
-  0% { transform: translateY(20px) scale(0.9); opacity: 0; filter: blur(10px); }
-  100% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0); }
+  0% { transform: translateY(20px) scale(0.9); opacity: 0; filter: blur(10px); letter-spacing: 0.1em; }
+  100% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0); letter-spacing: 0.3em; }
 }
 
 .animate-title-reveal {
-  animation: title-reveal 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: title-reveal 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
 @keyframes slide-fade-up {
@@ -179,13 +178,4 @@
 
 .animate-slide-fade-up {
   animation: slide-fade-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
-}
-
-@keyframes loading-stripes {
-  0% { transform: translateX(-150%); }
-  100% { transform: translateX(150%); }
-}
-
-.animate-loading-stripes {
-  animation: loading-stripes 2.5s infinite ease-in-out;
 }
