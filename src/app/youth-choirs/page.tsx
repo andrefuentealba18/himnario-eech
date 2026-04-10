@@ -20,6 +20,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import type { GroupType } from '@/lib/youth-choirs';
 import { cn } from '@/lib/utils';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const groups: { name: GroupType; icon?: any; imageUrl?: string; color: string; iconColor?: string }[] = [
   { name: "Coro Juventud", imageUrl: "https://i.postimg.cc/bvk974Xp/IMG_2532.jpg", color: "bg-transparent" },
@@ -41,6 +42,8 @@ export default function YouthChoirsIndexPage() {
     const timer = setTimeout(() => setShowIntro(false), 2200);
     return () => clearTimeout(timer);
   }, []);
+
+  const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
 
   const countsByGroup = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -75,7 +78,20 @@ export default function YouthChoirsIndexPage() {
     return (
       <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
-        <div className="relative flex flex-col items-center gap-8">
+        <div className="relative flex flex-col items-center gap-10">
+          {/* Insignia Institucional Animada */}
+          <div className="relative w-28 h-28 md:w-36 md:h-36 animate-in fade-in zoom-in-95 duration-1000 ease-out">
+            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
+            <Image 
+              src={insigniaUrl} 
+              alt="Insignia EECH" 
+              width={144} 
+              height={144} 
+              className="relative rounded-full object-cover shadow-2xl border-4 border-white"
+              priority
+            />
+          </div>
+
           <div className="space-y-4 text-center">
             <div className="h-px w-16 bg-primary/20 mx-auto animate-in fade-in slide-in-from-left duration-1000" />
             <h1 className="text-4xl md:text-7xl font-black font-headline tracking-[0.3em] text-primary animate-in fade-in zoom-in-95 duration-1000 ease-out uppercase text-glow">
