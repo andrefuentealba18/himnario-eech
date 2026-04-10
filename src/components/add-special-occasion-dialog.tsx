@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState, useMemo } from 'react';
@@ -88,7 +87,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     return allSongs.filter(s => 
       s.title.toLowerCase().includes(term) || 
       (s.type === 'Himno' && s.title.includes(term))
-    ).slice(0, 15);
+    ).slice(0, 30); // Aumentado a 30 resultados
   }, [allSongs, searchSong]);
 
   const form = useForm<FormData>({
@@ -193,21 +192,23 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
               </Tabs>
             </div>
 
-            <ScrollArea className="flex-1">
-              <div className="p-6">
-                <Tabs defaultValue="import" className="w-full">
-                  <TabsContent value="import" className="mt-0 space-y-6">
+            <div className="flex-1 overflow-hidden">
+              <Tabs defaultValue="import" className="h-full flex flex-col">
+                <TabsContent value="import" className="mt-0 flex-1 overflow-hidden flex flex-col">
+                  <div className="p-6 pb-2">
                     <div className="relative group">
                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-amber-600 transition-colors" />
                       <Input 
                         placeholder="Escribe título o número..." 
                         className="pl-12 h-14 rounded-2xl border-2 bg-background focus:ring-4 focus:ring-amber-500/10"
                         value={searchSong}
-                        onChange={(e) => setSearchSong(e.target.value)}
+                        onChange={(e) => setSearchTerm(e.target.value)}
                       />
                     </div>
-                    
-                    <div className="space-y-3">
+                  </div>
+                  
+                  <ScrollArea className="flex-1 px-6">
+                    <div className="space-y-3 py-4">
                       {filteredSongs.length > 0 ? filteredSongs.map((song, i) => (
                         <button
                           key={i}
@@ -241,7 +242,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                     </div>
 
                     {form.watch('title') && (
-                      <div className="p-4 rounded-2xl bg-green-50 border border-green-100 animate-in zoom-in-95 duration-300">
+                      <div className="mb-6 p-4 rounded-2xl bg-green-50 border border-green-100 animate-in zoom-in-95 duration-300">
                         <div className="flex items-center gap-2 text-green-700 mb-4">
                           <CheckCircle2 className="h-5 w-5" />
                           <p className="text-xs font-bold">Canto cargado: "{form.watch('title')}"</p>
@@ -277,9 +278,11 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                         </Form>
                       </div>
                     )}
-                  </TabsContent>
+                  </ScrollArea>
+                </TabsContent>
 
-                  <TabsContent value="manual" className="mt-0">
+                <TabsContent value="manual" className="mt-0 flex-1 overflow-y-auto">
+                  <div className="p-6">
                     <Form {...form}>
                       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                         <FormField
@@ -356,10 +359,10 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                         </Button>
                       </form>
                     </Form>
-                  </TabsContent>
-                </Tabs>
-              </div>
-            </ScrollArea>
+                  </div>
+                </TabsContent>
+              </Tabs>
+            </div>
           </div>
         )}
       </DialogContent>

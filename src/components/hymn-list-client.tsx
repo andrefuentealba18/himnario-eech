@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { Hymn } from '@/lib/hymns';
@@ -80,14 +79,14 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
             Favoritos
           </TabsTrigger>
         </TabsList>
-        <TabsContent value="all">
+        <TabsContent value="all" className="mt-0">
           <HymnRoll hymns={filteredHymns} />
         </TabsContent>
-        <TabsContent value="favorites">
+        <TabsContent value="favorites" className="mt-0">
           {isLoaded && filteredHymns.length === 0 ? (
-            <div className="text-center text-muted-foreground py-10">
-              <p>No tienes himnos favoritos.</p>
-              <p className="text-xs">Toca la estrella en un himno para agregarlo.</p>
+            <div className="text-center text-muted-foreground py-20">
+              <p className="font-bold">No tienes favoritos aún</p>
+              <p className="text-[10px] uppercase tracking-widest mt-2">Toca la estrella en un himno</p>
             </div>
           ) : (
             <HymnRoll hymns={filteredHymns} />
@@ -101,30 +100,30 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
 function HymnRoll({ hymns }: { hymns: (Hymn & { _searchIndex?: string })[] }) {
   if (hymns.length === 0) {
     return (
-      <div className="text-center text-muted-foreground py-10">
-        <p>No se encontraron himnos.</p>
+      <div className="text-center text-muted-foreground py-20">
+        <p className="text-xs uppercase font-black tracking-widest">No se hallaron resultados</p>
       </div>
     );
   }
 
   return (
-    <ScrollArea className="h-[calc(100vh-13rem)]">
-        <div className="flex flex-col">
+    <ScrollArea className="h-[calc(100vh-14rem)] pr-2">
+        <div className="flex flex-col pb-10">
         {hymns.map((hymn) => (
             <Link
                 href={`/hymns/${hymn.number}`}
                 key={hymn.number}
-                className="flex items-center gap-3 p-3 border-b transition-colors hover:bg-muted/50 rounded-lg"
+                className="flex items-center gap-3 p-3 border-b transition-colors hover:bg-muted/50 rounded-lg group"
             >
-                <span className="font-black text-primary w-7 text-center text-xs">{hymn.number}</span>
+                <span className="font-black text-primary w-7 text-center text-xs opacity-60 group-hover:opacity-100">{hymn.number}</span>
                 <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
                     <div className="flex items-center gap-2 overflow-hidden">
-                      <span className="font-bold text-[13px] text-slate-700 dark:text-slate-200 truncate">{hymn.title}</span>
+                      <span className="font-bold text-[13px] text-slate-700 dark:text-slate-200 truncate group-hover:text-primary transition-colors">{hymn.title}</span>
                       {isNewSong(hymn.createdAt) && (
                         <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[8px] py-0 px-1.5 h-4 flex-shrink-0">NEW</Badge>
                       )}
                     </div>
-                    {hymn.tone && <Badge variant="outline" className="flex-shrink-0 text-[9px] h-5 px-1.5 font-bold border-primary/20 text-primary">{hymn.tone}</Badge>}
+                    {hymn.tone && <Badge variant="outline" className="flex-shrink-0 text-[9px] h-5 px-1.5 font-bold border-primary/20 text-primary bg-primary/5">{hymn.tone}</Badge>}
                 </div>
             </Link>
         ))}
