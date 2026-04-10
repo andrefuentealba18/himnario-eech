@@ -23,12 +23,23 @@ export default function ChoirsIndexPage() {
   const { choirs, addChoir, addChoirs, isLoaded } = useChoirs();
   const [isSingleChoirDialogOpen, setSingleChoirDialogOpen] = useState(false);
   const [isMultiChoirDialogOpen, setMultiChoirDialogOpen] = useState(false);
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowIntro(false), 2800);
-    return () => clearTimeout(timer);
+    const introSeen = sessionStorage.getItem('intro_seen_choirs');
+    if (!introSeen) {
+      setShowIntro(true);
+      const timer = setTimeout(() => {
+        setShowIntro(false);
+        sessionStorage.setItem('intro_seen_choirs', 'true');
+        setIsReady(true);
+      }, 2800);
+      return () => clearTimeout(timer);
+    } else {
+      setIsReady(true);
+    }
   }, []);
 
   const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
@@ -52,7 +63,6 @@ export default function ChoirsIndexPage() {
   if (showIntro) {
     return (
       <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center overflow-hidden">
-        {/* FONDO CINEMÁTICO TOTAL */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-100/40 via-white to-red-100/40" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] bg-blue-600/10 rounded-full blur-[160px] animate-aura-giant" />
@@ -60,7 +70,6 @@ export default function ChoirsIndexPage() {
           <div className="absolute inset-0 design-grid opacity-[0.08]" />
         </div>
         
-        {/* INSIGNIA SUPERIOR CON HALO DORADO */}
         <div className="absolute top-24 right-12 w-24 h-24 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out">
           <div className="absolute inset-0 bg-amber-400/25 blur-[100px] rounded-full scale-150 animate-pulse" />
           <div className="relative p-1.5 bg-gradient-to-tr from-amber-400/60 to-transparent rounded-full shadow-2xl">
@@ -75,15 +84,13 @@ export default function ChoirsIndexPage() {
           </div>
         </div>
 
-        {/* CONTENIDO CENTRAL */}
         <div className="relative flex flex-col items-center">
           <div className="space-y-12 text-center px-6">
             <div className="relative">
-              <h1 className="text-6xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.2em]">
+              <h1 className="text-5xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.2em]">
                 Coros
               </h1>
               
-              {/* PISTA DE CARGA DE ENERGÍA TRICOLOR MAGNIFICADA */}
               <div className="mt-12 relative w-80 h-2 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
                 <div className="absolute inset-0 flex">
                   <div className="h-full flex-1 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.8)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
@@ -95,7 +102,6 @@ export default function ChoirsIndexPage() {
           </div>
         </div>
 
-        {/* FOOTER INSTITUCIONAL */}
         <div className="absolute bottom-24 left-0 w-full text-center px-8">
           <div className="flex flex-col items-center gap-6">
             <p className="text-[11px] font-black tracking-[0.8em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
@@ -111,6 +117,8 @@ export default function ChoirsIndexPage() {
       </div>
     );
   }
+
+  if (!isReady) return null;
 
   return (
     <>

@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { Music, Book, Mic, Library, WifiOff, Sparkles, ChevronRight } from 'lucide-react';
+import { Music, Book, Mic, Library, WifiOff, Sparkles } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { InstallPWAButton } from '@/components/install-pwa-button';
 import { AppearanceDialog } from '@/components/appearance-dialog';
@@ -15,6 +15,7 @@ import { useChoirs } from '@/context/choirs-context';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
 import { useSpecialOccasions } from '@/context/special-occasions-context';
 import { useAppearance } from '@/hooks/use-appearance';
+import { useEffect } from 'react';
 
 const navigationItems = [
   {
@@ -58,6 +59,15 @@ export default function HomePage() {
   const { isLoaded: youthChoirsLoaded } = useYouthChoirs();
   const { isLoaded: specialOccasionsLoaded } = useSpecialOccasions();
   const { isLoaded: appearanceLoaded } = useAppearance();
+
+  useEffect(() => {
+    // Al estar en el Home, permitimos que las intros se vuelvan a mostrar al entrar
+    sessionStorage.removeItem('intro_seen_hymns');
+    sessionStorage.removeItem('intro_seen_praises');
+    sessionStorage.removeItem('intro_seen_choirs');
+    sessionStorage.removeItem('intro_seen_youth_choirs');
+    sessionStorage.removeItem('intro_seen_special_occasions');
+  }, []);
 
   const isFullySynced = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded && specialOccasionsLoaded && appearanceLoaded;
 
@@ -149,7 +159,6 @@ export default function HomePage() {
               ))}
             </div>
 
-            {/* BOTÓN OCASIONES ESPECIALES - CENTRADO */}
             <div className="animate-in fade-in zoom-in-95 duration-700 delay-500">
               <Link href="/special-occasions" className="group block">
                 <Card className="border-none bg-gradient-to-r from-amber-500/10 to-amber-600/5 backdrop-blur-xl hover:bg-amber-500/20 transition-all duration-500 hover:-translate-y-1 active:scale-95 overflow-hidden relative app-card card-glow">

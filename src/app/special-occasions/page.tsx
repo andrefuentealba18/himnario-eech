@@ -13,12 +13,23 @@ import type { SpecialCategory } from '@/lib/special-occasions';
 
 export default function SpecialOccasionsPage() {
   const { specialOccasions, isLoaded } = useSpecialOccasions();
-  const [showIntro, setShowIntro] = useState(true);
+  const [showIntro, setShowIntro] = useState(false);
+  const [isReady, setIsReady] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<SpecialCategory | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowIntro(false), 2800);
-    return () => clearTimeout(timer);
+    const introSeen = sessionStorage.getItem('intro_seen_special_occasions');
+    if (!introSeen) {
+      setShowIntro(true);
+      const timer = setTimeout(() => {
+        setShowIntro(false);
+        sessionStorage.setItem('intro_seen_special_occasions', 'true');
+        setIsReady(true);
+      }, 2800);
+      return () => clearTimeout(timer);
+    } else {
+      setIsReady(true);
+    }
   }, []);
 
   const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
@@ -26,14 +37,12 @@ export default function SpecialOccasionsPage() {
   if (showIntro) {
     return (
       <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center overflow-hidden">
-        {/* FONDO CINEMÁTICO TOTAL */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[15%] left-[15%] w-[180vw] h-[180vw] bg-blue-600/10 rounded-full blur-[160px] animate-aura-giant" />
           <div className="absolute bottom-[15%] right-[15%] w-[160vw] h-[160vw] bg-red-600/10 rounded-full blur-[180px] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-4s' }} />
           <div className="absolute inset-0 design-grid opacity-[0.08]" />
         </div>
         
-        {/* INSIGNIA SUPERIOR MAGNIFICADA */}
         <div className="absolute top-24 right-12 w-24 h-24 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out">
           <div className="absolute inset-0 bg-amber-400/30 blur-[100px] rounded-full scale-150 animate-pulse" />
           <div className="relative p-1.5 bg-gradient-to-tr from-amber-400/60 to-transparent rounded-full shadow-2xl">
@@ -48,7 +57,6 @@ export default function SpecialOccasionsPage() {
                 Ocasiones<br/><span className="text-amber-600">Especiales</span>
               </h1>
               
-              {/* BARRA TRICOLOR MAGNIFICADA */}
               <div className="mt-12 relative w-80 h-2 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
                 <div className="absolute inset-0 flex">
                   <div className="h-full flex-1 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.8)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
@@ -75,6 +83,8 @@ export default function SpecialOccasionsPage() {
       </div>
     );
   }
+
+  if (!isReady) return null;
 
   return (
     <main className="relative flex flex-col items-center bg-background min-h-screen animate-in fade-in duration-1000">
