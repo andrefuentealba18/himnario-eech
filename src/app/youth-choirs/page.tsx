@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from 'react';
 import { YouthChoirListClient } from '@/components/youth-choir-list-client';
-import { Users, ChevronLeft, Plus, Baby, UserCircle, Library, Loader2 } from 'lucide-react';
+import { Users, ChevronLeft, Plus, Baby, UserCircle, Library, Loader2, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -39,7 +39,7 @@ export default function YouthChoirsIndexPage() {
   const { toast } = useToast();
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowIntro(false), 2200);
+    const timer = setTimeout(() => setShowIntro(false), 2500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -76,37 +76,56 @@ export default function YouthChoirsIndexPage() {
 
   if (showIntro) {
     return (
-      <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
+      <div className="fixed inset-0 z-[100] bg-white dark:bg-slate-950 flex flex-col items-center justify-center overflow-hidden transition-colors duration-700">
+        {/* EFECTOS DE FONDO CINEMÁTICOS */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/5 rounded-full blur-[120px] animate-aura-slow" />
+          <div className="absolute inset-0 design-grid opacity-10" />
+          <div className="absolute top-1/4 left-1/4 w-[100vw] h-[100vw] bg-gradient-to-br from-amber-200/5 to-transparent blur-[100px] animate-pulse" />
+        </div>
         
-        <div className="absolute top-20 right-8 w-16 h-16 animate-in fade-in zoom-in-95 duration-1000 ease-out">
-          <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full scale-125 animate-pulse" />
+        {/* INSIGNIA ESQUINA SUPERIOR DERECHA */}
+        <div className="absolute top-12 right-8 w-14 h-14 animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-1000 ease-out">
+          <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-150 animate-pulse" />
           <Image 
             src={insigniaUrl} 
             alt="Insignia EECH" 
-            width={64} 
-            height={64} 
-            className="relative rounded-full object-cover shadow-xl border-2 border-white"
+            width={56} 
+            height={56} 
+            className="relative rounded-full object-cover shadow-2xl border-2 border-white dark:border-white/10"
             priority
           />
         </div>
 
+        {/* CONTENIDO CENTRAL */}
         <div className="relative flex flex-col items-center">
-          <div className="space-y-4 text-center">
-            <div className="h-px w-12 bg-primary/20 mx-auto animate-in fade-in slide-in-from-left duration-1000" />
-            <h1 className="text-4xl font-black font-headline tracking-[0.2em] text-primary animate-in fade-in zoom-in-95 duration-1000 ease-out uppercase text-glow">
-              Agrupaciones
-            </h1>
-            <div className="h-px w-12 bg-primary/20 mx-auto animate-in fade-in slide-in-from-right duration-1000" />
+          <div className="space-y-6 text-center">
+            <div className="flex flex-col items-center gap-2 mb-2 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-300">
+              <Library className="h-5 w-5 text-primary/40" />
+              <div className="h-px w-8 bg-primary/20" />
+            </div>
+            
+            <div className="relative group">
+              <h1 className="text-5xl font-black font-headline tracking-[0.15em] text-slate-900 dark:text-white animate-title-reveal uppercase text-glow">
+                Agrupaciones
+              </h1>
+              <div className="absolute -inset-x-8 -bottom-4 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent scale-x-0 animate-in slide-in-from-left duration-1000 delay-500 fill-mode-forwards" style={{ transform: 'scaleX(1)' }} />
+            </div>
+
+            <p className="text-[10px] font-black tracking-[0.6em] text-primary/60 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-700 pt-4">
+              Cánticos Especiales
+            </p>
           </div>
         </div>
+
+        {/* PIE DE PÁGINA SOLEMNE */}
         <div className="absolute bottom-16 left-0 w-full text-center px-6">
-          <div className="flex items-center justify-center gap-4 mb-2 opacity-40">
-            <div className="h-px w-6 bg-slate-400" />
-            <span className="text-[8px] font-black uppercase tracking-[0.3em]">Oficial</span>
-            <div className="h-px w-6 bg-slate-400" />
+          <div className="flex items-center justify-center gap-4 mb-3 opacity-20 dark:opacity-40">
+            <div className="h-px w-12 bg-slate-400" />
+            <Sparkles className="h-3 w-3 text-slate-400 animate-pulse" />
+            <div className="h-px w-12 bg-slate-400" />
           </div>
-          <p className="text-[10px] font-black tracking-[0.5em] text-slate-500 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+          <p className="text-[9px] font-black tracking-[0.4em] text-slate-500 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
             Ejército Evangélico de Chile
           </p>
         </div>
