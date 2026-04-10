@@ -80,8 +80,7 @@ export default function YouthChoirsIndexPage() {
       <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
         
-        {/* Insignia en la esquina superior derecha optimizada para móvil */}
-        <div className="absolute top-8 right-8 w-20 h-20 animate-in fade-in zoom-in-95 duration-1000 ease-out">
+        <div className="absolute top-12 right-8 w-20 h-20 animate-in fade-in zoom-in-95 duration-1000 ease-out">
           <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full scale-125 animate-pulse" />
           <Image 
             src={insigniaUrl} 
@@ -125,24 +124,24 @@ export default function YouthChoirsIndexPage() {
         </div>
 
         <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
-          <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm pt-16 pb-6 px-4 border-b flex items-center justify-center relative">
-              <div className="absolute left-2 top-1/2 -translate-y-1/2 mt-10 sm:mt-8">
+          <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm pt-32 pb-8 px-4 border-b flex items-center justify-center relative">
+              <div className="absolute left-2 top-1/2 -translate-y-1/2 mt-16">
                   {selectedGroup ? (
-                    <Button variant="ghost" size="icon" onClick={() => setSelectedGroup(null)} className="rounded-full">
-                      <ChevronLeft className="h-6 w-6" />
+                    <Button variant="ghost" size="icon" onClick={() => setSelectedGroup(null)} className="rounded-full h-12 w-12">
+                      <ChevronLeft className="h-7 w-7" />
                       <span className="sr-only">Volver al menú</span>
                     </Button>
                   ) : (
-                    <Button variant="ghost" size="icon" asChild className="rounded-full">
+                    <Button variant="ghost" size="icon" asChild className="rounded-full h-12 w-12">
                       <Link href="/">
-                          <ChevronLeft className="h-6 w-6" />
+                          <ChevronLeft className="h-7 w-7" />
                           <span className="sr-only">Volver</span>
                       </Link>
                     </Button>
                   )}
               </div>
-              <div className="flex items-center gap-3 px-10 mt-10 sm:mt-8">
-                <h1 className="text-lg font-bold font-headline text-foreground truncate">
+              <div className="flex items-center gap-3 px-10 mt-16">
+                <h1 className="text-xl font-bold font-headline text-foreground truncate">
                   {selectedGroup || "Agrupaciones"}
                 </h1>
                 {selectedGroup && (
@@ -150,12 +149,12 @@ export default function YouthChoirsIndexPage() {
                     {filteredByGroup.length}
                   </Badge>
                 )}
-                {!selectedGroup && <Library className="h-5 w-5 text-primary" />}
+                {!selectedGroup && <Library className="h-6 w-6 text-primary" />}
               </div>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 mt-10 sm:mt-8">
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 mt-16">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="rounded-full h-9">
+                      <Button variant="outline" size="sm" className="rounded-full h-10 px-4">
                         <Plus className="mr-1 h-4 w-4" />
                         Agregar
                       </Button>

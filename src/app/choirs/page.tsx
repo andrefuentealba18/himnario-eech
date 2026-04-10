@@ -55,8 +55,7 @@ export default function ChoirsIndexPage() {
       <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
         
-        {/* Insignia en la esquina superior derecha optimizada para móvil */}
-        <div className="absolute top-8 right-8 w-20 h-20 animate-in fade-in zoom-in-95 duration-1000 ease-out">
+        <div className="absolute top-12 right-8 w-20 h-20 animate-in fade-in zoom-in-95 duration-1000 ease-out">
           <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full scale-125 animate-pulse" />
           <Image 
             src={insigniaUrl} 
@@ -100,7 +99,7 @@ export default function ChoirsIndexPage() {
         </div>
 
         <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
-          <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm pt-16 pb-6 px-4 border-b flex items-center justify-between relative">
+          <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm pt-32 pb-8 px-4 border-b flex items-center justify-between relative">
               <Button variant="ghost" size="icon" asChild className="rounded-full">
                   <Link href="/">
                       <ChevronLeft className="h-6 w-6" />

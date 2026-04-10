@@ -42,7 +42,7 @@ const groupLogos: Record<string, string> = {
 function YouthChoirDetailSkeleton() {
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-16 pb-6 px-4 border-b h-32">
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-32 pb-8 px-4 border-b h-48">
                 <Skeleton className="h-12 w-12 rounded-full" />
                 <div className="flex-1 px-4 text-center">
                     <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
@@ -125,13 +125,12 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
 
   return (
     <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
-      {/* Fondo Innovador Animado */}
       <div className="fixed inset-0 -z-10 pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-primary/5 via-background to-chart-5/5" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)] animate-aura" />
       </div>
       
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-16 pb-6 px-4 border-b h-36">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-32 pb-8 px-4 border-b h-48">
         <Button variant="ghost" size="icon" asChild className="h-12 w-12">
           <Link href={backHref}>
             <ChevronLeft className="h-7 w-7" />
@@ -198,7 +197,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
             </Button>
             <YouthChoirAdminActions youthChoir={youthChoir} onDelete={handleDelete} onUpdate={handleUpdate} />
             <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700 bg-white/50">
-              Share2 className="h-5 w-5" />
+              <Share2 className="h-5 w-5" />
             </Button>
             <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10 bg-white/50">
               <ZoomIn className="h-5 w-5" />
