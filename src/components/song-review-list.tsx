@@ -5,9 +5,11 @@ import { useMemo } from 'react';
 import { usePraises } from '@/context/praises-context';
 import { useChoirs } from '@/context/choirs-context';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
+import { useSpecialOccasions } from '@/context/special-occasions-context';
 import type { Praise } from '@/lib/praises';
 import type { Choir } from '@/lib/choirs';
 import type { YouthChoir } from '@/lib/youth-choirs';
+import type { SpecialOccasion } from '@/lib/special-occasions';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -34,82 +36,86 @@ import { EditPraiseDialog } from './edit-praise-dialog';
 import { EditChoirDialog } from './edit-choir-dialog';
 import { EditYouthChoirDialog } from './edit-youth-choir-dialog';
 
-type PendingSong = (Praise | Choir | YouthChoir) & { category: 'praise' | 'choir' | 'youth-choir' };
+type PendingSong = (Praise | Choir | YouthChoir | SpecialOccasion) & { categoryType: 'praise' | 'choir' | 'youth-choir' | 'special-occasion' };
 
 const categoryLabels = {
   praise: 'Alabanza General',
   choir: 'Coro',
   'youth-choir': 'Agrupación',
+  'special-occasion': 'Ocasión Especial',
 };
 
 export function SongReviewList() {
   const { pendingPraises, approvePraise, deletePraise, updatePraise, isLoaded: praisesLoaded } = usePraises();
   const { pendingChoirs, approveChoir, deleteChoir, updateChoir, isLoaded: choirsLoaded } = useChoirs();
   const { pendingYouthChoirs, approveYouthChoir, deleteYouthChoir, updateYouthChoir, isLoaded: youthChoirsLoaded } = useYouthChoirs();
+  const { pendingSpecialOccasions, approveSpecialOccasion, deleteSpecialOccasion, updateSpecialOccasion, isLoaded: specialsLoaded } = useSpecialOccasions();
 
-  // Consolidamos todo lo que ya ha llegado, sin importar si otras categorías siguen cargando
   const allPendingSongs: PendingSong[] = useMemo(() => {
     const list: PendingSong[] = [
-      ...pendingPraises.map(s => ({ ...s, category: 'praise' as const })),
-      ...pendingChoirs.map(s => ({ ...s, category: 'choir' as const })),
-      ...pendingYouthChoirs.map(s => ({ ...s, category: 'youth-choir' as const })),
+      ...pendingPraises.map(s => ({ ...s, categoryType: 'praise' as const })),
+      ...pendingChoirs.map(s => ({ ...s, categoryType: 'choir' as const })),
+      ...pendingYouthChoirs.map(s => ({ ...s, categoryType: 'youth-choir' as const })),
+      ...pendingSpecialOccasions.map(s => ({ ...s, categoryType: 'special-occasion' as const })),
     ];
 
-    // Ordenar por fecha: lo más nuevo arriba. 
-    // Usamos el ID como fallback de tiempo si el createdAt aún no llega del servidor
     return list.sort((a, b) => {
       const timeA = a.createdAt?.toMillis?.() || a.createdAt?.seconds * 1000 || Date.now();
       const timeB = b.createdAt?.toMillis?.() || b.createdAt?.seconds * 1000 || Date.now();
       return timeB - timeA;
     });
-  }, [pendingPraises, pendingChoirs, pendingYouthChoirs]);
+  }, [pendingPraises, pendingChoirs, pendingYouthChoirs, pendingSpecialOccasions]);
 
   const handleApprove = (song: PendingSong) => {
-    if (song.category === 'praise') approvePraise(song.id);
-    else if (song.category === 'choir') approveChoir(song.id);
-    else approveYouthChoir(song.id);
+    if (song.categoryType === 'praise') approvePraise(song.id);
+    else if (song.categoryType === 'choir') approveChoir(song.id);
+    else if (song.categoryType === 'youth-choir') approveYouthChoir(song.id);
+    else approveSpecialOccasion(song.id);
   };
 
   const handleDelete = (song: PendingSong) => {
-    if (song.category === 'praise') deletePraise(song.id);
-    else if (song.category === 'choir') deleteChoir(song.id);
-    else deleteYouthChoir(song.id);
+    if (song.categoryType === 'praise') deletePraise(song.id);
+    else if (song.categoryType === 'choir') deleteChoir(song.id);
+    else if (song.categoryType === 'youth-choir') deleteYouthChoir(song.id);
+    else deleteSpecialOccasion(song.id);
   };
 
   const handleUpdate = (song: PendingSong) => {
-    if (song.category === 'praise') return (data: Omit<Praise, 'id'>) => updatePraise(song.id, data);
-    if (song.category === 'choir') return (data: Omit<Choir, 'id'>) => updateChoir(song.id, data);
-    return (data: Omit<YouthChoir, 'id'>) => updateYouthChoir(song.id, data);
+    if (song.categoryType === 'praise') return (data: Omit<Praise, 'id'>) => updatePraise(song.id, data);
+    if (song.categoryType === 'choir') return (data: Omit<Choir, 'id'>) => updateChoir(song.id, data);
+    if (song.categoryType === 'youth-choir') return (data: Omit<YouthChoir, 'id'>) => updateYouthChoir(song.id, data);
+    return (data: Omit<SpecialOccasion, 'id'>) => updateSpecialOccasion(song.id, data);
   };
   
   const renderEditDialog = (song: PendingSong) => {
     const onUpdate = handleUpdate(song);
 
-    if (song.category === 'praise') {
+    if (song.categoryType === 'praise') {
         return (
             <EditPraiseDialog praise={song as Praise} onPraiseUpdated={onUpdate as any}>
                 <Button variant="outline" size="sm" className="h-9"><Edit className="mr-2 h-4 w-4" /> Modificar</Button>
             </EditPraiseDialog>
         );
     }
-    if (song.category === 'choir') {
+    if (song.categoryType === 'choir') {
         return (
             <EditChoirDialog choir={song as Choir} onChoirUpdated={onUpdate as any}>
                 <Button variant="outline" size="sm" className="h-9"><Edit className="mr-2 h-4 w-4" /> Modificar</Button>
             </EditChoirDialog>
         );
     }
-    if (song.category === 'youth-choir') {
+    if (song.categoryType === 'youth-choir') {
         return (
             <EditYouthChoirDialog youthChoir={song as YouthChoir} onYouthChoirUpdated={onUpdate as any}>
                 <Button variant="outline" size="sm" className="h-9"><Edit className="mr-2 h-4 w-4" /> Modificar</Button>
             </EditYouthChoirDialog>
         );
     }
+    // Para Special Occasions, por ahora usamos el mismo botón de aprobación o rechazo
     return null;
   }
 
-  const isAnyLoading = !praisesLoaded || !choirsLoaded || !youthChoirsLoaded;
+  const isAnyLoading = !praisesLoaded || !choirsLoaded || !youthChoirsLoaded || !specialsLoaded;
 
   if (allPendingSongs.length === 0) {
     if (isAnyLoading) {
@@ -151,10 +157,13 @@ export function SongReviewList() {
                   <CardTitle className="text-xl font-bold text-foreground leading-tight">{song.title}</CardTitle>
                   <div className="flex flex-wrap gap-2 pt-1">
                     <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-none">
-                      {categoryLabels[song.category]}
+                      {categoryLabels[song.categoryType]}
                     </Badge>
-                    {song.category === 'youth-choir' && (
+                    {song.categoryType === 'youth-choir' && (
                       <Badge variant="outline" className="border-primary/30 text-primary">{(song as YouthChoir).group}</Badge>
+                    )}
+                    {song.categoryType === 'special-occasion' && (
+                      <Badge variant="outline" className="border-amber-300 text-amber-700 bg-amber-50">{(song as SpecialOccasion).category}</Badge>
                     )}
                   </div>
                 </div>
@@ -166,11 +175,6 @@ export function SongReviewList() {
                 <span className="flex items-center gap-1 font-medium text-foreground/70">
                   Nota: <span className="text-primary font-bold">{song.tone || '---'}</span>
                 </span>
-                {(song.category === 'choir' || (song as any).speed) && (
-                  <span className="flex items-center gap-1 font-medium text-foreground/70">
-                    Ritmo: <span className="text-primary font-bold">{(song as any).speed || '---'}</span>
-                  </span>
-                )}
               </CardDescription>
             </CardHeader>
             <CardContent className="pb-4">

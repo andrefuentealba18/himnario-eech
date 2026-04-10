@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Sparkles, ChevronLeft, Loader2 } from 'lucide-react';
+import { Sparkles, ChevronLeft, Loader2, Plus } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -10,11 +10,13 @@ import { Badge } from '@/components/ui/badge';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useSpecialOccasions } from '@/context/special-occasions-context';
 import { SpecialOccasionListClient } from '@/components/special-occasion-list-client';
+import { AddSpecialOccasionDialog } from '@/components/add-special-occasion-dialog';
+import type { SpecialCategory } from '@/lib/special-occasions';
 
 export default function SpecialOccasionsPage() {
   const { specialOccasions, isLoaded } = useSpecialOccasions();
   const [showIntro, setShowIntro] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<SpecialCategory | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowIntro(false), 2400);
@@ -97,7 +99,9 @@ export default function SpecialOccasionsPage() {
             </h1>
             {!selectedCategory && <Sparkles className="h-5 w-5 text-amber-500" />}
           </div>
-          <div className="w-10"></div>
+          <div className="flex items-center">
+            <AddSpecialOccasionDialog initialCategory={selectedCategory || undefined} />
+          </div>
         </header>
 
         <div className="p-4 flex-1 overflow-auto">
@@ -111,7 +115,7 @@ export default function SpecialOccasionsPage() {
               <SpecialOccasionListClient 
                 specialOccasions={specialOccasions} 
                 activeCategory={selectedCategory}
-                onSelectCategory={setSelectedCategory}
+                onSelectCategory={(cat) => setSelectedCategory(cat as SpecialCategory)}
               />
             </div>
           )}
