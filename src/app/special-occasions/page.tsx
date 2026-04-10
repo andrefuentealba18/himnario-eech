@@ -44,16 +44,16 @@ export default function SpecialOccasionsPage() {
         <div className="relative flex flex-col items-center">
           <div className="space-y-12 text-center px-6">
             <div className="relative">
-              <h1 className="text-6xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase leading-tight tracking-[0.1em]">
+              <h1 className="text-4xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase leading-tight tracking-[0.1em]">
                 Ocasiones<br/><span className="text-amber-600">Especiales</span>
               </h1>
               
               {/* BARRA TRICOLOR MAGNIFICADA */}
               <div className="mt-12 relative w-80 h-2 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
                 <div className="absolute inset-0 flex">
-                  <div className="h-full w-32 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.8)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
+                  <div className="h-full flex-1 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.8)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
                   <div className="h-full w-24 bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.4s' }} />
-                  <div className="h-full w-32 bg-red-600 shadow-[0_0_20px_rgba(220,38,38,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.8s' }} />
+                  <div className="h-full flex-1 bg-red-600 shadow-[0_0_20px_rgba(220,38,38,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.8s' }} />
                 </div>
               </div>
             </div>
