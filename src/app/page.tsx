@@ -92,10 +92,10 @@ export default function HomePage() {
           <AppearanceDialog />
         </div>
 
-        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 py-10 space-y-8">
+        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-24 pb-10 space-y-10">
           
-          {/* HEADER - Ajustado para no estar tan arriba ni tan largo */}
-          <header className="w-full text-center space-y-6 animate-in fade-in slide-in-from-top-4 duration-1000">
+          {/* HEADER - Bajado significativamente */}
+          <header className="w-full text-center space-y-8 animate-in fade-in slide-in-from-top-4 duration-1000">
             <div className="relative inline-flex items-center justify-center group">
               <div className="absolute inset-0 bg-primary/20 blur-[40px] rounded-full scale-150 opacity-50" />
               <div className="relative p-1 bg-gradient-to-tr from-primary/80 to-primary/30 rounded-full shadow-xl animate-float">
@@ -112,7 +112,7 @@ export default function HomePage() {
               </div>
             </div>
             
-            <div className="space-y-1">
+            <div className="space-y-2">
               <div className="flex items-center justify-center gap-2 text-primary/40 mb-1">
                 <div className="h-px w-6 bg-current" />
                 <span className="text-[9px] font-black tracking-[0.3em] uppercase">Oficial</span>
@@ -127,12 +127,12 @@ export default function HomePage() {
             </div>
           </header>
 
-          {/* Buscador - Más integrado */}
+          {/* Buscador */}
           <div className="w-full flex flex-col items-center">
             <GlobalSearch />
           </div>
 
-          {/* Navegación Principal - Compacta para evitar scroll largo */}
+          {/* Navegación Principal - Compacta pero bien posicionada */}
           <div className="grid grid-cols-2 gap-4 w-full max-w-md">
             {navigationItems.map((item) => (
               <div key={item.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: item.delay }}>
@@ -153,8 +153,8 @@ export default function HomePage() {
             ))}
           </div>
           
-          {/* Footer - Reducido y balanceado */}
-          <footer className="w-full text-center space-y-8 animate-in fade-in duration-1000 delay-500 mt-auto pt-4">
+          {/* Footer - Con espacio al final */}
+          <footer className="w-full text-center space-y-8 animate-in fade-in duration-1000 delay-500 mt-12 pt-4">
             <div className="flex flex-col items-center gap-6">
               <div className="flex items-center justify-center gap-6">
                 <InstallPWAButton />
@@ -162,7 +162,7 @@ export default function HomePage() {
                 <SettingsDialog />
               </div>
               
-              <div className="space-y-3 pb-6">
+              <div className="space-y-3 pb-10">
                 <p className="text-xs font-headline italic font-bold text-primary/60">
                   "Alabaré a Jehová en mi vida"
                 </p>
