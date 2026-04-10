@@ -23,14 +23,15 @@ interface Atmosphere {
   design: BackgroundDesign;
   icon: any;
   previewColor: string;
+  styleName: string;
 }
 
 const atmospheres: Atmosphere[] = [
-  { id: 'peace', name: 'Océano de Paz', desc: 'Aura celestial y calma infinita', color: 'blue', design: 'aura', icon: Wind, previewColor: 'bg-blue-500' },
-  { id: 'zion', name: 'Monte de Sión', desc: 'Elegancia técnica y red de gracia', color: 'purple', design: 'grid', icon: Layout, previewColor: 'bg-purple-600' },
-  { id: 'glory', name: 'Luz del Mundo', desc: 'Resplandor dorado y presencia', color: 'amber', design: 'aura', icon: SunMedium, previewColor: 'bg-amber-500' },
-  { id: 'life', name: 'Valle de Bendición', desc: 'Minimalismo y esperanza viva', color: 'green', design: 'clean', icon: Sparkles, previewColor: 'bg-emerald-600' },
-  { id: 'love', name: 'Rosa de Sarón', desc: 'Dulzura eterna y orden divino', color: 'rose', design: 'grid', icon: Heart, previewColor: 'bg-rose-500' },
+  { id: 'peace', name: 'Océano de Paz', desc: 'Diseño fluido y calma infinita', color: 'blue', design: 'aura', icon: Wind, previewColor: 'bg-blue-500', styleName: 'Orgánico' },
+  { id: 'zion', name: 'Monte de Sión', desc: 'Cuadrícula técnica y orden divino', color: 'purple', design: 'grid', icon: Layout, previewColor: 'bg-purple-600', styleName: 'Técnico' },
+  { id: 'glory', name: 'Luz del Mundo', desc: 'Resplandor áureo y presencia', color: 'amber', design: 'aura', icon: SunMedium, previewColor: 'bg-amber-500', styleName: 'Majestuoso' },
+  { id: 'life', name: 'Valle de Bendición', desc: 'Minimalismo y esperanza viva', color: 'green', design: 'clean', icon: Sparkles, previewColor: 'bg-emerald-600', styleName: 'Limpio' },
+  { id: 'love', name: 'Rosa de Sarón', desc: 'Dulzura eterna y curvas suaves', color: 'rose', design: 'grid', icon: Heart, previewColor: 'bg-rose-500', styleName: 'Elegante' },
 ];
 
 export function AppearanceDialog() {
@@ -56,22 +57,24 @@ export function AppearanceDialog() {
           <DialogDescription>Selecciona una de nuestras atmósferas diseñadas para tu meditación.</DialogDescription>
         </DialogHeader>
 
-        {/* LADO IZQUIERDO: VISTA PREVIA (Mini Home) */}
+        {/* LADO IZQUIERDO: VISTA PREVIA (Mini Home Adaptativa) */}
         <div className="md:w-80 bg-muted/20 p-6 flex flex-col items-center justify-center border-r border-border/50 relative overflow-hidden shrink-0">
           <div className="absolute inset-0 opacity-20 pointer-events-none">
              <div className="absolute top-0 left-0 w-full h-full bg-primary/20 blur-[80px]" />
           </div>
           
           <div className="space-y-1 mb-6 text-center relative z-10">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Vista Previa</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">Estilo: {currentAtmosphere.styleName}</p>
             <h4 className="text-sm font-bold text-primary">{currentAtmosphere.name}</h4>
           </div>
           
+          {/* Dispositivo Simulado que cambia de forma */}
           <div className={cn(
-            "relative w-full aspect-[9/16] rounded-[2rem] overflow-hidden shadow-2xl border-[4px] border-white dark:border-white/10 transition-all duration-700 card-glow",
+            "relative w-full aspect-[9/16] overflow-hidden shadow-2xl border-[4px] border-white dark:border-white/10 transition-all duration-700 card-glow",
             displayMode === 'dark' ? "bg-slate-950" : "bg-slate-50",
             design === 'grid' && "design-grid"
-          )}>
+          )} style={{ borderRadius: 'calc(var(--ui-radius) * 1.5)' }}>
+            
             {/* Fondo Dinámico Simulado */}
             {design === 'aura' && (
               <div className="absolute inset-0 opacity-40">
@@ -80,7 +83,7 @@ export function AppearanceDialog() {
               </div>
             )}
 
-            {/* Contenido Home Simulado */}
+            {/* Contenido Home Simulado con Botones Dinámicos */}
             <div className="absolute inset-0 flex flex-col items-center p-4 pt-8 gap-4 overflow-hidden">
               <div className="relative p-0.5 bg-gradient-to-tr from-primary to-primary/40 rounded-full shadow-lg">
                 <div className="bg-white dark:bg-slate-900 rounded-full p-0.5 overflow-hidden w-12 h-12 flex items-center justify-center">
@@ -92,19 +95,19 @@ export function AppearanceDialog() {
                 <h4 className="text-[10px] font-bold font-headline leading-tight text-foreground text-glow">
                   Himnario <span className="text-primary">EECH</span>
                 </h4>
-                <p className="text-[5px] text-muted-foreground font-black tracking-widest uppercase">Ejército Evangélico</p>
               </div>
 
-              <div className="w-full h-6 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm flex items-center px-3 gap-2">
-                <div className="h-1 w-12 bg-muted-foreground/10 rounded-full" />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2 w-full mt-1">
+              <div className="grid grid-cols-2 gap-2 w-full mt-2">
                 {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="rounded-xl bg-white/60 dark:bg-white/5 backdrop-blur-sm border border-white/20 flex flex-col items-center justify-center p-3 gap-2 shadow-sm">
+                  <div key={i} className="bg-white/60 dark:bg-white/5 backdrop-blur-sm border border-white/20 flex flex-col items-center justify-center p-3 gap-2 shadow-sm" style={{ borderRadius: 'var(--ui-radius)' }}>
                     <div className="h-1 w-8 bg-primary/20 rounded-full" />
                   </div>
                 ))}
+              </div>
+              
+              {/* Simulación de Botón Principal */}
+              <div className="w-full h-8 bg-primary shadow-lg mt-auto flex items-center justify-center" style={{ borderRadius: 'var(--ui-radius)' }}>
+                <div className="h-1 w-12 bg-white/40 rounded-full" />
               </div>
             </div>
           </div>
@@ -124,22 +127,24 @@ export function AppearanceDialog() {
                   <button 
                     onClick={() => setDisplayMode('light')}
                     className={cn(
-                      "flex items-center justify-center gap-3 h-14 rounded-[1.5rem] border-2 transition-all duration-300 font-bold text-sm active:scale-95",
+                      "flex items-center justify-center gap-3 h-14 border-2 transition-all duration-300 font-bold text-sm active:scale-95",
                       displayMode === 'light' 
                         ? "bg-white border-primary text-primary shadow-xl shadow-primary/10" 
                         : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted opacity-70"
                     )}
+                    style={{ borderRadius: 'var(--ui-radius)' }}
                   >
                     <Sun className="h-5 w-5" /> Día
                   </button>
                   <button 
                     onClick={() => setDisplayMode('dark')}
                     className={cn(
-                      "flex items-center justify-center gap-3 h-14 rounded-[1.5rem] border-2 transition-all duration-300 font-bold text-sm active:scale-95",
+                      "flex items-center justify-center gap-3 h-14 border-2 transition-all duration-300 font-bold text-sm active:scale-95",
                       displayMode === 'dark' 
                         ? "bg-slate-900 border-primary text-primary shadow-xl shadow-primary/10" 
                         : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted opacity-70"
                     )}
+                    style={{ borderRadius: 'var(--ui-radius)' }}
                   >
                     <Moon className="h-5 w-5" /> Noche
                   </button>
@@ -160,28 +165,27 @@ export function AppearanceDialog() {
                         key={atm.id}
                         onClick={() => setAtmosphere(atm.color, atm.design)}
                         className={cn(
-                          "flex items-center gap-4 w-full p-5 rounded-[1.75rem] border-2 transition-all duration-500 active:scale-[0.98] text-left group relative overflow-hidden",
+                          "flex items-center gap-4 w-full p-5 border-2 transition-all duration-500 active:scale-[0.98] text-left group relative overflow-hidden",
                           isSelected 
                             ? "border-primary bg-primary/5 shadow-2xl shadow-primary/10" 
                             : "border-transparent bg-muted/30 hover:bg-muted/50"
                         )}
+                        style={{ borderRadius: isSelected ? 'calc(var(--ui-radius) * 1.2)' : 'var(--ui-radius)' }}
                       >
                         <div className={cn(
-                          "p-3 rounded-2xl transition-all duration-500 shadow-inner",
+                          "p-3 transition-all duration-500 shadow-inner",
                           isSelected ? "bg-primary text-white scale-110 rotate-3" : "bg-primary/10 text-primary group-hover:scale-105"
-                        )}>
+                        )} style={{ borderRadius: 'var(--ui-radius)' }}>
                           <atm.icon className="h-6 w-6" />
                         </div>
                         <div className="flex-1 space-y-0.5">
                           <p className={cn("text-sm font-bold tracking-tight", isSelected ? "text-primary" : "text-foreground")}>{atm.name}</p>
                           <p className="text-[10px] text-muted-foreground font-medium leading-tight">{atm.desc}</p>
                         </div>
-                        {isSelected ? (
+                        {isSelected && (
                           <div className="h-7 w-7 bg-primary text-white rounded-full flex items-center justify-center shadow-lg animate-in zoom-in-50">
                             <Check className="h-4 w-4" />
                           </div>
-                        ) : (
-                          <div className={cn("h-3 w-3 rounded-full opacity-40", atm.previewColor)} />
                         )}
                       </button>
                     );
@@ -197,7 +201,7 @@ export function AppearanceDialog() {
               <p className="text-[9px] font-black uppercase tracking-[0.2em]">Diseño Patentado</p>
             </div>
             <p className="text-[8px] text-muted-foreground text-center max-w-[220px] leading-relaxed">
-              Los cambios se aplican inmediatamente y quedarán guardados por determinación en este dispositivo.
+              Cada atmósfera cambia la forma de los botones y la profundidad de la interfaz para una experiencia única.
             </p>
           </div>
         </div>

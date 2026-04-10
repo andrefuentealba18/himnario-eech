@@ -25,6 +25,11 @@
     --ring: 222.2 84% 4.9%;
     --radius: 1.25rem;
     --primary-glow: hsla(217, 91%, 60%, 0.3);
+    
+    /* Variables de Diseño de Atmósfera */
+    --ui-radius: 1.25rem;
+    --ui-border-opacity: 0.1;
+    --ui-shadow-spread: 20px;
   }
   .dark {
     --background: 224 71% 4%;
@@ -49,22 +54,29 @@
     --primary-glow: hsla(217, 91%, 60%, 0.5);
   }
 
-  /* Atmósferas Increíbles */
+  /* ATMÓSFERAS MAESTRAS */
   .theme-purple { 
     --primary: 262.1 83.3% 57.8%; 
     --primary-glow: hsla(262, 83%, 58%, 0.4);
+    --ui-radius: 0.75rem;
+    --ui-border-opacity: 0.3;
   }
   .theme-green { 
     --primary: 142.1 76.2% 36.3%; 
     --primary-glow: hsla(142, 76%, 36%, 0.4);
+    --ui-radius: 1rem;
+    --ui-border-opacity: 0.15;
   }
   .theme-amber { 
     --primary: 37.9 92.1% 50.2%; 
     --primary-glow: hsla(38, 92%, 50%, 0.4);
+    --ui-radius: 1.5rem;
+    --ui-shadow-spread: 40px;
   }
   .theme-rose { 
     --primary: 346.8 77.2% 49.8%; 
     --primary-glow: hsla(347, 77%, 50%, 0.4);
+    --ui-radius: 2rem;
   }
 }
 
@@ -78,9 +90,21 @@
   }
 }
 
+/* Clases de Componentes Dinámicos */
+.app-card {
+  border-radius: var(--ui-radius);
+  border: 1px solid hsl(var(--foreground) / var(--ui-border-opacity));
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.app-button {
+  border-radius: var(--ui-radius);
+  transition: all 0.3s ease;
+}
+
 /* Diseños de Fondo Dinámicos */
 .design-grid {
-  background-image: radial-gradient(circle at 2px 2px, hsl(var(--primary) / 0.1) 1px, transparent 0);
+  background-image: radial-gradient(circle at 2px 2px, hsl(var(--primary) / 0.15) 1px, transparent 0);
   background-size: 24px 24px;
 }
 
@@ -114,7 +138,7 @@
 }
 
 .card-glow {
-  box-shadow: 0 10px 40px -10px var(--primary-glow);
+  box-shadow: 0 10px var(--ui-shadow-spread) -10px var(--primary-glow);
   transition: box-shadow 0.5s ease;
 }
 

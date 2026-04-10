@@ -70,8 +70,8 @@ export default function HomePage() {
         <div className="absolute top-1/2 left-1/2 w-[150vw] h-[150vw] bg-gradient-to-tr from-primary/10 via-primary/5 to-purple-400/10 rounded-full animate-aura-slow blur-[100px] pointer-events-none" />
         <div className="absolute top-1/4 left-1/4 w-[100vw] h-[100vw] bg-gradient-to-bl from-amber-200/10 via-transparent to-rose-300/10 rounded-full animate-aura-slow blur-[120px] pointer-events-none" style={{ animationDirection: 'reverse', animationDuration: '50s' }} />
         
-        {/* Grid de Fondo */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] [background-size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
+        {/* Grid de Fondo Adaptativo */}
+        <div className="absolute inset-0 design-grid opacity-40 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen">
@@ -136,15 +136,15 @@ export default function HomePage() {
             <GlobalSearch />
           </div>
 
-          {/* Navegación Principal en Cuadrícula Moderna */}
+          {/* Navegación Principal con Estilo Dinámico (app-card) */}
           <div className="grid grid-cols-2 gap-5 w-full max-w-lg mb-16">
             {navigationItems.map((item) => (
               <div key={item.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: item.delay }}>
                 <Link href={item.href} className="group block h-full">
-                  <Card className="h-full border-none bg-white/40 dark:bg-white/[0.03] backdrop-blur-xl hover:bg-white/80 dark:hover:bg-white/[0.08] transition-all duration-500 hover:shadow-[0_20px_50px_-15px_rgba(var(--primary),0.2)] hover:-translate-y-2 active:scale-95 overflow-hidden relative group">
+                  <Card className="h-full border-none bg-white/40 dark:bg-white/[0.03] backdrop-blur-xl hover:bg-white/80 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-2 active:scale-95 overflow-hidden relative group app-card card-glow">
                     <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
                     <CardContent className="flex flex-col items-center justify-center p-8 text-center h-full min-h-[160px] relative z-10">
-                      <div className={`p-5 rounded-3xl bg-white dark:bg-slate-900 shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 mb-5`}>
+                      <div className={`p-5 bg-white dark:bg-slate-900 shadow-xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500 mb-5`} style={{ borderRadius: 'var(--ui-radius)' }}>
                         <item.icon className={`h-8 w-8 ${item.iconColor}`} />
                       </div>
                       <h3 className="font-black text-[10px] md:text-[11px] uppercase tracking-[0.25em] font-body text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors leading-tight">
