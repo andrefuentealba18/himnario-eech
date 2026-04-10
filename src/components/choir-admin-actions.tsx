@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Settings, Edit, Trash2 } from 'lucide-react';
+import { Settings, Edit, Trash2, ShieldCheck } from 'lucide-react';
 import { EditChoirDialog } from './edit-choir-dialog';
 import {
   AlertDialog,
@@ -66,8 +66,8 @@ export function ChoirAdminActions({ choir, onDelete, onUpdate }: ChoirAdminActio
     } else {
       toast({
         variant: 'destructive',
-        title: 'Contraseña Incorrecta',
-        description: 'Por favor, inténtalo de nuevo.',
+        title: 'Clave Incorrecta',
+        description: 'Inténtalo de nuevo.',
       });
     }
     form.reset();
@@ -100,32 +100,35 @@ export function ChoirAdminActions({ choir, onDelete, onUpdate }: ChoirAdminActio
           <span className="sr-only">Configuración</span>
         </Button>
       </DialogTrigger>
-      <DialogContent onCloseAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent className={isAuthenticated ? "sm:max-w-lg" : "max-w-[320px] rounded-[2rem] p-6"} onCloseAutoFocus={(e) => e.preventDefault()}>
         {!isAuthenticated ? (
           <>
-            <DialogHeader>
-              <DialogTitle>Acceso de Administrador</DialogTitle>
-              <DialogDescription>
-                Ingresa la contraseña para editar o eliminar el coro.
+            <DialogHeader className="text-center">
+              <div className="mx-auto p-3 bg-primary/10 rounded-full w-fit mb-2">
+                <ShieldCheck className="h-6 w-6 text-primary" />
+              </div>
+              <DialogTitle className="text-lg font-bold">Admin</DialogTitle>
+              <DialogDescription className="text-xs">
+                Ingresa la clave.
               </DialogDescription>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onPasswordSubmit)} className="space-y-4 py-4">
+              <form onSubmit={form.handleSubmit(onPasswordSubmit)} className="space-y-4 py-2">
                 <FormField
                   control={form.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Contraseña</FormLabel>
+                      <FormLabel className="sr-only">Contraseña</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
+                        <Input type="password" placeholder="••••" {...field} className="text-center tracking-[0.8em] font-black h-11 text-lg rounded-xl border-2" autoFocus />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
                 <DialogFooter>
-                  <Button type="submit">Acceder</Button>
+                  <Button type="submit" className="w-full rounded-xl h-11 font-bold">Acceder</Button>
                 </DialogFooter>
               </form>
             </Form>

@@ -47,7 +47,7 @@ export function SettingsDialog() {
     if (values.password === '4002') {
       toast({
         title: 'Acceso concedido',
-        description: 'Redirigiendo a la página de administración...',
+        description: 'Redirigiendo...',
       });
       setOpen(false);
       router.push('/admin');
@@ -55,7 +55,7 @@ export function SettingsDialog() {
       toast({
         variant: 'destructive',
         title: 'Contraseña Incorrecta',
-        description: 'Por favor, inténtalo de nuevo.',
+        description: 'Inténtalo de nuevo.',
       });
     }
     form.reset();
@@ -69,22 +69,18 @@ export function SettingsDialog() {
           Configuración
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md" onCloseAutoFocus={(e) => e.preventDefault()}>
-        <DialogHeader>
-          <DialogTitle>Panel de Control</DialogTitle>
-          <DialogDescription>
-            Acceso exclusivo para administradores del cancionero.
+      <DialogContent className="w-[90vw] max-w-[320px] rounded-[2rem] p-6 border-none shadow-2xl overflow-hidden" onCloseAutoFocus={(e) => e.preventDefault()}>
+        <DialogHeader className="space-y-2 text-center">
+          <div className="mx-auto p-3 bg-primary/10 rounded-full w-fit mb-2">
+            <ShieldCheck className="h-8 w-8 text-primary" />
+          </div>
+          <DialogTitle className="text-xl font-bold tracking-tight">Panel de Control</DialogTitle>
+          <DialogDescription className="text-xs">
+            Ingresa la clave maestra.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          <div className="flex flex-col items-center justify-center p-6 bg-primary/5 rounded-2xl border border-primary/10">
-            <ShieldCheck className="h-12 w-12 text-primary mb-2" />
-            <p className="text-xs text-center text-muted-foreground">
-              Ingresa la clave maestra para gestionar el contenido.
-            </p>
-          </div>
-
+        <div className="py-4">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
@@ -96,9 +92,10 @@ export function SettingsDialog() {
                     <FormControl>
                       <Input 
                         type="password" 
-                        placeholder="Ingresa la contraseña" 
+                        placeholder="••••" 
                         {...field} 
-                        className="text-center tracking-[0.5em] font-bold h-12"
+                        className="text-center tracking-[0.8em] font-black h-12 text-xl rounded-xl border-2"
+                        autoFocus
                       />
                     </FormControl>
                     <FormMessage />
@@ -106,8 +103,8 @@ export function SettingsDialog() {
                 )}
               />
               <DialogFooter>
-                <Button type="submit" className="w-full h-12 text-base font-bold shadow-lg shadow-primary/20">
-                  Entrar al Panel
+                <Button type="submit" className="w-full h-12 text-sm font-bold rounded-xl shadow-lg shadow-primary/20">
+                  Entrar
                 </Button>
               </DialogFooter>
             </form>

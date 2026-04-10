@@ -38,7 +38,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, ShieldCheck, Search, CheckCircle2, ChevronRight, Checkbox as CheckboxIcon, ListChecks, Loader2 } from 'lucide-react';
+import { Plus, ShieldCheck, Search, CheckCircle2, ChevronRight, ListChecks, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -116,7 +116,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     e.preventDefault();
     if (password === '4002') {
       setIsAuthenticated(true);
-      toast({ title: "Acceso autorizado", description: "Ya puedes gestionar las categorías especiales." });
+      toast({ title: "Acceso autorizado" });
     } else {
       toast({ variant: "destructive", title: "Clave incorrecta" });
     }
@@ -149,7 +149,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     setIsImporting(false);
     toast({ 
       title: "Importación Exitosa", 
-      description: `Se han añadido ${selectedSongs.length} cantos a ${importCategory}.` 
+      description: `Se han añadido ${selectedSongs.length} cantos.` 
     });
     setOpen(false);
     resetDialog();
@@ -182,32 +182,35 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
           <span className="text-xs uppercase tracking-widest">Agregar</span>
         </button>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] max-w-2xl h-[90vh] flex flex-col p-0 border-none shadow-2xl rounded-[2.5rem] bg-background overflow-hidden">
+      <DialogContent className={cn(
+        "w-[92vw] p-0 border-none shadow-2xl rounded-[2rem] bg-background overflow-hidden transition-all duration-500 ease-in-out",
+        isAuthenticated ? "max-w-2xl h-[90vh]" : "max-w-[320px] h-auto"
+      )}>
         {!isAuthenticated ? (
-          <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-8">
-            <div className="p-6 bg-amber-50 rounded-full animate-bounce">
-              <ShieldCheck className="h-12 w-12 text-amber-600" />
+          <div className="flex flex-col items-center justify-center p-8 space-y-6">
+            <div className="p-4 bg-amber-50 rounded-full animate-bounce">
+              <ShieldCheck className="h-8 w-8 text-amber-600" />
             </div>
-            <div className="space-y-2 text-center">
-              <DialogTitle className="text-2xl font-bold tracking-tight">Acceso Administrador</DialogTitle>
-              <DialogDescription>Ingresa la clave maestra para gestionar Ocasiones Especiales.</DialogDescription>
+            <div className="space-y-1 text-center">
+              <DialogTitle className="text-xl font-bold tracking-tight">Acceso Admin</DialogTitle>
+              <DialogDescription className="text-xs">Ingresa la clave maestra.</DialogDescription>
             </div>
-            <form onSubmit={handleAuth} className="w-full max-w-xs space-y-4">
+            <form onSubmit={handleAuth} className="w-full max-w-[240px] space-y-4">
               <Input 
                 type="password" 
                 placeholder="••••" 
-                className="text-center tracking-[1em] font-black h-14 text-2xl rounded-2xl border-2 focus:border-amber-500"
+                className="text-center tracking-[0.8em] font-black h-12 text-xl rounded-xl border-2 focus:border-amber-500"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoFocus
               />
-              <Button type="submit" className="w-full h-14 text-lg font-bold rounded-2xl bg-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-200">
+              <Button type="submit" className="w-full h-12 text-sm font-bold rounded-xl bg-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-200">
                 Entrar
               </Button>
             </form>
           </div>
         ) : (
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col h-full animate-in fade-in duration-500">
             <div className="px-6 pt-8 pb-2 border-b bg-muted/20">
               <div className="flex items-center justify-between mb-6">
                 <div>
@@ -218,11 +221,11 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
               </div>
               <Tabs defaultValue="import" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 rounded-2xl h-12 p-1 bg-slate-200/50">
-                  <TabsTrigger value="import" className="rounded-xl text-xs font-black uppercase tracking-widest transition-all">
-                    <ListChecks className="h-3.5 w-3.5 mr-2" /> Selección Múltiple
+                  <TabsTrigger value="import" className="rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                    <ListChecks className="h-3 w-3 mr-2" /> Selección Múltiple
                   </TabsTrigger>
-                  <TabsTrigger value="manual" className="rounded-xl text-xs font-black uppercase tracking-widest transition-all">
-                    <Plus className="h-3.5 w-3.5 mr-2" /> Carga Manual
+                  <TabsTrigger value="manual" className="rounded-xl text-[10px] font-black uppercase tracking-widest transition-all">
+                    <Plus className="h-3 w-3 mr-2" /> Carga Manual
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -245,7 +248,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                     <div className="flex items-center gap-3 p-3 bg-amber-50/50 rounded-2xl border border-amber-100">
                       <span className="text-[10px] font-black text-amber-700 uppercase tracking-widest ml-2">Destino:</span>
                       <Select value={importCategory} onValueChange={(v) => setImportCategory(v as SpecialCategory)}>
-                        <SelectTrigger className="flex-1 h-10 rounded-xl bg-white border-amber-200 font-bold text-xs">
+                        <SelectTrigger className="flex-1 h-10 rounded-xl bg-white border-amber-200 font-bold text-[10px]">
                           <SelectValue placeholder="Categoría Destino" />
                         </SelectTrigger>
                         <SelectContent>
