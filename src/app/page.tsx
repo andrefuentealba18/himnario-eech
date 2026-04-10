@@ -73,8 +73,8 @@ export default function HomePage() {
 
       <div className="relative z-10 flex flex-col flex-1">
         
-        {/* Barra Superior - Dejada tal cual según solicitud */}
-        <div className="flex items-center justify-between px-6 pt-20 pb-4 animate-in fade-in duration-1000">
+        {/* Barra Superior - Ergonómica */}
+        <div className="flex items-center justify-between px-6 pt-16 pb-4 animate-in fade-in duration-1000">
           <div className="flex items-center gap-2">
             {isFullySynced ? (
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-md border border-green-500/20 shadow-sm transition-all duration-500 hover:scale-105">
@@ -91,10 +91,10 @@ export default function HomePage() {
           <AppearanceDialog />
         </div>
 
-        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-16 pb-6 space-y-10">
+        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-10 pb-6 space-y-8">
           
-          {/* HEADER - Logo subido un poco (pt-16 en lugar de pt-32) */}
-          <header className="w-full text-center space-y-8 animate-in fade-in slide-in-from-top-4 duration-1000">
+          {/* HEADER */}
+          <header className="w-full text-center space-y-6 animate-in fade-in slide-in-from-top-4 duration-1000">
             <div className="relative inline-flex items-center justify-center group">
               <div className="absolute inset-0 bg-primary/20 blur-[40px] rounded-full scale-150 opacity-50" />
               <div className="relative p-1 bg-gradient-to-tr from-primary/80 to-primary/30 rounded-full shadow-xl animate-float">
@@ -117,10 +117,10 @@ export default function HomePage() {
                 <span className="text-[9px] font-black tracking-[0.3em] uppercase">Oficial</span>
                 <div className="h-px w-6 bg-current" />
               </div>
-              <h1 className="text-4xl md:text-5xl font-bold font-headline tracking-tighter text-slate-950 dark:text-white leading-tight text-glow">
+              <h1 className="text-4xl font-bold font-headline tracking-tighter text-slate-950 dark:text-white leading-tight text-glow">
                 Himnario <span className="text-primary">EECH</span>
               </h1>
-              <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold tracking-[0.4em] uppercase pt-2 opacity-70">
+              <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold tracking-[0.4em] uppercase pt-1 opacity-70">
                 Ejército Evangélico de Chile
               </p>
             </div>
@@ -138,11 +138,11 @@ export default function HomePage() {
                 <Link href={item.href} className="group block h-full">
                   <Card className="h-full border-none bg-white/40 dark:bg-white/[0.03] backdrop-blur-xl hover:bg-white/80 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-1 active:scale-95 overflow-hidden relative group app-card card-glow">
                     <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                    <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[140px] relative z-10">
-                      <div className={`p-4 bg-white dark:bg-slate-900 shadow-lg group-hover:scale-110 transition-all duration-500 mb-4`} style={{ borderRadius: 'var(--ui-radius)' }}>
-                        <item.icon className={`h-6 w-6 ${item.iconColor}`} />
+                    <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[120px] relative z-10">
+                      <div className={`p-3 bg-white dark:bg-slate-900 shadow-lg group-hover:scale-110 transition-all duration-500 mb-3`} style={{ borderRadius: 'var(--ui-radius)' }}>
+                        <item.icon className={`h-5 w-5 ${item.iconColor}`} />
                       </div>
-                      <h3 className="font-black text-[10px] uppercase tracking-[0.2em] font-body text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors leading-tight">
+                      <h3 className="font-black text-[9px] uppercase tracking-[0.2em] font-body text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors leading-tight">
                         {item.title}
                       </h3>
                     </CardContent>
@@ -152,22 +152,22 @@ export default function HomePage() {
             ))}
           </div>
           
-          {/* Footer - Subido un poco (mt-6 pt-4 en lugar de mt-12 pt-4) */}
-          <footer className="w-full text-center space-y-8 animate-in fade-in duration-1000 delay-500 mt-6 pt-4">
-            <div className="flex flex-col items-center gap-6">
+          {/* Footer */}
+          <footer className="w-full text-center space-y-6 animate-in fade-in duration-1000 delay-500 mt-4">
+            <div className="flex flex-col items-center gap-4">
               <div className="flex items-center justify-center gap-6">
                 <InstallPWAButton />
                 <div className="w-px h-4 bg-slate-300 dark:bg-white/10" />
                 <SettingsDialog />
               </div>
               
-              <div className="space-y-3 pb-10">
+              <div className="space-y-2 pb-8">
                 <p className="text-xs font-headline italic font-bold text-primary/60">
                   "Alabaré a Jehová en mi vida"
                 </p>
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <p className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Iglesia Ejército Evangélico de Chile</p>
-                  <p className="text-[7px] font-black text-primary/30 uppercase tracking-[0.1em] border border-primary/5 rounded-full px-4 py-1.5 inline-block">
+                  <p className="text-[7px] font-black text-primary/30 uppercase tracking-[0.1em] border border-primary/5 rounded-full px-4 py-1 inline-block">
                     PABLO FUENTEALBA 2026
                   </p>
                 </div>
