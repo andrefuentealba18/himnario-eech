@@ -67,10 +67,10 @@
   }
 }
 
-/* Custom Scrollbar Stylings */
+/* Custom Scrollbar Stylings - Más visibles para facilitar la navegación */
 ::-webkit-scrollbar {
-  width: 5px;
-  height: 5px;
+  width: 8px;
+  height: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -78,12 +78,16 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--primary) / 0.15);
+  background: hsl(var(--primary) / 0.25);
   border-radius: 10px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--primary) / 0.3);
+  background: hsl(var(--primary) / 0.45);
+  border: 2px solid transparent;
+  background-clip: padding-box;
 }
 
 /* Hide scrollbar for Chrome, Safari and Opera when desired */

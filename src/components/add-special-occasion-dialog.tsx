@@ -38,7 +38,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, ShieldCheck, Search, Copy, CheckCircle2 } from 'lucide-react';
+import { Plus, ShieldCheck, Search, Copy, CheckCircle2, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
@@ -87,7 +87,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     return allSongs.filter(s => 
       s.title.toLowerCase().includes(term) || 
       (s.type === 'Himno' && s.title.includes(term))
-    ).slice(0, 30);
+    ).slice(0, 50);
   }, [allSongs, searchSong]);
 
   const form = useForm<FormData>({
@@ -146,7 +146,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
           Agregar
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] max-w-lg max-h-[92vh] overflow-hidden flex flex-col p-0 border-none shadow-2xl rounded-[2.5rem] bg-background">
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[95vh] overflow-hidden flex flex-col p-0 border-none shadow-2xl rounded-[2.5rem] bg-background">
         {!isAuthenticated ? (
           <div className="p-8 space-y-8 flex flex-col items-center">
             <div className="p-5 bg-amber-50 rounded-full">
@@ -213,7 +213,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                         <button
                           key={i}
                           onClick={() => selectSongToCopy(song)}
-                          className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100 hover:border-amber-200 hover:bg-amber-50/50 transition-all text-left shadow-sm active:scale-[0.98]"
+                          className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100 hover:border-amber-200 hover:bg-amber-50/50 transition-all text-left shadow-sm active:scale-[0.98] group"
                         >
                           <div className="flex-1 min-w-0 mr-4">
                             <p className="font-bold text-sm text-slate-900 truncate">{song.title}</p>
@@ -222,8 +222,8 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                               {song.tone && <span className="text-[9px] font-bold text-slate-400">· {song.tone}</span>}
                             </div>
                           </div>
-                          <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-amber-100 group-hover:text-amber-600">
-                            <Copy className="h-4 w-4" />
+                          <div className="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-amber-100 group-hover:text-amber-600 transition-colors">
+                            <ChevronRight className="h-5 w-5" />
                           </div>
                         </button>
                       )) : searchSong ? (
@@ -242,13 +242,13 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                     </div>
 
                     {form.watch('title') && (
-                      <div className="mb-6 p-4 rounded-2xl bg-green-50 border border-green-100 animate-in zoom-in-95 duration-300">
-                        <div className="flex items-center gap-2 text-green-700 mb-4">
-                          <CheckCircle2 className="h-5 w-5" />
-                          <p className="text-xs font-bold">Canto cargado: "{form.watch('title')}"</p>
+                      <div className="mb-10 p-6 rounded-3xl bg-green-50 border border-green-100 animate-in zoom-in-95 duration-300 shadow-sm">
+                        <div className="flex items-center gap-3 text-green-700 mb-6">
+                          <CheckCircle2 className="h-6 w-6" />
+                          <p className="text-sm font-bold leading-tight">Canto cargado: <span className="block text-xs font-medium opacity-80">"{form.watch('title')}"</span></p>
                         </div>
                         <Form {...form}>
-                          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
                             <FormField
                               control={form.control}
                               name="category"
@@ -257,7 +257,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                                   <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Asignar a:</FormLabel>
                                   <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                     <FormControl>
-                                      <SelectTrigger className="rounded-xl h-12 bg-white border-2">
+                                      <SelectTrigger className="rounded-2xl h-14 bg-white border-2">
                                         <SelectValue placeholder="Categoría" />
                                       </SelectTrigger>
                                     </FormControl>
@@ -271,7 +271,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                                 </FormItem>
                               )}
                             />
-                            <Button type="submit" className="w-full h-12 font-bold rounded-xl bg-green-600 hover:bg-green-700 shadow-md">
+                            <Button type="submit" className="w-full h-14 font-bold rounded-2xl bg-green-600 hover:bg-green-700 shadow-lg shadow-green-100 text-lg">
                               Guardar en {form.watch('category')}
                             </Button>
                           </form>
@@ -282,84 +282,86 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                 </TabsContent>
 
                 <TabsContent value="manual" className="mt-0 flex-1 overflow-y-auto">
-                  <div className="p-6">
-                    <Form {...form}>
-                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                        <FormField
-                          control={form.control}
-                          name="category"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Categoría</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                  <ScrollArea className="h-full">
+                    <div className="p-6">
+                      <Form {...form}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                          <FormField
+                            control={form.control}
+                            name="category"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Categoría</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="rounded-2xl h-14 border-2">
+                                      <SelectValue placeholder="Selecciona la ocasión" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    <SelectItem value="Predicación">🎤 Predicación</SelectItem>
+                                    <SelectItem value="Fúnebre">⛪ Fúnebre</SelectItem>
+                                    <SelectItem value="Cumpleaños">🎁 Cumpleaños</SelectItem>
+                                    <SelectItem value="Bautismos">💧 Bautismos</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="title"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Título</FormLabel>
                                 <FormControl>
-                                  <SelectTrigger className="rounded-2xl h-14 border-2">
-                                    <SelectValue placeholder="Selecciona la ocasión" />
-                                  </SelectTrigger>
+                                  <Input placeholder="Título del canto" className="rounded-2xl h-14 border-2" {...field} />
                                 </FormControl>
-                                <SelectContent>
-                                  <SelectItem value="Predicación">🎤 Predicación</SelectItem>
-                                  <SelectItem value="Fúnebre">⛪ Fúnebre</SelectItem>
-                                  <SelectItem value="Cumpleaños">🎁 Cumpleaños</SelectItem>
-                                  <SelectItem value="Bautismos">💧 Bautismos</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="title"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Título</FormLabel>
-                              <FormControl>
-                                <Input placeholder="Título del canto" className="rounded-2xl h-14 border-2" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="tone"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Tonalidad</FormLabel>
-                              <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="tone"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Tonalidad</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger className="rounded-2xl h-14 border-2">
+                                      <SelectValue placeholder="Selecciona tono (opcional)" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {musicalKeys.map(key => (
+                                      <SelectItem key={key} value={key}>{key}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name="lyrics"
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Letra</FormLabel>
                                 <FormControl>
-                                  <SelectTrigger className="rounded-2xl h-14 border-2">
-                                    <SelectValue placeholder="Selecciona tono (opcional)" />
-                                  </SelectTrigger>
+                                  <Textarea placeholder="Escribe la letra aquí..." className="h-64 rounded-2xl border-2 resize-none p-4" {...field} />
                                 </FormControl>
-                                <SelectContent>
-                                  {musicalKeys.map(key => (
-                                    <SelectItem key={key} value={key}>{key}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </FormItem>
-                          )}
-                        />
-                        <FormField
-                          control={form.control}
-                          name="lyrics"
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Letra</FormLabel>
-                              <FormControl>
-                                <Textarea placeholder="Escribe la letra aquí..." className="h-48 rounded-2xl border-2 resize-none p-4" {...field} />
-                              </FormControl>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                        <Button type="submit" className="w-full h-14 font-bold text-lg rounded-2xl bg-amber-600 hover:bg-amber-700 shadow-xl shadow-amber-100">
-                          Publicar Canto
-                        </Button>
-                      </form>
-                    </Form>
-                  </div>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <Button type="submit" className="w-full h-14 font-bold text-lg rounded-2xl bg-amber-600 hover:bg-amber-700 shadow-xl shadow-amber-100 mb-6">
+                            Publicar Canto
+                          </Button>
+                        </form>
+                      </Form>
+                    </div>
+                  </ScrollArea>
                 </TabsContent>
               </Tabs>
             </div>
