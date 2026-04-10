@@ -23,54 +23,62 @@ export default function HymnsIndexPage() {
 
   if (showIntro) {
     return (
-      <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden">
-        {/* FONDO CLARO Y VIBRANTE */}
+      <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center overflow-hidden">
+        {/* FONDO PATRIÓTICO TRANSLÚCIDO */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-indigo-100 animate-gradient-move opacity-100" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-blue-400/5 rounded-full blur-[140px] animate-aura-slow" />
-          <div className="absolute inset-0 design-grid opacity-[0.1]" />
+          <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-blue-50/50 via-white to-red-50/50" />
+          <div className="absolute top-1/4 -left-20 w-[100vw] h-[100vw] bg-blue-600/5 rounded-full blur-[120px] animate-aura-slow" />
+          <div className="absolute bottom-1/4 -right-20 w-[100vw] h-[100vw] bg-red-600/5 rounded-full blur-[120px] animate-aura-slow" style={{ animationDirection: 'reverse' }} />
+          <div className="absolute inset-0 design-grid opacity-[0.05]" />
         </div>
         
-        {/* INSIGNIA SUPERIOR */}
-        <div className="absolute top-16 right-10 w-16 h-16 animate-in fade-in zoom-in-95 slide-in-from-top-6 duration-1000 ease-out">
-          <div className="absolute inset-0 bg-blue-500/10 blur-2xl rounded-full scale-150 animate-pulse" />
+        {/* INSIGNIA SUPERIOR CON HALO DORADO */}
+        <div className="absolute top-20 right-10 w-20 h-20 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out">
+          <div className="absolute inset-0 bg-amber-400/20 blur-2xl rounded-full scale-150 animate-pulse" />
           <Image 
             src={insigniaUrl} 
             alt="Insignia EECH" 
-            width={64} 
-            height={64} 
-            className="relative rounded-full object-cover shadow-xl border-2 border-slate-200"
+            width={80} 
+            height={80} 
+            className="relative rounded-full object-cover shadow-2xl border-2 border-white"
             priority
           />
         </div>
 
         {/* CONTENIDO CENTRAL MINIMALISTA */}
         <div className="relative flex flex-col items-center">
-          <div className="space-y-6 text-center px-6">
-            <div className="flex flex-col items-center gap-3 mb-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-              <Sparkles className="h-6 w-6 text-blue-500 animate-pulse" />
-              <div className="h-0.5 w-12 bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
+          <div className="space-y-8 text-center px-6">
+            <div className="flex flex-col items-center gap-4 mb-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+              <div className="flex gap-1.5">
+                <div className="h-1.5 w-1.5 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.5)]" />
+                <div className="h-1.5 w-1.5 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.5)]" />
+                <div className="h-1.5 w-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
+              </div>
+              <div className="h-0.5 w-16 bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
             </div>
             
             <div className="relative">
-              <h1 className="text-7xl font-black font-headline tracking-[0.2em] text-slate-900 animate-title-reveal uppercase drop-shadow-sm">
+              <h1 className="text-7xl font-black font-headline tracking-[0.2em] text-slate-900 animate-title-reveal uppercase">
                 Himnos
               </h1>
-              <div className="absolute -inset-x-16 -bottom-4 h-px bg-gradient-to-r from-transparent via-blue-400/30 to-transparent scale-x-0 animate-in slide-in-from-left duration-1000 delay-500 fill-mode-forwards" style={{ transform: 'scaleX(1)' }} />
+              {/* LÍNEA DECORATIVA DORADA/AZUL/ROJA */}
+              <div className="absolute -inset-x-20 -bottom-6 h-px bg-gradient-to-r from-transparent via-blue-600/40 via-amber-400/60 via-red-600/40 to-transparent scale-x-0 animate-in slide-in-from-left duration-1000 delay-500 fill-mode-forwards" style={{ transform: 'scaleX(1)' }} />
             </div>
           </div>
         </div>
 
-        {/* FOOTER ELEGANTE */}
-        <div className="absolute bottom-20 left-0 w-full text-center px-8">
-          <div className="flex items-center justify-center gap-6 mb-4 opacity-40">
-            <div className="h-px w-16 bg-blue-300" />
-            <div className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-            <div className="h-px w-16 bg-blue-300" />
+        {/* FOOTER OFICIAL */}
+        <div className="absolute bottom-24 left-0 w-full text-center px-8">
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-[10px] font-black tracking-[0.6em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-800">
+              Ejército Evangélico de Chile
+            </p>
+            <div className="flex items-center gap-4 opacity-30">
+              <div className="h-px w-12 bg-blue-600" />
+              <Sparkles className="h-3 w-3 text-amber-500" />
+              <div className="h-px w-12 bg-red-600" />
+            </div>
           </div>
-          <p className="text-[10px] font-black tracking-[0.5em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-800">
-            Ejército Evangélico de Chile
-          </p>
         </div>
       </div>
     );

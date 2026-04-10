@@ -51,54 +51,61 @@ export default function ChoirsIndexPage() {
 
   if (showIntro) {
     return (
-      <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden">
-        {/* FONDO CLARO ROSA */}
+      <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-sm flex flex-col items-center justify-center overflow-hidden">
+        {/* FONDO PATRIÓTICO TRANSLÚCIDO */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-rose-50 via-white to-red-50 animate-gradient-move opacity-100" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-rose-400/5 rounded-full blur-[140px] animate-aura-slow" />
-          <div className="absolute inset-0 design-grid opacity-[0.1]" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-white to-red-50/30" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-blue-600/5 rounded-full blur-[140px] animate-aura-slow" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] bg-red-600/5 rounded-full blur-[160px] animate-aura-slow" style={{ animationDirection: 'reverse' }} />
+          <div className="absolute inset-0 design-grid opacity-[0.05]" />
         </div>
         
-        {/* INSIGNIA SUPERIOR */}
-        <div className="absolute top-16 right-10 w-16 h-16 animate-in fade-in zoom-in-95 slide-in-from-top-6 duration-1000 ease-out">
-          <div className="absolute inset-0 bg-rose-500/10 blur-3xl rounded-full scale-150 animate-pulse" />
+        {/* INSIGNIA SUPERIOR CON HALO DORADO */}
+        <div className="absolute top-20 right-10 w-20 h-20 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out">
+          <div className="absolute inset-0 bg-amber-400/20 blur-3xl rounded-full scale-150 animate-pulse" />
           <Image 
             src={insigniaUrl} 
             alt="Insignia EECH" 
-            width={64} 
-            height={64} 
-            className="relative rounded-full object-cover shadow-xl border-2 border-slate-200"
+            width={80} 
+            height={80} 
+            className="relative rounded-full object-cover shadow-2xl border-2 border-white"
             priority
           />
         </div>
 
         {/* CONTENIDO CENTRAL */}
         <div className="relative flex flex-col items-center">
-          <div className="space-y-6 text-center px-6">
-            <div className="flex flex-col items-center gap-3 mb-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-              <Mic className="h-6 w-6 text-rose-500 animate-pulse" />
-              <div className="h-0.5 w-10 bg-rose-200" />
+          <div className="space-y-8 text-center px-6">
+            <div className="flex flex-col items-center gap-4 mb-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+              <Mic className="h-8 w-8 text-red-600 animate-pulse" />
+              <div className="flex gap-1.5">
+                <div className="h-1 w-6 bg-blue-600 rounded-full" />
+                <div className="h-1 w-6 bg-amber-400 rounded-full" />
+                <div className="h-1 w-6 bg-red-600 rounded-full" />
+              </div>
             </div>
             
             <div className="relative">
-              <h1 className="text-7xl font-black font-headline tracking-[0.3em] text-slate-900 animate-title-reveal uppercase drop-shadow-sm">
+              <h1 className="text-7xl font-black font-headline tracking-[0.3em] text-slate-900 animate-title-reveal uppercase">
                 Coros
               </h1>
-              <div className="absolute -inset-x-16 -bottom-4 h-px bg-gradient-to-r from-transparent via-rose-400/20 to-transparent scale-x-0 animate-in slide-in-from-left duration-1000 delay-500 fill-mode-forwards" style={{ transform: 'scaleX(1)' }} />
+              <div className="absolute -inset-x-20 -bottom-6 h-px bg-gradient-to-r from-transparent via-blue-600/40 via-amber-400/60 via-red-600/40 to-transparent scale-x-0 animate-in slide-in-from-left duration-1000 delay-500 fill-mode-forwards" style={{ transform: 'scaleX(1)' }} />
             </div>
           </div>
         </div>
 
-        {/* FOOTER */}
-        <div className="absolute bottom-20 left-0 w-full text-center px-8">
-          <div className="flex items-center justify-center gap-6 mb-4 opacity-40">
-            <div className="h-px w-14 bg-slate-300" />
-            <div className="w-1.5 h-1.5 rounded-full bg-rose-400" />
-            <div className="h-px w-14 bg-slate-300" />
+        {/* FOOTER OFICIAL */}
+        <div className="absolute bottom-24 left-0 w-full text-center px-8">
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-[10px] font-black tracking-[0.6em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-800">
+              Ejército Evangélico de Chile
+            </p>
+            <div className="flex items-center gap-4 opacity-30">
+              <div className="h-px w-12 bg-blue-600" />
+              <Sparkles className="h-3 w-3 text-amber-500" />
+              <div className="h-px w-12 bg-red-600" />
+            </div>
           </div>
-          <p className="text-[10px] font-black tracking-[0.5em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-800">
-            Ejército Evangélico de Chile
-          </p>
         </div>
       </div>
     );
