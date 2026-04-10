@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
@@ -124,8 +125,8 @@ export default function YouthChoirsIndexPage() {
         </div>
 
         <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
-          <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm p-4 border-b flex items-center justify-center relative h-16">
-              <div className="absolute left-2 top-1/2 -translate-y-1/2">
+          <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm pt-16 pb-6 px-4 border-b flex items-center justify-center relative">
+              <div className="absolute left-2 top-1/2 -translate-y-1/2 mt-10 sm:mt-8">
                   {selectedGroup ? (
                     <Button variant="ghost" size="icon" onClick={() => setSelectedGroup(null)} className="rounded-full">
                       <ChevronLeft className="h-6 w-6" />
@@ -140,7 +141,7 @@ export default function YouthChoirsIndexPage() {
                     </Button>
                   )}
               </div>
-              <div className="flex items-center gap-3 px-10">
+              <div className="flex items-center gap-3 px-10 mt-10 sm:mt-8">
                 <h1 className="text-lg font-bold font-headline text-foreground truncate">
                   {selectedGroup || "Agrupaciones"}
                 </h1>
@@ -151,7 +152,7 @@ export default function YouthChoirsIndexPage() {
                 )}
                 {!selectedGroup && <Library className="h-5 w-5 text-primary" />}
               </div>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2">
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 mt-10 sm:mt-8">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline" size="sm" className="rounded-full h-9">

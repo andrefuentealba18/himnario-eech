@@ -1,3 +1,4 @@
+
 "use client";
 
 import type { Hymn } from '@/lib/hymns';
@@ -26,7 +27,7 @@ const fontSizes = [
 function HymnDetailSkeleton() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm p-2 border-b h-24">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-16 pb-6 px-4 border-b h-32">
         <Skeleton className="h-12 w-12 rounded-full" />
         <div className="flex-1 px-4 text-center">
             <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
@@ -114,7 +115,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
         <div className="absolute bottom-0 left-0 w-[120%] h-[120%] bg-[radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.05)_0%,transparent_60%)] animate-aura" style={{ animationDuration: '20s' }} />
       </div>
 
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md p-2 border-b h-24">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-16 pb-6 px-4 border-b h-36">
         <Button variant="ghost" size="icon" asChild className="h-12 w-12">
           <Link href="/hymns">
             <ChevronLeft className="h-7 w-7" />

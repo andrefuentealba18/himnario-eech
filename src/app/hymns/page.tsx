@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -71,7 +72,7 @@ export default function HymnsIndexPage() {
       </div>
 
       <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
-        <header className="sticky top-0 z-20 bg-background/60 backdrop-blur-xl p-4 border-b flex flex-col items-center gap-4 transition-all duration-500">
+        <header className="sticky top-0 z-20 bg-background/60 backdrop-blur-xl pt-16 pb-6 px-4 border-b flex flex-col items-center gap-4 transition-all duration-500">
             <div className="flex items-center justify-between w-full">
               <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-primary/10 transition-colors h-12 w-12">
                   <Link href="/">
