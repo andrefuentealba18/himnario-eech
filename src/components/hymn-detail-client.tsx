@@ -140,10 +140,6 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
         </Button>
         
         <div className="flex-1 flex flex-col items-center justify-center overflow-hidden px-2">
-            <div className="flex items-center gap-1.5 mb-0.5">
-              <Sparkles className="h-3 w-3 text-amber-500" />
-              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-primary/60">HIMNO OFICIAL</span>
-            </div>
             <h1 className="font-headline text-lg font-bold text-foreground truncate text-center w-full tracking-tight">
               {hymn.title}
             </h1>
