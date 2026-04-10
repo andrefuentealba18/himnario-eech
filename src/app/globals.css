@@ -150,3 +150,22 @@
 .animate-aura-slow {
   animation: aura-slow 15s ease-in-out infinite;
 }
+
+/* Transiciones Cinematográficas */
+@keyframes title-reveal {
+  0% { transform: translateY(20px) scale(0.9); opacity: 0; filter: blur(10px); }
+  100% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0); }
+}
+
+.animate-title-reveal {
+  animation: title-reveal 1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+
+@keyframes slide-fade-up {
+  0% { transform: translateY(30px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+.animate-slide-fade-up {
+  animation: slide-fade-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
