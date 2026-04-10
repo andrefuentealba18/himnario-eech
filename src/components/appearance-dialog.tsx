@@ -10,24 +10,24 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Palette, Sun, Moon, Check, Layout, BookOpen, Music, Mic, Library } from 'lucide-react';
+import { Palette, Sun, Moon, Check, Layout, BookOpen, Music, Mic, Library, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import Image from 'next/image';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
-const themes: { id: ColorTheme; name: string; color: string; hex: string }[] = [
-  { id: 'blue', name: 'Azul Celestial', color: 'bg-blue-500', hex: '#3b82f6' },
-  { id: 'purple', name: 'Púrpura Real', color: 'bg-purple-600', hex: '#9333ea' },
-  { id: 'green', name: 'Verde Esperanza', color: 'bg-emerald-600', hex: '#059669' },
-  { id: 'amber', name: 'Ámbar de Gloria', color: 'bg-amber-500', hex: '#f59e0b' },
-  { id: 'rose', name: 'Rosa de Sarón', color: 'bg-rose-500', hex: '#f43f5e' },
+const themes: { id: ColorTheme; name: string; color: string; desc: string }[] = [
+  { id: 'blue', name: 'Azul Infinito', color: 'bg-blue-500', desc: 'Paz y serenidad profunda' },
+  { id: 'purple', name: 'Púrpura Real', color: 'bg-purple-600', desc: 'Majestad y soberanía' },
+  { id: 'green', name: 'Esmeralda Vida', color: 'bg-emerald-600', desc: 'Esperanza y crecimiento' },
+  { id: 'amber', name: 'Oro de Ofir', color: 'bg-amber-500', desc: 'Gloria y presencia divina' },
+  { id: 'rose', name: 'Rosa de Sarón', color: 'bg-rose-500', desc: 'Amor y dulzura eterna' },
 ];
 
-const designs: { id: BackgroundDesign; name: string; icon: any }[] = [
-  { id: 'aura', name: 'Aura Celestial', icon: Palette },
-  { id: 'grid', name: 'Red de Gracia', icon: Layout },
-  { id: 'clean', name: 'Minimalista', icon: Check },
+const designs: { id: BackgroundDesign; name: string; icon: any; desc: string }[] = [
+  { id: 'aura', name: 'Aura Mística', icon: Sparkles, desc: 'Degradados fluidos espirituales' },
+  { id: 'grid', name: 'Red de Gracia', icon: Layout, desc: 'Cuadrícula técnica elegante' },
+  { id: 'clean', name: 'Luz Pura', icon: Check, desc: 'Minimalismo sin distracciones' },
 ];
 
 export function AppearanceDialog() {
@@ -39,125 +39,139 @@ export function AppearanceDialog() {
     <Dialog>
       <DialogTrigger asChild>
         <button 
-          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 dark:bg-white/5 backdrop-blur-md border border-slate-200/50 dark:border-white/10 shadow-sm text-slate-600 dark:text-slate-300 hover:text-primary transition-all font-bold uppercase tracking-tighter text-[10px] active:scale-95"
+          className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/40 dark:bg-white/5 backdrop-blur-md border border-slate-200/50 dark:border-white/10 shadow-sm text-slate-600 dark:text-slate-300 hover:text-primary transition-all font-bold uppercase tracking-tighter text-[10px] active:scale-95 group"
         >
-          <Palette className="h-4 w-4 text-primary" />
+          <Palette className="h-4 w-4 text-primary group-hover:rotate-12 transition-transform" />
           <span>Apariencia</span>
         </button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md border-none shadow-2xl rounded-[2.5rem] overflow-hidden p-0 max-h-[95vh] outline-none">
+      <DialogContent className="sm:max-w-xl border-none shadow-2xl rounded-[2.5rem] overflow-hidden p-0 max-h-[95vh] outline-none flex flex-col md:flex-row bg-background">
         <DialogHeader className="sr-only">
           <DialogTitle>Personalizar Apariencia</DialogTitle>
-          <DialogDescription>
-            Ajusta los colores y el diseño de la pantalla de inicio del himnario.
-          </DialogDescription>
+          <DialogDescription>Ajusta la apariencia visual de tu Himnario.</DialogDescription>
         </DialogHeader>
 
-        <div className="bg-gradient-to-b from-primary/10 to-background flex flex-col h-full overflow-hidden">
+        {/* LADO IZQUIERDO: VISTA PREVIA (Mini Home) */}
+        <div className="md:w-72 bg-muted/30 p-6 flex flex-col items-center justify-center border-r border-border/50 relative overflow-hidden shrink-0">
+          <div className="absolute inset-0 opacity-20 pointer-events-none">
+             <div className="absolute top-0 left-0 w-full h-full bg-primary/20 blur-[80px]" />
+          </div>
           
-          {/* VISTA PREVIA QUE SIMULA EL INICIO (HOME) */}
-          <div className="p-6 pb-2">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-center mb-4">Vista Previa del Inicio</p>
-            <div className={cn(
-              "relative w-full aspect-[10/12] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white dark:border-white/10 transition-all duration-500 mx-auto max-w-[240px]",
-              displayMode === 'dark' ? "bg-slate-950" : "bg-slate-50",
-              design === 'grid' && "design-grid"
-            )}>
-              {/* Fondo del Simulador */}
-              {design === 'aura' && (
-                <div className="absolute inset-0 -z-10 opacity-40">
-                  <div className="absolute top-0 left-0 w-full h-full bg-primary/20 blur-3xl animate-pulse" />
-                </div>
-              )}
+          <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 text-center mb-6 relative z-10">Vista Previa Real</p>
+          
+          <div className={cn(
+            "relative w-full aspect-[9/16] rounded-[2.5rem] overflow-hidden shadow-2xl border-[6px] border-white dark:border-white/10 transition-all duration-500 card-glow",
+            displayMode === 'dark' ? "bg-slate-950" : "bg-slate-50",
+            design === 'grid' && "design-grid"
+          )}>
+            {/* Fondo Dinámico Simulado */}
+            {design === 'aura' && (
+              <div className="absolute inset-0 opacity-40">
+                <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-primary/30 rounded-full blur-2xl animate-pulse" />
+                <div className="absolute bottom-1/4 right-1/4 w-24 h-24 bg-primary/20 rounded-full blur-2xl animate-bounce" style={{ animationDuration: '4s' }} />
+              </div>
+            )}
 
-              {/* Contenido del Inicio Simulado */}
-              <div className="absolute inset-0 flex flex-col items-center p-4 gap-4 overflow-hidden scale-90 sm:scale-100">
-                {/* Logo */}
-                <div className="relative p-0.5 bg-gradient-to-tr from-primary to-primary/40 rounded-full shadow-lg mt-2">
-                  <div className="bg-white dark:bg-slate-900 rounded-full p-0.5 overflow-hidden w-12 h-12 flex items-center justify-center">
-                    <Image src={insigniaUrl} alt="Logo" width={48} height={48} className="rounded-full object-cover" />
-                  </div>
+            {/* Contenido Home Simulado */}
+            <div className="absolute inset-0 flex flex-col items-center p-4 pt-8 gap-4 overflow-hidden">
+              {/* Logo */}
+              <div className="relative p-0.5 bg-gradient-to-tr from-primary to-primary/40 rounded-full shadow-lg">
+                <div className="bg-white dark:bg-slate-900 rounded-full p-0.5 overflow-hidden w-14 h-14 flex items-center justify-center">
+                  <Image src={insigniaUrl} alt="Logo" width={56} height={56} className="rounded-full object-cover" />
                 </div>
+              </div>
 
-                {/* Título */}
-                <div className="text-center space-y-0.5">
-                  <h4 className="text-sm font-bold font-headline leading-tight text-foreground">
-                    Himnario <span className="text-primary">EECH</span>
-                  </h4>
-                  <p className="text-[6px] text-muted-foreground font-bold tracking-widest uppercase">Ejército Evangélico</p>
-                </div>
+              {/* Título */}
+              <div className="text-center space-y-0.5">
+                <h4 className="text-sm font-bold font-headline leading-tight text-foreground text-glow">
+                  Himnario <span className="text-primary">EECH</span>
+                </h4>
+                <p className="text-[6px] text-muted-foreground font-black tracking-widest uppercase">Ejército Evangélico</p>
+              </div>
 
-                {/* Botón de Búsqueda Falso */}
-                <div className="w-full h-6 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm flex items-center px-2 gap-2">
-                  <div className="h-2 w-2 rounded-full bg-muted-foreground/30" />
-                  <div className="h-1.5 w-16 bg-muted-foreground/20 rounded-full" />
-                </div>
+              {/* Buscador Falso */}
+              <div className="w-full h-7 rounded-full bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 shadow-sm flex items-center px-3 gap-2">
+                <Palette className="h-2.5 w-2.5 text-muted-foreground/40" />
+                <div className="h-1.5 w-20 bg-muted-foreground/10 rounded-full" />
+              </div>
 
-                {/* Grid de Navegación Falso */}
-                <div className="grid grid-cols-2 gap-2 w-full flex-1">
-                  {[BookOpen, Music, Mic, Library].map((Icon, i) => (
-                    <div key={i} className="rounded-xl bg-white/40 dark:bg-white/5 backdrop-blur-sm border border-white/20 flex flex-col items-center justify-center p-2 gap-1 shadow-sm">
-                      <div className="p-1.5 rounded-lg bg-white dark:bg-slate-900 shadow-inner">
-                        <Icon className="h-3 w-3 text-primary" />
-                      </div>
-                      <div className="h-1 w-8 bg-foreground/10 rounded-full" />
+              {/* Grid de Navegación Falso */}
+              <div className="grid grid-cols-2 gap-2 w-full mt-2">
+                {[BookOpen, Music, Mic, Library].map((Icon, i) => (
+                  <div key={i} className="rounded-2xl bg-white/60 dark:bg-white/5 backdrop-blur-sm border border-white/20 flex flex-col items-center justify-center p-3 gap-2 shadow-sm">
+                    <div className="p-2 rounded-xl bg-white dark:bg-slate-900 shadow-inner">
+                      <Icon className="h-3.5 w-3.5 text-primary" />
                     </div>
-                  ))}
-                </div>
+                    <div className="h-1 w-10 bg-foreground/10 rounded-full" />
+                  </div>
+                ))}
               </div>
             </div>
           </div>
+        </div>
 
-          <ScrollArea className="flex-1 p-6 h-[350px]">
-            <div className="space-y-8 pb-10">
+        {/* LADO DERECHO: CONTROLES */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          <ScrollArea className="flex-1 h-[400px] md:h-[550px]">
+            <div className="p-8 space-y-10">
               {/* MODO DE PANTALLA */}
-              <div className="space-y-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Modo de Pantalla</p>
-                <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-4 bg-primary rounded-full" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Ambiente Lumínico</p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <button 
                     onClick={() => setDisplayMode('light')}
                     className={cn(
-                      "flex items-center justify-center gap-2 h-12 rounded-2xl border-2 transition-all duration-300 font-bold text-xs active:scale-95",
+                      "flex items-center justify-center gap-3 h-14 rounded-[1.5rem] border-2 transition-all duration-300 font-bold text-sm active:scale-95",
                       displayMode === 'light' 
-                        ? "bg-white border-primary text-primary shadow-lg" 
-                        : "bg-muted/50 border-transparent text-muted-foreground opacity-60"
+                        ? "bg-white border-primary text-primary shadow-xl shadow-primary/10" 
+                        : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted opacity-70"
                     )}
                   >
-                    <Sun className="h-4 w-4" /> Día
+                    <Sun className="h-5 w-5" /> Día
                   </button>
                   <button 
                     onClick={() => setDisplayMode('dark')}
                     className={cn(
-                      "flex items-center justify-center gap-2 h-12 rounded-2xl border-2 transition-all duration-300 font-bold text-xs active:scale-95",
+                      "flex items-center justify-center gap-3 h-14 rounded-[1.5rem] border-2 transition-all duration-300 font-bold text-sm active:scale-95",
                       displayMode === 'dark' 
-                        ? "bg-slate-900 border-primary text-primary shadow-lg" 
-                        : "bg-muted/50 border-transparent text-muted-foreground opacity-60"
+                        ? "bg-slate-900 border-primary text-primary shadow-xl shadow-primary/10" 
+                        : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted opacity-70"
                     )}
                   >
-                    <Moon className="h-4 w-4" /> Noche
+                    <Moon className="h-5 w-5" /> Noche
                   </button>
                 </div>
               </div>
 
               {/* COLOR DE IDENTIDAD */}
-              <div className="space-y-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Color del Himnario</p>
-                <div className="grid grid-cols-5 gap-2">
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-4 bg-primary rounded-full" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Paleta Increíble</p>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
                   {themes.map((t) => (
                     <button
                       key={t.id}
                       onClick={() => setColorTheme(t.id)}
                       className={cn(
-                        "relative flex flex-col items-center justify-center aspect-square rounded-2xl transition-all duration-300 border-2 active:scale-90",
+                        "flex items-center gap-4 w-full p-4 rounded-[1.5rem] border-2 transition-all duration-300 active:scale-[0.98] text-left group",
                         colorTheme === t.id 
-                          ? "border-primary bg-white dark:bg-white/10 shadow-md scale-110 z-10" 
-                          : "border-transparent bg-muted/30 grayscale-[0.5] hover:grayscale-0"
+                          ? "border-primary bg-primary/5 shadow-lg shadow-primary/5" 
+                          : "border-transparent bg-muted/30 hover:bg-muted/50"
                       )}
                     >
-                      <div className={cn("h-6 w-6 rounded-full shadow-inner", t.color)} />
+                      <div className={cn("h-10 w-10 rounded-full shadow-inner ring-4 ring-white dark:ring-slate-900 transition-transform group-hover:scale-110", t.color)} />
+                      <div className="flex-1">
+                        <p className={cn("text-sm font-bold", colorTheme === t.id ? "text-primary" : "text-foreground")}>{t.name}</p>
+                        <p className="text-[10px] text-muted-foreground font-medium">{t.desc}</p>
+                      </div>
                       {colorTheme === t.id && (
-                        <div className="absolute -top-1 -right-1 bg-primary text-white p-0.5 rounded-full ring-2 ring-background">
-                          <Check className="h-2 w-2" />
+                        <div className="h-6 w-6 bg-primary text-white rounded-full flex items-center justify-center shadow-md animate-in zoom-in-50">
+                          <Check className="h-3 w-3" />
                         </div>
                       )}
                     </button>
@@ -166,29 +180,31 @@ export function AppearanceDialog() {
               </div>
 
               {/* DISEÑOS DE FONDO */}
-              <div className="space-y-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">Ambiente de Fondo</p>
-                <div className="space-y-2">
+              <div className="space-y-4 pb-8">
+                <div className="flex items-center gap-2">
+                  <div className="h-1.5 w-4 bg-primary rounded-full" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Estilo de Fondo</p>
+                </div>
+                <div className="grid grid-cols-1 gap-3">
                   {designs.map((d) => (
                     <button
                       key={d.id}
                       onClick={() => setDesign(d.id)}
                       className={cn(
-                        "flex items-center justify-between w-full p-3.5 rounded-2xl border-2 transition-all duration-300 active:scale-[0.98]",
+                        "flex items-center gap-4 w-full p-4 rounded-[1.5rem] border-2 transition-all duration-300 active:scale-[0.98] text-left",
                         design === d.id 
-                          ? "border-primary bg-white dark:bg-white/10 shadow-md" 
+                          ? "border-primary bg-primary/5 shadow-lg shadow-primary/5" 
                           : "border-transparent bg-muted/30 hover:bg-muted/50"
                       )}
                     >
-                      <div className="flex items-center gap-3">
-                        <div className={cn("p-2 rounded-lg transition-colors", design === d.id ? "bg-primary text-white" : "bg-primary/10 text-primary")}>
-                          <d.icon className="h-4 w-4" />
-                        </div>
-                        <span className={cn("text-xs font-bold", design === d.id ? "text-foreground" : "text-foreground/60")}>
-                          {d.name}
-                        </span>
+                      <div className={cn("p-2.5 rounded-2xl transition-all", design === d.id ? "bg-primary text-white scale-110" : "bg-primary/10 text-primary")}>
+                        <d.icon className="h-5 w-5" />
                       </div>
-                      {design === d.id && <Check className="h-4 w-4 text-primary" />}
+                      <div className="flex-1">
+                        <p className={cn("text-sm font-bold", design === d.id ? "text-primary" : "text-foreground")}>{d.name}</p>
+                        <p className="text-[10px] text-muted-foreground font-medium">{d.desc}</p>
+                      </div>
+                      {design === d.id && <Check className="h-5 w-5 text-primary" />}
                     </button>
                   ))}
                 </div>
@@ -196,10 +212,12 @@ export function AppearanceDialog() {
             </div>
           </ScrollArea>
 
-          <div className="p-6 pt-2 bg-background/80 backdrop-blur-md border-t border-slate-200 dark:border-white/10">
-            <p className="text-[9px] text-center text-primary/60 font-black leading-relaxed uppercase tracking-widest">
-              Configuración Guardada en el Dispositivo
-            </p>
+          <div className="p-6 bg-background border-t border-border/50 flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2 text-primary/60">
+              <Sparkles className="h-3 w-3" />
+              <p className="text-[9px] font-black uppercase tracking-[0.2em]">Configuración Guardada</p>
+            </div>
+            <p className="text-[8px] text-muted-foreground text-center max-w-[200px]">Los cambios se aplican inmediatamente y quedarán guardados por determinación en este dispositivo.</p>
           </div>
         </div>
       </DialogContent>
