@@ -73,7 +73,7 @@ export default function HomePage() {
 
       <div className="relative z-10 flex flex-col flex-1">
         
-        {/* Barra Superior - Bajada para mejor ergonomía móvil */}
+        {/* Barra Superior - Dejada tal cual según solicitud */}
         <div className="flex items-center justify-between px-6 pt-20 pb-4 animate-in fade-in duration-1000">
           <div className="flex items-center gap-2">
             {isFullySynced ? (
@@ -91,9 +91,9 @@ export default function HomePage() {
           <AppearanceDialog />
         </div>
 
-        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-32 pb-10 space-y-10">
+        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-16 pb-6 space-y-10">
           
-          {/* HEADER - Ajustado verticalmente */}
+          {/* HEADER - Logo subido un poco (pt-16 en lugar de pt-32) */}
           <header className="w-full text-center space-y-8 animate-in fade-in slide-in-from-top-4 duration-1000">
             <div className="relative inline-flex items-center justify-center group">
               <div className="absolute inset-0 bg-primary/20 blur-[40px] rounded-full scale-150 opacity-50" />
@@ -152,8 +152,8 @@ export default function HomePage() {
             ))}
           </div>
           
-          {/* Footer */}
-          <footer className="w-full text-center space-y-8 animate-in fade-in duration-1000 delay-500 mt-12 pt-4">
+          {/* Footer - Subido un poco (mt-6 pt-4 en lugar de mt-12 pt-4) */}
+          <footer className="w-full text-center space-y-8 animate-in fade-in duration-1000 delay-500 mt-6 pt-4">
             <div className="flex flex-col items-center gap-6">
               <div className="flex items-center justify-center gap-6">
                 <InstallPWAButton />
