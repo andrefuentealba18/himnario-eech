@@ -123,7 +123,7 @@ export default function YouthChoirsIndexPage() {
         </div>
 
         <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
-          <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm pt-24 pb-6 px-4 border-b flex items-center justify-center relative min-h-[140px]">
+          <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm pt-16 pb-6 px-4 border-b flex items-center justify-center relative min-h-[140px]">
               <div className="absolute left-2 top-1/2 -translate-y-1/2">
                   {selectedGroup ? (
                     <Button variant="ghost" size="icon" onClick={() => setSelectedGroup(null)} className="rounded-full h-12 w-12">

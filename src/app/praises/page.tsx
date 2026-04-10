@@ -98,7 +98,7 @@ export default function PraisesIndexPage() {
         </div>
 
         <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
-          <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm pt-24 pb-6 px-4 border-b flex items-center justify-between relative">
+          <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm pt-16 pb-6 px-4 border-b flex items-center justify-between relative">
               <Button variant="ghost" size="icon" asChild className="rounded-full">
                   <Link href="/">
                       <ChevronLeft className="h-6 w-6" />
