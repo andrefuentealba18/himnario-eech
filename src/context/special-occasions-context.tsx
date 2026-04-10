@@ -68,12 +68,19 @@ export function SpecialOccasionsProvider({ children }: { children: ReactNode }) 
     if (!firestore) return { success: false };
     const id = `${slugify(data.category)}-${slugify(data.title)}-${Date.now().toString().slice(-4)}`;
     const docRef = doc(firestore, 'special-occasions', id);
-    const dataToSave = { ...data, status: 'pending' as const, createdAt: serverTimestamp() };
+    
+    // Si no viene status, por defecto es pending. Si viene (desde admin), lo respetamos.
+    const dataToSave = { 
+      ...data, 
+      status: data.status || 'pending' as const, 
+      createdAt: serverTimestamp() 
+    };
     
     setDoc(docRef, removeUndefined(dataToSave))
       .catch(err => errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'create', requestResourceData: dataToSave })));
     
-    toast({ title: 'Enviado a Revisión' });
+    const msg = dataToSave.status === 'approved' ? 'Canto agregado correctamente' : 'Enviado a Revisión';
+    toast({ title: msg });
     return { success: true };
   }, [firestore, toast]);
 
@@ -95,7 +102,8 @@ export function SpecialOccasionsProvider({ children }: { children: ReactNode }) 
   const approveSpecialOccasion = useCallback((id: string) => {
     if (!firestore) return;
     const docRef = doc(firestore, 'special-occasions', id);
-    updateDoc(docRef, { status: 'approved' });
+    updateDoc(docRef, { status: 'approved' })
+      .catch(err => errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'update' })));
     toast({ title: 'Aprobado' });
   }, [firestore, toast]);
 
