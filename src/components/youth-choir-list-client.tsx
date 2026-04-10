@@ -5,7 +5,7 @@ import type { YouthChoir } from '@/lib/youth-choirs';
 import { useState, useMemo, useDeferredValue } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
-import { Search, List, Star } from 'lucide-react';
+import { Search, List, Star, ChevronRight } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -73,8 +73,8 @@ export function YouthChoirListClient({ youthChoirs }: YouthChoirListClientProps)
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar por título, letra o nota..."
-          className="pl-10 w-full"
+          placeholder="Buscar alabanza o letra..."
+          className="pl-10 w-full h-11 rounded-xl"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -121,23 +121,23 @@ function SimpleYouthChoirRoll({ youthChoirs }: { youthChoirs: (YouthChoir & { _s
 
   return (
     <ScrollArea className="h-[calc(100vh-16rem)] pr-4">
-        <div className="flex flex-col">
+        <div className="flex flex-col gap-1">
         {youthChoirs.map((praise) => (
             <Link
                 href={`/youth-choirs/${praise.id}`}
                 key={praise.id}
-                className="flex items-center gap-4 p-3 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
+                className="flex items-center gap-3 p-3 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
             >
                 <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
                     <div className="flex items-center gap-2 overflow-hidden">
-                      <span className="font-medium truncate text-sm">{praise.title}</span>
+                      <span className="font-bold text-[13px] text-slate-700 dark:text-slate-200 truncate">{praise.title}</span>
                       {isNewSong(praise.createdAt) && (
                         <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[8px] py-0 px-1 h-4 flex-shrink-0">NEW</Badge>
                       )}
                     </div>
                     <div className="flex items-center gap-1 flex-shrink-0 scale-90">
-                        {praise.speed && <Badge variant="outline" className="capitalize text-[8px]">{praise.speed}</Badge>}
-                        {praise.tone && <Badge variant="outline" className="text-[8px]">{praise.tone}</Badge>}
+                        {praise.speed && <Badge variant="outline" className="capitalize text-[8px] font-bold">{praise.speed}</Badge>}
+                        {praise.tone && <Badge variant="outline" className="text-[9px] font-bold border-primary/20 text-primary">{praise.tone}</Badge>}
                     </div>
                 </div>
             </Link>
@@ -183,9 +183,10 @@ function GroupedYouthChoirRoll({ youthChoirs }: { youthChoirs: (YouthChoir & { _
                                 <Link
                                     href={`/youth-choirs/${yc.id}`}
                                     key={yc.id}
-                                    className="flex items-center gap-4 p-2 -mx-2 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
+                                    className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors border-b last:border-none"
                                 >
-                                    <span className="text-xs font-medium truncate">{yc.title}</span>
+                                    <span className="text-[13px] font-bold text-slate-700 dark:text-slate-200 truncate">{yc.title}</span>
+                                    <ChevronRight className="h-4 w-4 text-slate-300" />
                                 </Link>
                             ))}
                         </div>

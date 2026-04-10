@@ -30,7 +30,6 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
   const [activeTab, setActiveTab] = useState('all');
   const { favorites, isLoaded } = useFavorites();
 
-  // Indexar himnos para búsqueda rápida
   const indexedHymns = useMemo(() => {
     return hymns.map(h => ({
       ...h,
@@ -45,7 +44,9 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
     let listToFilter = indexedHymns;
     if (activeTab === 'favorites') {
       if (!isLoaded) return [];
-      listToFilter = indexedHymns.filter(hymn => favorites.has(hymn.number));
+      listToFilter = indexedHymns.filter(hymn => {
+        return favorites.some(f => f.id === hymn.number && f.type === 'hymn');
+      });
     }
 
     if (!normalizedSearch) {
@@ -61,8 +62,8 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar por número, título, letra o nota..."
-          className="pl-10 w-full"
+          placeholder="Buscar por número, título o letra..."
+          className="pl-10 w-full h-11 rounded-xl"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -86,7 +87,7 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
           {isLoaded && filteredHymns.length === 0 ? (
             <div className="text-center text-muted-foreground py-10">
               <p>No tienes himnos favoritos.</p>
-              <p className="text-sm">Toca la estrella en un himno para agregarlo.</p>
+              <p className="text-xs">Toca la estrella en un himno para agregarlo.</p>
             </div>
           ) : (
             <HymnRoll hymns={filteredHymns} />
@@ -113,17 +114,17 @@ function HymnRoll({ hymns }: { hymns: (Hymn & { _searchIndex?: string })[] }) {
             <Link
                 href={`/hymns/${hymn.number}`}
                 key={hymn.number}
-                className="flex items-center gap-4 p-3 border-b transition-colors hover:bg-muted/50 rounded-lg"
+                className="flex items-center gap-3 p-3 border-b transition-colors hover:bg-muted/50 rounded-lg"
             >
-                <span className="font-bold text-primary w-8 text-center">{hymn.number}</span>
+                <span className="font-black text-primary w-7 text-center text-xs">{hymn.number}</span>
                 <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
                     <div className="flex items-center gap-2 overflow-hidden">
-                      <span className="font-medium truncate">{hymn.title}</span>
+                      <span className="font-bold text-[13px] text-slate-700 dark:text-slate-200 truncate">{hymn.title}</span>
                       {isNewSong(hymn.createdAt) && (
-                        <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[10px] py-0 px-1.5 h-5 flex-shrink-0">NEW</Badge>
+                        <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[8px] py-0 px-1.5 h-4 flex-shrink-0">NEW</Badge>
                       )}
                     </div>
-                    {hymn.tone && <Badge variant="outline" className="flex-shrink-0">{hymn.tone}</Badge>}
+                    {hymn.tone && <Badge variant="outline" className="flex-shrink-0 text-[9px] h-5 px-1.5 font-bold border-primary/20 text-primary">{hymn.tone}</Badge>}
                 </div>
             </Link>
         ))}

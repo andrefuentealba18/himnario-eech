@@ -163,12 +163,10 @@
         "category": {
           "type": "string",
           "enum": [
-            "Bautismo",
-            "Santa Cena",
-            "Matrimonio",
+            "Predicación",
             "Fúnebre",
-            "Aniversario",
-            "Campaña"
+            "Cumpleaños",
+            "Bautismos"
           ]
         }
       },

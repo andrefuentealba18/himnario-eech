@@ -1,5 +1,5 @@
 
-export type SpecialCategory = "Bautismo" | "Santa Cena" | "Matrimonio" | "Fúnebre" | "Aniversario" | "Campaña";
+export type SpecialCategory = "Predicación" | "Fúnebre" | "Cumpleaños" | "Bautismos";
 
 export type SpecialOccasion = {
   id: string;

@@ -14,6 +14,7 @@ import { SpecialOccasionListClient } from '@/components/special-occasion-list-cl
 export default function SpecialOccasionsPage() {
   const { specialOccasions, isLoaded } = useSpecialOccasions();
   const [showIntro, setShowIntro] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => setShowIntro(false), 2400);
@@ -76,34 +77,42 @@ export default function SpecialOccasionsPage() {
       </div>
 
       <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
-        <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm pt-16 pb-6 px-4 border-b flex items-center justify-between relative">
-          <Button variant="ghost" size="icon" asChild className="rounded-full h-12 w-12">
-            <Link href="/">
-              <ChevronLeft className="h-7 w-7" />
+        <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm pt-12 pb-4 px-4 border-b flex items-center justify-between relative">
+          {selectedCategory ? (
+            <Button variant="ghost" size="icon" onClick={() => setSelectedCategory(null)} className="rounded-full h-10 w-10">
+              <ChevronLeft className="h-6 w-6" />
               <span className="sr-only">Volver</span>
-            </Link>
-          </Button>
+            </Button>
+          ) : (
+            <Button variant="ghost" size="icon" asChild className="rounded-full h-10 w-10">
+              <Link href="/">
+                <ChevronLeft className="h-6 w-6" />
+                <span className="sr-only">Volver</span>
+              </Link>
+            </Button>
+          )}
           <div className="flex items-center gap-3">
-            <h1 className="text-xl font-bold font-headline text-foreground">
-              Ocasiones Especiales
+            <h1 className="text-lg font-bold font-headline text-foreground">
+              {selectedCategory || "Ocasiones Especiales"}
             </h1>
-            <Badge variant="secondary" className="bg-amber-100 text-amber-700 border-amber-200 font-bold">
-              {specialOccasions.length}
-            </Badge>
-            <Sparkles className="h-6 w-6 text-amber-500" />
+            {!selectedCategory && <Sparkles className="h-5 w-5 text-amber-500" />}
           </div>
-          <div className="w-12"></div>
+          <div className="w-10"></div>
         </header>
 
         <div className="p-4 flex-1 overflow-auto">
           {!isLoaded ? (
             <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-4">
               <Loader2 className="h-10 w-10 animate-spin text-primary" />
-              <p className="animate-pulse font-bold uppercase tracking-widest text-[10px]">Sincronizando Alabanzas Especiales...</p>
+              <p className="animate-pulse font-bold uppercase tracking-widest text-[10px]">Sincronizando...</p>
             </div>
           ) : (
             <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
-              <SpecialOccasionListClient specialOccasions={specialOccasions} />
+              <SpecialOccasionListClient 
+                specialOccasions={specialOccasions} 
+                activeCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+              />
             </div>
           )}
         </div>

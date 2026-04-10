@@ -73,8 +73,8 @@ export function ChoirListClient({ choirs }: ChoirListClientProps) {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar por título, letra o nota..."
-          className="pl-10 w-full"
+          placeholder="Buscar coro o letra..."
+          className="pl-10 w-full h-11 rounded-xl"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
@@ -126,18 +126,18 @@ function SimpleChoirRoll({ choirs }: { choirs: (Choir & { _searchIndex?: string 
             <Link
                 href={`/choirs/${choir.id}`}
                 key={choir.id}
-                className="flex items-center gap-4 p-3 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
+                className="flex items-center gap-3 p-3 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
             >
                 <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
                     <div className="flex items-center gap-2 overflow-hidden">
-                      <span className="font-medium truncate text-sm">{choir.title}</span>
+                      <span className="font-bold text-[13px] text-slate-700 dark:text-slate-200 truncate">{choir.title}</span>
                       {isNewSong(choir.createdAt) && (
                         <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[8px] py-0 px-1 h-4 flex-shrink-0">NEW</Badge>
                       )}
                     </div>
                     <div className="flex items-center gap-1 flex-shrink-0 scale-90">
-                        {choir.speed && <Badge variant="outline" className="capitalize text-[8px]">{choir.speed === 'Rapido' ? 'Aviv.' : 'Medit.'}</Badge>}
-                        {choir.tone && <Badge variant="outline" className="text-[8px]">{choir.tone}</Badge>}
+                        {choir.speed && <Badge variant="outline" className="capitalize text-[8px] font-bold">{choir.speed === 'Rapido' ? 'Aviv.' : 'Medit.'}</Badge>}
+                        {choir.tone && <Badge variant="outline" className="text-[9px] font-bold border-primary/20 text-primary">{choir.tone}</Badge>}
                     </div>
                 </div>
             </Link>
@@ -185,7 +185,7 @@ function GroupedChoirRoll({ choirs }: { choirs: (Choir & { _searchIndex?: string
                                     key={choir.id}
                                     className="flex items-center gap-4 p-2 -mx-2 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
                                 >
-                                    <span className="text-xs font-medium truncate">{choir.title}</span>
+                                    <span className="text-[13px] font-bold text-slate-700 dark:text-slate-200 truncate">{choir.title}</span>
                                 </Link>
                             ))}
                         </div>
