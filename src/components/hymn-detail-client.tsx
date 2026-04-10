@@ -2,18 +2,19 @@
 
 import type { Hymn } from '@/lib/hymns';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useHymns } from '@/context/hymns-context';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useFontSize } from '@/hooks/use-font-size';
 import { useRecents } from '@/hooks/use-recents';
 import { Button } from '@/components/ui/button';
 import { HymnAdminActions } from '@/components/hymn-admin-actions';
-import { Star, ChevronLeft, ZoomIn, ZoomOut, Share2, Sparkles } from 'lucide-react';
+import { Star, ChevronLeft, ZoomIn, ZoomOut, Share2, Sparkles, Home } from 'lucide-react';
 import { useCallback, useEffect } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 interface HymnDetailClientProps {
   hymnId: number;
@@ -49,6 +50,7 @@ function HymnDetailSkeleton() {
 
 export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { getHymnById, deleteHymn, updateHymn, isLoaded: isHymnsLoaded } = useHymns();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
   const { isFavorite, toggleFavorite, isLoaded: isFavoritesLoaded } = useFavorites();
@@ -98,8 +100,25 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
     window.open(shareUrl, '_blank');
   }, [hymn]);
 
-  if (!isHymnsLoaded || !hymn) {
+  if (!isHymnsLoaded) {
     return <HymnDetailSkeleton />;
+  }
+
+  if (!hymn) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center space-y-6">
+        <div className="p-6 bg-primary/5 rounded-full">
+          <Sparkles className="h-12 w-12 text-primary/40" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold font-headline">Himno no encontrado</h2>
+          <p className="text-muted-foreground">El himno Nº {hymnId} no se encuentra en nuestra base de datos o aún se está sincronizando.</p>
+        </div>
+        <Button asChild className="rounded-full px-8">
+          <Link href="/hymns"><Home className="mr-2 h-4 w-4" /> Volver al Índice</Link>
+        </Button>
+      </div>
+    );
   }
 
   const isFav = isFavoritesLoaded && isFavorite(hymn.number, 'hymn');

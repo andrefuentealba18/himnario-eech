@@ -2,10 +2,34 @@
 
 import { useParams } from 'next/navigation';
 import { HymnDetailClient } from '@/components/hymn-detail-client';
+import { Suspense } from 'react';
+import { Skeleton } from '@/components/ui/skeleton';
+
+function HymnPageFallback() {
+  return (
+    <div className="flex flex-col min-h-screen bg-background">
+      <header className="h-20 border-b flex items-center px-4">
+        <Skeleton className="h-10 w-10 rounded-full" />
+      </header>
+      <main className="p-8">
+        <Skeleton className="h-8 w-3/4 mb-4" />
+        <Skeleton className="h-64 w-full rounded-2xl" />
+      </main>
+    </div>
+  );
+}
 
 export default function HymnPage() {
   const params = useParams();
-  const hymnId = parseInt(params.id as string, 10);
+  const id = params?.id;
+  
+  if (!id) return <HymnPageFallback />;
+  
+  const hymnId = parseInt(id as string, 10);
 
-  return <HymnDetailClient hymnId={hymnId} />;
+  return (
+    <Suspense fallback={<HymnPageFallback />}>
+      <HymnDetailClient hymnId={hymnId} />
+    </Suspense>
+  );
 }
