@@ -1,9 +1,8 @@
-
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { YouthChoirListClient } from '@/components/youth-choir-list-client';
-import { Users, ChevronLeft, Plus, Baby, UserCircle, Library } from 'lucide-react';
+import { Users, ChevronLeft, Plus, Baby, UserCircle, Library, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -35,7 +34,13 @@ export default function YouthChoirsIndexPage() {
   const [selectedGroup, setSelectedGroup] = useState<GroupType | null>(null);
   const [isSingleYouthChoirDialogOpen, setSingleYouthChoirDialogOpen] = useState(false);
   const [isMultiYouthChoirDialogOpen, setMultiYouthChoirDialogOpen] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
   const { toast } = useToast();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setShowIntro(false), 2200);
+    return () => clearTimeout(timer);
+  }, []);
 
   const countsByGroup = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -66,19 +71,51 @@ export default function YouthChoirsIndexPage() {
     }
   };
 
+  if (showIntro) {
+    return (
+      <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
+        <div className="relative flex flex-col items-center gap-8">
+          <div className="space-y-4 text-center">
+            <div className="h-px w-16 bg-primary/20 mx-auto animate-in fade-in slide-in-from-left duration-1000" />
+            <h1 className="text-4xl md:text-7xl font-black font-headline tracking-[0.3em] text-primary animate-in fade-in zoom-in-95 duration-1000 ease-out uppercase text-glow">
+              Agrupaciones
+            </h1>
+            <div className="h-px w-16 bg-primary/20 mx-auto animate-in fade-in slide-in-from-right duration-1000" />
+          </div>
+        </div>
+        <div className="absolute bottom-16 left-0 w-full text-center px-6">
+          <div className="flex items-center justify-center gap-4 mb-2 opacity-40">
+            <div className="h-px w-8 bg-slate-400" />
+            <span className="text-[8px] font-black uppercase tracking-[0.3em]">Oficial</span>
+            <div className="h-px w-8 bg-slate-400" />
+          </div>
+          <p className="text-[10px] md:text-xs font-black tracking-[0.6em] text-slate-500 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+            Ejército Evangélico de Chile
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <main className="flex flex-col items-center bg-background min-h-screen">
+      <main className="relative flex flex-col items-center bg-background min-h-screen animate-in fade-in duration-1000">
+        <div className="fixed inset-0 -z-10 pointer-events-none opacity-40">
+          <div className="absolute top-0 right-0 w-[80vw] h-[80vw] bg-primary/10 rounded-full blur-[120px] animate-aura" />
+          <div className="absolute bottom-0 left-0 w-[60vw] h-[60vw] bg-primary/5 rounded-full blur-[100px] animate-aura" style={{ animationDirection: 'reverse' }} />
+        </div>
+
         <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
-          <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm p-2 border-b flex items-center justify-center relative h-14">
+          <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm p-4 border-b flex items-center justify-center relative h-16">
               <div className="absolute left-2 top-1/2 -translate-y-1/2">
                   {selectedGroup ? (
-                    <Button variant="ghost" size="icon" onClick={() => setSelectedGroup(null)}>
+                    <Button variant="ghost" size="icon" onClick={() => setSelectedGroup(null)} className="rounded-full">
                       <ChevronLeft className="h-6 w-6" />
                       <span className="sr-only">Volver al menú</span>
                     </Button>
                   ) : (
-                    <Button variant="ghost" size="icon" asChild>
+                    <Button variant="ghost" size="icon" asChild className="rounded-full">
                       <Link href="/">
                           <ChevronLeft className="h-6 w-6" />
                           <span className="sr-only">Volver</span>
@@ -87,11 +124,11 @@ export default function YouthChoirsIndexPage() {
                   )}
               </div>
               <div className="flex items-center gap-3 px-10">
-                <h1 className="text-base font-bold font-headline text-foreground truncate">
+                <h1 className="text-lg font-bold font-headline text-foreground truncate">
                   {selectedGroup || "Agrupaciones"}
                 </h1>
                 {selectedGroup && (
-                  <Badge variant="secondary" className="text-xs font-semibold px-2 h-5">
+                  <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 font-bold">
                     {filteredByGroup.length}
                   </Badge>
                 )}
@@ -100,8 +137,8 @@ export default function YouthChoirsIndexPage() {
               <div className="absolute right-2 top-1/2 -translate-y-1/2">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm" className="h-8 px-2 text-xs">
-                        <Plus className="mr-1 h-3 w-3" />
+                      <Button variant="outline" size="sm" className="rounded-full h-9">
+                        <Plus className="mr-1 h-4 w-4" />
                         Agregar
                       </Button>
                     </DropdownMenuTrigger>
@@ -119,36 +156,37 @@ export default function YouthChoirsIndexPage() {
 
           <div className="p-4 flex-1 overflow-auto">
             {!isLoaded ? (
-              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-                <p className="animate-pulse text-sm">Cargando alabanzas...</p>
+              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-4">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                <p className="animate-pulse font-bold uppercase tracking-widest text-[10px]">Sincronizando Agrupaciones...</p>
               </div>
             ) : !selectedGroup ? (
-              <div className="space-y-8 py-4">
+              <div className="space-y-8 py-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
                 <div className="text-center space-y-2">
-                  <p className="text-xs font-bold text-slate-400 uppercase tracking-[0.25em]">Selecciona Categoría</p>
-                  <div className="h-1 w-8 bg-primary/30 mx-auto rounded-full" />
+                  <p className="text-[10px] font-black text-primary/60 uppercase tracking-[0.3em]">Selecciona Categoría</p>
+                  <div className="h-0.5 w-8 bg-primary/30 mx-auto rounded-full" />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
                   {groups.map((group, index) => (
                     <Card 
                       key={group.name} 
-                      className="cursor-pointer border-slate-200 bg-white hover:bg-slate-50 transition-all duration-300 active:scale-95 shadow-sm hover:shadow-md group overflow-hidden border-2"
+                      className="cursor-pointer border-slate-200/50 bg-white/40 backdrop-blur-sm hover:bg-white/80 transition-all duration-500 active:scale-95 shadow-sm hover:shadow-xl group overflow-hidden border-2 app-card"
                       onClick={() => setSelectedGroup(group.name)}
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <CardContent className="p-6 flex flex-col items-center text-center gap-4">
                         <div className={cn(
-                          "transition-transform duration-500 group-hover:scale-110 flex items-center justify-center overflow-hidden",
-                          group.imageUrl ? "w-24 h-24 p-0" : `w-16 h-16 p-4 rounded-2xl shadow-inner ${group.color}`
+                          "transition-all duration-700 group-hover:scale-110 flex items-center justify-center overflow-hidden",
+                          group.imageUrl ? "w-20 h-20 p-0 shadow-lg rounded-full" : `w-16 h-16 p-4 rounded-2xl shadow-inner ${group.color}`
                         )}>
                           {group.imageUrl ? (
                             <Image 
                               src={group.imageUrl} 
                               alt={group.name} 
-                              width={96} 
-                              height={96} 
-                              className="object-contain w-full h-full"
+                              width={80} 
+                              height={80} 
+                              className="object-cover w-full h-full"
                               priority
                               data-ai-hint="group logo"
                             />
@@ -156,9 +194,9 @@ export default function YouthChoirsIndexPage() {
                             <group.icon className={`h-8 w-8 ${group.iconColor}`} />
                           )}
                         </div>
-                        <div className="space-y-1">
-                          <h3 className="font-bold text-sm text-slate-800 leading-tight uppercase tracking-tight">{group.name}</h3>
-                          <Badge variant="secondary" className="text-[10px] font-bold px-2 py-0 h-5">
+                        <div className="space-y-1.5">
+                          <h3 className="font-black text-[10px] text-slate-800 leading-tight uppercase tracking-widest">{group.name}</h3>
+                          <Badge variant="secondary" className="text-[9px] font-bold px-2 py-0 h-5 bg-primary/5 text-primary border-primary/10">
                             {countsByGroup[group.name] || 0} cantos
                           </Badge>
                         </div>
