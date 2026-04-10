@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -18,7 +17,7 @@ export default function SpecialOccasionsPage() {
   const [selectedCategory, setSelectedCategory] = useState<SpecialCategory | null>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowIntro(false), 2400);
+    const timer = setTimeout(() => setShowIntro(false), 2800);
     return () => clearTimeout(timer);
   }, []);
 
@@ -26,33 +25,35 @@ export default function SpecialOccasionsPage() {
 
   if (showIntro) {
     return (
-      <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-2xl flex flex-col items-center justify-center overflow-hidden">
+      <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center overflow-hidden">
+        {/* FONDO CINEMÁTICO TOTAL */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-white to-red-50/30" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-blue-600/5 rounded-full blur-[140px] animate-aura-slow" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] bg-red-600/5 rounded-full blur-[160px] animate-aura-slow" style={{ animationDirection: 'reverse' }} />
-          <div className="absolute inset-0 design-grid opacity-[0.05]" />
+          <div className="absolute top-[15%] left-[15%] w-[180vw] h-[180vw] bg-blue-600/10 rounded-full blur-[160px] animate-aura-giant" />
+          <div className="absolute bottom-[15%] right-[15%] w-[160vw] h-[160vw] bg-red-600/10 rounded-full blur-[180px] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-4s' }} />
+          <div className="absolute inset-0 design-grid opacity-[0.08]" />
         </div>
         
-        <div className="absolute top-20 right-10 w-20 h-20 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out">
-          <div className="absolute inset-0 bg-amber-400/20 blur-3xl rounded-full scale-150 animate-pulse" />
-          <div className="relative p-1 bg-gradient-to-tr from-amber-400/40 to-transparent rounded-full shadow-2xl">
-            <Image src={insigniaUrl} alt="Insignia EECH" width={80} height={80} className="relative rounded-full object-cover border-2 border-white/80" priority />
+        {/* INSIGNIA SUPERIOR MAGNIFICADA */}
+        <div className="absolute top-24 right-12 w-24 h-24 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out">
+          <div className="absolute inset-0 bg-amber-400/30 blur-[100px] rounded-full scale-150 animate-pulse" />
+          <div className="relative p-1.5 bg-gradient-to-tr from-amber-400/60 to-transparent rounded-full shadow-2xl">
+            <Image src={insigniaUrl} alt="Insignia EECH" width={96} height={96} className="relative rounded-full object-cover border-2 border-white/80" priority />
           </div>
         </div>
 
         <div className="relative flex flex-col items-center">
           <div className="space-y-12 text-center px-6">
             <div className="relative">
-              <h1 className="text-5xl font-black font-headline text-slate-900 animate-title-reveal uppercase leading-tight">
+              <h1 className="text-6xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase leading-tight tracking-[0.1em]">
                 Ocasiones<br/><span className="text-amber-600">Especiales</span>
               </h1>
               
-              <div className="mt-10 relative w-64 h-1.5 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
+              {/* BARRA TRICOLOR MAGNIFICADA */}
+              <div className="mt-12 relative w-80 h-2 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
                 <div className="absolute inset-0 flex">
-                  <div className="h-full w-24 bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.6)] rounded-full animate-loading-beam" style={{ animationDelay: '0s' }} />
-                  <div className="h-full w-20 bg-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)] rounded-full animate-loading-beam" style={{ animationDelay: '0.3s' }} />
-                  <div className="h-full w-24 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.6)] rounded-full animate-loading-beam" style={{ animationDelay: '0.6s' }} />
+                  <div className="h-full w-32 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.8)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
+                  <div className="h-full w-24 bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.4s' }} />
+                  <div className="h-full w-32 bg-red-600 shadow-[0_0_20px_rgba(220,38,38,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.8s' }} />
                 </div>
               </div>
             </div>
@@ -60,10 +61,15 @@ export default function SpecialOccasionsPage() {
         </div>
 
         <div className="absolute bottom-24 left-0 w-full text-center px-8">
-          <div className="flex flex-col items-center gap-5">
-            <p className="text-[10px] font-black tracking-[0.6em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-800">
+          <div className="flex flex-col items-center gap-6">
+            <p className="text-[11px] font-black tracking-[0.8em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
               Ejército Evangélico de Chile
             </p>
+            <div className="flex items-center gap-8 opacity-40">
+              <div className="h-px w-20 bg-blue-600" />
+              <Sparkles className="h-4 w-4 text-amber-500 animate-spin-slow" />
+              <div className="h-px w-20 bg-red-600" />
+            </div>
           </div>
         </div>
       </div>
@@ -73,8 +79,8 @@ export default function SpecialOccasionsPage() {
   return (
     <main className="relative flex flex-col items-center bg-background min-h-screen animate-in fade-in duration-1000">
       <div className="fixed inset-0 -z-10 pointer-events-none opacity-40">
-        <div className="absolute top-0 right-0 w-[80vw] h-[80vw] bg-primary/10 rounded-full blur-[120px] animate-aura" />
-        <div className="absolute bottom-0 left-0 w-[60vw] h-[60vw] bg-primary/5 rounded-full blur-[100px] animate-aura" style={{ animationDirection: 'reverse' }} />
+        <div className="absolute top-0 right-0 w-[100vw] h-[100vw] bg-primary/10 rounded-full blur-[140px] animate-aura-giant" />
+        <div className="absolute bottom-0 left-0 w-[80vw] h-[80vw] bg-primary/5 rounded-full blur-[120px] animate-aura-giant" style={{ animationDirection: 'reverse' }} />
       </div>
 
       <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">

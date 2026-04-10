@@ -15,7 +15,7 @@ export default function HymnsIndexPage() {
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowIntro(false), 2400);
+    const timer = setTimeout(() => setShowIntro(false), 2800);
     return () => clearTimeout(timer);
   }, []);
 
@@ -23,27 +23,29 @@ export default function HymnsIndexPage() {
 
   if (showIntro) {
     return (
-      <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-2xl flex flex-col items-center justify-center overflow-hidden">
-        {/* FONDO PATRIÓTICO CINEMÁTICO */}
+      <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center overflow-hidden">
+        {/* FONDO CINEMÁTICO GIGANTE */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/40 via-white to-red-50/40" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-blue-600/5 rounded-full blur-[140px] animate-aura-slow" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] bg-red-600/5 rounded-full blur-[160px] animate-aura-slow" style={{ animationDirection: 'reverse' }} />
-          <div className="absolute inset-0 design-grid opacity-[0.05]" />
+          <div className="absolute top-[20%] left-[20%] w-[180vw] h-[180vw] bg-blue-600/10 rounded-full blur-[160px] animate-aura-giant" />
+          <div className="absolute bottom-[20%] right-[20%] w-[150vw] h-[150vw] bg-red-600/10 rounded-full blur-[180px] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-5s' }} />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-white/20 backdrop-blur-sm" />
+          <div className="absolute inset-0 design-grid opacity-[0.08]" />
         </div>
         
-        {/* INSIGNIA SUPERIOR CON HALO DORADO REFINADO */}
-        <div className="absolute top-20 right-10 w-20 h-20 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out">
-          <div className="absolute inset-0 bg-amber-400/20 blur-3xl rounded-full scale-150 animate-pulse" />
-          <div className="relative p-1 bg-gradient-to-tr from-amber-400/40 to-transparent rounded-full shadow-2xl">
-            <Image 
-              src={insigniaUrl} 
-              alt="Insignia EECH" 
-              width={80} 
-              height={80} 
-              className="relative rounded-full object-cover border-2 border-white/80"
-              priority
-            />
+        {/* INSIGNIA CENTRAL MAGNIFICADA */}
+        <div className="relative mb-16 animate-in fade-in zoom-in-95 duration-1000 ease-out">
+          <div className="absolute inset-0 bg-blue-600/20 blur-[100px] rounded-full scale-150 animate-pulse" />
+          <div className="relative p-1.5 bg-gradient-to-tr from-blue-600 via-white to-red-600 rounded-full shadow-2xl">
+            <div className="bg-white rounded-full p-1">
+              <Image 
+                src={insigniaUrl} 
+                alt="Insignia EECH" 
+                width={120} 
+                height={120} 
+                className="relative rounded-full object-cover border-4 border-white shadow-inner"
+                priority
+              />
+            </div>
           </div>
         </div>
 
@@ -51,19 +53,16 @@ export default function HymnsIndexPage() {
         <div className="relative flex flex-col items-center">
           <div className="space-y-12 text-center px-6">
             <div className="relative">
-              <h1 className="text-7xl font-black font-headline text-slate-900 animate-title-reveal uppercase">
+              <h1 className="text-7xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.4em]">
                 Himnos
               </h1>
               
-              {/* PISTA DE CARGA DE ENERGÍA TRICOLOR */}
-              <div className="mt-10 relative w-64 h-1.5 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
+              {/* BARRA DE CARGA TRICOLOR EXPANDIDA */}
+              <div className="mt-12 relative w-80 h-2 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
                 <div className="absolute inset-0 flex">
-                  {/* Haz de Luz Azul */}
-                  <div className="h-full w-24 bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.6)] rounded-full animate-loading-beam" style={{ animationDelay: '0s' }} />
-                  {/* Haz de Luz Dorado */}
-                  <div className="h-full w-20 bg-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)] rounded-full animate-loading-beam" style={{ animationDelay: '0.3s' }} />
-                  {/* Haz de Luz Rojo */}
-                  <div className="h-full w-24 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.6)] rounded-full animate-loading-beam" style={{ animationDelay: '0.6s' }} />
+                  <div className="h-full w-32 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.8)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
+                  <div className="h-full w-24 bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.4s' }} />
+                  <div className="h-full w-32 bg-red-600 shadow-[0_0_20px_rgba(220,38,38,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.8s' }} />
                 </div>
               </div>
             </div>
@@ -71,15 +70,15 @@ export default function HymnsIndexPage() {
         </div>
 
         {/* FOOTER INSTITUCIONAL */}
-        <div className="absolute bottom-24 left-0 w-full text-center px-8">
-          <div className="flex flex-col items-center gap-5">
-            <p className="text-[10px] font-black tracking-[0.6em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-800">
+        <div className="absolute bottom-20 left-0 w-full text-center px-8">
+          <div className="flex flex-col items-center gap-6">
+            <p className="text-[11px] font-black tracking-[0.8em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
               Ejército Evangélico de Chile
             </p>
-            <div className="flex items-center gap-6 opacity-30">
-              <div className="h-px w-16 bg-blue-600" />
-              <Sparkles className="h-3.5 w-3.5 text-amber-500" />
-              <div className="h-px w-16 bg-red-600" />
+            <div className="flex items-center gap-8 opacity-40">
+              <div className="h-px w-24 bg-gradient-to-r from-transparent to-blue-600" />
+              <Sparkles className="h-4 w-4 text-amber-500 animate-spin-slow" />
+              <div className="h-px w-24 bg-gradient-to-l from-transparent to-red-600" />
             </div>
           </div>
         </div>
@@ -89,9 +88,11 @@ export default function HymnsIndexPage() {
 
   return (
     <main className="relative flex flex-col items-center bg-background min-h-screen overflow-x-hidden animate-in fade-in duration-1000">
-      <div className="fixed inset-0 -z-10 pointer-events-none opacity-40">
-        <div className="absolute top-0 right-0 w-[80vw] h-[80vw] bg-primary/10 rounded-full blur-[120px] animate-aura" />
-        <div className="absolute bottom-0 left-0 w-[60vw] h-[60vw] bg-primary/5 rounded-full blur-[100px] animate-aura" style={{ animationDirection: 'reverse' }} />
+      {/* FONDO GIGANTE POST-INTRO */}
+      <div className="fixed inset-0 -z-10 pointer-events-none">
+        <div className="absolute top-0 right-0 w-[120vw] h-[120vw] bg-blue-600/5 rounded-full blur-[140px] animate-aura-giant" />
+        <div className="absolute bottom-0 left-0 w-[100vw] h-[100vw] bg-red-600/5 rounded-full blur-[120px] animate-aura-giant" style={{ animationDirection: 'reverse' }} />
+        <div className="absolute inset-0 design-grid opacity-20" />
       </div>
 
       <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
