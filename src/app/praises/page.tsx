@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { PraiseListClient } from '@/components/praise-list-client';
-import { Music, ChevronLeft, Plus, ChevronDown, Loader2 } from 'lucide-react';
+import { Music, ChevronLeft, Plus, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -54,14 +54,14 @@ export default function PraisesIndexPage() {
       <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
         
-        {/* Insignia en la esquina superior derecha */}
-        <div className="absolute top-8 right-8 md:top-12 md:right-12 w-20 h-20 md:w-28 md:h-28 animate-in fade-in zoom-in-95 duration-1000 ease-out">
+        {/* Insignia en la esquina superior derecha optimizada para móvil */}
+        <div className="absolute top-8 right-8 w-20 h-20 animate-in fade-in zoom-in-95 duration-1000 ease-out">
           <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full scale-125 animate-pulse" />
           <Image 
             src={insigniaUrl} 
             alt="Insignia EECH" 
-            width={112} 
-            height={112} 
+            width={80} 
+            height={80} 
             className="relative rounded-full object-cover shadow-xl border-2 border-white"
             priority
           />
@@ -69,20 +69,20 @@ export default function PraisesIndexPage() {
 
         <div className="relative flex flex-col items-center">
           <div className="space-y-4 text-center">
-            <div className="h-px w-16 bg-primary/20 mx-auto animate-in fade-in slide-in-from-left duration-1000" />
-            <h1 className="text-5xl md:text-7xl font-black font-headline tracking-[0.3em] text-primary animate-in fade-in zoom-in-95 duration-1000 ease-out uppercase text-glow">
+            <div className="h-px w-12 bg-primary/20 mx-auto animate-in fade-in slide-in-from-left duration-1000" />
+            <h1 className="text-5xl font-black font-headline tracking-[0.2em] text-primary animate-in fade-in zoom-in-95 duration-1000 ease-out uppercase text-glow">
               Alabanzas
             </h1>
-            <div className="h-px w-16 bg-primary/20 mx-auto animate-in fade-in slide-in-from-right duration-1000" />
+            <div className="h-px w-12 bg-primary/20 mx-auto animate-in fade-in slide-in-from-right duration-1000" />
           </div>
         </div>
-        <div className="absolute bottom-16 left-0 w-full text-center px-6">
+        <div className="absolute bottom-12 left-0 w-full text-center px-6">
           <div className="flex items-center justify-center gap-4 mb-2 opacity-40">
-            <div className="h-px w-8 bg-slate-400" />
+            <div className="h-px w-6 bg-slate-400" />
             <span className="text-[8px] font-black uppercase tracking-[0.3em]">Oficial</span>
-            <div className="h-px w-8 bg-slate-400" />
+            <div className="h-px w-6 bg-slate-400" />
           </div>
-          <p className="text-[10px] md:text-xs font-black tracking-[0.6em] text-slate-500 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+          <p className="text-[10px] font-black tracking-[0.5em] text-slate-500 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
             Ejército Evangélico de Chile
           </p>
         </div>
