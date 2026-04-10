@@ -17,7 +17,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -40,9 +39,10 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, ShieldCheck, Search, Check, Copy } from 'lucide-react';
+import { Plus, ShieldCheck, Search, Copy, CheckCircle2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 const specialOccasionSchema = z.object({
@@ -68,7 +68,6 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
   const { addSpecialOccasion } = useSpecialOccasions();
   const { toast } = useToast();
 
-  // Data for song picker
   const { hymns } = useHymns();
   const { praises } = usePraises();
   const { choirs } = useChoirs();
@@ -84,8 +83,12 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
   }, [hymns, praises, choirs, youthChoirs]);
 
   const filteredSongs = useMemo(() => {
-    if (!searchSong) return [];
-    return allSongs.filter(s => s.title.toLowerCase().includes(searchSong.toLowerCase())).slice(0, 20);
+    const term = searchSong.toLowerCase().trim();
+    if (!term) return [];
+    return allSongs.filter(s => 
+      s.title.toLowerCase().includes(term) || 
+      (s.type === 'Himno' && s.title.includes(term))
+    ).slice(0, 15);
   }, [allSongs, searchSong]);
 
   const form = useForm<FormData>({
@@ -102,9 +105,9 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     e.preventDefault();
     if (password === '4002') {
       setIsAuthenticated(true);
-      toast({ title: "Acceso concedido" });
+      toast({ title: "Acceso autorizado", description: "Ya puedes gestionar las categorías especiales." });
     } else {
-      toast({ variant: "destructive", title: "Contraseña incorrecta" });
+      toast({ variant: "destructive", title: "Clave incorrecta" });
     }
   };
 
@@ -112,12 +115,14 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     form.setValue('title', song.title.replace(/^\d+\.\s*/, ''));
     form.setValue('lyrics', song.lyrics);
     form.setValue('tone', song.tone || '');
-    toast({ title: "Canto seleccionado", description: "Se han copiado los datos al formulario." });
+    toast({ 
+      title: "Canto Seleccionado", 
+      description: "Datos copiados. Selecciona la categoría destino y guarda.",
+    });
   };
 
   function onSubmit(values: FormData) {
-    // Como es administrador, lo mandamos como aprobado directamente
-    addSpecialOccasion({ ...values, status: 'approved' as any });
+    addSpecialOccasion({ ...values, status: 'approved' });
     setOpen(false);
     resetDialog();
   }
@@ -137,167 +142,225 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
   return (
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if(!o) resetDialog(); }}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="rounded-full h-10 px-4 border-primary/30 text-primary hover:bg-primary/5">
-          <Plus className="mr-1 h-4 w-4" />
+        <Button variant="outline" size="sm" className="rounded-full h-10 px-4 border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100 transition-all font-bold">
+          <Plus className="mr-1.5 h-4 w-4" />
           Agregar
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-hidden flex flex-col p-0 border-none shadow-2xl rounded-[2rem]">
+      <DialogContent className="w-[95vw] max-w-lg max-h-[92vh] overflow-hidden flex flex-col p-0 border-none shadow-2xl rounded-[2.5rem] bg-background">
         {!isAuthenticated ? (
-          <div className="p-8 space-y-6">
-            <DialogHeader>
-              <DialogTitle className="text-center flex flex-col items-center gap-3">
-                <div className="p-3 bg-primary/10 rounded-full">
-                  <ShieldCheck className="h-8 w-8 text-primary" />
-                </div>
-                Acceso de Administración
-              </DialogTitle>
-              <DialogDescription className="text-center">
-                Ingresa la clave maestra para gestionar Ocasiones Especiales.
-              </DialogDescription>
-            </DialogHeader>
-            <form onSubmit={handleAuth} className="space-y-4">
+          <div className="p-8 space-y-8 flex flex-col items-center">
+            <div className="p-5 bg-amber-50 rounded-full">
+              <ShieldCheck className="h-12 w-12 text-amber-600" />
+            </div>
+            <div className="space-y-2 text-center">
+              <DialogTitle className="text-2xl font-bold tracking-tight">Zona de Administración</DialogTitle>
+              <DialogDescription>Solo el administrador puede asignar cantos a ocasiones especiales.</DialogDescription>
+            </div>
+            <form onSubmit={handleAuth} className="w-full space-y-4">
               <Input 
                 type="password" 
-                placeholder="Contraseña" 
-                className="text-center tracking-[0.5em] font-bold h-12 text-lg"
+                placeholder="Ingresa la clave maestra" 
+                className="text-center tracking-[0.6em] font-black h-14 text-xl rounded-2xl border-2 focus:border-amber-500"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoFocus
               />
-              <Button type="submit" className="w-full h-12 font-bold">Validar Acceso</Button>
+              <Button type="submit" className="w-full h-14 text-lg font-bold rounded-2xl bg-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-200">
+                Validar Identidad
+              </Button>
             </form>
           </div>
         ) : (
-          <Tabs defaultValue="manual" className="w-full h-full flex flex-col">
-            <div className="px-6 pt-6 pb-2 border-b bg-muted/20">
-              <DialogHeader className="mb-4">
-                <DialogTitle>Agregar Canto Especial</DialogTitle>
-                <DialogDescription>Importa uno existente o escribe uno nuevo.</DialogDescription>
-              </DialogHeader>
-              <TabsList className="grid w-full grid-cols-2 rounded-full h-10">
-                <TabsTrigger value="manual" className="rounded-full text-xs font-bold">Escribir Nuevo</TabsTrigger>
-                <TabsTrigger value="import" className="rounded-full text-xs font-bold">Importar Existente</TabsTrigger>
-              </TabsList>
+          <div className="flex flex-col h-full overflow-hidden">
+            <div className="px-6 pt-8 pb-4 border-b bg-muted/30">
+              <div className="flex items-center justify-between mb-6">
+                <div>
+                  <DialogTitle className="text-xl font-bold">Asignar Canto Especial</DialogTitle>
+                  <p className="text-xs text-muted-foreground">Importa desde tu lista o escribe uno nuevo.</p>
+                </div>
+                <Badge className="bg-amber-600">Admin</Badge>
+              </div>
+              <Tabs defaultValue="import" className="w-full">
+                <TabsList className="grid w-full grid-cols-2 rounded-2xl h-12 p-1 bg-slate-200/50">
+                  <TabsTrigger value="import" className="rounded-xl text-xs font-black uppercase tracking-widest">
+                    <Search className="h-3.5 w-3.5 mr-2" /> Importar
+                  </TabsTrigger>
+                  <TabsTrigger value="manual" className="rounded-xl text-xs font-black uppercase tracking-widest">
+                    <Plus className="h-3.5 w-3.5 mr-2" /> Manual
+                  </TabsTrigger>
+                </TabsList>
+              </Tabs>
             </div>
 
-            <ScrollArea className="flex-1 p-6 overflow-y-auto">
-              <TabsContent value="import" className="mt-0 space-y-4">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    placeholder="Buscar en Himnos, Alabanzas o Coros..." 
-                    className="pl-10 rounded-xl"
-                    value={searchSong}
-                    onChange={(e) => setSearchSong(e.target.value)}
-                  />
-                </div>
-                <div className="space-y-2">
-                  {filteredSongs.length > 0 ? filteredSongs.map((song, i) => (
-                    <button
-                      key={i}
-                      onClick={() => selectSongToCopy(song)}
-                      className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-primary/5 border border-transparent hover:border-primary/20 transition-all text-left group"
-                    >
-                      <div className="flex-1 min-w-0">
-                        <p className="font-bold text-sm truncate">{song.title}</p>
-                        <p className="text-[10px] text-muted-foreground uppercase font-black tracking-widest">{song.type}</p>
-                      </div>
-                      <Copy className="h-4 w-4 text-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                    </button>
-                  )) : searchSong ? (
-                    <p className="text-center py-10 text-xs text-muted-foreground font-bold uppercase tracking-widest">No se encontraron resultados</p>
-                  ) : (
-                    <div className="text-center py-10 opacity-40">
-                      <Search className="h-10 w-10 mx-auto mb-2" />
-                      <p className="text-xs font-bold uppercase tracking-widest">Busca un canto para copiar</p>
+            <ScrollArea className="flex-1">
+              <div className="p-6">
+                <Tabs defaultValue="import" className="w-full">
+                  <TabsContent value="import" className="mt-0 space-y-6">
+                    <div className="relative group">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-amber-600 transition-colors" />
+                      <Input 
+                        placeholder="Escribe título o número..." 
+                        className="pl-12 h-14 rounded-2xl border-2 bg-background focus:ring-4 focus:ring-amber-500/10"
+                        value={searchSong}
+                        onChange={(e) => setSearchSong(e.target.value)}
+                      />
                     </div>
-                  )}
-                </div>
-              </TabsContent>
+                    
+                    <div className="space-y-3">
+                      {filteredSongs.length > 0 ? filteredSongs.map((song, i) => (
+                        <button
+                          key={i}
+                          onClick={() => selectSongToCopy(song)}
+                          className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100 hover:border-amber-200 hover:bg-amber-50/50 transition-all text-left shadow-sm active:scale-[0.98]"
+                        >
+                          <div className="flex-1 min-w-0 mr-4">
+                            <p className="font-bold text-sm text-slate-900 truncate">{song.title}</p>
+                            <div className="flex items-center gap-2 mt-1">
+                              <span className="text-[10px] font-black uppercase tracking-tighter text-amber-600/70">{song.type}</span>
+                              {song.tone && <span className="text-[9px] font-bold text-slate-400">· {song.tone}</span>}
+                            </div>
+                          </div>
+                          <div className="h-8 w-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-amber-100 group-hover:text-amber-600">
+                            <Copy className="h-4 w-4" />
+                          </div>
+                        </button>
+                      )) : searchSong ? (
+                        <div className="py-12 text-center space-y-2 opacity-50">
+                          <Search className="h-10 w-10 mx-auto text-slate-300" />
+                          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">No hay coincidencias</p>
+                        </div>
+                      ) : (
+                        <div className="py-12 text-center space-y-3 opacity-40">
+                          <div className="h-16 w-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
+                            <Plus className="h-8 w-8 text-slate-400" />
+                          </div>
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em]">Busca un canto para empezar</p>
+                        </div>
+                      )}
+                    </div>
 
-              <TabsContent value="manual" className="mt-0">
-                <Form {...form}>
-                  <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="category"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Categoría Destino</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="rounded-xl h-11">
-                                <SelectValue placeholder="Selecciona la ocasión" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              <SelectItem value="Predicación">🎤 Predicación</SelectItem>
-                              <SelectItem value="Fúnebre">⛪ Fúnebre</SelectItem>
-                              <SelectItem value="Cumpleaños">🎁 Cumpleaños</SelectItem>
-                              <SelectItem value="Bautismos">💧 Bautismos</SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="title"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Título</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Título del canto" className="rounded-xl h-11" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="tone"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Tonalidad</FormLabel>
-                          <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                            <FormControl>
-                              <SelectTrigger className="rounded-xl h-11">
-                                <SelectValue placeholder="Opcional" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {musicalKeys.map(key => (
-                                <SelectItem key={key} value={key}>{key}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="lyrics"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Letra</FormLabel>
-                          <FormControl>
-                            <Textarea placeholder="Letra del canto..." className="h-40 rounded-xl resize-none" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <Button type="submit" className="w-full h-12 font-bold shadow-lg shadow-primary/20 rounded-xl">
-                      Guardar Canto Especial
-                    </Button>
-                  </form>
-                </Form>
-              </TabsContent>
+                    {form.watch('title') && (
+                      <div className="p-4 rounded-2xl bg-green-50 border border-green-100 animate-in zoom-in-95 duration-300">
+                        <div className="flex items-center gap-2 text-green-700 mb-4">
+                          <CheckCircle2 className="h-5 w-5" />
+                          <p className="text-xs font-bold">Canto cargado: "{form.watch('title')}"</p>
+                        </div>
+                        <Form {...form}>
+                          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                            <FormField
+                              control={form.control}
+                              name="category"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Asignar a:</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="rounded-xl h-12 bg-white border-2">
+                                        <SelectValue placeholder="Categoría" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      <SelectItem value="Predicación">🎤 Predicación</SelectItem>
+                                      <SelectItem value="Fúnebre">⛪ Fúnebre</SelectItem>
+                                      <SelectItem value="Cumpleaños">🎁 Cumpleaños</SelectItem>
+                                      <SelectItem value="Bautismos">💧 Bautismos</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </FormItem>
+                              )}
+                            />
+                            <Button type="submit" className="w-full h-12 font-bold rounded-xl bg-green-600 hover:bg-green-700 shadow-md">
+                              Guardar en {form.watch('category')}
+                            </Button>
+                          </form>
+                        </Form>
+                      </div>
+                    )}
+                  </TabsContent>
+
+                  <TabsContent value="manual" className="mt-0">
+                    <Form {...form}>
+                      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                        <FormField
+                          control={form.control}
+                          name="category"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Categoría</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="rounded-2xl h-14 border-2">
+                                    <SelectValue placeholder="Selecciona la ocasión" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  <SelectItem value="Predicación">🎤 Predicación</SelectItem>
+                                  <SelectItem value="Fúnebre">⛪ Fúnebre</SelectItem>
+                                  <SelectItem value="Cumpleaños">🎁 Cumpleaños</SelectItem>
+                                  <SelectItem value="Bautismos">💧 Bautismos</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="title"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Título</FormLabel>
+                              <FormControl>
+                                <Input placeholder="Título del canto" className="rounded-2xl h-14 border-2" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="tone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Tonalidad</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                <FormControl>
+                                  <SelectTrigger className="rounded-2xl h-14 border-2">
+                                    <SelectValue placeholder="Selecciona tono (opcional)" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {musicalKeys.map(key => (
+                                    <SelectItem key={key} value={key}>{key}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="lyrics"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Letra</FormLabel>
+                              <FormControl>
+                                <Textarea placeholder="Escribe la letra aquí..." className="h-48 rounded-2xl border-2 resize-none p-4" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <Button type="submit" className="w-full h-14 font-bold text-lg rounded-2xl bg-amber-600 hover:bg-amber-700 shadow-xl shadow-amber-100">
+                          Publicar Canto
+                        </Button>
+                      </form>
+                    </Form>
+                  </TabsContent>
+                </Tabs>
+              </div>
             </ScrollArea>
-          </Tabs>
+          </div>
         )}
       </DialogContent>
     </Dialog>

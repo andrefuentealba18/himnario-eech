@@ -2,11 +2,10 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Sparkles, ChevronLeft, Loader2, Plus } from 'lucide-react';
+import { Sparkles, ChevronLeft, Loader2 } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useSpecialOccasions } from '@/context/special-occasions-context';
 import { SpecialOccasionListClient } from '@/components/special-occasion-list-client';
