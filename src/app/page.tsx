@@ -149,21 +149,18 @@ export default function HomePage() {
               ))}
             </div>
 
-            {/* BOTÓN OCASIONES ESPECIALES */}
+            {/* BOTÓN OCASIONES ESPECIALES - CENTRADO */}
             <div className="animate-in fade-in zoom-in-95 duration-700 delay-500">
               <Link href="/special-occasions" className="group block">
                 <Card className="border-none bg-gradient-to-r from-amber-500/10 to-amber-600/5 backdrop-blur-xl hover:bg-amber-500/20 transition-all duration-500 hover:-translate-y-1 active:scale-95 overflow-hidden relative app-card card-glow">
                   <div className="absolute inset-0 bg-gradient-to-r from-amber-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <CardContent className="flex items-center justify-between p-4 px-6 relative z-10 h-16">
-                    <div className="flex items-center gap-4">
-                      <div className="p-2.5 bg-white dark:bg-slate-900 shadow-lg rounded-xl text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-all duration-500">
-                        <Sparkles className="h-5 w-5" />
-                      </div>
-                      <h3 className="font-black text-[10px] uppercase tracking-[0.2em] text-slate-800 dark:text-slate-200 group-hover:text-amber-600 transition-colors">
-                        Ocasiones Especiales
-                      </h3>
+                  <CardContent className="flex items-center justify-center p-4 px-6 relative z-10 h-16 gap-4">
+                    <div className="p-2.5 bg-white dark:bg-slate-900 shadow-lg rounded-xl text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-all duration-500">
+                      <Sparkles className="h-5 w-5" />
                     </div>
-                    <ChevronRight className="h-4 w-4 text-amber-600/40 group-hover:translate-x-1 transition-transform" />
+                    <h3 className="font-black text-[10px] uppercase tracking-[0.2em] text-slate-800 dark:text-slate-200 group-hover:text-amber-600 transition-colors">
+                      Ocasiones Especiales
+                    </h3>
                   </CardContent>
                 </Card>
               </Link>
