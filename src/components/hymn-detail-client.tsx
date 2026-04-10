@@ -9,7 +9,7 @@ import { useFontSize } from '@/hooks/use-font-size';
 import { useRecents } from '@/hooks/use-recents';
 import { Button } from '@/components/ui/button';
 import { HymnAdminActions } from '@/components/hymn-admin-actions';
-import { Star, ChevronLeft, ZoomIn, ZoomOut, Share2 } from 'lucide-react';
+import { Star, ChevronLeft, ZoomIn, ZoomOut, Share2, Sparkles } from 'lucide-react';
 import { useCallback, useEffect } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -107,28 +107,33 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
   return (
     <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
       <div className="fixed inset-0 -z-10 pointer-events-none">
-        <div className="absolute top-0 right-0 w-[120%] h-[120%] bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.08)_0%,transparent_60%)] animate-aura" />
-        <div className="absolute bottom-0 left-0 w-[120%] h-[120%] bg-[radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.05)_0%,transparent_60%)] animate-aura" style={{ animationDuration: '20s' }} />
+        <div className="absolute top-0 right-0 w-[140%] h-[140%] bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.1)_0%,transparent_60%)] animate-aura-slow" />
+        <div className="absolute bottom-0 left-0 w-[140%] h-[140%] bg-[radial-gradient(circle_at_bottom_left,rgba(220,38,38,0.08)_0%,transparent_60%)] animate-aura-slow" style={{ animationDuration: '25s', animationDirection: 'reverse' }} />
+        <div className="absolute inset-0 design-grid opacity-[0.03]" />
       </div>
 
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-32 pb-6 px-4 border-b">
-        <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-full">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-xl pt-16 pb-6 px-4 border-b transition-all duration-500">
+        <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-full hover:bg-primary/10">
           <Link href="/hymns">
-            <ChevronLeft className="h-7 w-7" />
+            <ChevronLeft className="h-7 w-7 text-slate-600" />
             <span className="sr-only">Volver</span>
           </Link>
         </Button>
         
         <div className="flex-1 flex flex-col items-center justify-center overflow-hidden px-2">
-            <h1 className="font-headline text-lg font-bold text-primary truncate text-center w-full">
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <Sparkles className="h-3 w-3 text-amber-500" />
+              <span className="text-[9px] font-black uppercase tracking-[0.3em] text-primary/60">HIMNO OFICIAL</span>
+            </div>
+            <h1 className="font-headline text-lg font-bold text-foreground truncate text-center w-full tracking-tight">
               {hymn.title}
             </h1>
-            <div className="flex items-center justify-center gap-2 mt-1">
-                <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest px-2 py-0.5 bg-slate-100 dark:bg-white/5 rounded-full border border-slate-200/50">
-                  Himno Nº {hymn.number}
+            <div className="flex items-center justify-center gap-2 mt-1.5">
+                <p className="text-[10px] font-black text-white px-2.5 py-0.5 bg-primary/80 rounded-full shadow-lg shadow-primary/20">
+                  Nº {hymn.number}
                 </p>
                 <EditToneDialog song={hymn} onToneUpdated={handleToneUpdate}>
-                  <button className="text-[10px] font-bold text-primary px-2 py-0.5 rounded-full border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors">
+                  <button className="text-[10px] font-bold text-primary px-2.5 py-0.5 rounded-full border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors backdrop-blur-md">
                     {hymn.tone || 'Tonalidad'}
                   </button>
                 </EditToneDialog>
@@ -136,39 +141,67 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
         </div>
 
         <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number, 'hymn')} disabled={!isFavoritesLoaded} className="h-12 w-12 rounded-full">
-          <Star className={`h-7 w-7 transition-all duration-300 transform-gpu ${isFav ? 'fill-yellow-400 text-yellow-400 scale-125' : 'text-foreground/70'}`} />
+          <Star className={`h-7 w-7 transition-all duration-500 transform-gpu ${isFav ? 'fill-yellow-400 text-yellow-400 scale-125 filter drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]' : 'text-foreground/30'}`} />
           <span className="sr-only">Marcar como favorito</span>
         </Button>
       </header>
 
       <main className="flex-1 py-10 px-4 flex flex-col items-center justify-start overflow-y-auto">
-        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-1000 mt-4">
-          <div className={`font-body leading-relaxed text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
+        <div className="w-full max-w-3xl glass-morphism rounded-[2.5rem] p-8 sm:p-16 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-4 relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-full h-1.5 flex">
+            <div className="h-full flex-1 bg-blue-600/40" />
+            <div className="h-full flex-1 bg-white/40" />
+            <div className="h-full flex-1 bg-red-600/40" />
+          </div>
+          
+          <div className={`font-body leading-[1.8] text-center transition-all duration-300 ease-in-out ${fontSizes[fontSizeIndex]}`}>
             {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
-              const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
+              const lines = paragraph.trim().split('\n');
+              const isChorus = lines[0].trim().toUpperCase().startsWith('CORO');
+              
               return (
-                <p key={pIndex} className={`whitespace-pre-wrap mb-8 last:mb-0 ${isChorus ? 'font-black text-primary dark:text-blue-400' : 'text-foreground/90'}`}>
-                  {paragraph}
-                </p>
+                <div key={pIndex} className={cn(
+                  "mb-12 last:mb-0 transition-all duration-500",
+                  isChorus ? "bg-primary/5 dark:bg-primary/10 p-8 rounded-3xl border border-primary/10 relative" : ""
+                )}>
+                  {isChorus && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-black px-4 py-1 rounded-full shadow-lg uppercase tracking-widest">
+                      Coro
+                    </div>
+                  )}
+                  {lines.map((line, lIndex) => {
+                    if (isChorus && lIndex === 0) return null;
+                    return (
+                      <p key={lIndex} className={cn(
+                        "whitespace-pre-wrap mb-1 last:mb-0",
+                        isChorus ? "font-black text-primary dark:text-blue-400 italic" : "text-foreground/90 font-medium"
+                      )}>
+                        {line}
+                      </p>
+                    );
+                  })}
+                </div>
               );
             })}
           </div>
         </div>
-        <div className="h-32 w-full" />
+        <div className="h-40 w-full" />
       </main>
       
       <footer className="fixed bottom-8 left-0 w-full z-30 flex items-center justify-center px-4 pointer-events-none">
-         <div className="flex items-center justify-center gap-3 bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full shadow-2xl p-2.5 animate-in slide-in-from-bottom-8 duration-1000 pointer-events-auto">
-            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-11 w-11 bg-white/50 dark:bg-white/5">
+         <div className="flex items-center justify-center gap-3 bg-background/80 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-full shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] p-2.5 animate-in slide-in-from-bottom-8 duration-1000 pointer-events-auto hover:scale-105 transition-transform">
+            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-12 w-12 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
               <ZoomOut className="h-5 w-5" />
             </Button>
-            <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
-            <HymnAdminActions hymn={hymn} onDelete={handleDelete} onUpdate={handleUpdate} />
-            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-11 w-11 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5">
-              <Share2 className="h-5 w-5" />
-            </Button>
-            <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
-            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-11 w-11 bg-white/50 dark:bg-white/5">
+            <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
+            <div className="flex gap-2">
+              <HymnAdminActions hymn={hymn} onDelete={handleDelete} onUpdate={handleUpdate} />
+              <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-12 w-12 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
+                <Share2 className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
+            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-12 w-12 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
               <ZoomIn className="h-5 w-5" />
             </Button>
          </div>

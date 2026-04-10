@@ -67,7 +67,6 @@
   }
 }
 
-/* Custom Scrollbar Stylings - Más visibles para facilitar la navegación */
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
@@ -90,15 +89,13 @@
   background-clip: padding-box;
 }
 
-/* Hide scrollbar for Chrome, Safari and Opera when desired */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
-/* Hide scrollbar for IE, Edge and Firefox */
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .app-card {
@@ -113,8 +110,8 @@
 }
 
 @keyframes aura-slow {
-  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
-  50% { transform: translate(-45%, -55%) scale(1.1); opacity: 0.6; }
+  0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 0.4; }
+  50% { transform: translate(-45%, -55%) scale(1.1) rotate(5deg); opacity: 0.6; }
 }
 
 .animate-aura-slow {
@@ -143,11 +140,22 @@
 
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(1deg); }
+  50% { transform: translateY(-15px) rotate(1deg); }
 }
 
 .animate-float {
   animation: float 6s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.animate-shimmer {
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
 }
 
 .text-glow {
@@ -155,5 +163,9 @@
 }
 
 .card-glow {
-  box-shadow: 0 10px var(--ui-shadow-spread) -10px var(--primary-glow);
+  box-shadow: 0 15px 35px -5px var(--primary-glow);
+}
+
+.glass-morphism {
+  @apply bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10;
 }

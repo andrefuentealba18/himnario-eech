@@ -3,7 +3,7 @@
 import type { Praise } from '@/lib/praises';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star, Music } from 'lucide-react';
 import { usePraises } from '@/context/praises-context';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useRecents } from '@/hooks/use-recents';
@@ -15,6 +15,7 @@ import { useFontSize } from '@/hooks/use-font-size';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { cn } from '@/lib/utils';
 
 const slugify = (text: string): string =>
   text.toString().toLowerCase()
@@ -120,68 +121,98 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
   return (
     <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
         <div className="fixed inset-0 -z-10 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-[150%] h-[150%] bg-gradient-to-tr from-blue-100/40 via-indigo-50/30 to-rose-50/20 blur-[120px] rounded-full animate-aura" />
-          <div className="absolute bottom-1/4 right-1/4 w-[150%] h-[150%] bg-gradient-to-bl from-amber-50/30 via-sky-50/20 to-purple-50/30 blur-[120px] rounded-full animate-aura" style={{ animationDirection: 'reverse', animationDuration: '30s' }} />
+          <div className="absolute top-1/4 left-1/4 w-[150%] h-[150%] bg-gradient-to-tr from-indigo-100/40 via-blue-50/30 to-transparent blur-[120px] rounded-full animate-aura-slow" />
+          <div className="absolute bottom-1/4 right-1/4 w-[150%] h-[150%] bg-gradient-to-bl from-amber-50/30 via-slate-50/20 to-indigo-50/30 blur-[120px] rounded-full animate-aura-slow" style={{ animationDirection: 'reverse', animationDuration: '30s' }} />
+          <div className="absolute inset-0 design-grid opacity-[0.04]" />
         </div>
 
-        <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-32 pb-6 px-4 border-b">
-            <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-full">
+        <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-xl pt-16 pb-6 px-4 border-b">
+            <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-full hover:bg-primary/10">
             <Link href={backHref}>
-                <ChevronLeft className="h-7 w-7" />
+                <ChevronLeft className="h-7 w-7 text-slate-600" />
                 <span className="sr-only">Volver</span>
             </Link>
             </Button>
             
             <div className="flex-1 flex flex-col items-center justify-center overflow-hidden px-2">
-                <h1 className="font-headline text-lg font-bold text-primary truncate text-center w-full">
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  <Music className="h-3 w-3 text-indigo-500" />
+                  <span className="text-[9px] font-black uppercase tracking-[0.3em] text-indigo-600/60">ALABANZA GENERAL</span>
+                </div>
+                <h1 className="font-headline text-lg font-bold text-foreground truncate text-center w-full tracking-tight">
                   {praise.title}
                 </h1>
-                <div className="flex items-center justify-center gap-2 mt-1">
+                <div className="flex items-center justify-center gap-2 mt-1.5">
                     <EditToneDialog song={praise} onToneUpdated={handleToneUpdate}>
-                        <button className="text-[10px] font-bold text-primary px-2 py-0.5 rounded-full border border-primary/20 bg-primary/5">
+                        <button className="text-[10px] font-bold text-primary px-3 py-0.5 rounded-full border border-primary/20 bg-primary/5 backdrop-blur-md">
                             {praise.tone || 'Tonalidad'}
                         </button>
                     </EditToneDialog>
                     {praise.speed && (
-                        <Badge variant="secondary" className="text-[10px] font-bold capitalize rounded-full px-2 py-0.5 bg-slate-100 dark:bg-white/5 border border-slate-200/50">{praise.speed}</Badge>
+                        <Badge variant="secondary" className="text-[10px] font-black uppercase tracking-tighter rounded-full px-3 py-0.5 bg-slate-100 dark:bg-white/5 border border-slate-200/50">
+                          {praise.speed}
+                        </Badge>
                     )}
                 </div>
             </div>
             
             <Button variant="ghost" size="icon" onClick={() => toggleFavorite(praise.id, 'praise')} disabled={!isFavoritesLoaded} className="h-12 w-12 rounded-full">
-              <Star className={`h-7 w-7 transition-all duration-300 transform-gpu ${isFav ? 'fill-yellow-400 text-yellow-400 scale-125' : 'text-foreground/70'}`} />
+              <Star className={`h-7 w-7 transition-all duration-500 transform-gpu ${isFav ? 'fill-yellow-400 text-yellow-400 scale-125 filter drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]' : 'text-foreground/30'}`} />
               <span className="sr-only">Marcar como favorito</span>
             </Button>
         </header>
 
       <main className="flex-1 py-10 px-4 flex flex-col items-center justify-start overflow-y-auto">
-        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-1000 mt-4">
-            <div className={`font-body leading-relaxed text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
+        <div className="w-full max-w-3xl glass-morphism rounded-[2.5rem] p-8 sm:p-16 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-4 relative overflow-hidden group">
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-600/40 via-blue-400/40 to-indigo-600/40" />
+            <div className={`font-body leading-[1.8] text-center transition-all duration-300 ease-in-out ${fontSizes[fontSizeIndex]}`}>
                 {praise.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
-                  const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
+                  const lines = paragraph.trim().split('\n');
+                  const isChorus = lines[0].trim().toUpperCase().startsWith('CORO');
+                  
                   return (
-                    <p key={pIndex} className={`whitespace-pre-wrap mb-8 last:mb-0 ${isChorus ? 'font-black text-primary dark:text-blue-400' : 'text-foreground/90'}`}>
-                      {paragraph}
-                    </p>
+                    <div key={pIndex} className={cn(
+                      "mb-12 last:mb-0 transition-all duration-500",
+                      isChorus ? "bg-indigo-500/5 dark:bg-indigo-500/10 p-8 rounded-3xl border border-indigo-500/10 relative" : ""
+                    )}>
+                      {isChorus && (
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-black px-4 py-1 rounded-full shadow-lg uppercase tracking-widest">
+                          Coro
+                        </div>
+                      )}
+                      {lines.map((line, lIndex) => {
+                        if (isChorus && lIndex === 0) return null;
+                        return (
+                          <p key={lIndex} className={cn(
+                            "whitespace-pre-wrap mb-1 last:mb-0",
+                            isChorus ? "font-black text-indigo-600 dark:text-indigo-400 italic" : "text-foreground/90 font-medium"
+                          )}>
+                            {line}
+                          </p>
+                        );
+                      })}
+                    </div>
                   );
                 })}
             </div>
         </div>
-        <div className="h-32 w-full" />
+        <div className="h-40 w-full" />
       </main>
 
       <footer className="fixed bottom-8 left-0 w-full z-30 flex items-center justify-center px-4 pointer-events-none">
-           <div className="flex items-center justify-center gap-3 bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full shadow-2xl p-2.5 animate-in slide-in-from-bottom-8 duration-1000 pointer-events-auto">
-            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-11 w-11 bg-white/50 dark:bg-white/5">
+           <div className="flex items-center justify-center gap-3 bg-background/80 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-full shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] p-2.5 animate-in slide-in-from-bottom-8 duration-1000 pointer-events-auto hover:scale-105 transition-transform">
+            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-12 w-12 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
               <ZoomOut className="h-5 w-5" />
             </Button>
-            <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
-            <PraiseAdminActions praise={praise} onUpdate={handleUpdate} onDelete={handleDelete} />
-            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-11 w-11 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5">
-              <Share2 className="h-5 w-5" />
-            </Button>
-            <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
-            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-11 w-11 bg-white/50 dark:bg-white/5">
+            <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
+            <div className="flex gap-2">
+              <PraiseAdminActions praise={praise} onUpdate={handleUpdate} onDelete={handleDelete} />
+              <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-12 w-12 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
+                <Share2 className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
+            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-12 w-12 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
               <ZoomIn className="h-5 w-5" />
             </Button>
          </div>
