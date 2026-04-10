@@ -53,20 +53,21 @@ export default function ChoirsIndexPage() {
     return (
       <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
-        <div className="relative flex flex-col items-center gap-10">
-          {/* Insignia Institucional Animada */}
-          <div className="relative w-28 h-28 md:w-36 md:h-36 animate-in fade-in zoom-in-95 duration-1000 ease-out">
-            <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full scale-150 animate-pulse" />
-            <Image 
-              src={insigniaUrl} 
-              alt="Insignia EECH" 
-              width={144} 
-              height={144} 
-              className="relative rounded-full object-cover shadow-2xl border-4 border-white"
-              priority
-            />
-          </div>
+        
+        {/* Insignia en la esquina superior derecha */}
+        <div className="absolute top-8 right-8 md:top-12 md:right-12 w-20 h-20 md:w-28 md:h-28 animate-in fade-in zoom-in-95 duration-1000 ease-out">
+          <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full scale-125 animate-pulse" />
+          <Image 
+            src={insigniaUrl} 
+            alt="Insignia EECH" 
+            width={112} 
+            height={112} 
+            className="relative rounded-full object-cover shadow-xl border-2 border-white"
+            priority
+          />
+        </div>
 
+        <div className="relative flex flex-col items-center">
           <div className="space-y-4 text-center">
             <div className="h-px w-16 bg-primary/20 mx-auto animate-in fade-in slide-in-from-left duration-1000" />
             <h1 className="text-6xl md:text-8xl font-black font-headline tracking-[0.4em] text-primary animate-in fade-in zoom-in-95 duration-1000 ease-out uppercase text-glow">
