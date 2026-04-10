@@ -45,24 +45,22 @@ export default function HymnsIndexPage() {
           />
         </div>
 
-        {/* CONTENIDO CENTRAL MINIMALISTA */}
+        {/* CONTENIDO CENTRAL */}
         <div className="relative flex flex-col items-center">
-          <div className="space-y-8 text-center px-6">
-            <div className="flex flex-col items-center gap-4 mb-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-              <div className="flex gap-1.5">
-                <div className="h-1.5 w-1.5 rounded-full bg-blue-600 shadow-[0_0_8px_rgba(37,99,235,0.5)]" />
-                <div className="h-1.5 w-1.5 rounded-full bg-red-600 shadow-[0_0_8px_rgba(220,38,38,0.5)]" />
-                <div className="h-1.5 w-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]" />
-              </div>
-              <div className="h-0.5 w-16 bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
-            </div>
-            
+          <div className="space-y-10 text-center px-6">
             <div className="relative">
               <h1 className="text-7xl font-black font-headline tracking-[0.2em] text-slate-900 animate-title-reveal uppercase">
                 Himnos
               </h1>
-              {/* LÍNEA DECORATIVA DORADA/AZUL/ROJA */}
-              <div className="absolute -inset-x-20 -bottom-6 h-px bg-gradient-to-r from-transparent via-blue-600/40 via-amber-400/60 via-red-600/40 to-transparent scale-x-0 animate-in slide-in-from-left duration-1000 delay-500 fill-mode-forwards" style={{ transform: 'scaleX(1)' }} />
+              
+              {/* LÍNEAS DE CARGA TRICOLORES */}
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-48 h-1 overflow-hidden rounded-full bg-slate-100 shadow-inner">
+                <div className="absolute inset-0 flex">
+                  <div className="h-full w-1/3 bg-blue-600 animate-loading-stripes" style={{ animationDelay: '0s' }} />
+                  <div className="h-full w-1/3 bg-amber-400 animate-loading-stripes" style={{ animationDelay: '0.2s' }} />
+                  <div className="h-full w-1/3 bg-red-600 animate-loading-stripes" style={{ animationDelay: '0.4s' }} />
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -75,21 +75,20 @@ export default function PraisesIndexPage() {
 
         {/* CONTENIDO CENTRAL */}
         <div className="relative flex flex-col items-center">
-          <div className="space-y-8 text-center px-6">
-            <div className="flex flex-col items-center gap-4 mb-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
-              <Music className="h-8 w-8 text-blue-600 animate-bounce" />
-              <div className="flex gap-2">
-                <div className="h-1 w-8 bg-blue-600 rounded-full" />
-                <div className="h-1 w-8 bg-amber-400 rounded-full" />
-                <div className="h-1 w-8 bg-red-600 rounded-full" />
-              </div>
-            </div>
-            
+          <div className="space-y-10 text-center px-6">
             <div className="relative">
               <h1 className="text-6xl font-black font-headline tracking-[0.15em] text-slate-900 animate-title-reveal uppercase">
                 Alabanzas
               </h1>
-              <div className="absolute -inset-x-16 -bottom-6 h-px bg-gradient-to-r from-transparent via-blue-600/30 via-red-600/30 to-transparent scale-x-0 animate-in slide-in-from-left duration-1000 delay-500 fill-mode-forwards" style={{ transform: 'scaleX(1)' }} />
+              
+              {/* LÍNEAS DE CARGA TRICOLORES */}
+              <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-48 h-1 overflow-hidden rounded-full bg-slate-100 shadow-inner">
+                <div className="absolute inset-0 flex">
+                  <div className="h-full w-1/3 bg-blue-600 animate-loading-stripes" style={{ animationDelay: '0s' }} />
+                  <div className="h-full w-1/3 bg-amber-400 animate-loading-stripes" style={{ animationDelay: '0.2s' }} />
+                  <div className="h-full w-1/3 bg-red-600 animate-loading-stripes" style={{ animationDelay: '0.4s' }} />
+                </div>
+              </div>
             </div>
           </div>
         </div>
