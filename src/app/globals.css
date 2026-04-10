@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -33,7 +32,7 @@
     --card-foreground: 213 31% 91%;
     --popover: 224 71% 4%;
     --popover-foreground: 213 31% 91%;
-    --primary: 210 40% 98%;
+    --primary: 217.2 91.2% 59.8%;
     --primary-foreground: 222.2 47.4% 11.2%;
     --secondary: 222.2 47.4% 11.2%;
     --secondary-foreground: 210 40% 98%;
@@ -46,6 +45,20 @@
     --border: 216 34% 17%;
     --input: 216 34% 17%;
     --ring: 216 34% 17%;
+  }
+
+  /* Temas de Colores */
+  .theme-purple {
+    --primary: 262.1 83.3% 57.8%;
+  }
+  .theme-green {
+    --primary: 142.1 76.2% 36.3%;
+  }
+  .theme-amber {
+    --primary: 37.9 92.1% 50.2%;
+  }
+  .theme-rose {
+    --primary: 346.8 77.2% 49.8%;
   }
 }
 
@@ -86,10 +99,20 @@
   animation: aura-rotate 40s linear infinite;
 }
 
+@keyframes aura-drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(10%, 5%) scale(1.1); }
+  66% { transform: translate(-5%, 10%) scale(0.9); }
+}
+
+.animate-aura {
+  animation: aura-drift 20s ease-in-out infinite;
+}
+
 .glass-morphism {
   @apply bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-2xl;
 }
 
 .text-glow {
-  text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+  text-shadow: 0 0 20px rgba(var(--primary), 0.3);
 }
