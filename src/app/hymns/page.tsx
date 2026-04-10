@@ -86,7 +86,7 @@ export default function HymnsIndexPage() {
                   </Badge>
                 )}
                 <div className="p-2 bg-primary/5 rounded-full border border-primary/10 shadow-sm">
-                  <BookOpen className="h-6 w-6 text-primary animate-float" style={{ animationDuration: '4s' }} />
+                  <BookOpen className="h-6 w-6 text-primary" />
                 </div>
               </div>
             </div>
