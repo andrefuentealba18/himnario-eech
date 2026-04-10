@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -148,6 +147,7 @@ export default function HomePage() {
               ))}
             </div>
 
+            {/* BOTÓN OCASIONES ESPECIALES */}
             <div className="animate-in fade-in zoom-in-95 duration-700 delay-500">
               <Link href="/special-occasions" className="group block">
                 <Card className="border-none bg-gradient-to-r from-amber-500/10 to-amber-600/5 backdrop-blur-xl hover:bg-amber-500/20 transition-all duration-500 hover:-translate-y-1 active:scale-95 overflow-hidden relative app-card card-glow">

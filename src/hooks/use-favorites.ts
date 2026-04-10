@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect, useCallback } from 'react';
@@ -8,7 +7,7 @@ const LEGACY_FAVORITES_KEY = 'himnario_favorites';
 
 export type FavoriteItem = {
   id: string | number;
-  type: 'hymn' | 'praise' | 'choir' | 'youth-choir';
+  type: 'hymn' | 'praise' | 'choir' | 'youth-choir' | 'special-occasion';
 };
 
 export function useFavorites() {
@@ -21,7 +20,6 @@ export function useFavorites() {
       if (stored) {
         setFavorites(JSON.parse(stored));
       } else {
-        // Migración de favoritos antiguos (solo himnos)
         const legacy = localStorage.getItem(LEGACY_FAVORITES_KEY);
         if (legacy) {
           const legacyIds: number[] = JSON.parse(legacy);

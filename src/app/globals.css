@@ -26,7 +26,6 @@
     --radius: 1.25rem;
     --primary-glow: hsla(217, 91%, 60%, 0.3);
     
-    /* Variables de Diseño de Atmósfera */
     --ui-radius: 1.25rem;
     --ui-border-opacity: 0.1;
     --ui-shadow-spread: 20px;
@@ -54,92 +53,29 @@
     --primary-glow: hsla(217, 91%, 60%, 0.5);
   }
 
-  /* ATMÓSFERAS MAESTRAS */
-  .theme-purple { 
-    --primary: 262.1 83.3% 57.8%; 
-    --primary-glow: hsla(262, 83%, 58%, 0.4);
-    --ui-radius: 0.75rem;
-    --ui-border-opacity: 0.3;
-  }
-  .theme-green { 
-    --primary: 142.1 76.2% 36.3%; 
-    --primary-glow: hsla(142, 76%, 36%, 0.4);
-    --ui-radius: 1rem;
-    --ui-border-opacity: 0.15;
-  }
-  .theme-amber { 
-    --primary: 37.9 92.1% 50.2%; 
-    --primary-glow: hsla(38, 92%, 50%, 0.4);
-    --ui-radius: 1.5rem;
-    --ui-shadow-spread: 40px;
-  }
-  .theme-rose { 
-    --primary: 346.8 77.2% 49.8%; 
-    --primary-glow: hsla(347, 77%, 50%, 0.4);
-    --ui-radius: 2rem;
-  }
+  .theme-purple { --primary: 262.1 83.3% 57.8%; --primary-glow: hsla(262, 83%, 58%, 0.4); }
+  .theme-green { --primary: 142.1 76.2% 36.3%; --primary-glow: hsla(142, 76%, 36%, 0.4); }
+  .theme-amber { --primary: 37.9 92.1% 50.2%; --primary-glow: hsla(38, 92%, 50%, 0.4); }
+  .theme-rose { --primary: 346.8 77.2% 49.8%; --primary-glow: hsla(347, 77%, 50%, 0.4); }
 }
 
 @layer base {
-  * {
-    @apply border-border;
-  }
+  * { @apply border-border; }
   body {
     @apply bg-background text-foreground selection:bg-primary/20 selection:text-primary antialiased;
     transition: background-color 0.5s ease, color 0.5s ease;
   }
 }
 
-/* Clases de Componentes Dinámicos */
 .app-card {
   border-radius: var(--ui-radius);
   border: 1px solid hsl(var(--foreground) / var(--ui-border-opacity));
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.app-button {
-  border-radius: var(--ui-radius);
-  transition: all 0.3s ease;
-}
-
-/* Diseños de Fondo Dinámicos */
 .design-grid {
   background-image: radial-gradient(circle at 2px 2px, rgba(0,0,0,0.05) 1px, transparent 0);
   background-size: 24px 24px;
-}
-
-.design-none {
-  background-image: none !important;
-}
-
-/* Animaciones Fluidas */
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-15px) rotate(1.5deg); }
-}
-
-.animate-float {
-  animation: float 8s ease-in-out infinite;
-}
-
-@keyframes aura-drift {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(10%, 5%) scale(1.1); }
-  66% { transform: translate(-5%, 10%) scale(0.9); }
-}
-
-.animate-aura {
-  animation: aura-drift 20s ease-in-out infinite;
-}
-
-.text-glow {
-  text-shadow: 0 0 25px var(--primary-glow);
-  transition: text-shadow 0.5s ease;
-}
-
-.card-glow {
-  box-shadow: 0 10px var(--ui-shadow-spread) -10px var(--primary-glow);
-  transition: box-shadow 0.5s ease;
 }
 
 @keyframes aura-slow {
@@ -152,30 +88,38 @@
 }
 
 @keyframes loading-beam {
-  0% { transform: translateX(-100%); opacity: 0; }
+  0% { transform: translateX(-150%); opacity: 0; }
   20% { opacity: 1; }
   80% { opacity: 1; }
   100% { transform: translateX(250%); opacity: 0; }
 }
 
 .animate-loading-beam {
-  animation: loading-beam 2.5s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation: loading-beam 2.2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
 @keyframes title-reveal {
-  0% { transform: translateY(20px) scale(0.9); opacity: 0; filter: blur(10px); letter-spacing: 0.1em; }
+  0% { transform: translateY(20px) scale(0.95); opacity: 0; filter: blur(10px); letter-spacing: 0.1em; }
   100% { transform: translateY(0) scale(1); opacity: 1; filter: blur(0); letter-spacing: 0.3em; }
 }
 
 .animate-title-reveal {
-  animation: title-reveal 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: title-reveal 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
 
-@keyframes slide-fade-up {
-  0% { transform: translateY(30px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
+@keyframes float {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(1deg); }
 }
 
-.animate-slide-fade-up {
-  animation: slide-fade-up 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.text-glow {
+  text-shadow: 0 0 25px var(--primary-glow);
+}
+
+.card-glow {
+  box-shadow: 0 10px var(--ui-shadow-spread) -10px var(--primary-glow);
 }

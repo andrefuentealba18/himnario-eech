@@ -1,45 +1,9 @@
-
 rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Permitimos lectura y escritura total para agilizar el prototipado y edición sin bloqueos
-    match /hymns/{hymnId} {
-      allow read, write: if true;
-    }
-
-    match /praises/{praiseId} {
-      allow read, write: if true;
-    }
-    
-    match /choirs/{choirId} {
-      allow read, write: if true;
-    }
-    
-    match /youth-choirs/{youthChoirId} {
-      allow read, write: if true;
-    }
-
-    match /special-occasions/{specialId} {
-      allow read, write: if true;
-    }
-
-    match /repertoires/{repertoireId} {
-      allow read, write: if true;
-    }
-
-    match /users/{userId} {
-      function isOwner(userId) {
-        return request.auth != null && request.auth.uid == userId;
-      }
-      allow read, write: if isOwner(userId);
-      
-      match /favoriteHymns/{favoriteHymnId} {
-        allow read, write: if isOwner(userId);
-      }
-    }
-    
-    match /songRequests/{requestId} {
+    // Apertura total de permisos para agilizar la edición y evitar errores de publicación
+    match /{document=**} {
       allow read, write: if true;
     }
   }

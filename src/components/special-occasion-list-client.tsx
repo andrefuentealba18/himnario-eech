@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { SpecialOccasion, SpecialCategory } from '@/lib/special-occasions';
@@ -10,7 +9,12 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFavorites } from '@/hooks/use-favorites';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { normalizeSearchTerm } from '@/lib/utils';
 
 interface SpecialOccasionListClientProps {
@@ -23,7 +27,14 @@ export function SpecialOccasionListClient({ specialOccasions }: SpecialOccasionL
   const [activeTab, setActiveTab] = useState('all');
   const { isFavorite } = useFavorites();
 
-  const categories: SpecialCategory[] = ["Bautismo", "Santa Cena", "Matrimonio", "Fúnebre", "Aniversario", "Campaña"];
+  const categories: SpecialCategory[] = [
+    "Bautismo",
+    "Santa Cena",
+    "Matrimonio",
+    "Fúnebre",
+    "Aniversario",
+    "Campaña"
+  ];
 
   const indexedSongs = useMemo(() => {
     return specialOccasions.map(s => ({
@@ -34,18 +45,23 @@ export function SpecialOccasionListClient({ specialOccasions }: SpecialOccasionL
 
   const filteredSongs = useMemo(() => {
     let list = indexedSongs;
+
     if (activeTab === 'favorites') {
-      list = indexedSongs.filter(s => isFavorite(s.id, 'special-occasion' as any));
+      list = indexedSongs.filter(s => isFavorite(s.id, 'special-occasion'));
     }
+
     const term = normalizeSearchTerm(deferredSearchTerm.trim());
     if (!term) return list;
+
     return list.filter(s => s._searchIndex.includes(term));
   }, [deferredSearchTerm, indexedSongs, activeTab, isFavorite]);
 
   const groupedSongs = useMemo(() => {
     const groups: Record<string, typeof filteredSongs> = {};
     filteredSongs.forEach(song => {
-      if (!groups[song.category]) groups[song.category] = [];
+      if (!groups[song.category]) {
+        groups[song.category] = [];
+      }
       groups[song.category].push(song);
     });
     return groups;
@@ -66,8 +82,14 @@ export function SpecialOccasionListClient({ specialOccasions }: SpecialOccasionL
 
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="all"><List className="mr-2 h-4 w-4" /> Todos</TabsTrigger>
-          <TabsTrigger value="favorites"><Star className="mr-2 h-4 w-4" /> Favoritos</TabsTrigger>
+          <TabsTrigger value="all">
+            <List className="mr-2 h-4 w-4" />
+            Todos
+          </TabsTrigger>
+          <TabsTrigger value="favorites">
+            <Star className="mr-2 h-4 w-4" />
+            Favoritos
+          </TabsTrigger>
         </TabsList>
       </Tabs>
 
@@ -80,10 +102,12 @@ export function SpecialOccasionListClient({ specialOccasions }: SpecialOccasionL
 
             return (
               <AccordionItem value={cat} key={cat} className="border-none mb-2">
-                <AccordionTrigger className="hover:no-underline p-4 bg-white dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-sm">
+                <AccordionTrigger className="hover:no-underline p-4 bg-white dark:bg-white/5 rounded-2xl border border-slate-200/50 dark:border-white/10 shadow-sm transition-all duration-300 hover:shadow-md">
                   <div className="flex items-center gap-3">
                     <span className="font-bold text-sm text-amber-600 dark:text-amber-400">{cat}</span>
-                    <Badge variant="secondary" className="text-[10px] bg-amber-50 text-amber-700">{songs.length}</Badge>
+                    <Badge variant="secondary" className="text-[10px] font-bold bg-amber-50 text-amber-700 border-amber-100">
+                      {songs.length}
+                    </Badge>
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="pt-2">
@@ -94,8 +118,11 @@ export function SpecialOccasionListClient({ specialOccasions }: SpecialOccasionL
                         href={`/special-occasions/${song.id}`}
                         className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-colors border-b last:border-none"
                       >
-                        <span className="font-medium text-sm truncate">{song.title}</span>
-                        {song.tone && <Badge variant="outline" className="text-[8px] h-4">{song.tone}</Badge>}
+                        <span className="font-medium text-sm truncate text-slate-700 dark:text-slate-300">{song.title}</span>
+                        <div className="flex gap-1 items-center">
+                          {song.tone && <Badge variant="outline" className="text-[8px] h-4 px-1">{song.tone}</Badge>}
+                          <ChevronRight className="h-3 w-3 text-slate-300" />
+                        </div>
                       </Link>
                     ))}
                   </div>
@@ -104,6 +131,7 @@ export function SpecialOccasionListClient({ specialOccasions }: SpecialOccasionL
             );
           })}
         </Accordion>
+        
         {filteredSongs.length === 0 && (
           <div className="text-center py-20 text-muted-foreground">
             <p>No se encontraron alabanzas especiales.</p>
@@ -111,5 +139,24 @@ export function SpecialOccasionListClient({ specialOccasions }: SpecialOccasionL
         )}
       </ScrollArea>
     </div>
+  );
+}
+
+function ChevronRight(props: any) {
+  return (
+    <svg
+      {...props}
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
   );
 }
