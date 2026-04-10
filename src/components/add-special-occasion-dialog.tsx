@@ -38,10 +38,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Plus, ShieldCheck, Search, Copy, CheckCircle2, ChevronRight } from 'lucide-react';
+import { Plus, ShieldCheck, Search, CheckCircle2, ChevronRight, Checkbox as CheckboxIcon, ListChecks, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { cn } from '@/lib/utils';
 
 const specialOccasionSchema = z.object({
@@ -59,11 +60,23 @@ interface AddSpecialOccasionDialogProps {
   initialCategory?: SpecialCategory;
 }
 
+type SelectableSong = {
+  title: string;
+  lyrics: string;
+  tone?: string;
+  type: string;
+  id: string;
+};
+
 export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasionDialogProps) {
   const [open, setOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [searchSong, setSearchSong] = useState('');
+  const [selectedSongs, setSelectedSongs] = useState<SelectableSong[]>([]);
+  const [importCategory, setImportCategory] = useState<SpecialCategory>(initialCategory || "Predicación");
+  const [isImporting, setIsImporting] = useState(false);
+  
   const { addSpecialOccasion } = useSpecialOccasions();
   const { toast } = useToast();
 
@@ -72,12 +85,12 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
   const { choirs } = useChoirs();
   const { youthChoirs } = useYouthChoirs();
 
-  const allSongs = useMemo(() => {
+  const allSongs: SelectableSong[] = useMemo(() => {
     return [
-      ...hymns.map(h => ({ title: `${h.number}. ${h.title}`, lyrics: h.lyrics, tone: h.tone, type: 'Himno' })),
-      ...praises.map(p => ({ title: p.title, lyrics: p.lyrics, tone: p.tone, type: 'Alabanza' })),
-      ...choirs.map(c => ({ title: c.title, lyrics: c.lyrics, tone: c.tone, type: 'Coro' })),
-      ...youthChoirs.map(yc => ({ title: yc.title, lyrics: yc.lyrics, tone: yc.tone, type: 'Agrupación' })),
+      ...hymns.map(h => ({ id: `hymn-${h.number}`, title: `${h.number}. ${h.title}`, lyrics: h.lyrics, tone: h.tone, type: 'Himno' })),
+      ...praises.map(p => ({ id: `praise-${p.id}`, title: p.title, lyrics: p.lyrics, tone: p.tone, type: 'Alabanza' })),
+      ...choirs.map(c => ({ id: `choir-${c.id}`, title: c.title, lyrics: c.lyrics, tone: c.tone, type: 'Coro' })),
+      ...youthChoirs.map(yc => ({ id: `youth-${yc.id}`, title: yc.title, lyrics: yc.lyrics, tone: yc.tone, type: 'Agrupación' })),
     ].sort((a, b) => a.title.localeCompare(b.title));
   }, [hymns, praises, choirs, youthChoirs]);
 
@@ -85,8 +98,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     const term = searchSong.toLowerCase().trim();
     if (!term) return [];
     return allSongs.filter(s => 
-      s.title.toLowerCase().includes(term) || 
-      (s.type === 'Himno' && s.title.includes(term))
+      s.title.toLowerCase().includes(term)
     ).slice(0, 50);
   }, [allSongs, searchSong]);
 
@@ -110,14 +122,37 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     }
   };
 
-  const selectSongToCopy = (song: any) => {
-    form.setValue('title', song.title.replace(/^\d+\.\s*/, ''));
-    form.setValue('lyrics', song.lyrics);
-    form.setValue('tone', song.tone || '');
-    toast({ 
-      title: "Canto Seleccionado", 
-      description: "Datos copiados. Selecciona la categoría destino y guarda.",
+  const toggleSongSelection = (song: SelectableSong) => {
+    setSelectedSongs(prev => {
+      const exists = prev.find(s => s.id === song.id);
+      if (exists) {
+        return prev.filter(s => s.id !== song.id);
+      }
+      return [...prev, song];
     });
+  };
+
+  const handleBulkImport = async () => {
+    if (selectedSongs.length === 0) return;
+    setIsImporting(true);
+    
+    for (const song of selectedSongs) {
+      await addSpecialOccasion({
+        title: song.title.replace(/^\d+\.\s*/, ''),
+        lyrics: song.lyrics,
+        tone: song.tone,
+        category: importCategory,
+        status: 'approved'
+      });
+    }
+    
+    setIsImporting(false);
+    toast({ 
+      title: "Importación Exitosa", 
+      description: `Se han añadido ${selectedSongs.length} cantos a ${importCategory}.` 
+    });
+    setOpen(false);
+    resetDialog();
   };
 
   function onSubmit(values: FormData) {
@@ -130,6 +165,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     setIsAuthenticated(false);
     setPassword('');
     setSearchSong('');
+    setSelectedSongs([]);
     form.reset({
       title: '',
       category: initialCategory || "Predicación",
@@ -141,52 +177,52 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
   return (
     <Dialog open={open} onOpenChange={(o) => { setOpen(o); if(!o) resetDialog(); }}>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="rounded-full h-10 px-4 border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100 transition-all font-bold">
-          <Plus className="mr-1.5 h-4 w-4" />
-          Agregar
-        </Button>
+        <button className="flex items-center gap-2 px-4 h-10 rounded-full border border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100 transition-all font-bold active:scale-95">
+          <Plus className="h-4 w-4" />
+          <span className="text-xs uppercase tracking-widest">Agregar</span>
+        </button>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] max-w-2xl max-h-[95vh] overflow-hidden flex flex-col p-0 border-none shadow-2xl rounded-[2.5rem] bg-background">
+      <DialogContent className="w-[95vw] max-w-2xl h-[90vh] flex flex-col p-0 border-none shadow-2xl rounded-[2.5rem] bg-background overflow-hidden">
         {!isAuthenticated ? (
-          <div className="p-8 space-y-8 flex flex-col items-center">
-            <div className="p-5 bg-amber-50 rounded-full">
+          <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-8">
+            <div className="p-6 bg-amber-50 rounded-full animate-bounce">
               <ShieldCheck className="h-12 w-12 text-amber-600" />
             </div>
             <div className="space-y-2 text-center">
-              <DialogTitle className="text-2xl font-bold tracking-tight">Zona de Administración</DialogTitle>
-              <DialogDescription>Solo el administrador puede asignar cantos a ocasiones especiales.</DialogDescription>
+              <DialogTitle className="text-2xl font-bold tracking-tight">Acceso Administrador</DialogTitle>
+              <DialogDescription>Ingresa la clave maestra para gestionar Ocasiones Especiales.</DialogDescription>
             </div>
-            <form onSubmit={handleAuth} className="w-full space-y-4">
+            <form onSubmit={handleAuth} className="w-full max-w-xs space-y-4">
               <Input 
                 type="password" 
-                placeholder="Ingresa la clave maestra" 
-                className="text-center tracking-[0.6em] font-black h-14 text-xl rounded-2xl border-2 focus:border-amber-500"
+                placeholder="••••" 
+                className="text-center tracking-[1em] font-black h-14 text-2xl rounded-2xl border-2 focus:border-amber-500"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 autoFocus
               />
               <Button type="submit" className="w-full h-14 text-lg font-bold rounded-2xl bg-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-200">
-                Validar Identidad
+                Entrar
               </Button>
             </form>
           </div>
         ) : (
-          <div className="flex flex-col h-full overflow-hidden">
-            <div className="px-6 pt-8 pb-4 border-b bg-muted/30">
+          <div className="flex flex-col h-full">
+            <div className="px-6 pt-8 pb-2 border-b bg-muted/20">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <DialogTitle className="text-xl font-bold">Asignar Canto Especial</DialogTitle>
-                  <p className="text-xs text-muted-foreground">Importa desde tu lista o escribe uno nuevo.</p>
+                  <DialogTitle className="text-xl font-bold">Gestión de Especiales</DialogTitle>
+                  <p className="text-xs text-muted-foreground">Agrega cantos en lote o manualmente.</p>
                 </div>
-                <Badge className="bg-amber-600">Admin</Badge>
+                <Badge className="bg-amber-600 font-bold px-3">ADMIN</Badge>
               </div>
               <Tabs defaultValue="import" className="w-full">
                 <TabsList className="grid w-full grid-cols-2 rounded-2xl h-12 p-1 bg-slate-200/50">
-                  <TabsTrigger value="import" className="rounded-xl text-xs font-black uppercase tracking-widest">
-                    <Search className="h-3.5 w-3.5 mr-2" /> Importar
+                  <TabsTrigger value="import" className="rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+                    <ListChecks className="h-3.5 w-3.5 mr-2" /> Selección Múltiple
                   </TabsTrigger>
-                  <TabsTrigger value="manual" className="rounded-xl text-xs font-black uppercase tracking-widest">
-                    <Plus className="h-3.5 w-3.5 mr-2" /> Manual
+                  <TabsTrigger value="manual" className="rounded-xl text-xs font-black uppercase tracking-widest transition-all">
+                    <Plus className="h-3.5 w-3.5 mr-2" /> Carga Manual
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -195,97 +231,109 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
             <div className="flex-1 overflow-hidden">
               <Tabs defaultValue="import" className="h-full flex flex-col">
                 <TabsContent value="import" className="mt-0 flex-1 overflow-hidden flex flex-col">
-                  <div className="p-6 pb-2">
+                  <div className="p-6 space-y-4 bg-background">
                     <div className="relative group">
                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-amber-600 transition-colors" />
                       <Input 
-                        placeholder="Escribe título o número..." 
+                        placeholder="Buscar por título o número..." 
                         className="pl-12 h-14 rounded-2xl border-2 bg-background focus:ring-4 focus:ring-amber-500/10"
                         value={searchSong}
                         onChange={(e) => setSearchSong(e.target.value)}
                       />
                     </div>
+                    
+                    <div className="flex items-center gap-3 p-3 bg-amber-50/50 rounded-2xl border border-amber-100">
+                      <span className="text-[10px] font-black text-amber-700 uppercase tracking-widest ml-2">Destino:</span>
+                      <Select value={importCategory} onValueChange={(v) => setImportCategory(v as SpecialCategory)}>
+                        <SelectTrigger className="flex-1 h-10 rounded-xl bg-white border-amber-200 font-bold text-xs">
+                          <SelectValue placeholder="Categoría Destino" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Predicación">🎤 Predicación</SelectItem>
+                          <SelectItem value="Fúnebre">⛪ Fúnebre</SelectItem>
+                          <SelectItem value="Cumpleaños">🎁 Cumpleaños</SelectItem>
+                          <SelectItem value="Bautismos">💧 Bautismos</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   
                   <ScrollArea className="flex-1 px-6">
-                    <div className="space-y-3 py-4">
-                      {filteredSongs.length > 0 ? filteredSongs.map((song, i) => (
-                        <button
-                          key={i}
-                          onClick={() => selectSongToCopy(song)}
-                          className="w-full flex items-center justify-between p-4 rounded-2xl bg-white border border-slate-100 hover:border-amber-200 hover:bg-amber-50/50 transition-all text-left shadow-sm active:scale-[0.98] group"
-                        >
-                          <div className="flex-1 min-w-0 mr-4">
-                            <p className="font-bold text-sm text-slate-900 truncate">{song.title}</p>
-                            <div className="flex items-center gap-2 mt-1">
-                              <span className="text-[10px] font-black uppercase tracking-tighter text-amber-600/70">{song.type}</span>
-                              {song.tone && <span className="text-[9px] font-bold text-slate-400">· {song.tone}</span>}
+                    <div className="space-y-2 pb-24">
+                      {filteredSongs.length > 0 ? filteredSongs.map((song) => {
+                        const isSelected = selectedSongs.some(s => s.id === song.id);
+                        return (
+                          <div
+                            key={song.id}
+                            onClick={() => toggleSongSelection(song)}
+                            className={cn(
+                              "w-full flex items-center gap-4 p-4 rounded-2xl border transition-all cursor-pointer group",
+                              isSelected 
+                                ? "bg-amber-100/50 border-amber-400 shadow-md translate-x-1" 
+                                : "bg-white border-slate-100 hover:border-amber-200 hover:bg-slate-50"
+                            )}
+                          >
+                            <Checkbox 
+                              checked={isSelected} 
+                              onCheckedChange={() => toggleSongSelection(song)}
+                              className="h-5 w-5 border-2 rounded-md"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <p className={cn("font-bold text-sm truncate", isSelected ? "text-amber-900" : "text-slate-900")}>
+                                {song.title}
+                              </p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <Badge variant="outline" className="text-[8px] font-black uppercase py-0 px-1.5 h-4 border-slate-200 text-slate-500">
+                                  {song.type}
+                                </Badge>
+                                {song.tone && <span className="text-[9px] font-bold text-slate-400">· {song.tone}</span>}
+                              </div>
+                            </div>
+                            <div className={cn(
+                              "h-8 w-8 rounded-full flex items-center justify-center transition-colors",
+                              isSelected ? "bg-amber-500 text-white" : "bg-slate-50 text-slate-300"
+                            )}>
+                              <ChevronRight className="h-4 w-4" />
                             </div>
                           </div>
-                          <div className="h-10 w-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 group-hover:bg-amber-100 group-hover:text-amber-600 transition-colors">
-                            <ChevronRight className="h-5 w-5" />
-                          </div>
-                        </button>
-                      )) : searchSong ? (
-                        <div className="py-12 text-center space-y-2 opacity-50">
-                          <Search className="h-10 w-10 mx-auto text-slate-300" />
-                          <p className="text-xs font-bold uppercase tracking-widest text-slate-400">No hay coincidencias</p>
+                        );
+                      }) : searchSong ? (
+                        <div className="py-20 text-center opacity-40">
+                          <Search className="h-12 w-12 mx-auto mb-4" />
+                          <p className="text-xs font-black uppercase tracking-widest">Sin resultados</p>
                         </div>
                       ) : (
-                        <div className="py-12 text-center space-y-3 opacity-40">
-                          <div className="h-16 w-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto">
-                            <Plus className="h-8 w-8 text-slate-400" />
-                          </div>
-                          <p className="text-[10px] font-black uppercase tracking-[0.2em]">Busca un canto para empezar</p>
+                        <div className="py-20 text-center opacity-30">
+                          <ListChecks className="h-16 w-16 mx-auto mb-4" />
+                          <p className="text-[10px] font-black uppercase tracking-[0.2em]">Selecciona múltiples cantos</p>
                         </div>
                       )}
                     </div>
-
-                    {form.watch('title') && (
-                      <div className="mb-10 p-6 rounded-3xl bg-green-50 border border-green-100 animate-in zoom-in-95 duration-300 shadow-sm">
-                        <div className="flex items-center gap-3 text-green-700 mb-6">
-                          <CheckCircle2 className="h-6 w-6" />
-                          <p className="text-sm font-bold leading-tight">Canto cargado: <span className="block text-xs font-medium opacity-80">"{form.watch('title')}"</span></p>
-                        </div>
-                        <Form {...form}>
-                          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-                            <FormField
-                              control={form.control}
-                              name="category"
-                              render={({ field }) => (
-                                <FormItem>
-                                  <FormLabel className="text-[10px] font-black uppercase tracking-widest text-muted-foreground ml-1">Asignar a:</FormLabel>
-                                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
-                                    <FormControl>
-                                      <SelectTrigger className="rounded-2xl h-14 bg-white border-2">
-                                        <SelectValue placeholder="Categoría" />
-                                      </SelectTrigger>
-                                    </FormControl>
-                                    <SelectContent>
-                                      <SelectItem value="Predicación">🎤 Predicación</SelectItem>
-                                      <SelectItem value="Fúnebre">⛪ Fúnebre</SelectItem>
-                                      <SelectItem value="Cumpleaños">🎁 Cumpleaños</SelectItem>
-                                      <SelectItem value="Bautismos">💧 Bautismos</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </FormItem>
-                              )}
-                            />
-                            <Button type="submit" className="w-full h-14 font-bold rounded-2xl bg-green-600 hover:bg-green-700 shadow-lg shadow-green-100 text-lg">
-                              Guardar en {form.watch('category')}
-                            </Button>
-                          </form>
-                        </Form>
-                      </div>
-                    )}
                   </ScrollArea>
+
+                  {selectedSongs.length > 0 && (
+                    <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-white via-white to-transparent animate-in slide-in-from-bottom-full duration-500">
+                      <Button 
+                        onClick={handleBulkImport} 
+                        disabled={isImporting}
+                        className="w-full h-16 text-lg font-bold rounded-2xl bg-green-600 hover:bg-green-700 shadow-2xl shadow-green-200"
+                      >
+                        {isImporting ? (
+                          <Loader2 className="h-6 w-6 animate-spin mr-3" />
+                        ) : (
+                          <CheckCircle2 className="h-6 w-6 mr-3" />
+                        )}
+                        Importar {selectedSongs.length} a {importCategory}
+                      </Button>
+                    </div>
+                  )}
                 </TabsContent>
 
                 <TabsContent value="manual" className="mt-0 flex-1 overflow-y-auto">
                   <ScrollArea className="h-full">
-                    <div className="p-6">
+                    <div className="p-6 pb-10">
                       <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+                        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                           <FormField
                             control={form.control}
                             name="category"
@@ -294,7 +342,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                                 <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Categoría</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                   <FormControl>
-                                    <SelectTrigger className="rounded-2xl h-14 border-2">
+                                    <SelectTrigger className="rounded-2xl h-14 border-2 bg-slate-50">
                                       <SelectValue placeholder="Selecciona la ocasión" />
                                     </SelectTrigger>
                                   </FormControl>
@@ -315,7 +363,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                               <FormItem>
                                 <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Título</FormLabel>
                                 <FormControl>
-                                  <Input placeholder="Título del canto" className="rounded-2xl h-14 border-2" {...field} />
+                                  <Input placeholder="Escribe el nombre del canto" className="rounded-2xl h-14 border-2" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
@@ -326,11 +374,11 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                             name="tone"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Tonalidad</FormLabel>
+                                <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Tonalidad (Opcional)</FormLabel>
                                 <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
                                   <FormControl>
                                     <SelectTrigger className="rounded-2xl h-14 border-2">
-                                      <SelectValue placeholder="Selecciona tono (opcional)" />
+                                      <SelectValue placeholder="Selecciona tono" />
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
@@ -347,15 +395,15 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                             name="lyrics"
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Letra</FormLabel>
+                                <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Letra Completa</FormLabel>
                                 <FormControl>
-                                  <Textarea placeholder="Escribe la letra aquí..." className="h-64 rounded-2xl border-2 resize-none p-4" {...field} />
+                                  <Textarea placeholder="Pega o escribe la letra aquí..." className="h-80 rounded-3xl border-2 resize-none p-6 font-body text-base leading-relaxed" {...field} />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>
                             )}
                           />
-                          <Button type="submit" className="w-full h-14 font-bold text-lg rounded-2xl bg-amber-600 hover:bg-amber-700 shadow-xl shadow-amber-100 mb-6">
+                          <Button type="submit" className="w-full h-16 font-black text-lg rounded-2xl bg-amber-600 hover:bg-amber-700 shadow-xl shadow-amber-100">
                             Publicar Canto
                           </Button>
                         </form>
