@@ -44,6 +44,14 @@ export function AppearanceDialog() {
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md border-none shadow-2xl rounded-[2.5rem] overflow-hidden p-0 max-h-[90vh]">
+        {/* Encabezado accesible para lectores de pantalla pero oculto visualmente */}
+        <DialogHeader className="sr-only">
+          <DialogTitle>Personalizar Apariencia</DialogTitle>
+          <DialogDescription>
+            Ajusta los colores, el modo de pantalla y el diseño de fondo del himnario.
+          </DialogDescription>
+        </DialogHeader>
+
         <div className="bg-gradient-to-b from-primary/10 to-background flex flex-col h-full">
           
           {/* VISTA PREVIA DINÁMICA */}
