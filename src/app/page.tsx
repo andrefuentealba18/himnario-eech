@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -77,18 +76,18 @@ export default function HomePage() {
 
       <div className="relative z-10 flex flex-col min-h-screen">
         
-        {/* Barra Superior Minimalista */}
-        <div className="flex items-center justify-between p-4 md:p-6 animate-in fade-in duration-1000">
+        {/* Barra Superior Minimalista Refinada */}
+        <div className="flex items-center justify-between px-4 py-4 md:px-8 animate-in fade-in duration-1000">
           <div className="flex items-center gap-2">
             {isFullySynced ? (
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-md border border-green-500/20 shadow-sm transition-all duration-500 hover:scale-105">
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-md border border-green-500/20 shadow-sm transition-all duration-500 hover:scale-105">
                 <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[9px] font-black uppercase tracking-widest text-green-600 dark:text-green-400">Offline Listo</span>
+                <span className="text-[8px] font-black uppercase tracking-widest text-green-600 dark:text-green-400">Offline Listo</span>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-md border border-amber-500/20 shadow-sm">
-                <WifiOff className="h-3 w-3 text-amber-500 animate-bounce" />
-                <span className="text-[9px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">Sincronizando...</span>
+              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-md border border-amber-500/20 shadow-sm">
+                <WifiOff className="h-2.5 w-2.5 text-amber-500 animate-bounce" />
+                <span className="text-[8px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">Sincronizando...</span>
               </div>
             )}
           </div>
