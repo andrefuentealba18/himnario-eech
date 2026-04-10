@@ -38,7 +38,7 @@ export function SpecialOccasionListClient({ specialOccasions, activeCategory, on
   const indexedSongs = useMemo(() => {
     return specialOccasions.map(s => ({
       ...s,
-      _searchIndex: normalizeSearchTerm(`${s.title} ${s.lyrics} ${s.tone || ''} ${s.category}`)
+      _searchIndex: normalizeSearchTerm(`${s.title} ${s.lyrics} ${s.tone || ''} ${s.category} ${s.hymnNumber || ''}`)
     }));
   }, [specialOccasions]);
 
@@ -126,13 +126,16 @@ export function SpecialOccasionListClient({ specialOccasions, activeCategory, on
               <Link
                 key={song.id}
                 href={`/special-occasions/${song.id}`}
-                className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-colors border-b last:border-none"
+                className="flex items-center justify-between p-3 rounded-xl hover:bg-muted/50 transition-colors border-b last:border-none group"
               >
                 <div className="flex-1 overflow-hidden">
-                  <span className="font-bold text-[13px] text-slate-700 dark:text-slate-200 truncate block">
-                    {song.title}
-                  </span>
-                  <div className="flex gap-2 mt-0.5">
+                  <div className="flex items-center gap-2">
+                    {song.hymnNumber && <span className="font-black text-primary text-[10px] bg-primary/5 px-1.5 rounded">Nº {song.hymnNumber}</span>}
+                    <span className="font-bold text-[13px] text-slate-700 dark:text-slate-200 truncate block group-hover:text-primary transition-colors">
+                      {song.title}
+                    </span>
+                  </div>
+                  <div className="flex gap-2 mt-0.5 ml-1">
                     <span className="text-[9px] font-bold text-muted-foreground/60 uppercase">{song.category}</span>
                   </div>
                 </div>

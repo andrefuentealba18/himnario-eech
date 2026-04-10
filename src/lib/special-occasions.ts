@@ -6,6 +6,7 @@ export type SpecialOccasion = {
   title: string;
   lyrics: string;
   tone?: string;
+  hymnNumber?: number;
   category: SpecialCategory;
   status?: 'pending' | 'approved';
   createdAt?: any;

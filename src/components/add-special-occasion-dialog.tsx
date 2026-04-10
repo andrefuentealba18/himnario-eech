@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect, useState, useMemo } from 'react';
@@ -51,6 +52,10 @@ const specialOccasionSchema = z.object({
     required_error: "Debes seleccionar una categoría."
   }),
   tone: z.string().optional(),
+  hymnNumber: z.preprocess(
+    (val) => (val === "" ? undefined : Number(val)),
+    z.number().optional()
+  ),
   lyrics: z.string().min(1, 'La letra es requerida.'),
 });
 
@@ -66,6 +71,7 @@ type SelectableSong = {
   tone?: string;
   type: string;
   id: string;
+  hymnNumber?: number;
 };
 
 export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasionDialogProps) {
@@ -87,7 +93,14 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
 
   const allSongs: SelectableSong[] = useMemo(() => {
     return [
-      ...hymns.map(h => ({ id: `hymn-${h.number}`, title: `${h.number}. ${h.title}`, lyrics: h.lyrics, tone: h.tone, type: 'Himno' })),
+      ...hymns.map(h => ({ 
+        id: `hymn-${h.number}`, 
+        title: h.title, 
+        lyrics: h.lyrics, 
+        tone: h.tone, 
+        type: 'Himno',
+        hymnNumber: h.number
+      })),
       ...praises.map(p => ({ id: `praise-${p.id}`, title: p.title, lyrics: p.lyrics, tone: p.tone, type: 'Alabanza' })),
       ...choirs.map(c => ({ id: `choir-${c.id}`, title: c.title, lyrics: c.lyrics, tone: c.tone, type: 'Coro' })),
       ...youthChoirs.map(yc => ({ id: `youth-${yc.id}`, title: yc.title, lyrics: yc.lyrics, tone: yc.tone, type: 'Agrupación' })),
@@ -98,7 +111,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     const term = searchSong.toLowerCase().trim();
     if (!term) return [];
     return allSongs.filter(s => 
-      s.title.toLowerCase().includes(term)
+      s.title.toLowerCase().includes(term) || (s.hymnNumber && s.hymnNumber.toString().includes(term))
     ).slice(0, 50);
   }, [allSongs, searchSong]);
 
@@ -108,6 +121,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
       title: '',
       category: initialCategory || "Predicación",
       tone: '',
+      hymnNumber: undefined,
       lyrics: '',
     },
   });
@@ -138,9 +152,10 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     
     for (const song of selectedSongs) {
       await addSpecialOccasion({
-        title: song.title.replace(/^\d+\.\s*/, ''),
+        title: song.title,
         lyrics: song.lyrics,
         tone: song.tone,
+        hymnNumber: song.hymnNumber,
         category: importCategory,
         status: 'approved'
       });
@@ -170,6 +185,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
       title: '',
       category: initialCategory || "Predicación",
       tone: '',
+      hymnNumber: undefined,
       lyrics: '',
     });
   };
@@ -183,8 +199,8 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
         </button>
       </DialogTrigger>
       <DialogContent className={cn(
-        "w-[92vw] p-0 border-none shadow-2xl rounded-[2rem] bg-background overflow-hidden transition-all duration-500 ease-in-out",
-        isAuthenticated ? "max-w-2xl h-[90vh]" : "max-w-[320px] h-auto"
+        "w-[95vw] p-0 border-none shadow-2xl rounded-[2rem] bg-background overflow-hidden transition-all duration-500 ease-in-out",
+        isAuthenticated ? "max-w-2xl h-[95vh]" : "max-w-[320px] h-auto"
       )}>
         {!isAuthenticated ? (
           <div className="flex flex-col items-center justify-center p-8 space-y-6">
@@ -283,7 +299,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                             />
                             <div className="flex-1 min-w-0">
                               <p className={cn("font-bold text-sm truncate", isSelected ? "text-amber-900" : "text-slate-900")}>
-                                {song.title}
+                                {song.hymnNumber ? `${song.hymnNumber}. ` : ""}{song.title}
                               </p>
                               <div className="flex items-center gap-2 mt-1">
                                 <Badge variant="outline" className="text-[8px] font-black uppercase py-0 px-1.5 h-4 border-slate-200 text-slate-500">
@@ -372,27 +388,42 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                               </FormItem>
                             )}
                           />
-                          <FormField
-                            control={form.control}
-                            name="tone"
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Tonalidad (Opcional)</FormLabel>
-                                <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                          <div className="grid grid-cols-2 gap-4">
+                            <FormField
+                              control={form.control}
+                              name="tone"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Tonalidad</FormLabel>
+                                  <Select onValueChange={field.onChange} defaultValue={field.value} value={field.value}>
+                                    <FormControl>
+                                      <SelectTrigger className="rounded-2xl h-14 border-2">
+                                        <SelectValue placeholder="Tono" />
+                                      </SelectTrigger>
+                                    </FormControl>
+                                    <SelectContent>
+                                      {musicalKeys.map(key => (
+                                        <SelectItem key={key} value={key}>{key}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </FormItem>
+                              )}
+                            />
+                            <FormField
+                              control={form.control}
+                              name="hymnNumber"
+                              render={({ field }) => (
+                                <FormItem>
+                                  <FormLabel className="text-[10px] font-black uppercase tracking-widest ml-1">Nº Himno (Opc.)</FormLabel>
                                   <FormControl>
-                                    <SelectTrigger className="rounded-2xl h-14 border-2">
-                                      <SelectValue placeholder="Selecciona tono" />
-                                    </SelectTrigger>
+                                    <Input type="number" placeholder="Ej: 116" className="rounded-2xl h-14 border-2" {...field} />
                                   </FormControl>
-                                  <SelectContent>
-                                    {musicalKeys.map(key => (
-                                      <SelectItem key={key} value={key}>{key}</SelectItem>
-                                    ))}
-                                  </SelectContent>
-                                </Select>
-                              </FormItem>
-                            )}
-                          />
+                                  <FormMessage />
+                                </FormItem>
+                              )}
+                            />
+                          </div>
                           <FormField
                             control={form.control}
                             name="lyrics"

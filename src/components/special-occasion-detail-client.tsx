@@ -1,9 +1,10 @@
+
 "use client";
 
 import type { SpecialOccasion } from '@/lib/special-occasions';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star, Sparkles } from 'lucide-react';
 import { useSpecialOccasions } from '@/context/special-occasions-context';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useRecents } from '@/hooks/use-recents';
@@ -13,6 +14,7 @@ import { useFontSize } from '@/hooks/use-font-size';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { cn } from '@/lib/utils';
 
 const fontSizes = [
   'text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl',
@@ -52,14 +54,14 @@ export function SpecialOccasionDetailClient({ specialId }: { specialId: string }
       addRecent({
         id: song.id,
         title: song.title,
-        type: 'praise' // Fallback para recents
+        type: 'praise'
       });
     }
   }, [song, addRecent]);
 
   const handleShare = useCallback(() => {
     if (!song) return;
-    const text = `*Ocasión Especial (${song.category}): ${song.title}*\n\n${song.lyrics}\n\n_Enviado desde Himnario EECH Móvil_`;
+    const text = `*Ocasión Especial (${song.category}): ${song.hymnNumber ? 'Nº ' + song.hymnNumber + ' ' : ''}${song.title}*\n\n${song.lyrics}\n\n_Enviado desde Himnario EECH Móvil_`;
     const shareUrl = `whatsapp://send?text=${encodeURIComponent(text)}`;
     window.open(shareUrl, '_blank');
   }, [song]);
@@ -72,13 +74,12 @@ export function SpecialOccasionDetailClient({ specialId }: { specialId: string }
 
   return (
     <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
-      {/* Fondo Patriótico Sutil */}
       <div className="fixed inset-0 -z-10 pointer-events-none opacity-20">
         <div className="absolute top-0 right-0 w-[100vw] h-[100vw] bg-blue-500/5 rounded-full blur-[120px] animate-aura" />
         <div className="absolute bottom-0 left-0 w-[80vw] h-[80vw] bg-red-500/5 rounded-full blur-[100px] animate-aura" style={{ animationDirection: 'reverse' }} />
       </div>
 
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-24 pb-6 px-4 border-b">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-xl pt-16 pb-6 px-4 border-b">
         <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-full">
           <Link href="/special-occasions">
             <ChevronLeft className="h-7 w-7" />
@@ -87,15 +88,21 @@ export function SpecialOccasionDetailClient({ specialId }: { specialId: string }
         </Button>
         
         <div className="flex-1 flex flex-col items-center justify-center overflow-hidden px-2">
-          <h1 className="font-headline text-lg font-bold text-amber-600 truncate text-center w-full">
+          <div className="flex items-center gap-1.5 mb-0.5">
+            <Sparkles className="h-3 w-3 text-amber-500" />
+            <span className="text-[9px] font-black uppercase tracking-[0.3em] text-amber-600/60">{song.category}</span>
+          </div>
+          <h1 className="font-headline text-lg font-bold text-foreground truncate text-center w-full tracking-tight">
             {song.title}
           </h1>
-          <div className="flex items-center justify-center gap-2 mt-1">
-            <Badge variant="outline" className="text-[10px] font-bold border-amber-200 text-amber-700 bg-amber-50 rounded-full px-2 py-0.5">
-              {song.category}
-            </Badge>
+          <div className="flex items-center justify-center gap-2 mt-1.5">
+            {song.hymnNumber && (
+              <p className="text-[10px] font-black text-white px-2.5 py-0.5 bg-primary/80 rounded-full shadow-lg shadow-primary/20">
+                HIMNO Nº {song.hymnNumber}
+              </p>
+            )}
             {song.tone && (
-              <Badge variant="secondary" className="text-[10px] font-bold rounded-full px-2 py-0.5 bg-slate-100 dark:bg-white/5 border border-slate-200/50">
+              <Badge variant="secondary" className="text-[10px] font-bold rounded-full px-3 py-0.5 bg-slate-100 dark:bg-white/5 border border-slate-200/50">
                 {song.tone}
               </Badge>
             )}
@@ -103,38 +110,59 @@ export function SpecialOccasionDetailClient({ specialId }: { specialId: string }
         </div>
         
         <Button variant="ghost" size="icon" onClick={() => toggleFavorite(song.id, 'special-occasion')} disabled={!isFavsLoaded} className="h-12 w-12 rounded-full">
-          <Star className={`h-7 w-7 transition-all duration-300 transform-gpu ${isFav ? 'fill-yellow-400 text-yellow-400 scale-125' : 'text-foreground/70'}`} />
+          <Star className={`h-7 w-7 transition-all duration-500 transform-gpu ${isFav ? 'fill-yellow-400 text-yellow-400 scale-125 filter drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]' : 'text-foreground/30'}`} />
           <span className="sr-only">Marcar como favorito</span>
         </Button>
       </header>
 
       <main className="flex-1 py-10 px-4 flex flex-col items-center justify-start overflow-y-auto">
-        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          <div className={`font-body leading-relaxed text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
+        <div className="w-full max-w-3xl glass-morphism rounded-[2.5rem] p-8 sm:p-16 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-4 relative overflow-hidden group">
+          <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-amber-500/40 via-amber-400/40 to-amber-500/40" />
+          <div className={`font-body leading-[1.8] text-center transition-all duration-300 ease-in-out ${fontSizes[fontSizeIndex]}`}>
             {song.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
-              const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
+              const lines = paragraph.trim().split('\n');
+              const isChorus = lines[0].trim().toUpperCase().startsWith('CORO');
+              
               return (
-                <p key={pIndex} className={`whitespace-pre-wrap mb-8 last:mb-0 ${isChorus ? 'font-black text-amber-600 dark:text-amber-400' : 'text-foreground/90'}`}>
-                  {paragraph}
-                </p>
+                <div key={pIndex} className={cn(
+                  "mb-12 last:mb-0 transition-all duration-500",
+                  isChorus ? "bg-amber-500/5 dark:bg-amber-500/10 p-8 rounded-3xl border border-amber-500/10 relative" : ""
+                )}>
+                  {isChorus && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-amber-600 text-white text-[10px] font-black px-4 py-1 rounded-full shadow-lg uppercase tracking-widest">
+                      Coro
+                    </div>
+                  )}
+                  {lines.map((line, lIndex) => {
+                    if (isChorus && lIndex === 0) return null;
+                    return (
+                      <p key={lIndex} className={cn(
+                        "whitespace-pre-wrap mb-1 last:mb-0",
+                        isChorus ? "font-black text-amber-600 dark:text-amber-400 italic" : "text-foreground/90 font-medium"
+                      )}>
+                        {line}
+                      </p>
+                    );
+                  })}
+                </div>
               );
             })}
           </div>
         </div>
-        <div className="h-32 w-full" />
+        <div className="h-40 w-full" />
       </main>
 
       <footer className="fixed bottom-8 left-0 w-full z-30 flex items-center justify-center px-4 pointer-events-none">
-        <div className="flex items-center justify-center gap-3 bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full shadow-2xl p-2.5 animate-in slide-in-from-bottom-8 duration-1000 pointer-events-auto">
-          <Button variant="outline" size="icon" onClick={decreaseFontSize} className="rounded-full h-11 w-11 bg-white/50 dark:bg-white/5">
+        <div className="flex items-center justify-center gap-3 bg-background/80 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-full shadow-[0_20px_50px_-12px_rgba(0,0,0,0.2)] p-2.5 animate-in slide-in-from-bottom-8 duration-1000 pointer-events-auto hover:scale-105 transition-transform">
+          <Button variant="outline" size="icon" onClick={decreaseFontSize} className="rounded-full h-12 w-12 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
             <ZoomOut className="h-5 w-5" />
           </Button>
-          <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
-          <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-11 w-11 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5">
+          <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
+          <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-12 w-12 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
             <Share2 className="h-5 w-5" />
           </Button>
-          <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
-          <Button variant="outline" size="icon" onClick={increaseFontSize} className="rounded-full h-11 w-11 bg-white/50 dark:bg-white/5">
+          <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
+          <Button variant="outline" size="icon" onClick={increaseFontSize} className="rounded-full h-12 w-12 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
             <ZoomIn className="h-5 w-5" />
           </Button>
         </div>
