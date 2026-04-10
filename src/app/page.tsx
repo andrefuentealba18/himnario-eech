@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -74,8 +73,8 @@ export default function HomePage() {
 
       <div className="relative z-10 flex flex-col flex-1">
         
-        {/* Barra Superior - Bajada para mejor ergonomía */}
-        <div className="flex items-center justify-between px-6 pt-14 pb-4 animate-in fade-in duration-1000">
+        {/* Barra Superior - Bajada para mejor ergonomía móvil */}
+        <div className="flex items-center justify-between px-6 pt-20 pb-4 animate-in fade-in duration-1000">
           <div className="flex items-center gap-2">
             {isFullySynced ? (
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-md border border-green-500/20 shadow-sm transition-all duration-500 hover:scale-105">
@@ -92,7 +91,7 @@ export default function HomePage() {
           <AppearanceDialog />
         </div>
 
-        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-28 pb-10 space-y-10">
+        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-32 pb-10 space-y-10">
           
           {/* HEADER - Ajustado verticalmente */}
           <header className="w-full text-center space-y-8 animate-in fade-in slide-in-from-top-4 duration-1000">

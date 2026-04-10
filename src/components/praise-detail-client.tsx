@@ -35,7 +35,7 @@ const fontSizes = [
 function PraiseDetailSkeleton() {
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-24 pb-6 px-4 border-b">
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-32 pb-6 px-4 border-b">
                 <Skeleton className="h-10 w-10 rounded-full" />
                 <div className="flex-1 px-4 text-center">
                     <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
@@ -124,7 +124,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
           <div className="absolute bottom-1/4 right-1/4 w-[150%] h-[150%] bg-gradient-to-bl from-amber-50/30 via-sky-50/20 to-purple-50/30 blur-[120px] rounded-full animate-aura" style={{ animationDirection: 'reverse', animationDuration: '30s' }} />
         </div>
 
-        <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-24 pb-6 px-4 border-b">
+        <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-32 pb-6 px-4 border-b">
             <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-full">
             <Link href={backHref}>
                 <ChevronLeft className="h-7 w-7" />
@@ -155,7 +155,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
         </header>
 
       <main className="flex-1 py-10 px-4 flex flex-col items-center justify-start overflow-y-auto">
-        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-1000">
+        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-1000 mt-4">
             <div className={`font-body leading-relaxed text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
                 {praise.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');

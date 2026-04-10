@@ -2,7 +2,7 @@ rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Permitimos lectura y escritura total para agilizar el prototipado y edición
+    // Permitimos lectura y escritura total para agilizar el prototipado y edición sin bloqueos
     match /hymns/{hymnId} {
       allow read, write: if true;
     }
