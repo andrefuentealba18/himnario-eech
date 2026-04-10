@@ -87,7 +87,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     return allSongs.filter(s => 
       s.title.toLowerCase().includes(term) || 
       (s.type === 'Himno' && s.title.includes(term))
-    ).slice(0, 30); // Aumentado a 30 resultados
+    ).slice(0, 30);
   }, [allSongs, searchSong]);
 
   const form = useForm<FormData>({
@@ -202,7 +202,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                         placeholder="Escribe título o número..." 
                         className="pl-12 h-14 rounded-2xl border-2 bg-background focus:ring-4 focus:ring-amber-500/10"
                         value={searchSong}
-                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onChange={(e) => setSearchSong(e.target.value)}
                       />
                     </div>
                   </div>
