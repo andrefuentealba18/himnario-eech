@@ -48,18 +48,10 @@
   }
 
   /* Temas de Colores */
-  .theme-purple {
-    --primary: 262.1 83.3% 57.8%;
-  }
-  .theme-green {
-    --primary: 142.1 76.2% 36.3%;
-  }
-  .theme-amber {
-    --primary: 37.9 92.1% 50.2%;
-  }
-  .theme-rose {
-    --primary: 346.8 77.2% 49.8%;
-  }
+  .theme-purple { --primary: 262.1 83.3% 57.8%; }
+  .theme-green { --primary: 142.1 76.2% 36.3%; }
+  .theme-amber { --primary: 37.9 92.1% 50.2%; }
+  .theme-rose { --primary: 346.8 77.2% 49.8%; }
 }
 
 @layer base {
@@ -71,7 +63,17 @@
   }
 }
 
-/* Animaciones Avanzadas e Innovadoras */
+/* Diseños de Fondo Especiales */
+.design-grid {
+  background-image: radial-gradient(circle at 2px 2px, hsl(var(--primary) / 0.1) 1px, transparent 0);
+  background-size: 24px 24px;
+}
+
+.design-none {
+  background-image: none !important;
+}
+
+/* Animaciones */
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   50% { transform: translateY(-15px) rotate(1deg); }
@@ -79,24 +81,6 @@
 
 .animate-float {
   animation: float 8s ease-in-out infinite;
-}
-
-@keyframes pulse-soft {
-  0%, 100% { opacity: 0.2; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(1.05); }
-}
-
-.animate-pulse-soft {
-  animation: pulse-soft 10s ease-in-out infinite;
-}
-
-@keyframes aura-rotate {
-  0% { transform: translate(-50%, -50%) rotate(0deg); }
-  100% { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
-.animate-aura-slow {
-  animation: aura-rotate 40s linear infinite;
 }
 
 @keyframes aura-drift {
@@ -109,10 +93,6 @@
   animation: aura-drift 20s ease-in-out infinite;
 }
 
-.glass-morphism {
-  @apply bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-2xl;
-}
-
 .text-glow {
-  text-shadow: 0 0 20px rgba(var(--primary), 0.3);
+  text-shadow: 0 0 20px hsl(var(--primary) / 0.3);
 }
