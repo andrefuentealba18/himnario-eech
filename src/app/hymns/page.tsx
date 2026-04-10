@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import { useHymns } from '@/context/hymns-context';
 import { HymnListClient } from '@/components/hymn-list-client';
 import { BookOpen, ChevronLeft, Loader2 } from 'lucide-react';
@@ -9,9 +10,48 @@ import { Badge } from '@/components/ui/badge';
 
 export default function HymnsIndexPage() {
   const { hymns, isLoaded } = useHymns();
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    // La animación dura 2.2 segundos antes de revelar la lista
+    const timer = setTimeout(() => setShowIntro(false), 2200);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showIntro) {
+    return (
+      <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden">
+        {/* Auras de Luz de fondo para profundidad */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
+        
+        <div className="relative flex flex-col items-center gap-8">
+          {/* Título Principal con expansión tipográfica */}
+          <div className="space-y-4 text-center">
+            <div className="h-px w-16 bg-primary/20 mx-auto animate-in fade-in slide-in-from-left duration-1000" />
+            <h1 className="text-6xl md:text-8xl font-black font-headline tracking-[0.4em] text-primary animate-in fade-in zoom-in-95 duration-1000 ease-out uppercase text-glow">
+              Himnos
+            </h1>
+            <div className="h-px w-16 bg-primary/20 mx-auto animate-in fade-in slide-in-from-right duration-1000" />
+          </div>
+        </div>
+
+        {/* Firma Institucional en la parte inferior */}
+        <div className="absolute bottom-16 left-0 w-full text-center px-6">
+          <div className="flex items-center justify-center gap-4 mb-2 opacity-40">
+            <div className="h-px w-8 bg-slate-400" />
+            <span className="text-[8px] font-black uppercase tracking-[0.3em]">Oficial</span>
+            <div className="h-px w-8 bg-slate-400" />
+          </div>
+          <p className="text-[10px] md:text-xs font-black tracking-[0.6em] text-slate-500 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-500">
+            Ejército Evangélico de Chile
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <main className="relative flex flex-col items-center bg-background min-h-screen overflow-x-hidden">
+    <main className="relative flex flex-col items-center bg-background min-h-screen overflow-x-hidden animate-in fade-in duration-1000">
       {/* Fondo Decorativo de Transición Suave */}
       <div className="fixed inset-0 -z-10 pointer-events-none opacity-40">
         <div className="absolute top-0 right-0 w-[80vw] h-[80vw] bg-primary/10 rounded-full blur-[120px] animate-aura" />
@@ -65,7 +105,7 @@ export default function HymnsIndexPage() {
               </div>
             </div>
           ) : (
-            <div className="animate-in fade-in duration-700">
+            <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
               <HymnListClient hymns={hymns} />
             </div>
           )}
