@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { Praise } from '@/lib/praises';
@@ -36,17 +35,17 @@ const fontSizes = [
 function PraiseDetailSkeleton() {
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-44 pb-8 px-4 border-b h-48">
-                <Skeleton className="h-12 w-12 rounded-full" />
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-24 pb-6 px-4 border-b">
+                <Skeleton className="h-10 w-10 rounded-full" />
                 <div className="flex-1 px-4 text-center">
-                    <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
+                    <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
                 </div>
-                <div className="w-12 h-12" />
+                <div className="w-10 h-10" />
             </header>
             <main className="flex-1 py-8 container max-w-2xl px-4">
-                <div className="space-y-8 text-center">
-                    <Skeleton className="h-6 w-full" />
-                    <Skeleton className="h-6 w-5/6 mx-auto" />
+                <div className="space-y-6">
+                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-5/6 mx-auto" />
                     <Skeleton className="h-24 w-full rounded-lg" />
                 </div>
             </main>
@@ -125,8 +124,8 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
           <div className="absolute bottom-1/4 right-1/4 w-[150%] h-[150%] bg-gradient-to-bl from-amber-50/30 via-sky-50/20 to-purple-50/30 blur-[120px] rounded-full animate-aura" style={{ animationDirection: 'reverse', animationDuration: '30s' }} />
         </div>
 
-        <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-44 pb-8 px-4 border-b h-48">
-            <Button variant="ghost" size="icon" asChild className="h-12 w-12">
+        <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-24 pb-6 px-4 border-b">
+            <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-full">
             <Link href={backHref}>
                 <ChevronLeft className="h-7 w-7" />
                 <span className="sr-only">Volver</span>
@@ -137,49 +136,52 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
                 <h1 className="font-headline text-lg font-bold text-primary truncate text-center w-full">
                   {praise.title}
                 </h1>
-                <div className="flex items-center justify-center gap-2 mt-2">
+                <div className="flex items-center justify-center gap-2 mt-1">
                     <EditToneDialog song={praise} onToneUpdated={handleToneUpdate}>
-                        <Button variant="outline" size="sm" className="h-auto px-3 py-1 text-xs rounded-full bg-white/50 backdrop-blur-sm">
+                        <button className="text-[10px] font-bold text-primary px-2 py-0.5 rounded-full border border-primary/20 bg-primary/5">
                             {praise.tone || 'Tonalidad'}
-                        </Button>
+                        </button>
                     </EditToneDialog>
                     {praise.speed && (
-                        <Badge variant="secondary" className="text-xs capitalize rounded-full px-3 py-1 bg-white/50 backdrop-blur-sm">{praise.speed}</Badge>
+                        <Badge variant="secondary" className="text-[10px] font-bold capitalize rounded-full px-2 py-0.5 bg-slate-100 dark:bg-white/5 border border-slate-200/50">{praise.speed}</Badge>
                     )}
                 </div>
             </div>
             
-            <Button variant="ghost" size="icon" onClick={() => toggleFavorite(praise.id, 'praise')} disabled={!isFavoritesLoaded} className="h-12 w-12">
+            <Button variant="ghost" size="icon" onClick={() => toggleFavorite(praise.id, 'praise')} disabled={!isFavoritesLoaded} className="h-12 w-12 rounded-full">
               <Star className={`h-7 w-7 transition-all duration-300 transform-gpu ${isFav ? 'fill-yellow-400 text-yellow-400 scale-125' : 'text-foreground/70'}`} />
               <span className="sr-only">Marcar como favorito</span>
             </Button>
         </header>
 
-      <main className="flex-1 py-8 px-4 flex flex-col justify-center items-center">
-        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-6 sm:p-10 shadow-2xl animate-in fade-in zoom-in-95 duration-1000">
-            <div className={`font-body leading-loose text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
+      <main className="flex-1 py-10 px-4 flex flex-col items-center justify-start overflow-y-auto">
+        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-1000">
+            <div className={`font-body leading-relaxed text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
                 {praise.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
                   return (
-                    <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-black text-primary dark:text-blue-400' : 'text-foreground/90'}`}>
+                    <p key={pIndex} className={`whitespace-pre-wrap mb-8 last:mb-0 ${isChorus ? 'font-black text-primary dark:text-blue-400' : 'text-foreground/90'}`}>
                       {paragraph}
                     </p>
                   );
                 })}
             </div>
         </div>
+        <div className="h-32 w-full" />
       </main>
 
-      <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4 pb-8">
-           <div className="flex items-center justify-center gap-2 bg-background/60 backdrop-blur-xl border border-white/50 rounded-full shadow-2xl p-2 animate-in slide-in-from-bottom-4 duration-1000">
-            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-10 w-10 bg-white/50">
+      <footer className="fixed bottom-8 left-0 w-full z-30 flex items-center justify-center px-4 pointer-events-none">
+           <div className="flex items-center justify-center gap-3 bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full shadow-2xl p-2.5 animate-in slide-in-from-bottom-8 duration-1000 pointer-events-auto">
+            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-11 w-11 bg-white/50 dark:bg-white/5">
               <ZoomOut className="h-5 w-5" />
             </Button>
+            <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
             <PraiseAdminActions praise={praise} onUpdate={handleUpdate} onDelete={handleDelete} />
-            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700 bg-white/50">
+            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-11 w-11 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5">
               <Share2 className="h-5 w-5" />
             </Button>
-            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10 bg-white/50">
+            <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
+            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-11 w-11 bg-white/50 dark:bg-white/5">
               <ZoomIn className="h-5 w-5" />
             </Button>
          </div>

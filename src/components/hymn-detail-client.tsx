@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { Hymn } from '@/lib/hymns';
@@ -27,22 +26,20 @@ const fontSizes = [
 function HymnDetailSkeleton() {
   return (
     <div className="flex flex-col min-h-screen bg-background">
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-44 pb-8 px-4 border-b h-48">
-        <Skeleton className="h-12 w-12 rounded-full" />
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-24 pb-6 px-4 border-b">
+        <Skeleton className="h-10 w-10 rounded-full" />
         <div className="flex-1 px-4 text-center">
-            <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
+            <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
             <div className="flex items-center justify-center gap-2 mt-2">
-                <Skeleton className="h-6 w-24 rounded-full" />
-                <Skeleton className="h-6 w-24 rounded-full" />
+                <Skeleton className="h-4 w-20 rounded-full" />
             </div>
         </div>
-        <Skeleton className="h-12 w-12 rounded-full" />
+        <Skeleton className="h-10 w-10 rounded-full" />
       </header>
       <main className="flex-1 py-8 container max-w-2xl px-4">
-        <div className="space-y-8 text-center">
-          <Skeleton className="h-6 w-full" />
-          <Skeleton className="h-6 w-5/6 mx-auto" />
-          <Skeleton className="h-6 w-4/6 mx-auto mb-8" />
+        <div className="space-y-6">
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6 mx-auto" />
           <Skeleton className="h-24 w-full rounded-lg" />
         </div>
       </main>
@@ -114,8 +111,8 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
         <div className="absolute bottom-0 left-0 w-[120%] h-[120%] bg-[radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.05)_0%,transparent_60%)] animate-aura" style={{ animationDuration: '20s' }} />
       </div>
 
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-44 pb-8 px-4 border-b h-48">
-        <Button variant="ghost" size="icon" asChild className="h-12 w-12">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-24 pb-6 px-4 border-b">
+        <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-full">
           <Link href="/hymns">
             <ChevronLeft className="h-7 w-7" />
             <span className="sr-only">Volver</span>
@@ -126,49 +123,52 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
             <h1 className="font-headline text-lg font-bold text-primary truncate text-center w-full">
               {hymn.title}
             </h1>
-            <div className="flex items-center justify-center gap-2 mt-2">
-                <p className="text-[10px] sm:text-xs font-semibold text-muted-foreground px-2 py-0.5 bg-white/50 backdrop-blur-sm rounded-full border">
+            <div className="flex items-center justify-center gap-2 mt-1">
+                <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest px-2 py-0.5 bg-slate-100 dark:bg-white/5 rounded-full border border-slate-200/50">
                   Himno Nº {hymn.number}
                 </p>
                 <EditToneDialog song={hymn} onToneUpdated={handleToneUpdate}>
-                  <Button variant="outline" size="sm" className="h-auto px-2 py-0.5 text-[10px] sm:text-xs rounded-full bg-white/50 backdrop-blur-sm">
+                  <button className="text-[10px] font-bold text-primary px-2 py-0.5 rounded-full border border-primary/20 bg-primary/5 hover:bg-primary/10 transition-colors">
                     {hymn.tone || 'Tonalidad'}
-                  </Button>
+                  </button>
                 </EditToneDialog>
             </div>
         </div>
 
-        <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number, 'hymn')} disabled={!isFavoritesLoaded} className="h-12 w-12">
+        <Button variant="ghost" size="icon" onClick={() => toggleFavorite(hymn.number, 'hymn')} disabled={!isFavoritesLoaded} className="h-12 w-12 rounded-full">
           <Star className={`h-7 w-7 transition-all duration-300 transform-gpu ${isFav ? 'fill-yellow-400 text-yellow-400 scale-125' : 'text-foreground/70'}`} />
           <span className="sr-only">Marcar como favorito</span>
         </Button>
       </header>
 
-      <main className="flex-1 py-8 px-4 flex flex-col justify-center items-center">
-        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-6 sm:p-10 shadow-2xl animate-in fade-in zoom-in-95 duration-1000">
-          <div className={`font-body leading-loose text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
+      <main className="flex-1 py-10 px-4 flex flex-col items-center justify-start overflow-y-auto">
+        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          <div className={`font-body leading-relaxed text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
             {hymn.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
               const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
               return (
-                <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-black text-primary dark:text-blue-400' : 'text-foreground/90'}`}>
+                <p key={pIndex} className={`whitespace-pre-wrap mb-8 last:mb-0 ${isChorus ? 'font-black text-primary dark:text-blue-400' : 'text-foreground/90'}`}>
                   {paragraph}
                 </p>
               );
             })}
           </div>
         </div>
+        <div className="h-32 w-full" /> {/* Spacer for footer */}
       </main>
       
-      <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4 pb-8">
-         <div className="flex items-center justify-center gap-2 bg-background/60 backdrop-blur-xl border border-white/50 rounded-full shadow-2xl p-2 animate-in slide-in-from-bottom-4 duration-1000">
-            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-10 w-10 bg-white/50">
+      <footer className="fixed bottom-8 left-0 w-full z-30 flex items-center justify-center px-4 pointer-events-none">
+         <div className="flex items-center justify-center gap-3 bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full shadow-2xl p-2.5 animate-in slide-in-from-bottom-8 duration-1000 pointer-events-auto">
+            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-11 w-11 bg-white/50 dark:bg-white/5">
               <ZoomOut className="h-5 w-5" />
             </Button>
+            <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
             <HymnAdminActions hymn={hymn} onDelete={handleDelete} onUpdate={handleUpdate} />
-            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700 bg-white/50">
+            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-11 w-11 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5">
               <Share2 className="h-5 w-5" />
             </Button>
-            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10 bg-white/50">
+            <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
+            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-11 w-11 bg-white/50 dark:bg-white/5">
               <ZoomIn className="h-5 w-5" />
             </Button>
          </div>

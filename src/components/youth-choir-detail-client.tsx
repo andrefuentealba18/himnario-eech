@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { YouthChoir } from '@/lib/youth-choirs';
@@ -42,15 +41,15 @@ const groupLogos: Record<string, string> = {
 function YouthChoirDetailSkeleton() {
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-44 pb-8 px-4 border-b h-48">
-                <Skeleton className="h-12 w-12 rounded-full" />
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-24 pb-6 px-4 border-b">
+                <Skeleton className="h-10 w-10 rounded-full" />
                 <div className="flex-1 px-4 text-center">
-                    <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
+                    <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
                 </div>
-                <div className="w-12 h-12" />
+                <div className="w-10 h-10" />
             </header>
             <main className="flex-1 py-8 container max-w-2xl px-4">
-                <div className="space-y-8 text-center">
+                <div className="space-y-6">
                     <Skeleton className="h-24 w-full rounded-lg" />
                 </div>
             </main>
@@ -130,8 +129,8 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)] animate-aura" />
       </div>
       
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-44 pb-8 px-4 border-b h-48">
-        <Button variant="ghost" size="icon" asChild className="h-12 w-12">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-24 pb-6 px-4 border-b">
+        <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-full">
           <Link href={backHref}>
             <ChevronLeft className="h-7 w-7" />
             <span className="sr-only">Volver</span>
@@ -142,29 +141,29 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
             <h1 className="font-headline text-lg font-bold text-primary truncate text-center w-full">
               {youthChoir.title}
             </h1>
-            <div className="flex items-center justify-center gap-2 mt-2">
+            <div className="flex items-center justify-center gap-2 mt-1">
                 <EditToneDialog song={youthChoir} onToneUpdated={handleToneUpdate}>
-                <Button variant="outline" size="sm" className="h-auto px-3 py-1 text-xs rounded-full bg-white/50 backdrop-blur-sm">
+                <button className="text-[10px] font-bold text-primary px-2 py-0.5 rounded-full border border-primary/20 bg-primary/5">
                     {youthChoir.tone || 'Tonalidad'}
-                </Button>
+                </button>
                 </EditToneDialog>
                 {youthChoir.speed && (
-                    <Badge variant="secondary" className="text-xs capitalize rounded-full px-3 py-1 bg-white/50 backdrop-blur-sm">
+                    <Badge variant="secondary" className="text-[10px] font-bold capitalize rounded-full px-2 py-0.5 bg-slate-100 dark:bg-white/5 border border-slate-200/50">
                       {youthChoir.speed === 'Rapido' ? 'Avivamiento' : 'Meditación'}
                     </Badge>
                 )}
             </div>
         </div>
         
-        <Button variant="ghost" size="icon" onClick={() => toggleFavorite(youthChoir.id, 'youth-choir')} disabled={!isFavoritesLoaded} className="h-12 w-12">
+        <Button variant="ghost" size="icon" onClick={() => toggleFavorite(youthChoir.id, 'youth-choir')} disabled={!isFavoritesLoaded} className="h-12 w-12 rounded-full">
           <Star className={`h-7 w-7 transition-all duration-300 transform-gpu ${isFav ? 'fill-yellow-400 text-yellow-400 scale-125' : 'text-foreground/70'}`} />
           <span className="sr-only">Marcar como favorito</span>
         </Button>
       </header>
 
-      <main className="flex-1 py-8 px-4 flex flex-col justify-center items-center relative">
+      <main className="flex-1 py-10 px-4 flex flex-col items-center justify-start overflow-y-auto relative">
         {groupLogo && (
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 opacity-[0.15] dark:opacity-[0.1] scale-110 sm:scale-100">
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none -z-10 opacity-[0.12] dark:opacity-[0.08] scale-110 sm:scale-100">
             <Image 
               src={groupLogo} 
               alt="Watermark" 
@@ -176,30 +175,33 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
           </div>
         )}
 
-        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-6 sm:p-10 shadow-2xl animate-in fade-in zoom-in-95 duration-1000">
-          <div className={`font-body leading-loose text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
+        <div className="w-full max-w-3xl bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 rounded-3xl p-8 sm:p-12 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          <div className={`font-body leading-relaxed text-center transition-all duration-200 ease-in-out ${fontSizes[fontSizeIndex]}`}>
             {youthChoir.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
               const isChorus = paragraph.trim().toUpperCase().startsWith('CORO');
               return (
-                <p key={pIndex} className={`whitespace-pre-wrap mb-6 ${isChorus ? 'font-black text-primary dark:text-blue-400' : 'text-foreground/90'}`}>
+                <p key={pIndex} className={`whitespace-pre-wrap mb-8 last:mb-0 ${isChorus ? 'font-black text-primary dark:text-blue-400' : 'text-foreground/90'}`}>
                   {paragraph}
                 </p>
               );
             })}
           </div>
         </div>
+        <div className="h-32 w-full" />
       </main>
 
-      <footer className="sticky bottom-0 z-20 flex items-center justify-center gap-4 bg-transparent p-4 pb-8">
-           <div className="flex items-center justify-center gap-2 bg-background/60 backdrop-blur-xl border border-white/50 rounded-full shadow-2xl p-2 animate-in slide-in-from-bottom-4 duration-1000">
-            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-10 w-10 bg-white/50">
+      <footer className="fixed bottom-8 left-0 w-full z-30 flex items-center justify-center px-4 pointer-events-none">
+           <div className="flex items-center justify-center gap-3 bg-background/80 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-full shadow-2xl p-2.5 animate-in slide-in-from-bottom-8 duration-1000 pointer-events-auto">
+            <Button variant="outline" size="icon" onClick={decreaseFontSize} disabled={!isFontLoaded || fontSizeIndex === 0} className="rounded-full h-11 w-11 bg-white/50 dark:bg-white/5">
               <ZoomOut className="h-5 w-5" />
             </Button>
+            <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
             <YouthChoirAdminActions youthChoir={youthChoir} onDelete={handleDelete} onUpdate={handleUpdate} />
-            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-10 w-10 text-green-600 hover:text-green-700 bg-white/50">
+            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-11 w-11 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5">
               <Share2 className="h-5 w-5" />
             </Button>
-            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-10 w-10 bg-white/50">
+            <div className="w-px h-6 bg-slate-200 dark:bg-white/10" />
+            <Button variant="outline" size="icon" onClick={increaseFontSize} disabled={!isFontLoaded || fontSizeIndex === fontSizes.length - 1} className="rounded-full h-11 w-11 bg-white/50 dark:bg-white/5">
               <ZoomIn className="h-5 w-5" />
             </Button>
          </div>
