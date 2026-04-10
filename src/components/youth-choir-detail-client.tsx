@@ -42,7 +42,7 @@ const groupLogos: Record<string, string> = {
 function YouthChoirDetailSkeleton() {
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-32 pb-8 px-4 border-b h-48">
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-44 pb-8 px-4 border-b h-48">
                 <Skeleton className="h-12 w-12 rounded-full" />
                 <div className="flex-1 px-4 text-center">
                     <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
@@ -130,7 +130,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,transparent_70%)] animate-aura" />
       </div>
       
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-32 pb-8 px-4 border-b h-48">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-44 pb-8 px-4 border-b h-48">
         <Button variant="ghost" size="icon" asChild className="h-12 w-12">
           <Link href={backHref}>
             <ChevronLeft className="h-7 w-7" />

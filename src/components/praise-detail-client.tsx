@@ -36,7 +36,7 @@ const fontSizes = [
 function PraiseDetailSkeleton() {
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-32 pb-8 px-4 border-b h-48">
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-44 pb-8 px-4 border-b h-48">
                 <Skeleton className="h-12 w-12 rounded-full" />
                 <div className="flex-1 px-4 text-center">
                     <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
@@ -125,7 +125,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
           <div className="absolute bottom-1/4 right-1/4 w-[150%] h-[150%] bg-gradient-to-bl from-amber-50/30 via-sky-50/20 to-purple-50/30 blur-[120px] rounded-full animate-aura" style={{ animationDirection: 'reverse', animationDuration: '30s' }} />
         </div>
 
-        <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-32 pb-8 px-4 border-b h-48">
+        <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-44 pb-8 px-4 border-b h-48">
             <Button variant="ghost" size="icon" asChild className="h-12 w-12">
             <Link href={backHref}>
                 <ChevronLeft className="h-7 w-7" />

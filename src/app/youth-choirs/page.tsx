@@ -124,8 +124,8 @@ export default function YouthChoirsIndexPage() {
         </div>
 
         <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
-          <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm pt-32 pb-8 px-4 border-b flex items-center justify-center relative">
-              <div className="absolute left-2 top-1/2 -translate-y-1/2 mt-16">
+          <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm pt-40 pb-8 px-4 border-b flex items-center justify-center relative">
+              <div className="absolute left-2 top-1/2 -translate-y-1/2 mt-20">
                   {selectedGroup ? (
                     <Button variant="ghost" size="icon" onClick={() => setSelectedGroup(null)} className="rounded-full h-12 w-12">
                       <ChevronLeft className="h-7 w-7" />
@@ -140,7 +140,7 @@ export default function YouthChoirsIndexPage() {
                     </Button>
                   )}
               </div>
-              <div className="flex items-center gap-3 px-10 mt-16">
+              <div className="flex items-center gap-3 px-10 mt-20">
                 <h1 className="text-xl font-bold font-headline text-foreground truncate">
                   {selectedGroup || "Agrupaciones"}
                 </h1>
@@ -151,7 +151,7 @@ export default function YouthChoirsIndexPage() {
                 )}
                 {!selectedGroup && <Library className="h-6 w-6 text-primary" />}
               </div>
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 mt-16">
+              <div className="absolute right-2 top-1/2 -translate-y-1/2 mt-20">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="outline" size="sm" className="rounded-full h-10 px-4">

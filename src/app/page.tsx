@@ -74,8 +74,8 @@ export default function HomePage() {
 
       <div className="relative z-10 flex flex-col flex-1">
         
-        {/* Barra Superior - Más compacta */}
-        <div className="flex items-center justify-between px-6 py-4 animate-in fade-in duration-1000">
+        {/* Barra Superior - Bajada para mejor ergonomía */}
+        <div className="flex items-center justify-between px-6 pt-14 pb-4 animate-in fade-in duration-1000">
           <div className="flex items-center gap-2">
             {isFullySynced ? (
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-md border border-green-500/20 shadow-sm transition-all duration-500 hover:scale-105">
@@ -92,9 +92,9 @@ export default function HomePage() {
           <AppearanceDialog />
         </div>
 
-        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-24 pb-10 space-y-10">
+        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-28 pb-10 space-y-10">
           
-          {/* HEADER - Bajado significativamente */}
+          {/* HEADER - Ajustado verticalmente */}
           <header className="w-full text-center space-y-8 animate-in fade-in slide-in-from-top-4 duration-1000">
             <div className="relative inline-flex items-center justify-center group">
               <div className="absolute inset-0 bg-primary/20 blur-[40px] rounded-full scale-150 opacity-50" />
@@ -132,7 +132,7 @@ export default function HomePage() {
             <GlobalSearch />
           </div>
 
-          {/* Navegación Principal - Compacta pero bien posicionada */}
+          {/* Navegación Principal */}
           <div className="grid grid-cols-2 gap-4 w-full max-w-md">
             {navigationItems.map((item) => (
               <div key={item.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: item.delay }}>
@@ -153,7 +153,7 @@ export default function HomePage() {
             ))}
           </div>
           
-          {/* Footer - Con espacio al final */}
+          {/* Footer */}
           <footer className="w-full text-center space-y-8 animate-in fade-in duration-1000 delay-500 mt-12 pt-4">
             <div className="flex flex-col items-center gap-6">
               <div className="flex items-center justify-center gap-6">

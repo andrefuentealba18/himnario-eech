@@ -36,7 +36,7 @@ const fontSizes = [
 function ChoirDetailSkeleton() {
     return (
         <div className="flex flex-col min-h-screen bg-background">
-            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-32 pb-8 px-4 border-b h-48">
+            <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-44 pb-8 px-4 border-b h-48">
                 <Skeleton className="h-12 w-12 rounded-full" />
                 <div className="flex-1 px-4 text-center">
                     <Skeleton className="h-8 w-3/4 mx-auto mb-2" />
@@ -123,7 +123,7 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
         <div className="absolute -top-[20%] -left-[20%] w-[140%] h-[140%] bg-[conic-gradient(from_0deg_at_50%_50%,rgba(225,232,255,0.2)_0deg,transparent_120deg,rgba(255,225,232,0.15)_240deg,transparent_360deg)] animate-aura" />
       </div>
 
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-32 pb-8 px-4 border-b h-48">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-md pt-44 pb-8 px-4 border-b h-48">
         <Button variant="ghost" size="icon" asChild className="h-12 w-12">
           <Link href={backHref}>
             <ChevronLeft className="h-7 w-7" />
