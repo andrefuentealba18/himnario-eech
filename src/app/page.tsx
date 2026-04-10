@@ -13,6 +13,7 @@ import { useHymns } from '@/context/hymns-context';
 import { usePraises } from '@/context/praises-context';
 import { useChoirs } from '@/context/choirs-context';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
+import { useSpecialOccasions } from '@/context/special-occasions-context';
 import { useAppearance } from '@/hooks/use-appearance';
 
 const navigationItems = [
@@ -55,9 +56,10 @@ export default function HomePage() {
   const { isLoaded: praisesLoaded } = usePraises();
   const { isLoaded: choirsLoaded } = useChoirs();
   const { isLoaded: youthChoirsLoaded } = useYouthChoirs();
+  const { isLoaded: specialOccasionsLoaded } = useSpecialOccasions();
   const { isLoaded: appearanceLoaded } = useAppearance();
 
-  const isFullySynced = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded && appearanceLoaded;
+  const isFullySynced = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded && specialOccasionsLoaded && appearanceLoaded;
 
   const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
 
@@ -88,7 +90,7 @@ export default function HomePage() {
           <AppearanceDialog />
         </div>
 
-        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-6 pb-6 space-y-8">
+        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-2 pb-6 space-y-8">
           
           <header className="w-full text-center space-y-6 animate-in fade-in slide-in-from-top-4 duration-1000">
             <div className="relative inline-flex items-center justify-center group">

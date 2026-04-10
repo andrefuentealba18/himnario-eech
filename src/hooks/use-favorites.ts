@@ -22,8 +22,11 @@ export function useFavorites() {
       } else {
         const legacy = localStorage.getItem(LEGACY_FAVORITES_KEY);
         if (legacy) {
-          const legacyIds: number[] = JSON.parse(legacy);
-          const migrated: FavoriteItem[] = legacyIds.map(id => ({ id, type: 'hymn' }));
+          const legacyIds: any[] = JSON.parse(legacy);
+          const migrated: FavoriteItem[] = legacyIds.map(id => ({ 
+            id: typeof id === 'object' ? id.id : id, 
+            type: typeof id === 'object' ? id.type : 'hymn' 
+          }));
           setFavorites(migrated);
           localStorage.setItem(FAVORITES_KEY, JSON.stringify(migrated));
         }
