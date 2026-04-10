@@ -49,7 +49,7 @@
     --primary-glow: hsla(217, 91%, 60%, 0.5);
   }
 
-  /* Temas de Colores Increíbles */
+  /* Atmósferas Increíbles */
   .theme-purple { 
     --primary: 262.1 83.3% 57.8%; 
     --primary-glow: hsla(262, 83%, 58%, 0.4);
@@ -74,10 +74,11 @@
   }
   body {
     @apply bg-background text-foreground selection:bg-primary/20 selection:text-primary antialiased;
+    transition: background-color 0.5s ease, color 0.5s ease;
   }
 }
 
-/* Diseños de Fondo Especiales */
+/* Diseños de Fondo Dinámicos */
 .design-grid {
   background-image: radial-gradient(circle at 2px 2px, hsl(var(--primary) / 0.1) 1px, transparent 0);
   background-size: 24px 24px;
@@ -87,7 +88,7 @@
   background-image: none !important;
 }
 
-/* Animaciones */
+/* Animaciones Fluidas */
 @keyframes float {
   0%, 100% { transform: translateY(0px) rotate(0deg); }
   50% { transform: translateY(-15px) rotate(1deg); }
@@ -109,10 +110,12 @@
 
 .text-glow {
   text-shadow: 0 0 25px var(--primary-glow);
+  transition: text-shadow 0.5s ease;
 }
 
 .card-glow {
   box-shadow: 0 10px 40px -10px var(--primary-glow);
+  transition: box-shadow 0.5s ease;
 }
 
 @keyframes aura-slow {

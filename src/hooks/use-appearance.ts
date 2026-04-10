@@ -64,13 +64,17 @@ export function useAppearance() {
     setDisplayMode(prev => prev === 'light' ? 'dark' : 'light');
   }, []);
 
+  const setAtmosphere = useCallback((theme: ColorTheme, bg: BackgroundDesign) => {
+    setColorTheme(theme);
+    setDesign(bg);
+  }, []);
+
   return { 
     colorTheme, 
-    setColorTheme, 
     displayMode, 
     setDisplayMode, 
     design,
-    setDesign,
+    setAtmosphere,
     toggleDisplayMode,
     isLoaded 
   };
