@@ -16,7 +16,7 @@ export default function HymnsIndexPage() {
     // La animación dura 2.2 segundos para un efecto más solemne y fluido
     const timer = setTimeout(() => {
       setShowIntro(false);
-    }, 2200);
+    }, 2500);
     return () => clearTimeout(timer);
   }, []);
 
@@ -47,11 +47,20 @@ export default function HymnsIndexPage() {
               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 w-0 h-[2px] bg-gradient-to-r from-transparent via-primary/40 to-transparent animate-in slide-in-from-left-full duration-1000 fill-mode-forwards" style={{ width: '80%', animationDelay: '0.5s' }} />
             </div>
 
-            <div className="mt-10 flex flex-col items-center gap-2 opacity-0 animate-in fade-in duration-1000 fill-mode-forwards" style={{ animationDelay: '1s' }}>
-              <p className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-400">
-                Cantoral Sagrado
-              </p>
-              <div className="h-1 w-1 rounded-full bg-primary/40 animate-bounce" />
+            <div className="mt-10 flex flex-col items-center gap-6">
+              <div className="flex flex-col items-center gap-2 opacity-0 animate-in fade-in duration-1000 fill-mode-forwards" style={{ animationDelay: '1s' }}>
+                <p className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-400">
+                  Cantoral Sagrado
+                </p>
+                <div className="h-1 w-1 rounded-full bg-primary/40 animate-bounce" />
+              </div>
+
+              {/* Texto Institucional Solicitado */}
+              <div className="opacity-0 animate-in fade-in slide-in-from-bottom-2 duration-1000 fill-mode-forwards" style={{ animationDelay: '1.4s' }}>
+                <p className="text-[9px] font-bold uppercase tracking-[0.5em] text-primary/50 text-center">
+                  Ejército Evangélico de Chile
+                </p>
+              </div>
             </div>
           </div>
         </div>
