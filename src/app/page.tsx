@@ -4,18 +4,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { Music, Book, Mic, Library, WifiOff, CheckCircle2, Sparkles } from 'lucide-react';
+import { Music, Book, Mic, Library, WifiOff } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { InstallPWAButton } from '@/components/install-pwa-button';
 import { GlobalSearch } from '@/components/global-search';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { FeaturedHymn } from '@/components/featured-hymn';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useHymns } from '@/context/hymns-context';
 import { usePraises } from '@/context/praises-context';
 import { useChoirs } from '@/context/choirs-context';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
-import { Badge } from '@/components/ui/badge';
 
 const navigationItems = [
   {
@@ -130,10 +128,9 @@ export default function HomePage() {
             </div>
           </header>
 
-          {/* Buscador y Sugerencia */}
-          <div className="w-full space-y-8 flex flex-col items-center">
+          {/* Buscador */}
+          <div className="w-full mb-12 flex flex-col items-center">
             <GlobalSearch />
-            <FeaturedHymn />
           </div>
 
           {/* Navegación Principal en Cuadrícula Moderna */}
