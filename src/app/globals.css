@@ -58,32 +58,38 @@
   }
 }
 
-/* Animaciones Personalizadas */
+/* Animaciones Avanzadas e Innovadoras */
 @keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-15px) rotate(1deg); }
 }
 
 .animate-float {
-  animation: float 6s ease-in-out infinite;
+  animation: float 8s ease-in-out infinite;
 }
 
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.15; transform: scale(1); }
-  50% { opacity: 0.3; transform: scale(1.1); }
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.2; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.05); }
 }
 
-.animate-pulse-slow {
-  animation: pulse-slow 8s ease-in-out infinite;
+.animate-pulse-soft {
+  animation: pulse-soft 10s ease-in-out infinite;
 }
 
-@keyframes aura-flow {
-  0% { transform: translate(-5%, -5%) rotate(0deg); }
-  50% { transform: translate(5%, 5%) rotate(180deg); }
-  100% { transform: translate(-5%, -5%) rotate(360deg); }
+@keyframes aura-rotate {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
-.animate-aura {
-  animation: aura-flow 30s linear infinite;
+.animate-aura-slow {
+  animation: aura-rotate 40s linear infinite;
+}
+
+.glass-morphism {
+  @apply bg-white/40 dark:bg-black/20 backdrop-blur-xl border border-white/50 dark:border-white/10 shadow-2xl;
+}
+
+.text-glow {
+  text-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
 }
