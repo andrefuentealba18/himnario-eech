@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -91,6 +92,9 @@ export default function HomePage() {
               </div>
             )}
           </div>
+          <div className="flex items-center gap-2">
+            <AppearanceDialog />
+          </div>
         </div>
 
         <main className="container max-w-2xl mx-auto flex-1 flex flex-col items-center justify-center p-6 pb-20">
@@ -159,8 +163,6 @@ export default function HomePage() {
             <div className="flex flex-col items-center gap-8">
               <div className="flex items-center justify-center gap-6">
                 <InstallPWAButton />
-                <div className="w-px h-6 bg-slate-300 dark:bg-white/10" />
-                <AppearanceDialog />
                 <div className="w-px h-6 bg-slate-300 dark:bg-white/10" />
                 <SettingsDialog />
               </div>
