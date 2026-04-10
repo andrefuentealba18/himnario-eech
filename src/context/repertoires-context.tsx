@@ -1,8 +1,9 @@
+
 "use client";
 
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { Repertoire } from '@/lib/repertoires';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -43,45 +44,44 @@ export function RepertoiresProvider({ children }: { children: ReactNode }) {
   const addRepertoire = useCallback(async (newRepertoireData: Omit<Repertoire, 'id' | 'createdAt'>): Promise<{ success: boolean; id?: string }> => {
     if (!firestore || !repertoiresCollectionRef) return { success: false };
     
-    try {
-        const docRef = await addDoc(repertoiresCollectionRef, {
-            ...newRepertoireData,
-            createdAt: serverTimestamp(),
-        });
-        toast({
-            title: 'Repertorio Guardado',
-            description: `El repertorio de "${newRepertoireData.name}" ha sido guardado.`,
-        });
-        router.push('/repertoire');
-        return { success: true, id: docRef.id };
-    } catch(e) {
+    const dataToSave = {
+        ...newRepertoireData,
+        createdAt: serverTimestamp(),
+    };
+
+    addDoc(repertoiresCollectionRef, dataToSave)
+      .catch((e) => {
         console.error("Error adding repertoire: ", e);
-        toast({
-            variant: 'destructive',
-            title: 'Error al guardar',
-            description: 'No se pudo guardar el repertorio.',
-        });
-        return { success: false };
-    }
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: repertoiresCollectionRef.path,
+          operation: 'create',
+          requestResourceData: dataToSave
+        }));
+      });
+
+    toast({
+        title: 'Repertorio Guardado',
+        description: `El repertorio de "${newRepertoireData.name}" ha sido guardado.`,
+    });
+    router.push('/repertoire');
+    return { success: true };
   }, [firestore, repertoiresCollectionRef, toast, router]);
 
   const deleteRepertoire = useCallback(async (repertoireId: string) => {
     if (!firestore) return;
-    try {
-        const docRef = doc(firestore, 'repertoires', repertoireId);
-        await deleteDoc(docRef);
-        toast({
-            title: 'Repertorio Eliminado',
-            description: 'El repertorio ha sido eliminado correctamente.',
-        });
-    } catch (e) {
+    const docRef = doc(firestore, 'repertoires', repertoireId);
+    deleteDoc(docRef)
+      .catch((e) => {
         console.error("Error deleting repertoire: ", e);
-        toast({
-            variant: 'destructive',
-            title: 'Error al eliminar',
-            description: 'No se pudo eliminar el repertorio.',
-        });
-    }
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'delete'
+        }));
+      });
+    toast({
+        title: 'Repertorio Eliminado',
+        description: 'El repertorio ha sido eliminado correctamente.',
+    });
   }, [firestore, toast]);
   
   const getRepertoireById = useCallback((id: string): Repertoire | undefined => {
@@ -100,4 +100,3 @@ export function useRepertoires() {
   }
   return context;
 }
-    

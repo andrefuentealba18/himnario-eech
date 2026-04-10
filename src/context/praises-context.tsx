@@ -137,13 +137,10 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     
     if (addedCount > 0) {
       batch.commit()
-        .then(() => {
-          toast({ title: 'Lote Enviado', description: `Se enviaron ${addedCount} alabanzas a revisión.` });
-        })
         .catch((error) => {
           console.error("Error bulk adding praises:", error);
-          toast({ variant: 'destructive', title: 'Error', description: 'No se pudieron guardar las alabanzas.' });
         });
+      toast({ title: 'Lote Enviado', description: `Se enviaron ${addedCount} alabanzas a revisión.` });
     }
   }, [firestore, toast]);
 
@@ -151,35 +148,38 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     if (!firestore) return;
     const docRef = doc(firestore, 'praises', praiseId);
     updateDoc(docRef, { status: 'approved' })
-      .then(() => toast({ title: 'Alabanza Aprobada' }))
       .catch((error) => {
         console.error("Error approving praise:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'update' }));
       });
+    toast({ title: 'Alabanza Aprobada' });
   }, [firestore, toast]);
 
   const deletePraise = useCallback((praiseId: string) => {
     if (!firestore) return;
     const docRef = doc(firestore, 'praises', praiseId);
     deleteDoc(docRef)
-      .then(() => toast({ title: 'Alabanza eliminada' }))
       .catch((error) => {
         console.error("Error deleting praise:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));
       });
+    toast({ title: 'Alabanza eliminada' });
   }, [firestore, toast]);
   
   const updatePraise = useCallback(async (praiseId: string, newPraiseData: Omit<Praise, 'id'>): Promise<{ success: boolean; error?: string }> => {
     if (!firestore) return { success: false, error: 'firestore_unavailable' };
     
     const docRef = doc(firestore, 'praises', praiseId);
-    try {
-      await setDoc(docRef, removeUndefined(newPraiseData), { merge: true });
-      return { success: true };
-    } catch (error) {
-      console.error("Error updating praise:", error);
-      return { success: false, error: 'update_failed' };
-    }
+    setDoc(docRef, removeUndefined(newPraiseData), { merge: true })
+      .catch((error) => {
+        console.error("Error updating praise:", error);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: newPraiseData
+        }));
+      });
+    return { success: true };
   }, [firestore]);
 
   const getPraiseById = useCallback((id: string): Praise | undefined => {

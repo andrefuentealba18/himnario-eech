@@ -1,7 +1,8 @@
+
 "use client";
 
 import { useMemo } from 'react';
-import { useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, doc, updateDoc } from 'firebase/firestore';
 import type { SongRequest } from '@/lib/song-requests';
 import { usePraises } from '@/context/praises-context';
@@ -66,7 +67,15 @@ export function SongRequestsList() {
 
     if (result.success) {
       const requestRef = doc(firestore, 'songRequests', request.id);
-      await updateDoc(requestRef, { status: 'approved' });
+      updateDoc(requestRef, { status: 'approved' })
+        .catch((error) => {
+          console.error("Error approving request doc:", error);
+          errorEmitter.emit('permission-error', new FirestorePermissionError({
+            path: requestRef.path,
+            operation: 'update',
+            requestResourceData: { status: 'approved' }
+          }));
+        });
       toast({ title: 'Solicitud Aprobada', description: `"${request.title}" ha sido añadida.` });
     } else {
       toast({ variant: 'destructive', title: 'Error al Aprobar', description: 'La canción ya existe en esa categoría.' });
@@ -76,7 +85,15 @@ export function SongRequestsList() {
   const handleReject = async (request: SongRequest) => {
     if (!firestore) return;
     const requestRef = doc(firestore, 'songRequests', request.id);
-    await updateDoc(requestRef, { status: 'rejected' });
+    updateDoc(requestRef, { status: 'rejected' })
+      .catch((error) => {
+        console.error("Error rejecting request doc:", error);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: requestRef.path,
+          operation: 'update',
+          requestResourceData: { status: 'rejected' }
+        }));
+      });
     toast({ title: 'Solicitud Rechazada' });
   };
 

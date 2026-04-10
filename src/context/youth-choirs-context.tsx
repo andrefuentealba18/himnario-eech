@@ -137,13 +137,10 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     
     if (addedCount > 0) {
       batch.commit()
-        .then(() => {
-          toast({ title: 'Enviadas a Revisión', description: `Se han enviado ${addedCount} alabanzas para revisión.` });
-        })
         .catch((error) => {
           console.error("Error bulk adding youth choirs:", error);
-          toast({ variant: 'destructive', title: 'Error al Enviar', description: 'No se pudieron guardar las alabanzas.' });
         });
+      toast({ title: 'Enviadas a Revisión', description: `Se han enviado ${addedCount} alabanzas para revisión.` });
     }
   }, [firestore, toast]);
 
@@ -151,35 +148,38 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     if (!firestore) return;
     const docRef = doc(firestore, 'youth-choirs', youthChoirId);
     updateDoc(docRef, { status: 'approved' })
-      .then(() => toast({ title: 'Alabanza Aprobada' }))
       .catch((error) => {
         console.error("Error approving youth choir:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'update' }));
       });
+    toast({ title: 'Alabanza Aprobada' });
   }, [firestore, toast]);
 
   const deleteYouthChoir = useCallback((youthChoirId: string) => {
     if (!firestore) return;
     const docRef = doc(firestore, 'youth-choirs', youthChoirId);
     deleteDoc(docRef)
-      .then(() => toast({ title: 'Alabanza eliminada' }))
       .catch((error) => {
         console.error("Error deleting youth choir:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' }));
       });
+    toast({ title: 'Alabanza eliminada' });
   }, [firestore, toast]);
   
   const updateYouthChoir = useCallback(async (youthChoirId: string, newYouthChoirData: Omit<YouthChoir, 'id'>): Promise<{ success: boolean; error?: string }> => {
     if (!firestore) return { success: false, error: 'firestore_unavailable' };
     
     const docRef = doc(firestore, 'youth-choirs', youthChoirId);
-    try {
-      await setDoc(docRef, removeUndefined(newYouthChoirData), { merge: true });
-      return { success: true };
-    } catch (error) {
-      console.error("Error updating youth choir:", error);
-      return { success: false, error: 'update_failed' };
-    }
+    setDoc(docRef, removeUndefined(newYouthChoirData), { merge: true })
+      .catch((error) => {
+        console.error("Error updating youth choir:", error);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: newYouthChoirData
+        }));
+      });
+    return { success: true };
   }, [firestore]);
 
   const getYouthChoirById = useCallback((id: string): YouthChoir | undefined => {

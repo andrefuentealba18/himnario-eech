@@ -1,10 +1,11 @@
+
 "use client";
 
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-import { useFirestore } from '@/firebase';
+import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 import { Button } from '@/components/ui/button';
@@ -65,7 +66,7 @@ export function AddSongDialog() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof songRequestSchema>) {
+  function onSubmit(values: z.infer<typeof songRequestSchema>) {
     if (!firestore) {
       toast({
         variant: "destructive",
@@ -75,31 +76,32 @@ export function AddSongDialog() {
       return;
     }
 
-    try {
-      const requestsCollection = collection(firestore, 'songRequests');
-      await addDoc(requestsCollection, {
-        category: categoryMap[values.category],
-        submitterName: values.submitterName,
-        title: values.title,
-        lyrics: values.lyrics,
-        status: 'pending',
-        createdAt: serverTimestamp(),
+    const requestsCollection = collection(firestore, 'songRequests');
+    const dataToSave = {
+      category: categoryMap[values.category],
+      submitterName: values.submitterName,
+      title: values.title,
+      lyrics: values.lyrics,
+      status: 'pending',
+      createdAt: serverTimestamp(),
+    };
+
+    addDoc(requestsCollection, dataToSave)
+      .catch((error) => {
+        console.error("Error submitting song request: ", error);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: requestsCollection.path,
+          operation: 'create',
+          requestResourceData: dataToSave
+        }));
       });
 
-      toast({
-        title: 'Sugerencia Enviada',
-        description: 'Gracias por tu contribución. La canción será revisada por un administrador.',
-      });
-      form.reset();
-      setOpen(false);
-    } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Error',
-        description: 'No se pudo enviar tu sugerencia.',
-      });
-      console.error("Error submitting song request: ", error);
-    }
+    toast({
+      title: 'Sugerencia Enviada',
+      description: 'Gracias por tu contribución. La canción será revisada por un administrador.',
+    });
+    form.reset();
+    setOpen(false);
   }
 
   return (
@@ -189,5 +191,3 @@ export function AddSongDialog() {
     </Dialog>
   );
 }
-
-    
