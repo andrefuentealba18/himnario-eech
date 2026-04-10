@@ -132,7 +132,7 @@ export function InstallPWAButton() {
               <span className="text-[9px] font-black uppercase tracking-tighter">Software Protegido</span>
             </div>
             <p className="text-[8px] font-bold text-center leading-tight uppercase tracking-[0.1em] text-slate-500 max-w-[200px]">
-              PATENTADO POR PABLO FB, TODOS LOS DERECHOS RESERVADOS
+              PATENTADO POR PABLO FUENTEALBA 2026
             </p>
           </div>
         </div>

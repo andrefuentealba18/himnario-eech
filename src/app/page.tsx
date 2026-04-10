@@ -175,7 +175,7 @@ export default function HomePage() {
                 </p>
                 <div className="space-y-1 text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">
                   <p>Iglesia Ejército Evangélico de Chile</p>
-                  <p className="opacity-60">2026 Todos los derechos reservados</p>
+                  <p className="opacity-60">PATENTADO POR PABLO FUENTEALBA 2026</p>
                 </div>
               </div>
             </div>
