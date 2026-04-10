@@ -97,10 +97,10 @@ export default function HomePage() {
           </div>
         </div>
 
-        <main className="container max-w-2xl mx-auto flex-1 flex flex-col items-center justify-center p-6 pt-12 pb-24">
+        <main className="container max-w-2xl mx-auto flex-1 flex flex-col items-center justify-center p-6 pt-24 pb-32">
           
           {/* HEADER DE BIENVENIDA INNOVADOR */}
-          <header className="w-full text-center space-y-8 mb-16 animate-in fade-in slide-in-from-top-8 duration-1000">
+          <header className="w-full text-center space-y-8 mb-12 animate-in fade-in slide-in-from-top-8 duration-1000">
             <div className="relative inline-flex items-center justify-center group">
               <div className="absolute inset-0 bg-primary/30 blur-[60px] rounded-full scale-150 animate-pulse-soft opacity-50" />
               <div className="relative p-1 bg-gradient-to-tr from-primary via-primary/60 to-primary/40 rounded-full shadow-2xl animate-float group-hover:scale-105 transition-transform duration-700">
@@ -133,12 +133,12 @@ export default function HomePage() {
           </header>
 
           {/* Buscador */}
-          <div className="w-full mb-16 flex flex-col items-center">
+          <div className="w-full mb-12 flex flex-col items-center">
             <GlobalSearch />
           </div>
 
           {/* Navegación Principal con Estilo Dinámico (app-card) */}
-          <div className="grid grid-cols-2 gap-6 w-full max-w-lg mb-20">
+          <div className="grid grid-cols-2 gap-6 w-full max-w-lg mb-16">
             {navigationItems.map((item) => (
               <div key={item.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: item.delay }}>
                 <Link href={item.href} className="group block h-full">
@@ -159,7 +159,7 @@ export default function HomePage() {
           </div>
           
           {/* Footer Elegante */}
-          <footer className="w-full text-center space-y-12 animate-in fade-in duration-1000 delay-700">
+          <footer className="w-full text-center space-y-12 animate-in fade-in duration-1000 delay-700 mt-auto pt-8">
             <div className="flex flex-col items-center gap-10">
               <div className="flex items-center justify-center gap-8">
                 <InstallPWAButton />
