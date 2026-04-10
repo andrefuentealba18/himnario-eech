@@ -151,6 +151,17 @@
   animation: aura-slow 15s ease-in-out infinite;
 }
 
+@keyframes gradient-move {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-gradient-move {
+  background-size: 200% 200%;
+  animation: gradient-move 10s ease infinite;
+}
+
 /* Transiciones Cinematográficas */
 @keyframes title-reveal {
   0% { transform: translateY(20px) scale(0.9); opacity: 0; filter: blur(10px); }

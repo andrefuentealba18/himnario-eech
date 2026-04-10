@@ -15,7 +15,7 @@ export default function HymnsIndexPage() {
   const [showIntro, setShowIntro] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShowIntro(false), 2500);
+    const timer = setTimeout(() => setShowIntro(false), 2800);
     return () => clearTimeout(timer);
   }, []);
 
@@ -23,56 +23,59 @@ export default function HymnsIndexPage() {
 
   if (showIntro) {
     return (
-      <div className="fixed inset-0 z-[100] bg-white dark:bg-slate-950 flex flex-col items-center justify-center overflow-hidden transition-colors duration-700">
-        {/* EFECTOS DE FONDO CINEMÁTICOS */}
+      <div className="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
+        {/* FONDO CINEMÁTICO MULTICOLOR */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/5 rounded-full blur-[120px] animate-aura-slow" />
-          <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-primary/10 via-transparent to-primary/5 opacity-40" />
-          <div className="absolute inset-0 design-grid opacity-10" />
+          <div className="absolute top-[-10%] left-[-10%] w-[120%] h-[120%] bg-gradient-to-br from-blue-900 via-slate-950 to-indigo-900 animate-gradient-move opacity-80" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-blue-500/10 rounded-full blur-[140px] animate-aura-slow" />
+          <div className="absolute top-0 right-0 w-full h-full bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.15),transparent_50%)]" />
+          <div className="absolute inset-0 design-grid opacity-[0.07]" />
         </div>
         
-        {/* INSIGNIA ESQUINA SUPERIOR DERECHA */}
-        <div className="absolute top-12 right-8 w-14 h-14 animate-in fade-in zoom-in-95 slide-in-from-top-4 duration-1000 ease-out">
-          <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-150 animate-pulse" />
+        {/* INSIGNIA SUPERIOR */}
+        <div className="absolute top-16 right-10 w-16 h-16 animate-in fade-in zoom-in-95 slide-in-from-top-6 duration-1000 ease-out">
+          <div className="absolute inset-0 bg-blue-500/30 blur-3xl rounded-full scale-150 animate-pulse" />
           <Image 
             src={insigniaUrl} 
             alt="Insignia EECH" 
-            width={56} 
-            height={56} 
-            className="relative rounded-full object-cover shadow-2xl border-2 border-white dark:border-white/10"
+            width={64} 
+            height={64} 
+            className="relative rounded-full object-cover shadow-[0_0_40px_rgba(59,130,246,0.4)] border-2 border-white/20"
             priority
           />
         </div>
 
-        {/* CONTENIDO CENTRAL */}
+        {/* CONTENIDO CENTRAL VIBRANTE */}
         <div className="relative flex flex-col items-center">
-          <div className="space-y-6 text-center">
-            <div className="flex flex-col items-center gap-2 mb-2 animate-in fade-in slide-in-from-bottom-2 duration-700 delay-300">
-              <Sparkles className="h-5 w-5 text-primary/40" />
-              <div className="h-px w-8 bg-primary/20" />
+          <div className="space-y-8 text-center px-6">
+            <div className="flex flex-col items-center gap-3 mb-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+              <Sparkles className="h-6 w-6 text-blue-400 animate-pulse" />
+              <div className="h-0.5 w-12 bg-gradient-to-r from-transparent via-blue-400/40 to-transparent" />
             </div>
             
-            <div className="relative group">
-              <h1 className="text-6xl font-black font-headline tracking-[0.2em] text-slate-900 dark:text-white animate-title-reveal uppercase text-glow">
+            <div className="relative">
+              <h1 className="text-7xl font-black font-headline tracking-[0.2em] text-white animate-title-reveal uppercase text-glow drop-shadow-[0_0_15px_rgba(59,130,246,0.5)]">
                 Himnos
               </h1>
-              <div className="absolute -inset-x-10 -bottom-4 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent scale-x-0 animate-in slide-in-from-left duration-1000 delay-500 fill-mode-forwards" style={{ transform: 'scaleX(1)' }} />
+              <div className="absolute -inset-x-16 -bottom-6 h-px bg-gradient-to-r from-transparent via-blue-400/50 to-transparent scale-x-0 animate-in slide-in-from-left duration-1000 delay-500 fill-mode-forwards" style={{ transform: 'scaleX(1)' }} />
             </div>
 
-            <p className="text-[10px] font-black tracking-[0.6em] text-primary/60 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-700 pt-4">
-              Cantoral Oficial
-            </p>
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-800">
+              <p className="text-[11px] font-black tracking-[0.7em] text-blue-300/70 uppercase pt-6">
+                Cantoral Sagrado
+              </p>
+            </div>
           </div>
         </div>
 
-        {/* PIE DE PÁGINA SOLEMNE */}
-        <div className="absolute bottom-16 left-0 w-full text-center px-6">
-          <div className="flex items-center justify-center gap-4 mb-3 opacity-20 dark:opacity-40">
-            <div className="h-px w-12 bg-slate-400" />
-            <div className="w-1.5 h-1.5 rounded-full bg-slate-400" />
-            <div className="h-px w-12 bg-slate-400" />
+        {/* FOOTER ELEGANTE */}
+        <div className="absolute bottom-20 left-0 w-full text-center px-8">
+          <div className="flex items-center justify-center gap-6 mb-4 opacity-30">
+            <div className="h-px w-16 bg-blue-400" />
+            <div className="w-2 h-2 rounded-full bg-blue-400 blur-[1px]" />
+            <div className="h-px w-16 bg-blue-400" />
           </div>
-          <p className="text-[9px] font-black tracking-[0.4em] text-slate-500 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
+          <p className="text-[10px] font-black tracking-[0.5em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
             Ejército Evangélico de Chile
           </p>
         </div>
