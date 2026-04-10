@@ -1,3 +1,4 @@
+
 rules_version = '2';
 
 service cloud.firestore {
@@ -16,6 +17,10 @@ service cloud.firestore {
     }
     
     match /youth-choirs/{youthChoirId} {
+      allow read, write: if true;
+    }
+
+    match /special-occasions/{specialId} {
       allow read, write: if true;
     }
 

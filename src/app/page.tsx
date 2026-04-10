@@ -1,9 +1,10 @@
+
 "use client";
 
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { Music, Book, Mic, Library, WifiOff } from 'lucide-react';
+import { Music, Book, Mic, Library, WifiOff, Sparkles, ChevronRight } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { InstallPWAButton } from '@/components/install-pwa-button';
 import { AppearanceDialog } from '@/components/appearance-dialog';
@@ -64,16 +65,13 @@ export default function HomePage() {
   return (
     <div className="relative min-h-screen w-full bg-slate-50 dark:bg-slate-950 text-foreground overflow-x-hidden font-body flex flex-col">
       
-      {/* FONDO ARTÍSTICO DINÁMICO */}
       <div className="fixed inset-0 -z-20 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 w-[150vw] h-[150vw] bg-gradient-to-tr from-primary/10 via-primary/5 to-purple-400/10 rounded-full animate-aura-slow blur-[100px] pointer-events-none" />
-        <div className="absolute top-1/4 left-1/4 w-[100vw] h-[100vw] bg-gradient-to-bl from-amber-200/10 via-transparent to-rose-300/10 rounded-full animate-aura-slow blur-[120px] pointer-events-none" style={{ animationDirection: 'reverse', animationDuration: '50s' }} />
         <div className="absolute inset-0 design-grid opacity-40 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
       </div>
 
       <div className="relative z-10 flex flex-col flex-1">
         
-        {/* Barra Superior - Ergonómica */}
         <div className="flex items-center justify-between px-6 pt-16 pb-4 animate-in fade-in duration-1000">
           <div className="flex items-center gap-2">
             {isFullySynced ? (
@@ -91,9 +89,8 @@ export default function HomePage() {
           <AppearanceDialog />
         </div>
 
-        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-10 pb-6 space-y-8">
+        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-6 pb-6 space-y-8">
           
-          {/* HEADER */}
           <header className="w-full text-center space-y-6 animate-in fade-in slide-in-from-top-4 duration-1000">
             <div className="relative inline-flex items-center justify-center group">
               <div className="absolute inset-0 bg-primary/20 blur-[40px] rounded-full scale-150 opacity-50" />
@@ -126,34 +123,52 @@ export default function HomePage() {
             </div>
           </header>
 
-          {/* Buscador */}
           <div className="w-full flex flex-col items-center">
             <GlobalSearch />
           </div>
 
-          {/* Navegación Principal */}
-          <div className="grid grid-cols-2 gap-4 w-full max-w-md">
-            {navigationItems.map((item) => (
-              <div key={item.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: item.delay }}>
-                <Link href={item.href} className="group block h-full">
-                  <Card className="h-full border-none bg-white/40 dark:bg-white/[0.03] backdrop-blur-xl hover:bg-white/80 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-1 active:scale-95 overflow-hidden relative group app-card card-glow">
-                    <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                    <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[120px] relative z-10">
-                      <div className={`p-3 bg-white dark:bg-slate-900 shadow-lg group-hover:scale-110 transition-all duration-500 mb-3`} style={{ borderRadius: 'var(--ui-radius)' }}>
-                        <item.icon className={`h-5 w-5 ${item.iconColor}`} />
+          <div className="w-full max-w-md space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {navigationItems.map((item) => (
+                <div key={item.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: item.delay }}>
+                  <Link href={item.href} className="group block h-full">
+                    <Card className="h-full border-none bg-white/40 dark:bg-white/[0.03] backdrop-blur-xl hover:bg-white/80 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-1 active:scale-95 overflow-hidden relative group app-card card-glow">
+                      <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
+                      <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[120px] relative z-10">
+                        <div className={`p-3 bg-white dark:bg-slate-900 shadow-lg group-hover:scale-110 transition-all duration-500 mb-3`} style={{ borderRadius: 'var(--ui-radius)' }}>
+                          <item.icon className={`h-5 w-5 ${item.iconColor}`} />
+                        </div>
+                        <h3 className="font-black text-[9px] uppercase tracking-[0.2em] font-body text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors leading-tight">
+                          {item.title}
+                        </h3>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                </div>
+              ))}
+            </div>
+
+            <div className="animate-in fade-in zoom-in-95 duration-700 delay-500">
+              <Link href="/special-occasions" className="group block">
+                <Card className="border-none bg-gradient-to-r from-amber-500/10 to-amber-600/5 backdrop-blur-xl hover:bg-amber-500/20 transition-all duration-500 hover:-translate-y-1 active:scale-95 overflow-hidden relative app-card card-glow">
+                  <div className="absolute inset-0 bg-gradient-to-r from-amber-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <CardContent className="flex items-center justify-between p-4 px-6 relative z-10 h-16">
+                    <div className="flex items-center gap-4">
+                      <div className="p-2.5 bg-white dark:bg-slate-900 shadow-lg rounded-xl text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-all duration-500">
+                        <Sparkles className="h-5 w-5" />
                       </div>
-                      <h3 className="font-black text-[9px] uppercase tracking-[0.2em] font-body text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors leading-tight">
-                        {item.title}
+                      <h3 className="font-black text-[10px] uppercase tracking-[0.2em] text-slate-800 dark:text-slate-200 group-hover:text-amber-600 transition-colors">
+                        Ocasiones Especiales
                       </h3>
-                    </CardContent>
-                  </Card>
-                </Link>
-              </div>
-            ))}
+                    </div>
+                    <ChevronRight className="h-4 w-4 text-amber-600/40 group-hover:translate-x-1 transition-transform" />
+                  </CardContent>
+                </Card>
+              </Link>
+            </div>
           </div>
           
-          {/* Footer */}
-          <footer className="w-full text-center space-y-6 animate-in fade-in duration-1000 delay-500 mt-4">
+          <footer className="w-full text-center space-y-6 animate-in fade-in duration-1000 delay-500 mt-2">
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center justify-center gap-6">
                 <InstallPWAButton />
