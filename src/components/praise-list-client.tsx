@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { Praise } from '@/lib/praises';
@@ -35,7 +34,7 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
   const deferredSearchTerm = useDeferredValue(searchTerm);
   const [activeTab, setActiveTab] = useState('all');
   const [filterTab, setFilterTab] = useState('all');
-  const { isFavorite, isLoaded: favsLoaded } = useFavorites();
+  const { isFavorite } = useFavorites();
 
   const indexedPraises = useMemo(() => {
     return praises.map(p => ({
@@ -64,7 +63,7 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
       return listToFilter;
     }
 
-    return listToFilter.filter(praise => praise._searchIndex.includes(normalizedSearch));
+    return listToFilter.filter(praise => praise._searchIndex?.includes(normalizedSearch));
   }, [deferredSearchTerm, indexedPraises, activeTab, filterTab, isFavorite]);
 
   return (
@@ -73,7 +72,7 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar por título, letra o nota..."
+          placeholder="Buscar por título o letra..."
           className="pl-10 w-full h-11 rounded-xl"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

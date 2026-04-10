@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { Choir } from '@/lib/choirs';
@@ -64,7 +63,7 @@ export function ChoirListClient({ choirs }: ChoirListClientProps) {
       return listToFilter;
     }
 
-    return listToFilter.filter(choir => choir._searchIndex.includes(normalizedSearch));
+    return listToFilter.filter(choir => choir._searchIndex?.includes(normalizedSearch));
   }, [deferredSearchTerm, indexedChoirs, activeTab, filterTab, isFavorite]);
 
   return (
@@ -73,7 +72,7 @@ export function ChoirListClient({ choirs }: ChoirListClientProps) {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar coro o letra..."
+          placeholder="Buscar por título o letra..."
           className="pl-10 w-full h-11 rounded-xl"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
