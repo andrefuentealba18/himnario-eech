@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -55,13 +54,13 @@ export default function PraisesIndexPage() {
       <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
         
-        <div className="absolute top-12 right-8 w-20 h-20 animate-in fade-in zoom-in-95 duration-1000 ease-out">
+        <div className="absolute top-20 right-8 w-16 h-16 animate-in fade-in zoom-in-95 duration-1000 ease-out">
           <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full scale-125 animate-pulse" />
           <Image 
             src={insigniaUrl} 
             alt="Insignia EECH" 
-            width={80} 
-            height={80} 
+            width={64} 
+            height={64} 
             className="relative rounded-full object-cover shadow-xl border-2 border-white"
             priority
           />
@@ -76,7 +75,7 @@ export default function PraisesIndexPage() {
             <div className="h-px w-12 bg-primary/20 mx-auto animate-in fade-in slide-in-from-right duration-1000" />
           </div>
         </div>
-        <div className="absolute bottom-12 left-0 w-full text-center px-6">
+        <div className="absolute bottom-16 left-0 w-full text-center px-6">
           <div className="flex items-center justify-center gap-4 mb-2 opacity-40">
             <div className="h-px w-6 bg-slate-400" />
             <span className="text-[8px] font-black uppercase tracking-[0.3em]">Oficial</span>
@@ -99,7 +98,7 @@ export default function PraisesIndexPage() {
         </div>
 
         <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
-          <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm pt-40 pb-8 px-4 border-b flex items-center justify-between relative">
+          <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm pt-24 pb-6 px-4 border-b flex items-center justify-between relative">
               <Button variant="ghost" size="icon" asChild className="rounded-full">
                   <Link href="/">
                       <ChevronLeft className="h-6 w-6" />
@@ -107,7 +106,7 @@ export default function PraisesIndexPage() {
                   </Link>
               </Button>
               <div className="flex items-center gap-3">
-                <h1 className="text-2xl font-bold font-headline text-foreground">
+                <h1 className="text-xl font-bold font-headline text-foreground">
                   Alabanzas
                 </h1>
                 <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/20 font-bold px-2">

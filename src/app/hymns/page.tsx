@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -27,13 +26,13 @@ export default function HymnsIndexPage() {
       <div className="fixed inset-0 z-[100] bg-white flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/5 rounded-full blur-[120px] animate-pulse" />
         
-        <div className="absolute top-12 right-8 w-20 h-20 animate-in fade-in zoom-in-95 duration-1000 ease-out">
+        <div className="absolute top-20 right-8 w-16 h-16 animate-in fade-in zoom-in-95 duration-1000 ease-out">
           <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full scale-125 animate-pulse" />
           <Image 
             src={insigniaUrl} 
             alt="Insignia EECH" 
-            width={80} 
-            height={80} 
+            width={64} 
+            height={64} 
             className="relative rounded-full object-cover shadow-xl border-2 border-white"
             priority
           />
@@ -49,7 +48,7 @@ export default function HymnsIndexPage() {
           </div>
         </div>
 
-        <div className="absolute bottom-12 left-0 w-full text-center px-6">
+        <div className="absolute bottom-16 left-0 w-full text-center px-6">
           <div className="flex items-center justify-center gap-4 mb-2 opacity-40">
             <div className="h-px w-6 bg-slate-400" />
             <span className="text-[8px] font-black uppercase tracking-[0.3em]">Oficial</span>
@@ -71,7 +70,7 @@ export default function HymnsIndexPage() {
       </div>
 
       <div className="w-full max-w-2xl mx-auto flex flex-col h-screen">
-        <header className="sticky top-0 z-20 bg-background/60 backdrop-blur-xl pt-40 pb-8 px-4 border-b flex flex-col items-center gap-4 transition-all duration-500">
+        <header className="sticky top-0 z-20 bg-background/60 backdrop-blur-xl pt-24 pb-6 px-4 border-b flex flex-col items-center gap-4 transition-all duration-500">
             <div className="flex items-center justify-between w-full">
               <Button variant="ghost" size="icon" asChild className="rounded-full hover:bg-primary/10 transition-colors h-12 w-12">
                   <Link href="/">
@@ -86,7 +85,7 @@ export default function HymnsIndexPage() {
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">Himnario Oficial</span>
                   <div className="h-px w-4 bg-primary/30" />
                 </div>
-                <h1 className="text-3xl font-bold font-headline text-foreground tracking-tighter text-glow">
+                <h1 className="text-2xl font-bold font-headline text-foreground tracking-tighter text-glow">
                   Himnos
                 </h1>
               </div>
