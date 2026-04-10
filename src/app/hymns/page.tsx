@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from 'react';
 import { useHymns } from '@/context/hymns-context';
 import { HymnListClient } from '@/components/hymn-list-client';
 import { BookOpen, ChevronLeft, Loader2, Sparkles } from 'lucide-react';
@@ -9,6 +10,43 @@ import { Badge } from '@/components/ui/badge';
 
 export default function HymnsIndexPage() {
   const { hymns, isLoaded } = useHymns();
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    // La animación dura 1.8 segundos antes de revelar el contenido
+    const timer = setTimeout(() => {
+      setShowIntro(false);
+    }, 1800);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (showIntro) {
+    return (
+      <main className="fixed inset-0 z-[100] flex items-center justify-center bg-slate-950 overflow-hidden">
+        {/* Fondo de Profundidad Animado */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[150vw] h-[150vw] bg-primary/20 rounded-full blur-[120px] animate-aura-slow opacity-50" />
+          <div className="absolute inset-0 design-grid opacity-10" />
+        </div>
+
+        <div className="relative z-10 flex flex-col items-center gap-8">
+          <div className="flex flex-col items-center animate-title-reveal">
+            <div className="flex items-center gap-3 mb-4 opacity-60">
+              <div className="h-px w-12 bg-primary" />
+              <Sparkles className="h-4 w-4 text-primary animate-pulse" />
+              <div className="h-px w-12 bg-primary" />
+            </div>
+            <h1 className="text-6xl md:text-8xl font-bold font-headline text-white tracking-[0.3em] uppercase text-glow animate-in zoom-in-95 duration-1000">
+              Himnos
+            </h1>
+            <p className="mt-6 text-[10px] font-black uppercase tracking-[0.8em] text-primary/60 animate-pulse">
+              Ejército Evangélico de Chile
+            </p>
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="relative flex flex-col items-center bg-background min-h-screen overflow-x-hidden">
@@ -28,7 +66,7 @@ export default function HymnsIndexPage() {
                   </Link>
               </Button>
               
-              <div className="flex flex-col items-center animate-title-reveal">
+              <div className="flex flex-col items-center">
                 <div className="flex items-center gap-2 mb-1">
                   <Sparkles className="h-3 w-3 text-primary animate-pulse" />
                   <span className="text-[10px] font-black uppercase tracking-[0.3em] text-primary/60">Himnario Oficial</span>
@@ -52,7 +90,7 @@ export default function HymnsIndexPage() {
             </div>
         </header>
 
-        <div className="p-4 flex-1 overflow-auto animate-slide-fade-up" style={{ animationDelay: '0.2s' }}>
+        <div className="p-4 flex-1 overflow-auto animate-slide-fade-up" style={{ animationDelay: '0.1s' }}>
           {!isLoaded ? (
             <div className="flex flex-col items-center justify-center py-32 text-muted-foreground gap-6">
               <div className="relative">
