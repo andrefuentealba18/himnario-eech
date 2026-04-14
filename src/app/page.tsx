@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
-import { Music, Book, Mic, Library, WifiOff, Sparkles } from 'lucide-react';
+import { Music, Book, Mic, Library, WifiOff, Sparkles, Loader2 } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { InstallPWAButton } from '@/components/install-pwa-button';
 import { AppearanceDialog } from '@/components/appearance-dialog';
@@ -15,7 +15,7 @@ import { useChoirs } from '@/context/choirs-context';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
 import { useSpecialOccasions } from '@/context/special-occasions-context';
 import { useAppearance } from '@/hooks/use-appearance';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 const navigationItems = [
   {
@@ -59,9 +59,25 @@ export default function HomePage() {
   const { isLoaded: youthChoirsLoaded } = useYouthChoirs();
   const { isLoaded: specialOccasionsLoaded } = useSpecialOccasions();
   const { isLoaded: appearanceLoaded } = useAppearance();
+  
+  const [showSplash, setShowSplash] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // Al estar en el Home, permitimos que las intros se vuelvan a mostrar al entrar
+    const splashSeen = sessionStorage.getItem('splash_seen');
+    if (!splashSeen) {
+      setShowSplash(true);
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+        sessionStorage.setItem('splash_seen', 'true');
+        setIsReady(true);
+      }, 3500); // Un poco más largo para disfrutar la animación
+      return () => clearTimeout(timer);
+    } else {
+      setIsReady(true);
+    }
+    
+    // Resetear las intros de secciones al estar en Home
     sessionStorage.removeItem('intro_seen_hymns');
     sessionStorage.removeItem('intro_seen_praises');
     sessionStorage.removeItem('intro_seen_choirs');
@@ -70,11 +86,69 @@ export default function HomePage() {
   }, []);
 
   const isFullySynced = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded && specialOccasionsLoaded && appearanceLoaded;
-
   const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
 
+  if (showSplash) {
+    return (
+      <div className="fixed inset-0 z-[200] bg-white dark:bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
+        {/* Fondo Cinemático */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250vw] h-[250vw] bg-blue-600/10 rounded-full blur-[180px] animate-aura-giant" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220vw] h-[220vw] bg-red-600/10 rounded-full blur-[200px] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-4s' }} />
+          <div className="absolute inset-0 design-grid opacity-[0.1]" />
+        </div>
+
+        <div className="relative flex flex-col items-center gap-12 text-center px-8">
+          {/* Logo Central con Resplandor */}
+          <div className="relative animate-in fade-in zoom-in-90 duration-1000">
+            <div className="absolute inset-0 bg-amber-400/30 blur-[80px] rounded-full scale-150 animate-pulse" />
+            <div className="relative p-2 bg-gradient-to-tr from-amber-400 via-white to-amber-200 rounded-full shadow-2xl shadow-amber-200/20">
+              <div className="bg-white rounded-full p-1 overflow-hidden w-32 h-32 flex items-center justify-center">
+                <Image 
+                  src={insigniaUrl} 
+                  alt="EECH Logo" 
+                  width={128} 
+                  height={128} 
+                  className="rounded-full object-cover"
+                  priority
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Texto de Bienvenida */}
+          <div className="space-y-4">
+            <h1 className="text-5xl font-black font-headline text-slate-900 dark:text-white animate-title-reveal-big tracking-[0.2em] uppercase">
+              Bienvenido
+            </h1>
+            <p className="text-[10px] font-black tracking-[0.6em] text-primary/60 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
+              Himnario Digital Oficial
+            </p>
+          </div>
+
+          {/* Barra de Progreso Tricolor */}
+          <div className="relative w-64 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5 shadow-inner border border-slate-200/50 dark:border-white/10 mt-4">
+            <div className="absolute inset-0 flex">
+              <div className="h-full flex-1 bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.6)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
+              <div className="h-full w-16 bg-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)] animate-loading-beam-long" style={{ animationDelay: '0.3s' }} />
+              <div className="h-full flex-1 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.6)] animate-loading-beam-long" style={{ animationDelay: '0.6s' }} />
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute bottom-16 left-0 w-full text-center">
+          <p className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.4em]">
+            Ejército Evangélico de Chile
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isReady) return null;
+
   return (
-    <div className="relative min-h-screen w-full bg-slate-50 dark:bg-slate-950 text-foreground overflow-x-hidden font-body flex flex-col">
+    <div className="relative min-h-screen w-full bg-slate-50 dark:bg-slate-950 text-foreground overflow-x-hidden font-body flex flex-col animate-in fade-in duration-1000">
       
       <div className="fixed inset-0 -z-20 overflow-hidden">
         <div className="absolute top-1/2 left-1/2 w-[150vw] h-[150vw] bg-gradient-to-tr from-primary/10 via-primary/5 to-purple-400/10 rounded-full animate-aura-slow blur-[100px] pointer-events-none" />
@@ -83,7 +157,7 @@ export default function HomePage() {
 
       <div className="relative z-10 flex flex-col flex-1">
         
-        <div className="flex items-center justify-between px-6 pt-16 pb-4 animate-in fade-in duration-1000">
+        <div className="flex items-center justify-between px-6 pt-16 pb-4">
           <div className="flex items-center gap-2">
             {isFullySynced ? (
               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-md border border-green-500/20 shadow-sm transition-all duration-500 hover:scale-105">
