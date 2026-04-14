@@ -23,7 +23,7 @@ export function PraiseAdminList() {
       return praises;
     }
     return praises.filter(praise =>
-      normalizeSearchTerm(praise.title).includes(normalizedSearch)
+      normalizeSearchTerm(`${praise.title} ${praise.lyrics} ${praise.tone || ''}`).includes(normalizedSearch)
     );
   }, [searchTerm, praises]);
 
@@ -87,7 +87,7 @@ export function PraiseAdminList() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar por título..."
+          placeholder="Buscar por título o letra..."
           className="pl-10 w-full"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -125,5 +125,3 @@ export function PraiseAdminList() {
     </div>
   );
 }
-
-    

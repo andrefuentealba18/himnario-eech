@@ -1,4 +1,3 @@
-
 "use client";
 
 import type { SpecialOccasion, SpecialCategory } from '@/lib/special-occasions';
@@ -105,7 +104,7 @@ export function SpecialOccasionListClient({ specialOccasions, activeCategory, on
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar canto..."
+          placeholder="Buscar por título o letra..."
           className="pl-10 w-full h-11 rounded-xl"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

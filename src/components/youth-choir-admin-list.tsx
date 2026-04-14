@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useMemo } from 'react';
@@ -23,8 +22,7 @@ export function YouthChoirAdminList() {
       return youthChoirs;
     }
     return youthChoirs.filter(youthChoir =>
-      normalizeSearchTerm(youthChoir.title).includes(normalizedSearch) ||
-      normalizeSearchTerm(youthChoir.group).includes(normalizedSearch)
+      normalizeSearchTerm(`${youthChoir.title} ${youthChoir.lyrics} ${youthChoir.tone || ''} ${youthChoir.group}`).includes(normalizedSearch)
     );
   }, [searchTerm, youthChoirs]);
 
@@ -71,7 +69,7 @@ export function YouthChoirAdminList() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar por título o agrupación..."
+          placeholder="Buscar por título, agrupación o letra..."
           className="pl-10 w-full"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

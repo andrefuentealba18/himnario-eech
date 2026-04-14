@@ -21,8 +21,7 @@ export function HymnAdminList() {
       return hymns;
     }
     return hymns.filter(hymn =>
-      normalizeSearchTerm(hymn.title).includes(normalizedSearch) ||
-      hymn.number.toString().includes(normalizedSearch)
+      normalizeSearchTerm(`${hymn.title} ${hymn.number} ${hymn.lyrics} ${hymn.tone || ''}`).includes(normalizedSearch)
     );
   }, [searchTerm, hymns]);
 
@@ -61,7 +60,7 @@ export function HymnAdminList() {
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
         <Input
           type="search"
-          placeholder="Buscar por número o título..."
+          placeholder="Buscar por número, título o letra..."
           className="pl-10 w-full"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}

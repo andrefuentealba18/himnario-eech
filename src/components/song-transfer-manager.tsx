@@ -53,19 +53,24 @@ export function SongTransferManager() {
 
   const sourceSongs = useMemo(() => {
     if (!sourceCategory) return [];
+    let list: any[] = [];
     switch (sourceCategory) {
-      case 'praises': return praises;
-      case 'choirs': return choirs;
-      case 'youth-choirs': return youthChoirs;
-      default: return [];
+      case 'praises': list = praises; break;
+      case 'choirs': list = choirs; break;
+      case 'youth-choirs': list = youthChoirs; break;
+      default: list = [];
     }
+    return list.map(s => ({
+      ...s,
+      _searchIndex: normalizeSearchTerm(`${s.title} ${s.lyrics} ${s.tone || ''} ${s.group || ''}`)
+    }));
   }, [sourceCategory, praises, choirs, youthChoirs]);
 
   const filteredSongs = useMemo(() => {
     const normalized = normalizeSearchTerm(searchTerm);
     if (!normalized) return sourceSongs;
     return sourceSongs.filter(song => 
-      normalizeSearchTerm(song.title).includes(normalized)
+      song._searchIndex.includes(normalized)
     );
   }, [sourceSongs, searchTerm]);
   
@@ -249,7 +254,7 @@ export function SongTransferManager() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input 
-                  placeholder="Buscar canción para seleccionar..." 
+                  placeholder="Buscar por título o letra..." 
                   className="pl-9"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}

@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useEffect, useState, useMemo } from 'react';
@@ -44,7 +43,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { cn } from '@/lib/utils';
+import { cn, normalizeSearchTerm } from '@/lib/utils';
 
 const specialOccasionSchema = z.object({
   title: z.string().min(1, 'El título es requerido.'),
@@ -72,6 +71,7 @@ type SelectableSong = {
   type: string;
   id: string;
   hymnNumber?: number;
+  _searchIndex: string;
 };
 
 export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasionDialogProps) {
@@ -99,20 +99,40 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
         lyrics: h.lyrics, 
         tone: h.tone, 
         type: 'Himno',
-        hymnNumber: h.number
+        hymnNumber: h.number,
+        _searchIndex: normalizeSearchTerm(`${h.title} ${h.number} ${h.lyrics} ${h.tone || ''}`)
       })),
-      ...praises.map(p => ({ id: `praise-${p.id}`, title: p.title, lyrics: p.lyrics, tone: p.tone, type: 'Alabanza' })),
-      ...choirs.map(c => ({ id: `choir-${c.id}`, title: c.title, lyrics: c.lyrics, tone: c.tone, type: 'Coro' })),
-      ...youthChoirs.map(yc => ({ id: `youth-${yc.id}`, title: yc.title, lyrics: yc.lyrics, tone: yc.tone, type: 'Agrupación' })),
+      ...praises.map(p => ({ 
+        id: `praise-${p.id}`, 
+        title: p.title, 
+        lyrics: p.lyrics, 
+        tone: p.tone, 
+        type: 'Alabanza',
+        _searchIndex: normalizeSearchTerm(`${p.title} ${p.lyrics} ${p.tone || ''}`)
+      })),
+      ...choirs.map(c => ({ 
+        id: `choir-${c.id}`, 
+        title: c.title, 
+        lyrics: c.lyrics, 
+        tone: c.tone, 
+        type: 'Coro',
+        _searchIndex: normalizeSearchTerm(`${c.title} ${c.lyrics} ${c.tone || ''}`)
+      })),
+      ...youthChoirs.map(yc => ({ 
+        id: `youth-${yc.id}`, 
+        title: yc.title, 
+        lyrics: yc.lyrics, 
+        tone: yc.tone, 
+        type: 'Agrupación',
+        _searchIndex: normalizeSearchTerm(`${yc.title} ${yc.lyrics} ${yc.tone || ''} ${yc.group}`)
+      })),
     ].sort((a, b) => a.title.localeCompare(b.title));
   }, [hymns, praises, choirs, youthChoirs]);
 
   const filteredSongs = useMemo(() => {
-    const term = searchSong.toLowerCase().trim();
+    const term = normalizeSearchTerm(searchSong.trim());
     if (!term) return [];
-    return allSongs.filter(s => 
-      s.title.toLowerCase().includes(term) || (s.hymnNumber && s.hymnNumber.toString().includes(term))
-    ).slice(0, 50);
+    return allSongs.filter(s => s._searchIndex.includes(term)).slice(0, 50);
   }, [allSongs, searchSong]);
 
   const form = useForm<FormData>({
@@ -254,7 +274,7 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
                     <div className="relative group">
                       <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-amber-600 transition-colors" />
                       <Input 
-                        placeholder="Buscar por título o número..." 
+                        placeholder="Buscar por título o letra..." 
                         className="pl-12 h-14 rounded-2xl border-2 bg-background focus:ring-4 focus:ring-amber-500/10"
                         value={searchSong}
                         onChange={(e) => setSearchSong(e.target.value)}

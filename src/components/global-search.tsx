@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useMemo, useEffect, useDeferredValue } from 'react';
@@ -108,7 +107,7 @@ export function GlobalSearch() {
                     {isLoaded ? null : <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground animate-spin" />}
                     <Input
                         type="search"
-                        placeholder="Buscar himnos, coros, agrupaciones..."
+                        placeholder="Buscar por título o letra..."
                         className="pl-10 w-full text-base h-12 rounded-full shadow-lg"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}

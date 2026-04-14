@@ -17,7 +17,7 @@ import { Plus, Trash2, ChevronsUpDown, Check } from "lucide-react";
 import { Separator } from "./ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
-import { cn } from "@/lib/utils";
+import { cn, normalizeSearchTerm } from "@/lib/utils";
 import type { SongReference } from "@/lib/repertoires";
 
 const songIdSchema = z.object({ id: z.string().min(1, "Debes seleccionar un canto.") });
@@ -50,11 +50,10 @@ function SearchableSelect({ songs, value, onChange, placeholder }: { songs: any[
     }, [value, songs, placeholder]);
 
     const filteredSongs = useMemo(() => {
-        if (!search) return songs;
-        const lowercasedSearch = search.toLowerCase();
+        const normalized = normalizeSearchTerm(search);
+        if (!normalized) return songs;
         return songs.filter(song => 
-            song.title.toLowerCase().includes(lowercasedSearch) ||
-            (song.number && song.number.toString().includes(lowercasedSearch))
+            song._searchIndex.includes(normalized)
         );
     }, [search, songs]);
 
@@ -74,7 +73,7 @@ function SearchableSelect({ songs, value, onChange, placeholder }: { songs: any[
             <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                 <div className="p-2 border-b">
                     <Input 
-                        placeholder="Buscar canto..."
+                        placeholder="Buscar por título o letra..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         className="h-9"
@@ -156,10 +155,10 @@ export function RepertoireBuilderClient() {
 
   const allSongs = useMemo(() => {
     const combined = [
-      ...hymns.map(h => ({ ...h, type: 'hymn' as const })),
-      ...praises.map(p => ({ ...p, type: 'praise' as const })),
-      ...choirs.map(c => ({ ...c, type: 'choir' as const })),
-      ...youthChoirs.map(yc => ({ ...yc, type: 'youth-choir' as const }))
+      ...hymns.map(h => ({ ...h, type: 'hymn' as const, _searchIndex: normalizeSearchTerm(`${h.title} ${h.number} ${h.lyrics} ${h.tone || ''}`) })),
+      ...praises.map(p => ({ ...p, type: 'praise' as const, _searchIndex: normalizeSearchTerm(`${p.title} ${p.lyrics} ${p.tone || ''}`) })),
+      ...choirs.map(c => ({ ...c, type: 'choir' as const, _searchIndex: normalizeSearchTerm(`${c.title} ${c.lyrics} ${c.tone || ''}`) })),
+      ...youthChoirs.map(yc => ({ ...yc, type: 'youth-choir' as const, _searchIndex: normalizeSearchTerm(`${yc.title} ${yc.lyrics} ${yc.tone || ''} ${yc.group}`) }))
     ];
     return combined.sort((a, b) => a.title.localeCompare(b.title, 'es', { sensitivity: 'base' }));
   }, [hymns, praises, choirs, youthChoirs]);
