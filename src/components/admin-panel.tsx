@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -64,11 +65,12 @@ export function AdminPanel() {
 
   if (showIntro) {
     return (
-      <div className="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
+      <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/40 via-white to-amber-100/40" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] bg-blue-600/10 rounded-full blur-[160px] animate-aura-giant" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180vw] h-[180vw] bg-amber-600/10 rounded-full blur-[180px] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-3s' }} />
-          <div className="absolute inset-0 design-grid opacity-[0.05]" />
+          <div className="absolute inset-0 design-grid opacity-[0.08]" />
         </div>
         
         <div className="absolute top-24 right-12 w-24 h-24 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out">
@@ -79,7 +81,7 @@ export function AdminPanel() {
               alt="Insignia EECH" 
               width={96} 
               height={96} 
-              className="relative rounded-full object-cover border-2 border-white/20"
+              className="relative rounded-full object-cover border-2 border-white/80"
               priority
             />
           </div>
@@ -89,14 +91,14 @@ export function AdminPanel() {
           <div className="space-y-12 text-center px-6">
             <div className="relative">
               <div className="flex items-center justify-center gap-2 mb-4 animate-in fade-in slide-in-from-bottom-2 duration-1000">
-                <ShieldCheck className="h-5 w-5 text-amber-500" />
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-500/80">Acceso Restringido</span>
+                <ShieldCheck className="h-5 w-5 text-amber-600" />
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-600/80">Acceso Restringido</span>
               </div>
-              <h1 className="text-3xl font-black font-headline text-white animate-title-reveal-big uppercase tracking-[0.3em]">
+              <h1 className="text-3xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.3em]">
                 Panel de Control
               </h1>
               
-              <div className="mt-12 relative w-64 h-1.5 mx-auto overflow-hidden rounded-full bg-white/5 shadow-inner border border-white/10">
+              <div className="mt-12 relative w-64 h-1.5 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
                 <div className="absolute inset-0 flex">
                   <div className="h-full flex-1 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.8)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
                   <div className="h-full w-24 bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.4s' }} />
@@ -109,10 +111,10 @@ export function AdminPanel() {
 
         <div className="absolute bottom-24 left-0 w-full text-center px-8">
           <div className="flex flex-col items-center gap-6">
-            <p className="text-[10px] font-black tracking-[0.6em] text-slate-500 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
+            <p className="text-[10px] font-black tracking-[0.6em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
               Sistema de Gestión Administrativa
             </p>
-            <div className="flex items-center gap-8 opacity-20">
+            <div className="flex items-center gap-8 opacity-40">
               <div className="h-px w-20 bg-blue-600" />
               <Sparkles className="h-4 w-4 text-amber-500" />
               <div className="h-px w-20 bg-red-600" />
