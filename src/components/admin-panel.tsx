@@ -6,13 +6,26 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, ShieldCheck, Sparkles, Loader2, Lock, LayoutDashboard } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { 
+  ChevronLeft, 
+  ShieldCheck, 
+  Sparkles, 
+  Book, 
+  Music, 
+  Mic, 
+  Library, 
+  Settings, 
+  ClipboardCheck, 
+  LayoutDashboard,
+  ArrowLeft,
+  ArrowRight,
+  Plus
+} from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
 import { YouthChoirAdminList } from '@/components/youth-choir-admin-list';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { MissingHymns } from '@/components/missing-hymns';
 import { BackupManager } from '@/components/backup-manager';
 import { SongTransferManager } from '@/components/song-transfer-manager';
@@ -20,6 +33,7 @@ import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
 import { SongReviewList } from '@/components/song-review-list';
 import { Badge } from '@/components/ui/badge';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
+import { cn } from '@/lib/utils';
 
 import { usePraises } from '@/context/praises-context';
 import { useChoirs } from '@/context/choirs-context';
@@ -30,7 +44,7 @@ export function AdminPanel() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const tab = searchParams.get('tab') || 'review';
+  const tab = searchParams.get('tab') || 'menu';
 
   const { pendingPraises } = usePraises();
   const { pendingChoirs } = useChoirs();
@@ -62,6 +76,66 @@ export function AdminPanel() {
   };
 
   const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
+
+  const adminMenuItems = [
+    { 
+      id: 'review', 
+      label: 'Revisión', 
+      desc: 'Pendientes por aprobar',
+      icon: ClipboardCheck, 
+      color: 'from-amber-500/20 to-amber-600/5', 
+      iconColor: 'text-amber-600',
+      count: pendingCount 
+    },
+    { 
+      id: 'hymns', 
+      label: 'Himnos', 
+      desc: 'Gestión del Himnario',
+      icon: Book, 
+      color: 'from-blue-500/20 to-blue-600/5',
+      iconColor: 'text-blue-600'
+    },
+    { 
+      id: 'praises', 
+      label: 'Alabanzas', 
+      desc: 'Alabanzas Generales',
+      icon: Music, 
+      color: 'from-indigo-500/20 to-indigo-600/5',
+      iconColor: 'text-indigo-600'
+    },
+    { 
+      id: 'choirs', 
+      label: 'Coros', 
+      desc: 'Avivamiento y Meditación',
+      icon: Mic, 
+      color: 'from-rose-500/20 to-rose-600/5',
+      iconColor: 'text-rose-600'
+    },
+    { 
+      id: 'youth-choirs', 
+      label: 'Agrupaciones', 
+      desc: 'Cantos de Grupos',
+      icon: Library, 
+      color: 'from-orange-500/20 to-orange-600/5',
+      iconColor: 'text-orange-600'
+    },
+    { 
+      id: 'special', 
+      label: 'Especiales', 
+      desc: 'Ocasiones Ceremoniales',
+      icon: Sparkles, 
+      color: 'from-purple-500/20 to-purple-600/5',
+      iconColor: 'text-purple-600'
+    },
+    { 
+      id: 'more-settings', 
+      label: 'Ajustes', 
+      desc: 'Backups y Traspasos',
+      icon: Settings, 
+      color: 'from-slate-500/20 to-slate-600/5',
+      iconColor: 'text-slate-600'
+    },
+  ];
 
   if (showIntro) {
     return (
@@ -152,64 +226,85 @@ export function AdminPanel() {
           </div>
         </header>
 
-        <div className="p-4 space-y-6">
-          <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 h-auto bg-muted/50 p-1 rounded-2xl gap-1 overflow-x-auto">
-              <TabsTrigger value="review" className="text-[10px] md:text-xs rounded-xl h-10">Revisión {pendingCount > 0 && <Badge className="ml-1 px-1 h-4 min-w-4 text-[8px]">{pendingCount}</Badge>}</TabsTrigger>
-              <TabsTrigger value="hymns" className="text-[10px] md:text-xs rounded-xl h-10">Himnos</TabsTrigger>
-              <TabsTrigger value="praises" className="text-[10px] md:text-xs rounded-xl h-10">Alabanzas</TabsTrigger>
-              <TabsTrigger value="choirs" className="text-[10px] md:text-xs rounded-xl h-10">Coros</TabsTrigger>
-              <TabsTrigger value="youth-choirs" className="text-[10px] md:text-xs rounded-xl h-10">Agrup.</TabsTrigger>
-              <TabsTrigger value="special" className="text-[10px] md:text-xs rounded-xl h-10">Especial</TabsTrigger>
-              <TabsTrigger value="more-settings" className="text-[10px] md:text-xs rounded-xl h-10">Más</TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="review" className="mt-6 space-y-4">
-              <SongReviewList />
-            </TabsContent>
-            
-            <TabsContent value="hymns" className="mt-6">
-              <HymnAdminList />
-            </TabsContent>
-            
-            <TabsContent value="praises" className="mt-6">
-              <PraiseAdminList />
-            </TabsContent>
-            
-            <TabsContent value="choirs" className="mt-6">
-              <ChoirAdminList />
-            </TabsContent>
-            
-            <TabsContent value="youth-choirs" className="mt-6">
-              <YouthChoirAdminList />
-            </TabsContent>
-            
-            <TabsContent value="special" className="mt-6">
-              <Card className="app-card overflow-hidden">
-                <div className="h-1 w-full bg-amber-500" />
-                <CardHeader>
-                  <CardTitle className="text-lg">Ocasiones Especiales</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground leading-relaxed">
-                    Gestiona los cantos de Bautismos, Matrimonios y otras ceremonias. 
-                    Puedes agregar cantos manualmente o importarlos desde las otras secciones usando el buscador integrado en la sección pública.
-                  </p>
-                  <Button asChild className="mt-6 rounded-xl bg-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-100">
-                    <Link href="/special-occasions">Ir a Especiales</Link>
-                  </Button>
-                </CardContent>
-              </Card>
-            </TabsContent>
-            
-            <TabsContent value="more-settings" className="mt-6 space-y-8 pb-10">
-              <DuplicateSongsManager />
-              <MissingHymns />
-              <SongTransferManager />
-              <BackupManager />
-            </TabsContent>
-          </Tabs>
-        </div>
+        <main className="p-4 space-y-6">
+          {tab === 'menu' ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 animate-in fade-in slide-in-from-bottom-4 duration-700">
+              <div className="col-span-full mb-2">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground ml-1">Selecciona Categoría para gestionar</p>
+              </div>
+              {adminMenuItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleTabChange(item.id)}
+                  className="group relative flex items-center gap-4 p-5 rounded-[2rem] bg-white dark:bg-white/5 border-2 border-slate-100 dark:border-white/10 hover:border-primary/30 hover:bg-slate-50 transition-all duration-500 shadow-sm hover:shadow-xl active:scale-95 text-left overflow-hidden"
+                >
+                  <div className={cn(
+                    "absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500",
+                    item.color
+                  )} />
+                  <div className="relative z-10 p-4 rounded-[1.5rem] bg-white dark:bg-slate-900 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                    <item.icon className={cn("h-6 w-6", item.iconColor)} />
+                  </div>
+                  <div className="relative z-10 flex-1">
+                    <div className="flex items-center justify-between">
+                      <h3 className="font-black text-xs uppercase tracking-widest text-slate-800 dark:text-slate-200">{item.label}</h3>
+                      {item.count !== undefined && item.count > 0 && (
+                        <Badge className="bg-red-600 text-white font-black animate-pulse h-6 min-w-6 flex items-center justify-center">
+                          {item.count}
+                        </Badge>
+                      )}
+                    </div>
+                    <p className="text-[10px] text-muted-foreground font-medium mt-0.5">{item.desc}</p>
+                  </div>
+                  <div className="relative z-10 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-500">
+                    <ArrowRight className="h-5 w-5 text-primary" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          ) : (
+            <div className="animate-in fade-in slide-in-from-right-4 duration-500">
+              <div className="flex items-center gap-2 mb-6">
+                <Button variant="outline" size="sm" onClick={() => handleTabChange('menu')} className="rounded-full h-10 px-4">
+                  <ArrowLeft className="mr-2 h-4 w-4" /> Volver al Menú
+                </Button>
+                <div className="h-px flex-1 bg-slate-200 dark:bg-white/10" />
+                <Badge variant="secondary" className="capitalize px-3 font-bold">{tab.replace('-', ' ')}</Badge>
+              </div>
+
+              {tab === 'review' && <SongReviewList />}
+              {tab === 'hymns' && <HymnAdminList />}
+              {tab === 'praises' && <PraiseAdminList />}
+              {tab === 'choirs' && <ChoirAdminList />}
+              {tab === 'youth-choirs' && <YouthChoirAdminList />}
+              {tab === 'special' && (
+                <Card className="app-card overflow-hidden">
+                  <div className="h-1 w-full bg-amber-500" />
+                  <CardHeader>
+                    <CardTitle className="text-lg">Ocasiones Especiales</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      Gestiona los cantos de Bautismos, Matrimonios y otras ceremonias. 
+                      Puedes agregar cantos manualmente o importarlos desde las otras secciones usando el buscador integrado en la sección pública.
+                    </p>
+                    <Button asChild className="mt-6 rounded-xl bg-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-100">
+                      <Link href="/special-occasions">Ir a Especiales</Link>
+                    </Button>
+                  </CardContent>
+                </Card>
+              )}
+              {tab === 'more-settings' && (
+                <div className="space-y-8 pb-10">
+                  <DuplicateSongsManager />
+                  <MissingHymns />
+                  <SongTransferManager />
+                  <BackupManager />
+                </div>
+              )}
+            </div>
+          )}
+        </main>
       </div>
   );
 }

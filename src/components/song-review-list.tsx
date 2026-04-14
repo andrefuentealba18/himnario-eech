@@ -31,7 +31,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from '@/components/ui/badge';
-import { Check, Edit, Trash2, Loader2, Inbox, RefreshCw } from 'lucide-react';
+import { Check, Edit, Trash2, Loader2, Inbox, RefreshCw, Eye } from 'lucide-react';
 import { EditPraiseDialog } from './edit-praise-dialog';
 import { EditChoirDialog } from './edit-choir-dialog';
 import { EditYouthChoirDialog } from './edit-youth-choir-dialog';
@@ -93,25 +93,24 @@ export function SongReviewList() {
     if (song.categoryType === 'praise') {
         return (
             <EditPraiseDialog praise={song as Praise} onPraiseUpdated={onUpdate as any}>
-                <Button variant="outline" size="sm" className="h-9"><Edit className="mr-2 h-4 w-4" /> Modificar</Button>
+                <Button variant="outline" size="sm" className="h-10 rounded-xl"><Edit className="mr-2 h-4 w-4" /> Editar</Button>
             </EditPraiseDialog>
         );
     }
     if (song.categoryType === 'choir') {
         return (
             <EditChoirDialog choir={song as Choir} onChoirUpdated={onUpdate as any}>
-                <Button variant="outline" size="sm" className="h-9"><Edit className="mr-2 h-4 w-4" /> Modificar</Button>
+                <Button variant="outline" size="sm" className="h-10 rounded-xl"><Edit className="mr-2 h-4 w-4" /> Editar</Button>
             </EditChoirDialog>
         );
     }
     if (song.categoryType === 'youth-choir') {
         return (
             <EditYouthChoirDialog youthChoir={song as YouthChoir} onYouthChoirUpdated={onUpdate as any}>
-                <Button variant="outline" size="sm" className="h-9"><Edit className="mr-2 h-4 w-4" /> Modificar</Button>
+                <Button variant="outline" size="sm" className="h-10 rounded-xl"><Edit className="mr-2 h-4 w-4" /> Editar</Button>
             </EditYouthChoirDialog>
         );
     }
-    // Para Special Occasions, por ahora usamos el mismo botón de aprobación o rechazo
     return null;
   }
 
@@ -122,18 +121,18 @@ export function SongReviewList() {
       return (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">
           <Loader2 className="h-10 w-10 text-primary animate-spin" />
-          <p className="text-muted-foreground animate-pulse text-sm font-medium">Buscando nuevas alabanzas...</p>
+          <p className="text-muted-foreground animate-pulse text-sm font-medium">Sincronizando pendientes...</p>
         </div>
       );
     }
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center space-y-4">
-        <div className="bg-muted p-6 rounded-full">
-          <Inbox className="h-12 w-12 text-muted-foreground/50" />
+        <div className="bg-muted p-8 rounded-full">
+          <Inbox className="h-16 w-16 text-muted-foreground/30" />
         </div>
         <div>
-          <h3 className="text-xl font-bold">¡Bandeja vacía!</h3>
-          <p className="text-muted-foreground max-w-xs mx-auto">No hay canciones nuevas esperando revisión en este momento.</p>
+          <h3 className="text-xl font-bold">¡Todo al día!</h3>
+          <p className="text-muted-foreground max-w-xs mx-auto text-sm mt-1">No hay nuevas alabanzas esperando tu aprobación.</p>
         </div>
       </div>
     );
@@ -141,66 +140,61 @@ export function SongReviewList() {
 
   return (
     <div className="space-y-6">
-      {isAnyLoading && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground bg-primary/5 p-2 rounded-md justify-center border border-primary/10">
-          <RefreshCw className="h-3 w-3 animate-spin" />
-          Sincronizando con la nube en tiempo real...
-        </div>
-      )}
+      <div className="flex items-center justify-between px-1">
+        <h2 className="text-sm font-black uppercase tracking-widest text-slate-400">Cantos en Espera ({allPendingSongs.length})</h2>
+        {isAnyLoading && <RefreshCw className="h-3 w-3 animate-spin text-primary" />}
+      </div>
       
       <div className="grid gap-4">
         {allPendingSongs.map(song => (
-          <Card key={song.id} className="border-l-4 border-l-yellow-500 shadow-sm hover:shadow-md transition-shadow animate-in fade-in slide-in-from-left-2 duration-300">
+          <Card key={song.id} className="border-none bg-white dark:bg-white/5 shadow-md hover:shadow-lg transition-all duration-300 rounded-[2rem] overflow-hidden group">
+            <div className="h-1.5 w-full bg-amber-500 opacity-60" />
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
                   <CardTitle className="text-xl font-bold text-foreground leading-tight">{song.title}</CardTitle>
                   <div className="flex flex-wrap gap-2 pt-1">
-                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-100 border-none">
+                    <Badge variant="secondary" className="bg-amber-100 text-amber-800 border-none font-bold text-[10px]">
                       {categoryLabels[song.categoryType]}
                     </Badge>
                     {song.categoryType === 'youth-choir' && (
-                      <Badge variant="outline" className="border-primary/30 text-primary">{(song as YouthChoir).group}</Badge>
-                    )}
-                    {song.categoryType === 'special-occasion' && (
-                      <Badge variant="outline" className="border-amber-300 text-amber-700 bg-amber-50">{(song as SpecialOccasion).category}</Badge>
+                      <Badge variant="outline" className="border-primary/20 text-primary text-[10px] font-bold">{(song as YouthChoir).group}</Badge>
                     )}
                   </div>
                 </div>
-                <div className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded font-mono">
-                  ID: {song.id.substring(0, 6)}
+                <div className="p-2 bg-slate-50 rounded-xl border border-slate-100">
+                  <Eye className="h-4 w-4 text-slate-400" />
                 </div>
               </div>
-              <CardDescription className="pt-2 text-xs flex items-center gap-3">
-                <span className="flex items-center gap-1 font-medium text-foreground/70">
-                  Nota: <span className="text-primary font-bold">{song.tone || '---'}</span>
-                </span>
-              </CardDescription>
+              <div className="pt-2 flex items-center gap-3">
+                <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Nota:</span>
+                <Badge variant="outline" className="text-primary font-black border-primary/20 bg-primary/5">{song.tone || 'Indefinida'}</Badge>
+              </div>
             </CardHeader>
             <CardContent className="pb-4">
-              <div className="relative group">
-                <p className="whitespace-pre-wrap text-sm p-4 bg-muted/50 rounded-lg max-h-60 overflow-y-auto font-body leading-relaxed border border-transparent group-hover:border-primary/20 transition-colors">
+              <div className="relative">
+                <p className="whitespace-pre-wrap text-sm p-5 bg-slate-50 dark:bg-black/20 rounded-2xl max-h-48 overflow-y-auto font-body leading-relaxed border border-transparent group-hover:border-amber-200/50 transition-colors">
                   {song.lyrics}
                 </p>
               </div>
             </CardContent>
-            <CardFooter className="flex justify-between gap-2 bg-muted/20 py-3 px-6 rounded-b-lg border-t">
+            <CardFooter className="flex justify-between gap-3 bg-muted/10 py-4 px-6 rounded-b-[2rem] border-t border-slate-100 dark:border-white/5">
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10">
+                  <Button variant="ghost" size="sm" className="text-destructive hover:bg-destructive/10 h-10 rounded-xl px-4 font-bold">
                     <Trash2 className="mr-2 h-4 w-4" /> Rechazar
                   </Button>
                 </AlertDialogTrigger>
-                <AlertDialogContent>
+                <AlertDialogContent className="rounded-[2rem]">
                   <AlertDialogHeader>
-                    <AlertDialogTitle>¿Eliminar contribución?</AlertDialogTitle>
+                    <AlertDialogTitle>¿Eliminar sugerencia?</AlertDialogTitle>
                     <AlertDialogDescription>
-                      Esta acción borrará permanentemente esta sugerencia de la base de datos.
+                      Esta acción borrará permanentemente la propuesta de "{song.title}".
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => handleDelete(song)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    <AlertDialogCancel className="rounded-xl">Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleDelete(song)} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">
                       Eliminar
                     </AlertDialogAction>
                   </AlertDialogFooter>
@@ -209,7 +203,7 @@ export function SongReviewList() {
 
               <div className="flex gap-2">
                 {renderEditDialog(song)}
-                <Button size="sm" onClick={() => handleApprove(song)} className="bg-green-600 hover:bg-green-700 shadow-sm">
+                <Button size="sm" onClick={() => handleApprove(song)} className="bg-green-600 hover:bg-green-700 shadow-lg shadow-green-200 h-10 rounded-xl px-6 font-bold">
                   <Check className="mr-2 h-4 w-4" /> Aprobar
                 </Button>
               </div>
