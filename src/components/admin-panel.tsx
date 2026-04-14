@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, Wallet, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
@@ -16,7 +16,6 @@ import { SongTransferManager } from '@/components/song-transfer-manager';
 import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
 import { SongReviewList } from '@/components/song-review-list';
 import { Badge } from '@/components/ui/badge';
-import { useState } from 'react';
 
 import { usePraises } from '@/context/praises-context';
 import { useChoirs } from '@/context/choirs-context';
@@ -28,7 +27,6 @@ export function AdminPanel() {
   const router = useRouter();
   const pathname = usePathname();
   const tab = searchParams.get('tab') || 'review';
-  const [showRoadmap, setShowRoadmap] = useState(false);
 
   const { pendingPraises } = usePraises();
   const { pendingChoirs } = useChoirs();
@@ -83,18 +81,6 @@ export function AdminPanel() {
               </div>
             </TabsContent>
           </Tabs>
-
-          <Card className="border-primary/20 bg-primary/5 shadow-lg overflow-hidden transition-all duration-300">
-            <div className="bg-primary/10 px-6 py-4 border-b border-primary/10 flex items-center justify-between cursor-pointer" onClick={() => setShowRoadmap(!showRoadmap)}>
-              <div className="flex items-center gap-2"><Wallet className="h-5 w-5 text-primary" /><h2 className="font-bold text-sm tracking-wide uppercase">Hoja de Ruta</h2></div>
-              {showRoadmap ? <ArrowUpCircle className="h-5 w-5 text-primary/60" /> : <ArrowDownCircle className="h-5 w-5 text-primary/60" />}
-            </div>
-            {showRoadmap && (
-              <CardContent className="p-6">
-                <p className="text-xs text-muted-foreground mb-4">Consejos para optimizar el uso de Firebase y mantener costos en $0.</p>
-              </CardContent>
-            )}
-          </Card>
         </div>
       </div>
   );
