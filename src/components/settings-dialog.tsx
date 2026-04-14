@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from 'react';
@@ -50,6 +51,8 @@ export function SettingsDialog() {
         title: 'Acceso concedido',
       });
       setOpen(false);
+      // Forzamos el reseteo de la animación para que se vea al entrar
+      sessionStorage.removeItem('intro_seen_admin');
       router.push('/admin');
     } else {
       toast({

@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -71,18 +72,19 @@ export default function HomePage() {
         setShowSplash(false);
         sessionStorage.setItem('splash_seen', 'true');
         setIsReady(true);
-      }, 4200); // Un poco más de tiempo para apreciar la nueva animación
+      }, 4200); 
       return () => clearTimeout(timer);
     } else {
       setIsReady(true);
     }
     
+    // Al volver al inicio, permitimos que se vea la animación de admin de nuevo si entra
+    sessionStorage.removeItem('intro_seen_admin');
     sessionStorage.removeItem('intro_seen_hymns');
     sessionStorage.removeItem('intro_seen_praises');
     sessionStorage.removeItem('intro_seen_choirs');
     sessionStorage.removeItem('intro_seen_youth_choirs');
     sessionStorage.removeItem('intro_seen_special_occasions');
-    sessionStorage.removeItem('intro_seen_admin');
   }, []);
 
   const isFullySynced = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded && specialOccasionsLoaded && appearanceLoaded;
