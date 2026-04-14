@@ -79,6 +79,7 @@ export default function HomePage() {
     }
     
     // Resetear las intros de secciones al estar en Home para que vuelvan a salir al entrar
+    // Esto asegura que la animación de bienvenida del admin salga SIEMPRE que se pone la clave
     sessionStorage.removeItem('intro_seen_hymns');
     sessionStorage.removeItem('intro_seen_praises');
     sessionStorage.removeItem('intro_seen_choirs');
@@ -129,7 +130,7 @@ export default function HomePage() {
             <div className="absolute inset-0 flex">
               <div className="h-full flex-1 bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.6)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
               <div className="h-full w-16 bg-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)] animate-loading-beam-long" style={{ animationDelay: '0.3s' }} />
-              <div className="h-full flex-1 bg-red-600 shadow-[0_0_15px_rgba(220,38,38,0.6)] animate-loading-beam-long" style={{ animationDelay: '0.6s' }} />
+              <div className="h-full flex-1 bg-red-600 shadow-[0_0_20px_rgba(220,38,38,0.6)] animate-loading-beam-long" style={{ animationDelay: '0.6s' }} />
             </div>
           </div>
         </div>

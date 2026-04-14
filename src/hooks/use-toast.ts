@@ -10,7 +10,7 @@ import type {
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1500
+const TOAST_REMOVE_DELAY = 1500 // Tiempo rápido para que los avisos no se queden pegados
 
 type ToasterToast = ToastProps & {
   id: string
@@ -94,8 +94,6 @@ export const reducer = (state: State, action: Action): State => {
     case "DISMISS_TOAST": {
       const { toastId } = action
 
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
       if (toastId) {
         addToRemoveQueue(toastId)
       } else {
@@ -164,6 +162,11 @@ function toast({ ...props }: Toast) {
       },
     },
   })
+
+  // Programar auto-dismiss inmediato para una experiencia ágil
+  setTimeout(() => {
+    dismiss();
+  }, TOAST_REMOVE_DELAY);
 
   return {
     id: id,
