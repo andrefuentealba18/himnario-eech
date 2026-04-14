@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ChevronLeft, Settings, Inbox, AlertTriangle, Lightbulb, ExternalLink, ShieldCheck, Wallet, Zap, Info, ArrowDownCircle, ArrowUpCircle, Sparkles, Bot } from 'lucide-react';
+import { ChevronLeft, Settings, Inbox, AlertTriangle, Lightbulb, ExternalLink, ShieldCheck, Wallet, Zap, Info, ArrowDownCircle, ArrowUpCircle, Sparkles } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
@@ -15,7 +15,6 @@ import { BackupManager } from '@/components/backup-manager';
 import { SongTransferManager } from '@/components/song-transfer-manager';
 import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
 import { SongReviewList } from '@/components/song-review-list';
-import { AppAssistantChat } from '@/components/app-assistant-chat';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useState } from 'react';
@@ -55,11 +54,8 @@ export function AdminPanel() {
 
         <div className="p-4 space-y-6">
           <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 md:grid-cols-8 h-auto bg-muted/50 p-1 rounded-xl gap-1 overflow-x-auto">
+            <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 h-auto bg-muted/50 p-1 rounded-xl gap-1 overflow-x-auto">
               <TabsTrigger value="review" className="text-[10px] md:text-xs">Revisión {pendingCount > 0 && <Badge className="ml-1 px-1 h-4 min-w-4 text-[8px]">{pendingCount}</Badge>}</TabsTrigger>
-              <TabsTrigger value="assistant" className="text-[10px] md:text-xs bg-primary/10 text-primary data-[state=active]:bg-primary data-[state=active]:text-white">
-                <Bot className="h-3 w-3 mr-1" /> Asistente
-              </TabsTrigger>
               <TabsTrigger value="hymns" className="text-[10px] md:text-xs">Himnos</TabsTrigger>
               <TabsTrigger value="praises" className="text-[10px] md:text-xs">Alabanzas</TabsTrigger>
               <TabsTrigger value="choirs" className="text-[10px] md:text-xs">Coros</TabsTrigger>
@@ -69,9 +65,6 @@ export function AdminPanel() {
             </TabsList>
             
             <TabsContent value="review" className="mt-4"><SongReviewList /></TabsContent>
-            <TabsContent value="assistant" className="mt-4 animate-in fade-in slide-in-from-top-4 duration-500">
-              <AppAssistantChat />
-            </TabsContent>
             <TabsContent value="hymns" className="mt-4"><HymnAdminList /></TabsContent>
             <TabsContent value="praises" className="mt-4"><PraiseAdminList /></TabsContent>
             <TabsContent value="choirs" className="mt-4"><ChoirAdminList /></TabsContent>
