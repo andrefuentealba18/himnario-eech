@@ -1,10 +1,12 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, Sparkles, Loader2 } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
@@ -16,6 +18,7 @@ import { SongTransferManager } from '@/components/song-transfer-manager';
 import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
 import { SongReviewList } from '@/components/song-review-list';
 import { Badge } from '@/components/ui/badge';
+import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 import { usePraises } from '@/context/praises-context';
 import { useChoirs } from '@/context/choirs-context';
@@ -33,19 +36,108 @@ export function AdminPanel() {
   const { pendingYouthChoirs } = useYouthChoirs();
   const { pendingSpecialOccasions } = useSpecialOccasions();
 
+  const [showIntro, setShowIntro] = useState(false);
+  const [isReady, setIsReady] = useState(false);
+
   const pendingCount = pendingPraises.length + pendingChoirs.length + pendingYouthChoirs.length + pendingSpecialOccasions.length;
+
+  useEffect(() => {
+    const introSeen = sessionStorage.getItem('intro_seen_admin');
+    if (!introSeen) {
+      setShowIntro(true);
+      const timer = setTimeout(() => {
+        setShowIntro(false);
+        sessionStorage.setItem('intro_seen_admin', 'true');
+        setIsReady(true);
+      }, 2800);
+      return () => clearTimeout(timer);
+    } else {
+      setIsReady(true);
+    }
+  }, []);
 
   const handleTabChange = (value: string) => {
     router.replace(`${pathname}?tab=${value}`, { scroll: false });
   };
 
+  const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
+
+  if (showIntro) {
+    return (
+      <div className="fixed inset-0 z-[100] bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] bg-blue-600/10 rounded-full blur-[160px] animate-aura-giant" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180vw] h-[180vw] bg-amber-600/10 rounded-full blur-[180px] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-3s' }} />
+          <div className="absolute inset-0 design-grid opacity-[0.05]" />
+        </div>
+        
+        <div className="absolute top-24 right-12 w-24 h-24 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out">
+          <div className="absolute inset-0 bg-amber-400/25 blur-[100px] rounded-full scale-150 animate-pulse" />
+          <div className="relative p-1.5 bg-gradient-to-tr from-amber-400/60 to-transparent rounded-full shadow-2xl">
+            <Image 
+              src={insigniaUrl} 
+              alt="Insignia EECH" 
+              width={96} 
+              height={96} 
+              className="relative rounded-full object-cover border-2 border-white/20"
+              priority
+            />
+          </div>
+        </div>
+
+        <div className="relative flex flex-col items-center">
+          <div className="space-y-12 text-center px-6">
+            <div className="relative">
+              <div className="flex items-center justify-center gap-2 mb-4 animate-in fade-in slide-in-from-bottom-2 duration-1000">
+                <ShieldCheck className="h-5 w-5 text-amber-500" />
+                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-500/80">Acceso Restringido</span>
+              </div>
+              <h1 className="text-3xl font-black font-headline text-white animate-title-reveal-big uppercase tracking-[0.3em]">
+                Panel de Control
+              </h1>
+              
+              <div className="mt-12 relative w-64 h-1.5 mx-auto overflow-hidden rounded-full bg-white/5 shadow-inner border border-white/10">
+                <div className="absolute inset-0 flex">
+                  <div className="h-full flex-1 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.8)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
+                  <div className="h-full w-24 bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.4s' }} />
+                  <div className="h-full flex-1 bg-red-600 shadow-[0_0_20px_rgba(220,38,38,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.8s' }} />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="absolute bottom-24 left-0 w-full text-center px-8">
+          <div className="flex flex-col items-center gap-6">
+            <p className="text-[10px] font-black tracking-[0.6em] text-slate-500 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
+              Sistema de Gestión Administrativa
+            </p>
+            <div className="flex items-center gap-8 opacity-20">
+              <div className="h-px w-20 bg-blue-600" />
+              <Sparkles className="h-4 w-4 text-amber-500" />
+              <div className="h-px w-20 bg-red-600" />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isReady) return null;
+
   return (
-      <div className="w-full max-w-4xl mx-auto pb-20">
+      <div className="w-full max-w-4xl mx-auto pb-20 animate-in fade-in duration-1000">
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm p-2 border-b flex items-center justify-between h-14">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild className="rounded-full">
             <Link href="/"><ChevronLeft className="h-6 w-6" /><span className="sr-only">Volver</span></Link>
           </Button>
-          <h1 className="text-xl font-bold font-headline text-foreground">Panel de Administración</h1>
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-1.5 mb-0.5">
+              <ShieldCheck className="h-3 w-3 text-amber-600" />
+              <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Administración</span>
+            </div>
+            <h1 className="text-lg font-bold font-headline text-foreground leading-tight">Panel de Control</h1>
+          </div>
           <div className="w-10"></div>
         </header>
 
@@ -69,7 +161,7 @@ export function AdminPanel() {
             <TabsContent value="special" className="mt-4">
               <Card>
                 <CardHeader><CardTitle>Ocasiones Especiales</CardTitle></CardHeader>
-                <CardContent><p className="text-sm text-muted-foreground">Gestiona los cantos de Bautismos, Matrimonios, etc.</p></CardContent>
+                <CardContent><p className="text-sm text-muted-foreground">Gestiona los cantos de Bautismos, Matrimonios, etc. Los cambios realizados aquí se reflejan de inmediato en la sección pública.</p></CardContent>
               </Card>
             </TabsContent>
             <TabsContent value="more-settings" className="mt-4">
