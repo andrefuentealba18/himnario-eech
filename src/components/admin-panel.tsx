@@ -50,7 +50,7 @@ export function AdminPanel() {
         setShowIntro(false);
         sessionStorage.setItem('intro_seen_admin', 'true');
         setIsReady(true);
-      }, 2800);
+      }, 3000);
       return () => clearTimeout(timer);
     } else {
       setIsReady(true);
@@ -65,43 +65,50 @@ export function AdminPanel() {
 
   if (showIntro) {
     return (
-      <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center overflow-hidden">
+      <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center overflow-hidden animate-in fade-in duration-700">
+        {/* Fondo Cinemático Claro */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/40 via-white to-amber-100/40" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] bg-blue-600/10 rounded-full blur-[160px] animate-aura-giant" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180vw] h-[180vw] bg-amber-600/10 rounded-full blur-[180px] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-3s' }} />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/40 via-white to-amber-50/40" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] bg-blue-600/5 rounded-full blur-[160px] animate-aura-giant" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180vw] h-[180vw] bg-amber-400/10 rounded-full blur-[180px] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-3s' }} />
           <div className="absolute inset-0 design-grid opacity-[0.08]" />
         </div>
         
-        <div className="absolute top-24 right-12 w-24 h-24 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out">
-          <div className="absolute inset-0 bg-amber-400/25 blur-[100px] rounded-full scale-150 animate-pulse" />
-          <div className="relative p-1.5 bg-gradient-to-tr from-amber-400/60 to-transparent rounded-full shadow-2xl">
-            <Image 
-              src={insigniaUrl} 
-              alt="Insignia EECH" 
-              width={96} 
-              height={96} 
-              className="relative rounded-full object-cover border-2 border-white/80"
-              priority
-            />
+        {/* Logo con Resplandor Ámbar */}
+        <div className="relative mb-16 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out">
+          <div className="absolute inset-0 bg-amber-400/20 blur-[100px] rounded-full scale-150 animate-pulse" />
+          <div className="relative p-2 bg-gradient-to-tr from-amber-400 via-white to-amber-200 rounded-full shadow-2xl">
+            <div className="bg-white rounded-full p-1 overflow-hidden w-32 h-32 flex items-center justify-center shadow-inner">
+              <Image 
+                src={insigniaUrl} 
+                alt="Insignia EECH" 
+                width={128} 
+                height={128} 
+                className="rounded-full object-cover"
+                priority
+              />
+            </div>
           </div>
         </div>
 
+        {/* Títulos */}
         <div className="relative flex flex-col items-center">
           <div className="space-y-12 text-center px-6">
             <div className="relative">
-              <div className="flex items-center justify-center gap-2 mb-4 animate-in fade-in slide-in-from-bottom-2 duration-1000">
+              <div className="flex items-center justify-center gap-2 mb-6 animate-in fade-in slide-in-from-bottom-2 duration-1000 delay-500">
                 <ShieldCheck className="h-5 w-5 text-amber-600" />
-                <span className="text-[10px] font-black uppercase tracking-[0.4em] text-amber-600/80">Acceso Restringido</span>
+                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400">Acceso Autorizado</span>
               </div>
-              <h1 className="text-3xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.3em]">
-                Panel de Control
+              
+              <h1 className="text-4xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.2em]">
+                Panel de <span className="text-primary">Control</span>
               </h1>
               
-              <div className="mt-12 relative w-64 h-1.5 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
+              {/* Barra Tricolor de Carga */}
+              <div className="mt-12 relative w-72 h-1.5 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
                 <div className="absolute inset-0 flex">
                   <div className="h-full flex-1 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.8)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
-                  <div className="h-full w-24 bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.4s' }} />
+                  <div className="h-full w-20 bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.4s' }} />
                   <div className="h-full flex-1 bg-red-600 shadow-[0_0_20px_rgba(220,38,38,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.8s' }} />
                 </div>
               </div>
@@ -109,14 +116,15 @@ export function AdminPanel() {
           </div>
         </div>
 
-        <div className="absolute bottom-24 left-0 w-full text-center px-8">
+        {/* Footer de la Intro */}
+        <div className="absolute bottom-20 left-0 w-full text-center px-8">
           <div className="flex flex-col items-center gap-6">
-            <p className="text-[10px] font-black tracking-[0.6em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
-              Sistema de Gestión Administrativa
+            <p className="text-[10px] font-black tracking-[0.8em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
+              Gestión Administrativa
             </p>
             <div className="flex items-center gap-8 opacity-40">
               <div className="h-px w-20 bg-blue-600" />
-              <Sparkles className="h-4 w-4 text-amber-500" />
+              <Sparkles className="h-4 w-4 text-amber-500 animate-spin-slow" />
               <div className="h-px w-20 bg-red-600" />
             </div>
           </div>
@@ -129,50 +137,75 @@ export function AdminPanel() {
 
   return (
       <div className="w-full max-w-4xl mx-auto pb-20 animate-in fade-in duration-1000">
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm p-2 border-b flex items-center justify-between h-14">
-          <Button variant="ghost" size="icon" asChild className="rounded-full">
-            <Link href="/"><ChevronLeft className="h-6 w-6" /><span className="sr-only">Volver</span></Link>
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-sm pt-16 pb-4 px-4 border-b flex items-center justify-between min-h-[100px]">
+          <Button variant="ghost" size="icon" asChild className="rounded-full h-12 w-12 hover:bg-primary/10 transition-colors">
+            <Link href="/"><ChevronLeft className="h-7 w-7 text-slate-600" /><span className="sr-only">Volver</span></Link>
           </Button>
           <div className="flex flex-col items-center">
             <div className="flex items-center gap-1.5 mb-0.5">
               <ShieldCheck className="h-3 w-3 text-amber-600" />
               <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Administración</span>
             </div>
-            <h1 className="text-lg font-bold font-headline text-foreground leading-tight">Panel de Control</h1>
+            <h1 className="text-xl font-bold font-headline text-foreground leading-tight tracking-tight">Panel de Control</h1>
           </div>
-          <div className="w-10"></div>
+          <div className="w-12"></div>
         </header>
 
         <div className="p-4 space-y-6">
           <Tabs value={tab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 h-auto bg-muted/50 p-1 rounded-xl gap-1 overflow-x-auto">
-              <TabsTrigger value="review" className="text-[10px] md:text-xs">Revisión {pendingCount > 0 && <Badge className="ml-1 px-1 h-4 min-w-4 text-[8px]">{pendingCount}</Badge>}</TabsTrigger>
-              <TabsTrigger value="hymns" className="text-[10px] md:text-xs">Himnos</TabsTrigger>
-              <TabsTrigger value="praises" className="text-[10px] md:text-xs">Alabanzas</TabsTrigger>
-              <TabsTrigger value="choirs" className="text-[10px] md:text-xs">Coros</TabsTrigger>
-              <TabsTrigger value="youth-choirs" className="text-[10px] md:text-xs">Agrup.</TabsTrigger>
-              <TabsTrigger value="special" className="text-[10px] md:text-xs">Especial</TabsTrigger>
-              <TabsTrigger value="more-settings" className="text-[10px] md:text-xs">Más</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-4 md:grid-cols-7 h-auto bg-muted/50 p-1 rounded-2xl gap-1 overflow-x-auto">
+              <TabsTrigger value="review" className="text-[10px] md:text-xs rounded-xl h-10">Revisión {pendingCount > 0 && <Badge className="ml-1 px-1 h-4 min-w-4 text-[8px]">{pendingCount}</Badge>}</TabsTrigger>
+              <TabsTrigger value="hymns" className="text-[10px] md:text-xs rounded-xl h-10">Himnos</TabsTrigger>
+              <TabsTrigger value="praises" className="text-[10px] md:text-xs rounded-xl h-10">Alabanzas</TabsTrigger>
+              <TabsTrigger value="choirs" className="text-[10px] md:text-xs rounded-xl h-10">Coros</TabsTrigger>
+              <TabsTrigger value="youth-choirs" className="text-[10px] md:text-xs rounded-xl h-10">Agrup.</TabsTrigger>
+              <TabsTrigger value="special" className="text-[10px] md:text-xs rounded-xl h-10">Especial</TabsTrigger>
+              <TabsTrigger value="more-settings" className="text-[10px] md:text-xs rounded-xl h-10">Más</TabsTrigger>
             </TabsList>
             
-            <TabsContent value="review" className="mt-4"><SongReviewList /></TabsContent>
-            <TabsContent value="hymns" className="mt-4"><HymnAdminList /></TabsContent>
-            <TabsContent value="praises" className="mt-4"><PraiseAdminList /></TabsContent>
-            <TabsContent value="choirs" className="mt-4"><ChoirAdminList /></TabsContent>
-            <TabsContent value="youth-choirs" className="mt-4"><YouthChoirAdminList /></TabsContent>
-            <TabsContent value="special" className="mt-4">
-              <Card>
-                <CardHeader><CardTitle>Ocasiones Especiales</CardTitle></CardHeader>
-                <CardContent><p className="text-sm text-muted-foreground">Gestiona los cantos de Bautismos, Matrimonios, etc. Los cambios realizados aquí se reflejan de inmediato en la sección pública.</p></CardContent>
+            <TabsContent value="review" className="mt-6 space-y-4">
+              <SongReviewList />
+            </TabsContent>
+            
+            <TabsContent value="hymns" className="mt-6">
+              <HymnAdminList />
+            </TabsContent>
+            
+            <TabsContent value="praises" className="mt-6">
+              <PraiseAdminList />
+            </TabsContent>
+            
+            <TabsContent value="choirs" className="mt-6">
+              <ChoirAdminList />
+            </TabsContent>
+            
+            <TabsContent value="youth-choirs" className="mt-6">
+              <YouthChoirAdminList />
+            </TabsContent>
+            
+            <TabsContent value="special" className="mt-6">
+              <Card className="app-card overflow-hidden">
+                <div className="h-1 w-full bg-amber-500" />
+                <CardHeader>
+                  <CardTitle className="text-lg">Ocasiones Especiales</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    Gestiona los cantos de Bautismos, Matrimonios y otras ceremonias. 
+                    Puedes agregar cantos manualmente o importarlos desde las otras secciones usando el buscador integrado en la sección pública.
+                  </p>
+                  <Button asChild className="mt-6 rounded-xl bg-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-100">
+                    <Link href="/special-occasions">Ir a Especiales</Link>
+                  </Button>
+                </CardContent>
               </Card>
             </TabsContent>
-            <TabsContent value="more-settings" className="mt-4">
-              <div className="space-y-6">
-                <DuplicateSongsManager />
-                <MissingHymns />
-                <SongTransferManager />
-                <BackupManager />
-              </div>
+            
+            <TabsContent value="more-settings" className="mt-6 space-y-8 pb-10">
+              <DuplicateSongsManager />
+              <MissingHymns />
+              <SongTransferManager />
+              <BackupManager />
             </TabsContent>
           </Tabs>
         </div>
