@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -72,14 +71,12 @@ export default function HomePage() {
         setShowSplash(false);
         sessionStorage.setItem('splash_seen', 'true');
         setIsReady(true);
-      }, 3500); 
+      }, 4200); // Un poco más de tiempo para apreciar la nueva animación
       return () => clearTimeout(timer);
     } else {
       setIsReady(true);
     }
     
-    // Resetear las intros de secciones al estar en Home para que vuelvan a salir al entrar
-    // Esto asegura que la animación de bienvenida del admin salga SIEMPRE que se pone la clave
     sessionStorage.removeItem('intro_seen_hymns');
     sessionStorage.removeItem('intro_seen_praises');
     sessionStorage.removeItem('intro_seen_choirs');
@@ -94,51 +91,68 @@ export default function HomePage() {
   if (showSplash) {
     return (
       <div className="fixed inset-0 z-[200] bg-white dark:bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
+        {/* Capa de fondo con profundidad */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250vw] h-[250vw] bg-blue-600/10 rounded-full blur-[180px] animate-aura-giant" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220vw] h-[220vw] bg-red-600/10 rounded-full blur-[200px] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-4s' }} />
-          <div className="absolute inset-0 design-grid opacity-[0.1]" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300vw] h-[300vw] bg-blue-600/[0.08] rounded-full blur-[180px] animate-aura-giant" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250vw] h-[250vw] bg-amber-400/[0.08] rounded-full blur-[200px] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-4s' }} />
+          <div className="absolute inset-0 design-grid opacity-[0.15] [mask-image:radial-gradient(circle_at_center,#000_20%,transparent_100%)]" />
         </div>
 
         <div className="relative flex flex-col items-center gap-12 text-center px-8">
-          <div className="relative animate-in fade-in zoom-in-90 duration-1000">
-            <div className="absolute inset-0 bg-amber-400/30 blur-[80px] rounded-full scale-150 animate-pulse" />
-            <div className="relative p-2 bg-gradient-to-tr from-amber-400 via-white to-amber-200 rounded-full shadow-2xl shadow-amber-200/20">
-              <div className="bg-white rounded-full p-1 overflow-hidden w-32 h-32 flex items-center justify-center">
+          {/* Logo con entrada energética */}
+          <div className="relative animate-in fade-in zoom-in-75 duration-1000 ease-out">
+            <div className="absolute inset-0 bg-amber-400/40 blur-[100px] rounded-full scale-150 animate-pulse" />
+            <div className="relative p-2.5 bg-gradient-to-tr from-amber-400 via-white to-amber-100 rounded-full shadow-2xl shadow-amber-200/30 transform transition-transform hover:scale-105 duration-700">
+              <div className="bg-white rounded-full p-1.5 overflow-hidden w-36 h-36 flex items-center justify-center shadow-inner">
                 <Image 
                   src={insigniaUrl} 
                   alt="EECH Logo" 
-                  width={128} 
-                  height={128} 
-                  className="rounded-full object-cover"
+                  width={144} 
+                  height={144} 
+                  className="rounded-full object-cover animate-float"
                   priority
                 />
               </div>
             </div>
           </div>
 
-          <div className="space-y-4">
-            <h1 className="text-5xl font-black font-headline text-slate-900 dark:text-white animate-title-reveal-big tracking-[0.2em] uppercase">
-              Bienvenido
-            </h1>
-            <p className="text-[10px] font-black tracking-[0.6em] text-primary/60 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
-              Himnario Digital Oficial
-            </p>
+          {/* Textos con revelación progresiva */}
+          <div className="space-y-6">
+            <div className="overflow-hidden">
+              <h1 className="text-6xl font-black font-headline text-slate-900 dark:text-white animate-title-reveal-big tracking-[0.3em] uppercase drop-shadow-sm">
+                Bienvenido
+              </h1>
+            </div>
+            
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-700 fill-mode-both">
+              <div className="flex items-center justify-center gap-3 mb-2">
+                <div className="h-px w-8 bg-primary/30" />
+                <p className="text-[11px] font-black tracking-[0.5em] text-primary/70 uppercase">
+                  Himnario Digital Oficial
+                </p>
+                <div className="h-px w-8 bg-primary/30" />
+              </div>
+            </div>
           </div>
 
-          <div className="relative w-64 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5 shadow-inner border border-slate-200/50 dark:border-white/10 mt-4">
+          {/* Barra de progreso tricolor con brillo */}
+          <div className="relative w-72 h-2.5 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5 shadow-inner border border-slate-200/50 dark:border-white/10 mt-4 animate-in fade-in zoom-in-95 duration-1000 delay-1000 fill-mode-both">
             <div className="absolute inset-0 flex">
-              <div className="h-full flex-1 bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.6)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
-              <div className="h-full w-16 bg-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.6)] animate-loading-beam-long" style={{ animationDelay: '0.3s' }} />
-              <div className="h-full flex-1 bg-red-600 shadow-[0_0_20px_rgba(220,38,38,0.6)] animate-loading-beam-long" style={{ animationDelay: '0.6s' }} />
+              <div className="h-full flex-1 bg-blue-600 shadow-[0_0_25px_rgba(37,99,235,0.9)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
+              <div className="h-full w-20 bg-amber-400 shadow-[0_0_25px_rgba(251,191,36,0.9)] animate-loading-beam-long" style={{ animationDelay: '0.3s' }} />
+              <div className="h-full flex-1 bg-red-600 shadow-[0_0_25px_rgba(220,38,38,0.9)] animate-loading-beam-long" style={{ animationDelay: '0.6s' }} />
             </div>
           </div>
         </div>
 
-        <div className="absolute bottom-16 left-0 w-full text-center">
-          <p className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.4em]">
-            Ejército Evangélico de Chile
-          </p>
+        {/* Footer Solemne */}
+        <div className="absolute bottom-16 left-0 w-full text-center px-10 animate-in fade-in slide-in-from-bottom-2 duration-1000 delay-1500 fill-mode-both">
+          <div className="flex flex-col items-center gap-4">
+            <div className="h-px w-12 bg-slate-300 dark:bg-white/10" />
+            <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.8em] ml-[0.8em]">
+              Ejército Evangélico de Chile
+            </p>
+          </div>
         </div>
       </div>
     );
