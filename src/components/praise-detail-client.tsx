@@ -121,8 +121,8 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
   return (
     <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
         <div className="fixed inset-0 -z-10 pointer-events-none">
-          <div className="absolute top-1/4 left-1/4 w-[150%] h-[150%] bg-gradient-to-tr from-indigo-100/40 via-blue-50/30 to-transparent blur-[120px] rounded-full animate-aura-slow" />
-          <div className="absolute bottom-1/4 right-1/4 w-[150%] h-[150%] bg-gradient-to-bl from-amber-50/30 via-slate-50/20 to-indigo-50/30 blur-[120px] rounded-full animate-aura-slow" style={{ animationDirection: 'reverse', animationDuration: '30s' }} />
+          <div className="absolute top-0 right-0 w-[120vw] h-[120vw] bg-blue-600/10 rounded-full blur-[140px] animate-aura-giant" />
+          <div className="absolute bottom-0 left-0 w-[100vw] h-[100vw] bg-red-600/10 rounded-full blur-[120px] animate-aura-giant" style={{ animationDirection: 'reverse' }} />
           <div className="absolute inset-0 design-grid opacity-[0.04]" />
         </div>
 
@@ -164,7 +164,12 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
 
       <main className="flex-1 py-10 px-4 flex flex-col items-center justify-start overflow-y-auto">
         <div className="w-full max-w-3xl glass-morphism rounded-[2.5rem] p-8 sm:p-16 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-4 relative overflow-hidden group">
-            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-600/40 via-blue-400/40 to-indigo-600/40" />
+            <div className="absolute top-0 left-0 w-full h-1.5 flex">
+              <div className="h-full flex-1 bg-blue-600/40" />
+              <div className="h-full flex-1 bg-white/40" />
+              <div className="h-full flex-1 bg-red-600/40" />
+            </div>
+            
             <div className={`font-body leading-[1.8] text-center transition-all duration-300 ease-in-out ${fontSizes[fontSizeIndex]}`}>
                 {praise.lyrics.split(/\n\s*\n/).map((paragraph, pIndex) => {
                   const lines = paragraph.trim().split('\n');
@@ -173,10 +178,10 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
                   return (
                     <div key={pIndex} className={cn(
                       "mb-12 last:mb-0 transition-all duration-500",
-                      isChorus ? "bg-indigo-500/5 dark:bg-indigo-500/10 p-8 rounded-3xl border border-indigo-500/10 relative" : ""
+                      isChorus ? "bg-primary/5 dark:bg-primary/10 p-8 rounded-3xl border border-primary/10 relative" : ""
                     )}>
                       {isChorus && (
-                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-black px-4 py-1 rounded-full shadow-lg uppercase tracking-widest">
+                        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] font-black px-4 py-1 rounded-full shadow-lg uppercase tracking-widest">
                           Coro
                         </div>
                       )}
@@ -185,7 +190,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
                         return (
                           <p key={lIndex} className={cn(
                             "whitespace-pre-wrap mb-1 last:mb-0",
-                            isChorus ? "font-black text-indigo-600 dark:text-indigo-400 italic" : "text-foreground/90 font-medium"
+                            isChorus ? "font-black text-primary dark:text-blue-400 italic" : "text-foreground/90 font-medium"
                           )}>
                             {line}
                           </p>
