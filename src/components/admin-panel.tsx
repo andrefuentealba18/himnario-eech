@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, ShieldCheck, Sparkles, Loader2, Lock } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, Sparkles, Loader2, Lock, LayoutDashboard } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
@@ -50,7 +50,7 @@ export function AdminPanel() {
         setShowIntro(false);
         sessionStorage.setItem('intro_seen_admin', 'true');
         setIsReady(true);
-      }, 2800);
+      }, 3500); // Un poco más largo para disfrutar el saludo
       return () => clearTimeout(timer);
     } else {
       setIsReady(true);
@@ -67,44 +67,49 @@ export function AdminPanel() {
     return (
       <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center overflow-hidden animate-in fade-in duration-700">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-50/40 via-white to-amber-50/40" />
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/40 via-white to-amber-50/40" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] bg-blue-600/5 rounded-full blur-[160px] animate-aura-giant" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[180vw] h-[180vw] bg-amber-400/10 rounded-full blur-[180px] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-3s' }} />
           <div className="absolute inset-0 design-grid opacity-[0.08]" />
         </div>
         
-        <div className="relative mb-12 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out flex flex-col items-center">
-          <div className="absolute inset-0 bg-amber-400/30 blur-[100px] rounded-full scale-150 animate-pulse" />
-          <div className="relative p-2 bg-gradient-to-tr from-amber-400 via-white to-amber-200 rounded-full shadow-2xl">
-            <div className="bg-white rounded-full p-1 overflow-hidden w-28 h-28 flex items-center justify-center shadow-inner">
+        <div className="relative mb-16 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out flex flex-col items-center">
+          <div className="absolute inset-0 bg-amber-400/25 blur-[100px] rounded-full scale-150 animate-pulse" />
+          <div className="relative p-2 bg-gradient-to-tr from-amber-400 via-white to-blue-400 rounded-full shadow-2xl">
+            <div className="bg-white rounded-full p-1 overflow-hidden w-32 h-32 flex items-center justify-center shadow-inner">
               <Image 
                 src={insigniaUrl} 
                 alt="Insignia EECH" 
-                width={112} 
-                height={112} 
+                width={128} 
+                height={128} 
                 className="rounded-full object-cover"
                 priority
               />
             </div>
           </div>
-          <div className="absolute -bottom-4 right-0 bg-blue-600 p-2 rounded-xl shadow-lg border-2 border-white animate-bounce delay-700">
-            <ShieldCheck className="h-5 w-5 text-white" />
+          <div className="absolute -bottom-4 right-0 bg-blue-600 p-2.5 rounded-2xl shadow-xl border-4 border-white animate-bounce delay-700">
+            <ShieldCheck className="h-6 w-6 text-white" />
           </div>
         </div>
 
         <div className="relative flex flex-col items-center">
-          <div className="space-y-10 text-center px-6">
+          <div className="space-y-12 text-center px-8 max-w-md">
             <div className="relative">
-              <div className="flex items-center justify-center gap-2 mb-4 animate-in fade-in slide-in-from-bottom-2 duration-1000 delay-500">
-                <Lock className="h-3 w-3 text-amber-600" />
-                <span className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400">Acceso Autorizado</span>
+              <div className="flex items-center justify-center gap-3 mb-6 animate-in fade-in slide-in-from-bottom-2 duration-1000 delay-500">
+                <div className="h-px w-8 bg-amber-500/40" />
+                <span className="text-[10px] font-black uppercase tracking-[0.6em] text-slate-400">Acceso Autorizado</span>
+                <div className="h-px w-8 bg-amber-500/40" />
               </div>
               
-              <h1 className="text-3xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.3em] leading-tight">
-                Panel de <span className="text-primary">Control</span>
+              <h1 className="text-5xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.1em] leading-tight">
+                Bienvenido
               </h1>
               
-              <div className="mt-10 relative w-64 h-1.5 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
+              <p className="mt-6 text-[11px] font-black tracking-[0.3em] text-primary/70 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000 leading-relaxed">
+                Panel de Control del Administrador
+              </p>
+              
+              <div className="mt-12 relative w-72 h-2 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
                 <div className="absolute inset-0 flex">
                   <div className="h-full flex-1 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.8)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
                   <div className="h-full w-20 bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.4s' }} />
@@ -118,7 +123,7 @@ export function AdminPanel() {
         <div className="absolute bottom-16 left-0 w-full text-center px-8">
           <div className="flex flex-col items-center gap-4">
             <p className="text-[9px] font-black tracking-[0.6em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
-              Gestión Administrativa Oficial
+              Ejército Evangélico de Chile
             </p>
             <div className="flex items-center gap-6 opacity-30">
               <div className="h-px w-16 bg-blue-600" />
@@ -142,11 +147,13 @@ export function AdminPanel() {
           <div className="flex flex-col items-center">
             <div className="flex items-center gap-1.5 mb-0.5">
               <ShieldCheck className="h-3 w-3 text-amber-600" />
-              <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Administración</span>
+              <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground">Gestión Oficial</span>
             </div>
-            <h1 className="text-xl font-bold font-headline text-foreground leading-tight tracking-tight">Panel de Control</h1>
+            <h1 className="text-xl font-bold font-headline text-foreground leading-tight tracking-tight">Panel Administrativo</h1>
           </div>
-          <div className="w-12"></div>
+          <div className="p-2 bg-primary/5 rounded-xl border border-primary/10">
+            <LayoutDashboard className="h-6 w-6 text-primary" />
+          </div>
         </header>
 
         <div className="p-4 space-y-6">
