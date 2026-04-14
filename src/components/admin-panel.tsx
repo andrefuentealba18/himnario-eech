@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { ChevronLeft, Settings, Inbox, AlertTriangle, Lightbulb, ExternalLink, ShieldCheck, Wallet, Zap, Info, ArrowDownCircle, ArrowUpCircle, Sparkles } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { ChevronLeft, Wallet, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
@@ -16,7 +16,6 @@ import { SongTransferManager } from '@/components/song-transfer-manager';
 import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
 import { SongReviewList } from '@/components/song-review-list';
 import { Badge } from '@/components/ui/badge';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { useState } from 'react';
 
 import { usePraises } from '@/context/praises-context';
