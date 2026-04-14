@@ -1,3 +1,4 @@
+
 "use client"
 
 import * as React from "react"
@@ -33,7 +34,7 @@ const toastVariants = cva(
         destructive:
           "destructive group border-destructive bg-destructive text-destructive-foreground",
         success:
-          "border-green-600 bg-green-600 text-white shadow-green-500/20",
+          "border-green-500 bg-green-600 text-white shadow-xl shadow-green-500/20",
       },
     },
     defaultVariants: {

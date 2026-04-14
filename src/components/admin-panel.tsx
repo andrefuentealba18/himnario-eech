@@ -7,7 +7,7 @@ import Image from 'next/image';
 import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChevronLeft, ShieldCheck, Sparkles, Loader2 } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, Sparkles, Loader2, Lock } from 'lucide-react';
 import { HymnAdminList } from '@/components/hymn-admin-list';
 import { PraiseAdminList } from '@/components/praise-admin-list';
 import { ChoirAdminList } from '@/components/choir-admin-list';
@@ -50,7 +50,7 @@ export function AdminPanel() {
         setShowIntro(false);
         sessionStorage.setItem('intro_seen_admin', 'true');
         setIsReady(true);
-      }, 3000);
+      }, 2800);
       return () => clearTimeout(timer);
     } else {
       setIsReady(true);
@@ -66,7 +66,6 @@ export function AdminPanel() {
   if (showIntro) {
     return (
       <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center overflow-hidden animate-in fade-in duration-700">
-        {/* Fondo Cinemático Claro */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-50/40 via-white to-amber-50/40" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200vw] h-[200vw] bg-blue-600/5 rounded-full blur-[160px] animate-aura-giant" />
@@ -74,38 +73,38 @@ export function AdminPanel() {
           <div className="absolute inset-0 design-grid opacity-[0.08]" />
         </div>
         
-        {/* Logo con Resplandor Ámbar */}
-        <div className="relative mb-16 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out">
-          <div className="absolute inset-0 bg-amber-400/20 blur-[100px] rounded-full scale-150 animate-pulse" />
+        <div className="relative mb-12 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out flex flex-col items-center">
+          <div className="absolute inset-0 bg-amber-400/30 blur-[100px] rounded-full scale-150 animate-pulse" />
           <div className="relative p-2 bg-gradient-to-tr from-amber-400 via-white to-amber-200 rounded-full shadow-2xl">
-            <div className="bg-white rounded-full p-1 overflow-hidden w-32 h-32 flex items-center justify-center shadow-inner">
+            <div className="bg-white rounded-full p-1 overflow-hidden w-28 h-28 flex items-center justify-center shadow-inner">
               <Image 
                 src={insigniaUrl} 
                 alt="Insignia EECH" 
-                width={128} 
-                height={128} 
+                width={112} 
+                height={112} 
                 className="rounded-full object-cover"
                 priority
               />
             </div>
           </div>
+          <div className="absolute -bottom-4 right-0 bg-blue-600 p-2 rounded-xl shadow-lg border-2 border-white animate-bounce delay-700">
+            <ShieldCheck className="h-5 w-5 text-white" />
+          </div>
         </div>
 
-        {/* Títulos */}
         <div className="relative flex flex-col items-center">
-          <div className="space-y-12 text-center px-6">
+          <div className="space-y-10 text-center px-6">
             <div className="relative">
-              <div className="flex items-center justify-center gap-2 mb-6 animate-in fade-in slide-in-from-bottom-2 duration-1000 delay-500">
-                <ShieldCheck className="h-5 w-5 text-amber-600" />
+              <div className="flex items-center justify-center gap-2 mb-4 animate-in fade-in slide-in-from-bottom-2 duration-1000 delay-500">
+                <Lock className="h-3 w-3 text-amber-600" />
                 <span className="text-[10px] font-black uppercase tracking-[0.5em] text-slate-400">Acceso Autorizado</span>
               </div>
               
-              <h1 className="text-4xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.2em]">
+              <h1 className="text-3xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.3em] leading-tight">
                 Panel de <span className="text-primary">Control</span>
               </h1>
               
-              {/* Barra Tricolor de Carga */}
-              <div className="mt-12 relative w-72 h-1.5 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
+              <div className="mt-10 relative w-64 h-1.5 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
                 <div className="absolute inset-0 flex">
                   <div className="h-full flex-1 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.8)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
                   <div className="h-full w-20 bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.4s' }} />
@@ -116,16 +115,15 @@ export function AdminPanel() {
           </div>
         </div>
 
-        {/* Footer de la Intro */}
-        <div className="absolute bottom-20 left-0 w-full text-center px-8">
-          <div className="flex flex-col items-center gap-6">
-            <p className="text-[10px] font-black tracking-[0.8em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
-              Gestión Administrativa
+        <div className="absolute bottom-16 left-0 w-full text-center px-8">
+          <div className="flex flex-col items-center gap-4">
+            <p className="text-[9px] font-black tracking-[0.6em] text-slate-400 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000">
+              Gestión Administrativa Oficial
             </p>
-            <div className="flex items-center gap-8 opacity-40">
-              <div className="h-px w-20 bg-blue-600" />
-              <Sparkles className="h-4 w-4 text-amber-500 animate-spin-slow" />
-              <div className="h-px w-20 bg-red-600" />
+            <div className="flex items-center gap-6 opacity-30">
+              <div className="h-px w-16 bg-blue-600" />
+              <Sparkles className="h-3 w-3 text-amber-500 animate-spin-slow" />
+              <div className="h-px w-16 bg-red-600" />
             </div>
           </div>
         </div>
