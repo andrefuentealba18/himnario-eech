@@ -26,6 +26,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { ShieldCheck } from 'lucide-react';
 
 const toneSchema = z.object({
   tone: z.string().min(1, 'Debes escribir o seleccionar una tonalidad.'),
@@ -83,7 +84,10 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
   async function onToneSubmit(values: ToneFormData) {
     const result = await onToneUpdated(values.tone);
     if (result.success) {
-      toast({ title: 'Tonalidad actualizada' });
+      toast({ 
+        variant: 'success',
+        title: 'Tonalidad actualizada' 
+      });
       handleOpenChange(false);
     } else {
       toast({ variant: 'destructive', title: 'Error', description: 'No se pudo guardar la tonalidad.' });
@@ -92,7 +96,10 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
   
   function onPasswordSubmit(values: PasswordFormData) {
     if (values.password === '4002') {
-      toast({ title: 'Acceso concedido' });
+      toast({ 
+        variant: 'success',
+        title: 'Acceso concedido' 
+      });
       setIsAuthenticated(true);
     } else {
       toast({
@@ -127,32 +134,35 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className={isAuthenticated ? "sm:max-w-md" : "max-w-[320px] rounded-[2rem] p-6"}>
         {!isAuthenticated ? (
            <>
-             <DialogHeader>
-               <DialogTitle>Acceso de Administrador</DialogTitle>
-               <DialogDescription>
-                 Ingresa la contraseña para cambiar la tonalidad.
+             <DialogHeader className="text-center">
+               <div className="mx-auto p-3 bg-primary/10 rounded-full w-fit mb-2">
+                 <ShieldCheck className="h-6 w-6 text-primary" />
+               </div>
+               <DialogTitle className="text-lg font-bold">Admin</DialogTitle>
+               <DialogDescription className="text-xs">
+                 Ingresa la clave.
                </DialogDescription>
              </DialogHeader>
              <Form {...passwordForm}>
-               <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4 py-4">
+               <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4 py-2">
                  <FormField
                    control={passwordForm.control}
                    name="password"
                    render={({ field }) => (
                      <FormItem>
-                       <FormLabel>Contraseña</FormLabel>
+                       <FormLabel className="sr-only">Contraseña</FormLabel>
                        <FormControl>
-                         <Input type="password" placeholder="••••••••" {...field} />
+                         <Input type="password" placeholder="••••" {...field} className="text-center tracking-[0.8em] font-black h-11 text-lg rounded-xl border-2" autoFocus />
                        </FormControl>
                        <FormMessage />
                      </FormItem>
                    )}
                  />
                  <DialogFooter>
-                   <Button type="submit">Acceder</Button>
+                   <Button type="submit" className="w-full rounded-xl h-11 font-bold">Acceder</Button>
                  </DialogFooter>
                </form>
              </Form>

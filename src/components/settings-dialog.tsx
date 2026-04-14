@@ -46,8 +46,8 @@ export function SettingsDialog() {
   function onSubmit(values: z.infer<typeof passwordSchema>) {
     if (values.password === '4002') {
       toast({
+        variant: 'success',
         title: 'Acceso concedido',
-        description: 'Redirigiendo...',
       });
       setOpen(false);
       router.push('/admin');
