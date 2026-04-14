@@ -265,7 +265,7 @@ export default function HomePage() {
                 <div className="space-y-1">
                   <p className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Iglesia Ejército Evangélico de Chile</p>
                   <p className="text-[7px] font-black text-primary/30 uppercase tracking-[0.1em] border border-primary/5 rounded-full px-4 py-1 inline-block">
-                    PABLO FUENTEALBA 2026
+                    PF - TODOS LOS DERECHOS RESERVADOS 2026
                   </p>
                 </div>
               </div>
