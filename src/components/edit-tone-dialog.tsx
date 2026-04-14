@@ -26,7 +26,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, Sparkles } from 'lucide-react';
 
 const toneSchema = z.object({
   tone: z.string().min(1, 'Debes escribir o seleccionar una tonalidad.'),
@@ -134,20 +134,25 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
       <DialogTrigger asChild>
         {children}
       </DialogTrigger>
-      <DialogContent className={isAuthenticated ? "sm:max-w-md" : "max-w-[320px] rounded-[2rem] p-6"}>
+      <DialogContent className={isAuthenticated ? "sm:max-w-md rounded-[2.5rem]" : "w-[95vw] max-w-[320px] rounded-[2.5rem] p-0 border-none shadow-2xl bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl overflow-hidden"}>
         {!isAuthenticated ? (
-           <>
-             <DialogHeader className="text-center">
-               <div className="mx-auto p-3 bg-primary/10 rounded-full w-fit mb-2">
-                 <ShieldCheck className="h-6 w-6 text-primary" />
+           <div className="p-8">
+             <DialogHeader className="text-center space-y-4">
+               <div className="relative mx-auto w-fit">
+                 <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full scale-150 animate-pulse" />
+                 <div className="relative p-4 bg-gradient-to-tr from-primary to-blue-400 rounded-full shadow-xl">
+                   <ShieldCheck className="h-7 w-7 text-white" />
+                 </div>
                </div>
-               <DialogTitle className="text-lg font-bold">Admin</DialogTitle>
-               <DialogDescription className="text-xs">
-                 Ingresa la clave.
-               </DialogDescription>
+               <div className="space-y-1">
+                 <DialogTitle className="text-xl font-black uppercase tracking-tight text-slate-900 dark:text-white">Admin</DialogTitle>
+                 <DialogDescription className="text-[10px] font-bold tracking-[0.2em] text-slate-400 uppercase">
+                   Ingresa la clave para editar
+                 </DialogDescription>
+               </div>
              </DialogHeader>
              <Form {...passwordForm}>
-               <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-4 py-2">
+               <form onSubmit={passwordForm.handleSubmit(onPasswordSubmit)} className="space-y-6 py-6">
                  <FormField
                    control={passwordForm.control}
                    name="password"
@@ -155,36 +160,43 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
                      <FormItem>
                        <FormLabel className="sr-only">Contraseña</FormLabel>
                        <FormControl>
-                         <Input type="password" placeholder="••••" {...field} className="text-center tracking-[0.8em] font-black h-11 text-lg rounded-xl border-2" autoFocus />
+                         <Input 
+                           type="password" 
+                           placeholder="••••" 
+                           {...field} 
+                           className="text-center tracking-[0.8em] font-black h-14 text-xl rounded-[1rem] border-2 bg-white/50 dark:bg-white/5 focus:border-primary transition-all shadow-inner" 
+                           autoFocus 
+                         />
                        </FormControl>
-                       <FormMessage />
+                       <FormMessage className="text-center text-[10px] font-bold uppercase mt-2" />
                      </FormItem>
                    )}
                  />
-                 <DialogFooter>
-                   <Button type="submit" className="w-full rounded-xl h-11 font-bold">Acceder</Button>
-                 </DialogFooter>
+                 <Button type="submit" className="w-full rounded-[1rem] h-14 font-black uppercase tracking-widest shadow-lg shadow-primary/20 bg-primary text-white">
+                   Acceder
+                 </Button>
                </form>
              </Form>
-           </>
+           </div>
         ) : (
-          <>
+          <div className="p-6">
             <DialogHeader>
-              <DialogTitle>Cambiar Tonalidad</DialogTitle>
-              <DialogDescription>Escribe o selecciona la nueva tonalidad para "{song.title}".</DialogDescription>
+              <DialogTitle className="font-headline text-2xl font-bold">Cambiar Tonalidad</DialogTitle>
+              <DialogDescription className="text-sm">Escribe o selecciona la nueva tonalidad para "{song.title}".</DialogDescription>
             </DialogHeader>
             <Form {...toneForm}>
-              <form onSubmit={toneForm.handleSubmit(onToneSubmit)} className="space-y-4 pt-4">
+              <form onSubmit={toneForm.handleSubmit(onToneSubmit)} className="space-y-4 pt-6">
                 <FormField
                   control={toneForm.control}
                   name="tone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Tonalidad</FormLabel>
+                      <FormLabel className="font-bold text-[10px] uppercase tracking-widest ml-1">Tonalidad</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Escribe o busca una tonalidad..."
                           {...field}
+                          className="rounded-xl h-12 border-2"
                           onChange={(e) => {
                             field.onChange(e);
                             setSearchTerm(e.target.value);
@@ -197,13 +209,13 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
                   )}
                 />
 
-                <ScrollArea className="h-40 w-full rounded-md border">
-                  <div className="p-1">
+                <ScrollArea className="h-48 w-full rounded-xl border-2 bg-slate-50 dark:bg-black/20">
+                  <div className="p-2">
                     {filteredKeys.length > 0 ? (
                       filteredKeys.map(key => (
                         <div
                           key={key}
-                          className="text-sm p-2 cursor-pointer rounded-sm hover:bg-accent"
+                          className="text-sm font-bold p-3 cursor-pointer rounded-lg hover:bg-primary hover:text-white transition-colors mb-1"
                           onMouseDown={(e) => {
                             e.preventDefault();
                             handleKeySelection(key);
@@ -213,18 +225,18 @@ export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialog
                         </div>
                       ))
                     ) : (
-                      <p className="p-2 text-sm text-muted-foreground">No se encontraron tonalidades.</p>
+                      <p className="p-4 text-xs font-bold uppercase text-center text-muted-foreground opacity-50">No se hallaron tonos</p>
                     )}
                   </div>
                 </ScrollArea>
                 
-                <DialogFooter className="sm:justify-start gap-2 pt-2">
-                    <Button type="submit" className="w-full">Guardar</Button>
-                    <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} className="w-full">Cancelar</Button>
+                <DialogFooter className="sm:justify-start gap-3 pt-4">
+                    <Button type="submit" className="flex-1 h-12 rounded-xl font-bold">Guardar</Button>
+                    <Button type="button" variant="outline" onClick={() => handleOpenChange(false)} className="flex-1 h-12 rounded-xl font-bold border-2">Cancelar</Button>
                 </DialogFooter>
               </form>
             </Form>
-          </>
+          </div>
         )}
       </DialogContent>
     </Dialog>
