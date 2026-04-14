@@ -50,7 +50,7 @@ export function AdminPanel() {
         setShowIntro(false);
         sessionStorage.setItem('intro_seen_admin', 'true');
         setIsReady(true);
-      }, 3500); // Un poco más largo para disfrutar el saludo
+      }, 3500); 
       return () => clearTimeout(timer);
     } else {
       setIsReady(true);
@@ -73,27 +73,27 @@ export function AdminPanel() {
           <div className="absolute inset-0 design-grid opacity-[0.08]" />
         </div>
         
-        <div className="relative mb-16 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out flex flex-col items-center">
+        <div className="relative mb-12 animate-in fade-in zoom-in-95 slide-in-from-top-10 duration-1000 ease-out flex flex-col items-center">
           <div className="absolute inset-0 bg-amber-400/25 blur-[100px] rounded-full scale-150 animate-pulse" />
           <div className="relative p-2 bg-gradient-to-tr from-amber-400 via-white to-blue-400 rounded-full shadow-2xl">
-            <div className="bg-white rounded-full p-1 overflow-hidden w-32 h-32 flex items-center justify-center shadow-inner">
+            <div className="bg-white rounded-full p-1 overflow-hidden w-28 h-28 flex items-center justify-center shadow-inner">
               <Image 
                 src={insigniaUrl} 
                 alt="Insignia EECH" 
-                width={128} 
-                height={128} 
+                width={112} 
+                height={112} 
                 className="rounded-full object-cover"
                 priority
               />
             </div>
           </div>
-          <div className="absolute -bottom-4 right-0 bg-blue-600 p-2.5 rounded-2xl shadow-xl border-4 border-white animate-bounce delay-700">
-            <ShieldCheck className="h-6 w-6 text-white" />
+          <div className="absolute -bottom-2 right-0 bg-blue-600 p-2 rounded-xl shadow-xl border-4 border-white animate-bounce delay-700">
+            <ShieldCheck className="h-5 w-5 text-white" />
           </div>
         </div>
 
         <div className="relative flex flex-col items-center">
-          <div className="space-y-12 text-center px-8 max-w-md">
+          <div className="space-y-8 text-center px-8 max-w-lg">
             <div className="relative">
               <div className="flex items-center justify-center gap-3 mb-6 animate-in fade-in slide-in-from-bottom-2 duration-1000 delay-500">
                 <div className="h-px w-8 bg-amber-500/40" />
@@ -101,13 +101,9 @@ export function AdminPanel() {
                 <div className="h-px w-8 bg-amber-500/40" />
               </div>
               
-              <h1 className="text-5xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.1em] leading-tight">
-                Bienvenido
+              <h1 className="text-3xl md:text-4xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.1em] leading-tight">
+                BIENVENIDO AL PANEL DE CONTROL DEL ADMINISTRADOR
               </h1>
-              
-              <p className="mt-6 text-[11px] font-black tracking-[0.3em] text-primary/70 uppercase animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1000 leading-relaxed">
-                Panel de Control del Administrador
-              </p>
               
               <div className="mt-12 relative w-72 h-2 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
                 <div className="absolute inset-0 flex">

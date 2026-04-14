@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useMemo, useEffect } from 'react';
@@ -90,7 +91,7 @@ export default function YouthChoirsIndexPage() {
       <div className="fixed inset-0 z-[100] bg-white/95 backdrop-blur-3xl flex flex-col items-center justify-center overflow-hidden">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-[10%] left-[10%] w-[180vw] h-[180vw] bg-amber-400/10 rounded-full blur-[160px] animate-aura-giant" />
-          <div className="absolute bottom-[10%] right-[10%] w-[160vw] h-[160vw] bg-blue-600/10 rounded-full blur-[180px] animate-aura-giant" style={{ animationDirection: 'reverse' }} />
+          <div className="absolute bottom-[10%] left-[10%] w-[160vw] h-[160vw] bg-blue-600/10 rounded-full blur-[180px] animate-aura-giant" style={{ animationDirection: 'reverse' }} />
           <div className="absolute inset-0 design-grid opacity-[0.08]" />
         </div>
         
@@ -111,7 +112,7 @@ export default function YouthChoirsIndexPage() {
         <div className="relative flex flex-col items-center">
           <div className="space-y-12 text-center px-6">
             <div className="relative">
-              <h1 className="text-4xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.2em]">
+              <h1 className="text-2xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.2em]">
                 Agrupaciones
               </h1>
               

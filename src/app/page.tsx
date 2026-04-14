@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -71,18 +72,19 @@ export default function HomePage() {
         setShowSplash(false);
         sessionStorage.setItem('splash_seen', 'true');
         setIsReady(true);
-      }, 3500); // Un poco más largo para disfrutar la animación
+      }, 3500); 
       return () => clearTimeout(timer);
     } else {
       setIsReady(true);
     }
     
-    // Resetear las intros de secciones al estar en Home
+    // Resetear las intros de secciones al estar en Home para que vuelvan a salir al entrar
     sessionStorage.removeItem('intro_seen_hymns');
     sessionStorage.removeItem('intro_seen_praises');
     sessionStorage.removeItem('intro_seen_choirs');
     sessionStorage.removeItem('intro_seen_youth_choirs');
     sessionStorage.removeItem('intro_seen_special_occasions');
+    sessionStorage.removeItem('intro_seen_admin');
   }, []);
 
   const isFullySynced = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded && specialOccasionsLoaded && appearanceLoaded;
@@ -91,7 +93,6 @@ export default function HomePage() {
   if (showSplash) {
     return (
       <div className="fixed inset-0 z-[200] bg-white dark:bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
-        {/* Fondo Cinemático */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[250vw] h-[250vw] bg-blue-600/10 rounded-full blur-[180px] animate-aura-giant" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[220vw] h-[220vw] bg-red-600/10 rounded-full blur-[200px] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-4s' }} />
@@ -99,7 +100,6 @@ export default function HomePage() {
         </div>
 
         <div className="relative flex flex-col items-center gap-12 text-center px-8">
-          {/* Logo Central con Resplandor */}
           <div className="relative animate-in fade-in zoom-in-90 duration-1000">
             <div className="absolute inset-0 bg-amber-400/30 blur-[80px] rounded-full scale-150 animate-pulse" />
             <div className="relative p-2 bg-gradient-to-tr from-amber-400 via-white to-amber-200 rounded-full shadow-2xl shadow-amber-200/20">
@@ -116,7 +116,6 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Texto de Bienvenida */}
           <div className="space-y-4">
             <h1 className="text-5xl font-black font-headline text-slate-900 dark:text-white animate-title-reveal-big tracking-[0.2em] uppercase">
               Bienvenido
@@ -126,7 +125,6 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Barra de Progreso Tricolor */}
           <div className="relative w-64 h-1.5 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5 shadow-inner border border-slate-200/50 dark:border-white/10 mt-4">
             <div className="absolute inset-0 flex">
               <div className="h-full flex-1 bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.6)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
