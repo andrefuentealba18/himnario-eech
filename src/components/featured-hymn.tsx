@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useHymns } from '@/context/hymns-context';
