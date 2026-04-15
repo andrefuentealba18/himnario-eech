@@ -8,7 +8,6 @@ import { SettingsDialog } from '@/components/settings-dialog';
 import { InstallPWAButton } from '@/components/install-pwa-button';
 import { AppearanceDialog } from '@/components/appearance-dialog';
 import { GlobalSearch } from '@/components/global-search';
-import { FeaturedHymn } from '@/components/featured-hymn';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { useHymns } from '@/context/hymns-context';
 import { usePraises } from '@/context/praises-context';
@@ -236,8 +235,6 @@ export default function HomePage() {
           <div className="w-full flex flex-col items-center">
             <GlobalSearch />
           </div>
-
-          <FeaturedHymn />
 
           <div className="w-full max-w-md space-y-4">
             <div className="grid grid-cols-2 gap-4">
