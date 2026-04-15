@@ -1,7 +1,5 @@
-
 "use client"
 
-// Inspired by react-hot-toast library
 import * as React from "react"
 
 import type {
@@ -10,7 +8,7 @@ import type {
 } from "@/components/ui/toast"
 
 const TOAST_LIMIT = 1
-const TOAST_REMOVE_DELAY = 1500 // Tiempo rápido para que los avisos no se queden pegados
+const TOAST_REMOVE_DELAY = 2500
 
 type ToasterToast = ToastProps & {
   id: string
@@ -29,7 +27,7 @@ const actionTypes = {
 let count = 0
 
 function genId() {
-  count = (count + 1) % Number.MAX_SAFE_INTEGER
+  count = (count + 1) % Number.SAFE_INTEGER
   return count.toString()
 }
 
@@ -162,11 +160,6 @@ function toast({ ...props }: Toast) {
       },
     },
   })
-
-  // Programar auto-dismiss inmediato para una experiencia ágil
-  setTimeout(() => {
-    dismiss();
-  }, TOAST_REMOVE_DELAY);
 
   return {
     id: id,
