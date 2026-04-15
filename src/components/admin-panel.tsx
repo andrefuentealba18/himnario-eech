@@ -175,11 +175,11 @@ export function AdminPanel() {
                 <div className="h-px w-8 bg-amber-500/40" />
               </div>
               
-              <h1 className="text-3xl md:text-4xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.1em] leading-tight">
+              <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.05em] sm:tracking-[0.1em] leading-tight px-4">
                 BIENVENIDO AL PANEL DE CONTROL DEL ADMINISTRADOR
               </h1>
               
-              <div className="mt-12 relative w-72 h-2 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
+              <div className="mt-12 relative w-64 sm:w-72 h-2 mx-auto overflow-hidden rounded-full bg-slate-100 shadow-inner border border-slate-200/50">
                 <div className="absolute inset-0 flex">
                   <div className="h-full flex-1 bg-blue-600 shadow-[0_0_20px_rgba(37,99,235,0.8)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
                   <div className="h-full w-20 bg-amber-400 shadow-[0_0_20px_rgba(251,191,36,0.8)] animate-loading-beam-long" style={{ animationDelay: '0.4s' }} />

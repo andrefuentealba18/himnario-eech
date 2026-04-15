@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -92,7 +93,6 @@ export default function HomePage() {
   if (showSplash) {
     return (
       <div className="fixed inset-0 z-[200] bg-white dark:bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
-        {/* Atmósfera de Profundidad Avanzada */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350vw] h-[350vw] bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.12)_0%,transparent_70%)] animate-aura-giant" />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300vw] h-[300vw] bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.1)_0%,transparent_70%)] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-5s' }} />
@@ -101,13 +101,12 @@ export default function HomePage() {
         </div>
 
         <div className="relative flex flex-col items-center gap-16 text-center px-8 w-full max-w-lg">
-          {/* Logo Central con Portal de Luz */}
           <div className="relative animate-in fade-in zoom-in-50 duration-1000 ease-out fill-mode-both">
             <div className="absolute inset-0 bg-blue-600/30 blur-[120px] rounded-full scale-[2] animate-pulse" />
             <div className="absolute inset-0 bg-amber-400/20 blur-[80px] rounded-full scale-150 animate-aura-slow" />
             
             <div className="relative p-1 bg-gradient-to-tr from-blue-600 via-white to-amber-400 rounded-full shadow-[0_0_50px_rgba(37,99,235,0.3)] transform transition-transform hover:scale-105 duration-1000">
-              <div className="bg-white dark:bg-slate-900 rounded-full p-1.5 overflow-hidden w-40 h-40 flex items-center justify-center shadow-inner relative group">
+              <div className="bg-white dark:bg-slate-900 rounded-full p-1.5 overflow-hidden w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center shadow-inner relative group">
                 <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
                 <Image 
                   src={insigniaUrl} 
@@ -120,15 +119,12 @@ export default function HomePage() {
               </div>
             </div>
             
-            {/* Anillos orbitales decorativos */}
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-primary/10 rounded-full animate-ping opacity-20" style={{ animationDuration: '3s' }} />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-56 h-56 border border-primary/5 rounded-full animate-ping opacity-10" style={{ animationDuration: '4s', animationDelay: '1s' }} />
           </div>
 
-          {/* Bloque de Texto Innovador */}
           <div className="space-y-8 relative">
             <div className="overflow-hidden">
-              <h1 className="text-6xl md:text-7xl font-black font-headline text-slate-900 dark:text-white animate-title-reveal-big tracking-[0.4em] uppercase drop-shadow-2xl">
+              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-slate-900 dark:text-white animate-title-reveal-big tracking-[0.25em] sm:tracking-[0.4em] uppercase drop-shadow-2xl">
                 BIENVENIDO
               </h1>
             </div>
@@ -141,22 +137,18 @@ export default function HomePage() {
                   <div className="h-px w-12 bg-gradient-to-l from-transparent to-primary" />
                 </div>
                 
-                {/* Barra de Carga Quantum */}
-                <div className="relative w-80 h-3 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5 shadow-inner border border-slate-200/50 dark:border-white/10 mt-2">
+                <div className="relative w-64 sm:w-80 h-2.5 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5 shadow-inner border border-slate-200/50 dark:border-white/10 mt-2">
                   <div className="absolute inset-0 flex">
                     <div className="h-full flex-1 bg-blue-600 shadow-[0_0_30px_rgba(37,99,235,1)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
                     <div className="h-full w-24 bg-amber-400 shadow-[0_0_30px_rgba(251,191,36,1)] animate-loading-beam-long" style={{ animationDelay: '0.4s' }} />
                     <div className="h-full flex-1 bg-red-600 shadow-[0_0_30px_rgba(220,38,38,1)] animate-loading-beam-long" style={{ animationDelay: '0.8s' }} />
                   </div>
-                  {/* Destello sweep */}
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[shimmer_2s_infinite]" />
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Footer Solemne con Identidad */}
         <div className="absolute bottom-16 left-0 w-full text-center px-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1500 fill-mode-both">
           <div className="flex flex-col items-center gap-6">
             <div className="flex items-center gap-3 opacity-40">
@@ -165,7 +157,7 @@ export default function HomePage() {
               <div className="h-1 w-1 rounded-full bg-primary" />
             </div>
             <div className="space-y-1">
-              <p className="text-[11px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[1em] ml-[1em]">
+              <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.5em] sm:tracking-[1em] ml-[0.5em] sm:ml-[1em]">
                 Ejército Evangélico
               </p>
               <p className="text-[9px] font-bold text-primary/40 uppercase tracking-[0.5em]">
