@@ -18,18 +18,7 @@ export default function SpecialOccasionsPage() {
   const [selectedCategory, setSelectedCategory] = useState<SpecialCategory | null>(null);
 
   useEffect(() => {
-    const introSeen = sessionStorage.getItem('intro_seen_special_occasions');
-    if (!introSeen) {
-      setShowIntro(true);
-      const timer = setTimeout(() => {
-        setShowIntro(false);
-        sessionStorage.setItem('intro_seen_special_occasions', 'true');
-        setIsReady(true);
-      }, 2800);
-      return () => clearTimeout(timer);
-    } else {
-      setIsReady(true);
-    }
+    setIsReady(true);
   }, []);
 
   const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
@@ -119,21 +108,12 @@ export default function SpecialOccasionsPage() {
           </div>
         </header>
 
-        <div className="p-4 flex-1 overflow-auto">
-          {!isLoaded ? (
-            <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-4">
-              <Loader2 className="h-10 w-10 animate-spin text-primary" />
-              <p className="animate-pulse font-bold uppercase tracking-widest text-[10px]">Sincronizando...</p>
-            </div>
-          ) : (
-            <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
-              <SpecialOccasionListClient 
-                specialOccasions={specialOccasions} 
-                activeCategory={selectedCategory}
-                onSelectCategory={(cat) => setSelectedCategory(cat as SpecialCategory)}
-              />
-            </div>
-          )}
+        <div className="p-4 flex-1 overflow-auto animate-in fade-in slide-in-from-bottom-2 duration-700">
+          <SpecialOccasionListClient 
+            specialOccasions={specialOccasions} 
+            activeCategory={selectedCategory}
+            onSelectCategory={(cat) => setSelectedCategory(cat as SpecialCategory)}
+          />
         </div>
       </div>
     </main>

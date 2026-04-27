@@ -3,7 +3,7 @@ export type Choir = {
   title: string;
   lyrics: string;
   tone?: string;
-  speed?: 'Rapido' | 'Lento';
+  speed?: string;
   status?: 'pending' | 'approved';
   createdAt?: any; // Firestore Timestamp
 };

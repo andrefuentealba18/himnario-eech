@@ -23,12 +23,12 @@ import type { GroupType } from '@/lib/youth-choirs';
 import { cn } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
-const groups: { name: GroupType; icon?: any; imageUrl?: string; color: string; iconColor?: string }[] = [
+const groups: { name: GroupType; icon?: any; imageUrl?: string; color: string; iconColor?: string; imgClass?: string }[] = [
   { name: "Coro Juventud", imageUrl: "https://i.postimg.cc/bvk974Xp/IMG_2532.jpg", color: "bg-transparent" },
-  { name: "Grupo Ciclista", imageUrl: "https://i.postimg.cc/QtWZZ88d/Imagen1.png", color: "bg-transparent" },
-  { name: "Departamento Infantil", icon: Baby, color: "bg-rose-100", iconColor: "text-rose-600" },
-  { name: "Clase Dorcas", icon: UserCircle, color: "bg-purple-100", iconColor: "text-purple-600" },
-  { name: "Departamento Juvenil", icon: Users, color: "bg-orange-100", iconColor: "text-orange-600" },
+  { name: "Grupo Ciclista", imageUrl: "https://i.postimg.cc/QtWZZ88d/Imagen1.png", color: "bg-transparent", imgClass: "object-contain scale-[0.85]" },
+  { name: "Departamento Infantil", imageUrl: "https://i.postimg.cc/mDkyNsXL/Asunto.png", color: "bg-transparent" },
+  { name: "Clase Dorcas", imageUrl: "https://www.photo-pick.com/online/api/v1/albums/628d3a58-df5a-4b3d-9e29-98902f716a85.jpg", color: "bg-transparent" },
+  { name: "Departamento Juvenil", imageUrl: "https://www.photo-pick.com/online/api/v1/albums/3f593f63-fae9-461e-a3b0-45f7c8a62c32.jpg", color: "bg-transparent" },
 ];
 
 export default function YouthChoirsIndexPage() {
@@ -36,22 +36,24 @@ export default function YouthChoirsIndexPage() {
   const [selectedGroup, setSelectedGroup] = useState<GroupType | null>(null);
   const [isSingleYouthChoirDialogOpen, setSingleYouthChoirDialogOpen] = useState(false);
   const [isMultiYouthChoirDialogOpen, setMultiYouthChoirDialogOpen] = useState(false);
-  const [showIntro, setShowIntro] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
   const [isReady, setIsReady] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const introSeen = sessionStorage.getItem('intro_seen_youth_choirs');
-    if (!introSeen) {
-      setShowIntro(true);
-      const timer = setTimeout(() => {
+    setIsReady(true);
+    
+    if (typeof window !== 'undefined') {
+      const introShown = sessionStorage.getItem('youth_choirs_intro_shown');
+      if (introShown) {
         setShowIntro(false);
-        sessionStorage.setItem('intro_seen_youth_choirs', 'true');
-        setIsReady(true);
-      }, 2800);
-      return () => clearTimeout(timer);
-    } else {
-      setIsReady(true);
+      } else {
+        const timer = setTimeout(() => {
+          setShowIntro(false);
+          sessionStorage.setItem('youth_choirs_intro_shown', 'true');
+        }, 2500);
+        return () => clearTimeout(timer);
+      }
     }
   }, []);
 
@@ -201,13 +203,8 @@ export default function YouthChoirsIndexPage() {
               </div>
           </header>
 
-          <div className="p-4 flex-1 overflow-auto">
-            {!isLoaded ? (
-              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-4">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <p className="animate-pulse font-bold uppercase tracking-widest text-[10px]">Sincronizando Agrupaciones...</p>
-              </div>
-            ) : !selectedGroup ? (
+          <div className="p-4 flex-1 overflow-auto animate-in fade-in duration-700">
+            {!selectedGroup ? (
               <div className="space-y-8 py-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
                 <div className="text-center space-y-2">
                   <p className="text-[10px] font-black text-primary/60 uppercase tracking-[0.3em]">Selecciona Categoría</p>
@@ -224,16 +221,16 @@ export default function YouthChoirsIndexPage() {
                     >
                       <CardContent className="p-6 flex flex-col items-center text-center gap-4">
                         <div className={cn(
-                          "transition-all duration-700 group-hover:scale-110 flex items-center justify-center overflow-hidden",
-                          group.imageUrl ? "w-20 h-20 p-0 shadow-lg rounded-full" : `w-16 h-16 p-4 rounded-2xl shadow-inner ${group.color}`
+                          "transition-all duration-700 group-hover:scale-110 flex items-center justify-center overflow-hidden relative",
+                          group.imageUrl ? "w-24 h-24 shadow-xl rounded-full bg-white ring-4 ring-white dark:ring-slate-800" : `w-16 h-16 p-4 rounded-full shadow-inner ${group.color}`
                         )}>
                           {group.imageUrl ? (
                             <Image 
                               src={group.imageUrl} 
                               alt={group.name} 
-                              width={80} 
-                              height={80} 
-                              className="object-cover w-full h-full"
+                              width={96} 
+                              height={96} 
+                              className={cn("w-full h-full", group.imgClass || "object-cover scale-[1.12]")}
                               priority
                               data-ai-hint="group logo"
                             />

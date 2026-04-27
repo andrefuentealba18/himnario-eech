@@ -28,6 +28,7 @@ interface HymnsContextType {
   getHymnById: (id: number) => Hymn | undefined;
   restoreHymns: (hymnsToRestore: Omit<Hymn, 'id'>[]) => void;
   isLoaded: boolean;
+  isSyncing: boolean;
 }
 
 const HymnsContext = createContext<HymnsContextType | undefined>(undefined);
@@ -42,15 +43,20 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
 
   const { data: rawHymns, isLoading: isLoadingFromHook } = useCollection<Hymn>(hymnsCollectionRef);
   
-  const isLoaded = !!firestore && !isLoadingFromHook;
+  const isSyncing = isLoadingFromHook;
+  // isLoaded now means "we have data to show", which is true if we have initial data or firestore data
+  const isLoaded = !!firestore && (!isLoadingFromHook || (rawHymns && rawHymns.length > 0) || initialHymnsData.length > 0);
 
   const hymns = useMemo(() => {
-    return rawHymns ? [...rawHymns].sort((a, b) => a.number - b.number) : [];
+    if (!rawHymns || rawHymns.length === 0) {
+      return [...initialHymnsData].sort((a, b) => a.number - b.number) as unknown as Hymn[];
+    }
+    return [...rawHymns].sort((a, b) => a.number - b.number);
   }, [rawHymns]);
 
   useEffect(() => {
     const migrateData = async () => {
-        if (!firestore || !isLoaded) return;
+        if (!firestore || isLoadingFromHook) return;
         
         if (rawHymns?.length === 0) {
             const migrationFlag = 'hymns_migrated_v3_final';
@@ -82,7 +88,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
         }
     };
     migrateData();
-  }, [isLoaded, rawHymns, firestore]);
+  }, [isLoadingFromHook, rawHymns, firestore]);
 
   const addHymn = useCallback((newHymnData: Omit<Hymn, 'id'>) => {
     if (!firestore) return;
@@ -174,7 +180,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
     batch.commit().catch(e => console.error("Error al restaurar:", e));
   }, [firestore]);
 
-  const value = { hymns, addHymn, addHymns, updateHymn, deleteHymn, getHymnById, restoreHymns, isLoaded };
+  const value = { hymns, addHymn, addHymns, updateHymn, deleteHymn, getHymnById, restoreHymns, isLoaded, isSyncing };
 
   return <HymnsContext.Provider value={value}>{children}</HymnsContext.Provider>;
 }

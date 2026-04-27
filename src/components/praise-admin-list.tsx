@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { Praise } from '@/lib/praises';
 import { Button } from '@/components/ui/button';
 import { Edit, Trash2, Search } from 'lucide-react';
@@ -26,6 +26,10 @@ export function PraiseAdminList() {
       normalizeSearchTerm(`${praise.title} ${praise.lyrics} ${praise.tone || ''}`).includes(normalizedSearch)
     );
   }, [searchTerm, praises]);
+
+  const [visibleCount, setVisibleCount] = useState(50);
+  useEffect(() => setVisibleCount(50), [searchTerm]);
+  const visiblePraises = filteredPraises.slice(0, visibleCount);
 
   const handleDelete = async (praiseId: string) => {
     await deletePraise(praiseId);
@@ -94,7 +98,7 @@ export function PraiseAdminList() {
         />
       </div>
       <div className="flex flex-col gap-2">
-        {filteredPraises.map((praise) => (
+        {visiblePraises.map((praise) => (
           <div key={praise.id} className="flex items-center justify-between p-3 border rounded-lg gap-2">
             <div className="flex items-center gap-2 flex-grow min-w-0">
               <span className="font-medium truncate">{praise.title}</span>
@@ -121,6 +125,11 @@ export function PraiseAdminList() {
             </div>
           </div>
         ))}
+        {visibleCount < filteredPraises.length && (
+          <Button variant="ghost" onClick={() => setVisibleCount(v => v + 50)} className="w-full mt-4 p-4 text-xs font-bold text-slate-500">
+            Cargar Más ({filteredPraises.length - visibleCount})
+          </Button>
+        )}
       </div>
     </div>
   );

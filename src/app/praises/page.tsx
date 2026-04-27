@@ -24,22 +24,24 @@ export default function PraisesIndexPage() {
   const { praises, addPraises, isLoaded, addPraise } = usePraises();
   const [isSinglePraiseDialogOpen, setSinglePraiseDialogOpen] = useState(false);
   const [isMultiPraiseDialogOpen, setMultiPraiseDialogOpen] = useState(false);
-  const [showIntro, setShowIntro] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
   const [isReady, setIsReady] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
-    const introSeen = sessionStorage.getItem('intro_seen_praises');
-    if (!introSeen) {
-      setShowIntro(true);
-      const timer = setTimeout(() => {
+    setIsReady(true);
+    
+    if (typeof window !== 'undefined') {
+      const introShown = sessionStorage.getItem('praises_intro_shown');
+      if (introShown) {
         setShowIntro(false);
-        sessionStorage.setItem('intro_seen_praises', 'true');
-        setIsReady(true);
-      }, 2800);
-      return () => clearTimeout(timer);
-    } else {
-      setIsReady(true);
+      } else {
+        const timer = setTimeout(() => {
+          setShowIntro(false);
+          sessionStorage.setItem('praises_intro_shown', 'true');
+        }, 2500);
+        return () => clearTimeout(timer);
+      }
     }
   }, []);
 
@@ -165,17 +167,8 @@ export default function PraisesIndexPage() {
               </div>
           </header>
 
-          <div className="p-4 flex-1 overflow-auto">
-            {!isLoaded ? (
-              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-4">
-                <Loader2 className="h-10 w-10 animate-spin text-primary" />
-                <p className="animate-pulse font-bold uppercase tracking-widest text-[10px]">Sincronizando Alabanzas...</p>
-              </div>
-            ) : (
-              <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
-                <PraiseListClient praises={praises} />
-              </div>
-            )}
+          <div className="p-4 flex-1 overflow-auto animate-in fade-in slide-in-from-bottom-2 duration-700">
+            <PraiseListClient praises={praises} />
           </div>
         </div>
       </main>

@@ -37,6 +37,7 @@ interface PraisesContextType {
   getPraiseById: (id: string) => Praise | undefined;
   restorePraises: (praisesToRestore: Omit<Praise, 'id'>[]) => void;
   isLoaded: boolean;
+  isSyncing: boolean;
 }
 
 const PraisesContext = createContext<PraisesContextType | undefined>(undefined);
@@ -51,10 +52,17 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
 
   const { data: allData, isLoading } = useCollection<Praise>(praisesCollection);
 
-  const isLoaded = !!firestore && !isLoading;
+  const isSyncing = isLoading;
+  const isLoaded = !!firestore && (!isLoading || (allData && allData.length > 0) || initialPraises.length > 0);
 
   const praises = useMemo(() => {
-    if (!allData) return [];
+    if (!allData || allData.length === 0) {
+      return initialPraises.map(p => ({
+        ...p,
+        id: slugify(p.title),
+        status: 'approved' as const
+      })) as Praise[];
+    }
     return allData
       .filter(p => p.status === 'approved' || !p.status)
       .sort((a, b) => a.title.localeCompare(b.title));
@@ -72,7 +80,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   }, [allData]);
 
   useEffect(() => {
-    if (isLoaded && allData?.length === 0) {
+    if (!!firestore && !isLoading && allData?.length === 0) {
       const migrationFlag = 'praises_migrated_v1';
       if (localStorage.getItem(migrationFlag)) return;
 
@@ -90,7 +98,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         })
         .catch((error) => console.error("Error migrating praises:", error));
     }
-  }, [isLoaded, allData, firestore]);
+  }, [isLoading, allData, firestore]);
   
   const addPraise = useCallback(async (newPraiseData: Omit<Praise, 'id'>) => {
     if (!firestore) return { success: false };
@@ -130,7 +138,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
           ...praiseData,
           status: 'pending' as const,
           createdAt: serverTimestamp() 
-      };
+    };
       batch.set(docRef, removeUndefined(dataToSave));
       addedCount++;
     }
@@ -205,7 +213,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     batch.commit().catch(error => console.error("Error restoring praises:", error));
   }, [firestore, allData]);
 
-  const value = { praises, pendingPraises, addPraise, addPraises, deletePraise, updatePraise, approvePraise, getPraiseById, restorePraises, isLoaded };
+  const value = { praises, pendingPraises, addPraise, addPraises, deletePraise, updatePraise, approvePraise, getPraiseById, restorePraises, isLoaded, isSyncing };
 
   return <PraisesContext.Provider value={value}>{children}</PraisesContext.Provider>;
 }

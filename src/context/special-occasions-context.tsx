@@ -34,6 +34,7 @@ interface SpecialOccasionsContextType {
   approveSpecialOccasion: (id: string) => void;
   getSpecialById: (id: string) => SpecialOccasion | undefined;
   isLoaded: boolean;
+  isSyncing: boolean;
 }
 
 const SpecialOccasionsContext = createContext<SpecialOccasionsContextType | undefined>(undefined);
@@ -48,7 +49,8 @@ export function SpecialOccasionsProvider({ children }: { children: ReactNode }) 
 
   const { data: allData, isLoading } = useCollection<SpecialOccasion>(collectionRef);
 
-  const isLoaded = !!firestore && !isLoading;
+  const isSyncing = isLoading;
+  const isLoaded = !!firestore && (!isLoading || (allData && allData.length > 0));
 
   const specialOccasions = useMemo(() => {
     if (!allData) return [];
@@ -109,8 +111,10 @@ export function SpecialOccasionsProvider({ children }: { children: ReactNode }) 
 
   const getSpecialById = useCallback((id: string) => allData?.find(s => s.id === id), [allData]);
 
+  const value = { specialOccasions, pendingSpecialOccasions, addSpecialOccasion, deleteSpecialOccasion, updateSpecialOccasion, approveSpecialOccasion, getSpecialById, isLoaded, isSyncing };
+
   return (
-    <SpecialOccasionsContext.Provider value={{ specialOccasions, pendingSpecialOccasions, addSpecialOccasion, deleteSpecialOccasion, updateSpecialOccasion, approveSpecialOccasion, getSpecialById, isLoaded }}>
+    <SpecialOccasionsContext.Provider value={value}>
       {children}
     </SpecialOccasionsContext.Provider>
   );

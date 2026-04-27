@@ -37,6 +37,7 @@ interface YouthChoirsContextType {
   getYouthChoirById: (id: string) => YouthChoir | undefined;
   restoreYouthChoirs: (youthChoirsToRestore: Omit<YouthChoir, 'id'>[]) => void;
   isLoaded: boolean;
+  isSyncing: boolean;
 }
 
 const YouthChoirsContext = createContext<YouthChoirsContextType | undefined>(undefined);
@@ -51,10 +52,17 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
 
   const { data: allData, isLoading } = useCollection<YouthChoir>(youthChoirsCollection);
 
-  const isLoaded = !!firestore && !isLoading;
+  const isSyncing = isLoading;
+  const isLoaded = !!firestore && (!isLoading || (allData && allData.length > 0) || initialYouthChoirs.length > 0);
 
   const youthChoirs = useMemo(() => {
-    if (!allData) return [];
+    if (!allData || allData.length === 0) {
+      return initialYouthChoirs.map(yc => ({
+        ...yc,
+        id: slugify(`${yc.group}-${yc.title}`),
+        status: 'approved' as const
+      })) as YouthChoir[];
+    }
     return allData
       .filter(yc => yc.status === 'approved' || !yc.status)
       .sort((a, b) => a.title.localeCompare(b.title));
@@ -72,7 +80,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
   }, [allData]);
 
   useEffect(() => {
-    if (isLoaded && allData?.length === 0) {
+    if (!!firestore && !isLoading && allData?.length === 0) {
       const migrationFlag = 'youth_choirs_migrated_v1';
       if (localStorage.getItem(migrationFlag)) return;
 
@@ -90,7 +98,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
         })
         .catch((error) => console.error("Error migrating youth choirs:", error));
     }
-  }, [isLoaded, allData, firestore]);
+  }, [isLoading, allData, firestore]);
   
   const addYouthChoir = useCallback(async (newYouthChoirData: Omit<YouthChoir, 'id'>) => {
     if (!firestore) return { success: false };
@@ -205,7 +213,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     batch.commit().catch(error => console.error("Error restoring group songs:", error));
   }, [firestore, allData]);
 
-  const value = { youthChoirs, pendingYouthChoirs, addYouthChoir, addYouthChoirs, approveYouthChoir, deleteYouthChoir, updateYouthChoir, getYouthChoirById, restoreYouthChoirs, isLoaded };
+  const value = { youthChoirs, pendingYouthChoirs, addYouthChoir, addYouthChoirs, approveYouthChoir, deleteYouthChoir, updateYouthChoir, getYouthChoirById, restoreYouthChoirs, isLoaded, isSyncing };
 
   return <YouthChoirsContext.Provider value={value}>{children}</YouthChoirsContext.Provider>;
 }

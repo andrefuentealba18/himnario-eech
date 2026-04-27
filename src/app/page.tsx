@@ -61,108 +61,101 @@ export default function HomePage() {
   const { isLoaded: specialOccasionsLoaded } = useSpecialOccasions();
   const { isLoaded: appearanceLoaded } = useAppearance();
   
-  const [showSplash, setShowSplash] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const splashSeen = sessionStorage.getItem('splash_seen');
-    if (!splashSeen) {
-      setShowSplash(true);
-      const timer = setTimeout(() => {
-        setShowSplash(false);
-        sessionStorage.setItem('splash_seen', 'true');
-        setIsReady(true);
-      }, 4500); 
-      return () => clearTimeout(timer);
-    } else {
-      setIsReady(true);
-    }
+    setIsReady(true);
     
-    sessionStorage.removeItem('intro_seen_admin');
-    sessionStorage.removeItem('intro_seen_hymns');
-    sessionStorage.removeItem('intro_seen_praises');
-    sessionStorage.removeItem('intro_seen_choirs');
-    sessionStorage.removeItem('intro_seen_youth_choirs');
-    sessionStorage.removeItem('intro_seen_special_occasions');
+    // Always show splash for 4 seconds to ensure the user sees it
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 4000);
+    return () => clearTimeout(timer);
   }, []);
 
   const isFullySynced = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded && specialOccasionsLoaded && appearanceLoaded;
+
   const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
 
   if (showSplash) {
     return (
-      <div className="fixed inset-0 z-[200] bg-white dark:bg-slate-950 flex flex-col items-center justify-center overflow-hidden">
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[350vw] h-[350vw] bg-[radial-gradient(circle_at_center,rgba(37,99,235,0.12)_0%,transparent_70%)] animate-aura-giant" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300vw] h-[300vw] bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.1)_0%,transparent_70%)] animate-aura-giant" style={{ animationDirection: 'reverse', animationDelay: '-5s' }} />
-          <div className="absolute inset-0 design-grid opacity-[0.2] [mask-image:radial-gradient(circle_at_center,black_30%,transparent_100%)] animate-zoom-subtle" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 dark:via-slate-950/40 to-white dark:to-slate-950" />
+      <div className="fixed inset-0 z-[200] bg-white dark:bg-[#030712] flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000">
+        
+        {/* Animated Background Orbs */}
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+          <div className="absolute w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] bg-primary/10 dark:bg-primary/20 rounded-full blur-[100px] animate-pulse-slow mix-blend-screen" />
+          <div className="absolute w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] bg-amber-400/10 dark:bg-amber-400/20 rounded-full blur-[80px] animate-aura-giant delay-1000 mix-blend-screen" style={{ animationDirection: 'reverse' }} />
+          <div className="absolute w-[100vw] h-[100vw] max-w-[1000px] max-h-[1000px] bg-blue-500/10 dark:bg-blue-500/20 rounded-full blur-[120px] animate-aura-slow" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 dark:via-[#030712]/40 to-white dark:to-[#030712]" />
         </div>
 
-        <div className="relative flex flex-col items-center gap-16 text-center px-8 w-full max-w-lg">
-          <div className="relative animate-in fade-in zoom-in-50 duration-1000 ease-out fill-mode-both">
-            <div className="absolute inset-0 bg-blue-600/30 blur-[120px] rounded-full scale-[2] animate-pulse" />
-            <div className="absolute inset-0 bg-amber-400/20 blur-[80px] rounded-full scale-150 animate-aura-slow" />
-            
-            <div className="relative p-1 bg-gradient-to-tr from-blue-600 via-white to-amber-400 rounded-full shadow-[0_0_50px_rgba(37,99,235,0.3)] transform transition-transform hover:scale-105 duration-1000">
-              <div className="bg-white dark:bg-slate-900 rounded-full p-1.5 overflow-hidden w-32 h-32 sm:w-40 sm:h-40 flex items-center justify-center shadow-inner relative group">
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000" />
+        <div className="relative z-10 flex flex-col items-center gap-10 text-center px-6 w-full max-w-xl">
+          
+          {/* Logo */}
+          <div className="relative animate-in zoom-in-50 fade-in duration-500 ease-out fill-mode-both">
+            {/* Solo dejamos el anillo giratorio para que no salgan "tantos circulos" */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] border-[3px] border-dashed border-primary/30 rounded-full animate-spin-slow" />
+
+            <div className="relative p-2 bg-gradient-to-br from-blue-600 via-primary to-amber-400 rounded-full shadow-[0_0_80px_rgba(37,99,235,0.4)] backdrop-blur-xl animate-float">
+              <div className="bg-white dark:bg-slate-900 rounded-full p-2 overflow-hidden w-40 h-40 flex items-center justify-center shadow-[inset_0_4px_20px_rgba(0,0,0,0.2)] relative">
                 <Image 
                   src={insigniaUrl} 
                   alt="EECH Logo" 
-                  width={160} 
-                  height={160} 
-                  className="rounded-full object-cover animate-float"
+                  width={160}
+                  height={160}
+                  className="rounded-full object-cover w-full h-full transform hover:scale-110 transition-transform duration-1000"
                   priority
                 />
               </div>
             </div>
-            
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 border border-primary/10 rounded-full animate-ping opacity-20" style={{ animationDuration: '3s' }} />
           </div>
 
-          <div className="space-y-8 relative">
-            <div className="overflow-hidden">
-              <h1 className="text-4xl sm:text-6xl md:text-7xl font-black font-headline text-slate-900 dark:text-white animate-title-reveal-big tracking-[0.25em] sm:tracking-[0.4em] uppercase drop-shadow-2xl">
-                BIENVENIDO
-              </h1>
+          <div className="space-y-6 relative w-full pt-4">
+            {/* Staggered Text Reveal */}
+            <div className="flex flex-col items-center justify-center">
+              <div className="flex overflow-hidden pb-4">
+                {"BIENVENIDO".split("").map((letter, i) => (
+                  <span 
+                    key={i} 
+                    className="text-5xl sm:text-7xl font-black font-headline text-slate-900 dark:text-white drop-shadow-[0_10px_20px_rgba(37,99,235,0.3)] opacity-0 animate-letter-reveal"
+                    style={{ animationDelay: `${0.3 + i * 0.05}s` }}
+                  >
+                    {letter}
+                  </span>
+                ))}
+              </div>
             </div>
             
-            <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-1000 fill-mode-both">
-              <div className="flex flex-col items-center gap-4">
-                <div className="flex items-center gap-4 opacity-60">
-                  <div className="h-px w-12 bg-gradient-to-r from-transparent to-primary" />
-                  <span className="text-[10px] font-black tracking-[0.6em] text-primary uppercase">Himnario Digital</span>
-                  <div className="h-px w-12 bg-gradient-to-l from-transparent to-primary" />
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-[800ms] fill-mode-both">
+              <div className="flex flex-col items-center gap-6">
+                
+                {/* Ultra cool modern multicolored loading bar */}
+                <div className="relative w-64 sm:w-80 h-3 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] border border-white/20">
+                  <div className="absolute top-0 left-0 h-full w-full animate-slide-progress origin-left">
+                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-amber-400 to-red-600 animate-rainbow-slide" />
+                    <div className="absolute inset-0 opacity-50 mix-blend-overlay">
+                      <div className="h-full w-24 bg-white blur-[8px] animate-loading-beam-fast" />
+                    </div>
+                  </div>
                 </div>
                 
-                <div className="relative w-64 sm:w-80 h-2.5 overflow-hidden rounded-full bg-slate-100 dark:bg-white/5 shadow-inner border border-slate-200/50 dark:border-white/10 mt-2">
-                  <div className="absolute inset-0 flex">
-                    <div className="h-full flex-1 bg-blue-600 shadow-[0_0_30px_rgba(37,99,235,1)] animate-loading-beam-long" style={{ animationDelay: '0s' }} />
-                    <div className="h-full w-24 bg-amber-400 shadow-[0_0_30px_rgba(251,191,36,1)] animate-loading-beam-long" style={{ animationDelay: '0.4s' }} />
-                    <div className="h-full flex-1 bg-red-600 shadow-[0_0_30px_rgba(220,38,38,1)] animate-loading-beam-long" style={{ animationDelay: '0.8s' }} />
-                  </div>
+                <div className="flex items-center gap-4 opacity-80">
+                  <div className="h-[2px] w-12 bg-gradient-to-r from-transparent to-primary" />
+                  <span className="text-[12px] font-black tracking-[0.5em] text-slate-800 dark:text-slate-100 uppercase px-4 py-1 rounded-full border-[2px] border-primary/30 bg-primary/10 backdrop-blur-md shadow-[0_0_15px_rgba(37,99,235,0.2)]">Himnario Digital</span>
+                  <div className="h-[2px] w-12 bg-gradient-to-l from-transparent to-primary" />
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="absolute bottom-16 left-0 w-full text-center px-10 animate-in fade-in slide-in-from-bottom-4 duration-1000 delay-1500 fill-mode-both">
-          <div className="flex flex-col items-center gap-6">
-            <div className="flex items-center gap-3 opacity-40">
-              <div className="h-1 w-1 rounded-full bg-primary" />
-              <div className="h-px w-16 bg-slate-300 dark:bg-white/10" />
-              <div className="h-1 w-1 rounded-full bg-primary" />
-            </div>
-            <div className="space-y-1">
-              <p className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.5em] sm:tracking-[1em] ml-[0.5em] sm:ml-[1em]">
-                Ejército Evangélico
-              </p>
-              <p className="text-[9px] font-bold text-primary/40 uppercase tracking-[0.5em]">
-                de Chile
-              </p>
-            </div>
+        {/* Footer info */}
+        <div className="absolute bottom-12 w-full text-center px-6 animate-in fade-in duration-500 delay-[1000ms] fill-mode-both">
+          <div className="flex flex-col items-center gap-2 opacity-80">
+            <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.8em] ml-[0.8em] drop-shadow-md">
+              Ejército Evangélico de Chile
+            </span>
           </div>
         </div>
       </div>

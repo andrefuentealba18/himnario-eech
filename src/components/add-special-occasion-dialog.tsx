@@ -150,7 +150,10 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
     e.preventDefault();
     if (password === '4002') {
       setIsAuthenticated(true);
-      toast({ title: "Acceso autorizado" });
+      toast({ 
+        title: '🔓 Desbloqueado',
+        className: 'fixed right-4 top-4 bg-emerald-500 text-white rounded-full flex items-center justify-center px-4 py-2 text-xs font-black border-none shadow-2xl z-[100] !m-0'
+      });
     } else {
       toast({ variant: "destructive", title: "Clave incorrecta" });
     }
@@ -219,29 +222,46 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
         </button>
       </DialogTrigger>
       <DialogContent className={cn(
-        "w-[95vw] p-0 border-none shadow-2xl rounded-[2rem] bg-background overflow-hidden transition-all duration-500 ease-in-out",
-        isAuthenticated ? "max-w-2xl h-[95vh]" : "max-w-[320px] h-auto"
-      )}>
+        isAuthenticated ? "sm:max-w-2xl h-[95vh] rounded-[2.5rem]" : "w-[95vw] max-w-[360px] rounded-[3rem] p-0 border border-white/20 dark:border-slate-800 shadow-[0_0_60px_rgba(0,0,0,0.15)] bg-white/80 dark:bg-slate-950/80 backdrop-blur-3xl overflow-hidden",
+        "transition-all duration-500 ease-in-out"
+      )} onCloseAutoFocus={(e) => e.preventDefault()}>
         {!isAuthenticated ? (
-          <div className="flex flex-col items-center justify-center p-8 space-y-6">
-            <div className="p-4 bg-amber-50 rounded-full animate-bounce">
-              <ShieldCheck className="h-8 w-8 text-amber-600" />
+          <div className="p-8 sm:p-10 relative z-10">
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute -top-32 -right-32 w-64 h-64 bg-amber-400/20 rounded-full blur-[80px]" />
+              <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-orange-500/20 rounded-full blur-[80px]" />
             </div>
-            <div className="space-y-1 text-center">
-              <DialogTitle className="text-xl font-bold tracking-tight">Acceso Admin</DialogTitle>
-              <DialogDescription className="text-xs">Ingresa la clave maestra.</DialogDescription>
-            </div>
-            <form onSubmit={handleAuth} className="w-full max-w-[240px] space-y-4">
-              <Input 
-                type="password" 
-                placeholder="••••" 
-                className="text-center tracking-[0.8em] font-black h-12 text-xl rounded-xl border-2 focus:border-amber-500"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                autoFocus
-              />
-              <Button type="submit" className="w-full h-12 text-sm font-bold rounded-xl bg-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-200">
-                Entrar
+            
+            <DialogHeader className="text-center space-y-6 relative">
+              <div className="relative mx-auto w-fit">
+                <div className="absolute inset-0 bg-amber-500/40 blur-[40px] rounded-full scale-150 animate-pulse duration-1000" />
+                <div className="relative p-5 bg-gradient-to-tr from-amber-400 via-orange-500 to-amber-600 rounded-[1.5rem] rotate-3 shadow-[0_10px_40px_-5px_rgba(0,0,0,0.4)] transition-transform hover:rotate-6">
+                  <ShieldCheck className="h-10 w-10 text-white -rotate-3" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <DialogTitle className="text-2xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-amber-900 to-amber-500 dark:from-white dark:to-amber-400">
+                  Acceso Seguro
+                </DialogTitle>
+                <DialogDescription className="text-[10px] font-bold tracking-[0.3em] text-amber-900/60 dark:text-amber-400/60 uppercase">
+                  Clave Maestra
+                </DialogDescription>
+              </div>
+            </DialogHeader>
+            <form onSubmit={handleAuth} className="space-y-8 py-8 relative">
+              <div className="space-y-2">
+                <label className="sr-only">Contraseña</label>
+                <Input 
+                  type="password" 
+                  placeholder="••••" 
+                  className="text-center tracking-[1em] font-black h-14 text-xl rounded-2xl border-0 bg-black/5 dark:bg-white/5 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-amber-500/20 backdrop-blur-md shadow-inner transition-all hover:bg-black/10 dark:hover:bg-white/10" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoFocus 
+                />
+              </div>
+              <Button type="submit" className="w-full rounded-[2rem] h-16 font-black text-lg uppercase tracking-widest bg-gradient-to-r from-amber-500 to-orange-600 focus:ring-4 focus:ring-amber-500/50 text-white hover:scale-[1.02] active:scale-95 transition-all shadow-[0_15px_30px_-5px_rgba(217,119,6,0.3)]">
+                Desbloquear
               </Button>
             </form>
           </div>

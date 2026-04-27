@@ -12,21 +12,23 @@ import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 export default function HymnsIndexPage() {
   const { hymns, isLoaded } = useHymns();
-  const [showIntro, setShowIntro] = useState(false);
+  const [showIntro, setShowIntro] = useState(true);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const introSeen = sessionStorage.getItem('intro_seen_hymns');
-    if (!introSeen) {
-      setShowIntro(true);
-      const timer = setTimeout(() => {
+    setIsReady(true);
+    
+    if (typeof window !== 'undefined') {
+      const introShown = sessionStorage.getItem('hymns_intro_shown');
+      if (introShown) {
         setShowIntro(false);
-        sessionStorage.setItem('intro_seen_hymns', 'true');
-        setIsReady(true);
-      }, 2800);
-      return () => clearTimeout(timer);
-    } else {
-      setIsReady(true);
+      } else {
+        const timer = setTimeout(() => {
+          setShowIntro(false);
+          sessionStorage.setItem('hymns_intro_shown', 'true');
+        }, 2500);
+        return () => clearTimeout(timer);
+      }
     }
   }, []);
 
@@ -136,20 +138,8 @@ export default function HymnsIndexPage() {
             </div>
         </header>
 
-        <div className="p-4 flex-1 overflow-auto">
-          {!isLoaded ? (
-            <div className="flex flex-col items-center justify-center py-32 text-muted-foreground gap-6">
-              <div className="relative">
-                <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full animate-pulse scale-150" />
-                <Loader2 className="h-12 w-12 animate-spin text-primary relative z-10" />
-              </div>
-              <p className="animate-pulse font-black uppercase tracking-[0.3em] text-xs text-primary">Sincronizando Himnos...</p>
-            </div>
-          ) : (
-            <div className="animate-in fade-in slide-in-from-bottom-2 duration-700">
-              <HymnListClient hymns={hymns} />
-            </div>
-          )}
+        <div className="p-4 flex-1 overflow-auto animate-in fade-in slide-in-from-bottom-2 duration-700">
+          <HymnListClient hymns={hymns} />
         </div>
       </div>
     </main>

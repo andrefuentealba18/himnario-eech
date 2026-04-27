@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import type { Hymn } from '@/lib/hymns';
 import { useHymns } from '@/context/hymns-context';
 import { Button } from '@/components/ui/button';
@@ -24,6 +24,10 @@ export function HymnAdminList() {
       normalizeSearchTerm(`${hymn.title} ${hymn.number} ${hymn.lyrics} ${hymn.tone || ''}`).includes(normalizedSearch)
     );
   }, [searchTerm, hymns]);
+
+  const [visibleCount, setVisibleCount] = useState(50);
+  useEffect(() => setVisibleCount(50), [searchTerm]);
+  const visibleHymns = filteredHymns.slice(0, visibleCount);
 
   const handleDelete = async (hymnNumber: number) => {
     await deleteHymn(hymnNumber);
@@ -67,7 +71,7 @@ export function HymnAdminList() {
         />
       </div>
       <div className="flex flex-col gap-2">
-        {filteredHymns.map((hymn) => (
+        {visibleHymns.map((hymn) => (
           <div key={hymn.number} className="flex items-center justify-between p-3 border rounded-lg">
             <div>
               <span className="font-bold text-primary">{hymn.number}.</span>
@@ -87,6 +91,11 @@ export function HymnAdminList() {
             </div>
           </div>
         ))}
+        {visibleCount < filteredHymns.length && (
+          <Button variant="ghost" onClick={() => setVisibleCount(v => v + 50)} className="w-full mt-4 p-4 text-xs font-bold text-slate-500">
+            Cargar Más ({filteredHymns.length - visibleCount})
+          </Button>
+        )}
       </div>
     </div>
   );

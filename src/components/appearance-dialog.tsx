@@ -51,16 +51,17 @@ export function AppearanceDialog() {
           <span>Apariencia</span>
         </button>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] sm:max-w-2xl border-none shadow-2xl rounded-[2rem] sm:rounded-[2.5rem] overflow-hidden p-0 max-h-[90vh] outline-none flex flex-col md:flex-row bg-background">
+      <DialogContent className="w-[95vw] sm:max-w-3xl border border-white/20 dark:border-slate-800 shadow-[0_30px_100px_-20px_rgba(0,0,0,0.5)] rounded-[3rem] overflow-hidden p-0 max-h-[90vh] outline-none flex flex-col md:flex-row bg-white/95 dark:bg-slate-950/95 backdrop-blur-3xl">
         <DialogHeader className="sr-only">
           <DialogTitle>Personalizar Experiencia Visual</DialogTitle>
           <DialogDescription>Selecciona una de nuestras atmósferas diseñadas para tu meditación.</DialogDescription>
         </DialogHeader>
 
-        {/* LADO IZQUIERDO: VISTA PREVIA (Oculta en móviles pequeños para ganar espacio) */}
-        <div className="hidden md:flex md:w-72 bg-muted/20 p-6 flex-col items-center justify-center border-r border-border/50 relative overflow-hidden shrink-0">
-          <div className="absolute inset-0 opacity-20 pointer-events-none">
-             <div className="absolute top-0 left-0 w-full h-full bg-primary/20 blur-[80px]" />
+        {/* LADO IZQUIERDO: VISTA PREVIA */}
+        <div className="hidden md:flex md:w-80 bg-slate-100/50 dark:bg-black/20 p-8 flex-col items-center justify-center border-r border-white/10 relative overflow-hidden shrink-0">
+          <div className="absolute inset-0 opacity-30 pointer-events-none">
+             <div className="absolute -top-32 -left-32 w-96 h-96 bg-primary/40 rounded-full blur-[100px] animate-pulse" />
+             <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-cyan-400/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
           </div>
           
           <div className="space-y-1 mb-6 text-center relative z-10">
@@ -100,48 +101,50 @@ export function AppearanceDialog() {
           </div>
 
           <ScrollArea className="flex-1">
-            <div className="p-6 md:p-8 space-y-8">
+            <div className="p-6 md:p-10 space-y-10">
               {/* MODO DE PANTALLA */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-1 w-4 bg-primary rounded-full" />
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Ambiente Lumínico</p>
+              <div className="space-y-5">
+                <div className="flex items-center gap-3">
+                  <div className="h-2 w-2 bg-primary rounded-full animate-ping" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Ambiente Lumínico</p>
                 </div>
-                <div className="grid grid-cols-2 gap-3">
+                <div className="grid grid-cols-2 gap-4">
                   <button 
                     onClick={() => setDisplayMode('light')}
                     className={cn(
-                      "flex items-center justify-center gap-2 h-12 border-2 transition-all duration-300 font-bold text-xs active:scale-95",
+                      "relative flex flex-col items-center justify-center gap-4 h-32 rounded-[2rem] border-2 transition-all duration-500 font-black text-sm uppercase tracking-widest overflow-hidden group active:scale-95",
                       displayMode === 'light' 
-                        ? "bg-white border-primary text-primary shadow-lg shadow-primary/10" 
-                        : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted"
+                        ? "bg-gradient-to-br from-white to-amber-50 dark:from-slate-800 dark:to-slate-900 border-amber-400 text-amber-500 shadow-[0_15px_30px_-10px_rgba(251,191,36,0.3)] scale-[1.02]" 
+                        : "bg-slate-50/50 dark:bg-white/5 border-transparent text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10"
                     )}
-                    style={{ borderRadius: 'var(--ui-radius)' }}
                   >
-                    <Sun className="h-4 w-4" /> Día
+                    <div className="absolute inset-0 bg-gradient-to-t from-transparent to-amber-100/30 dark:to-amber-900/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Sun className={cn("h-10 w-10 transition-transform duration-700", displayMode === 'light' ? "rotate-45" : "group-hover:rotate-45")} /> 
+                    <span>Día</span>
                   </button>
                   <button 
                     onClick={() => setDisplayMode('dark')}
                     className={cn(
-                      "flex items-center justify-center gap-2 h-12 border-2 transition-all duration-300 font-bold text-xs active:scale-95",
+                      "relative flex flex-col items-center justify-center gap-4 h-32 rounded-[2rem] border-2 transition-all duration-500 font-black text-sm uppercase tracking-widest overflow-hidden group active:scale-95",
                       displayMode === 'dark' 
-                        ? "bg-slate-900 border-primary text-primary shadow-lg shadow-primary/10" 
-                        : "bg-muted/50 border-transparent text-muted-foreground hover:bg-muted"
+                        ? "bg-gradient-to-br from-indigo-900 to-slate-900 border-indigo-500 text-indigo-400 shadow-[0_15px_30px_-10px_rgba(99,102,241,0.3)] scale-[1.02]" 
+                        : "bg-slate-50/50 dark:bg-white/5 border-transparent text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10"
                     )}
-                    style={{ borderRadius: 'var(--ui-radius)' }}
                   >
-                    <Moon className="h-4 w-4" /> Noche
+                    <div className="absolute inset-0 bg-gradient-to-t from-transparent to-indigo-500/20 opacity-0 group-hover:opacity-100 transition-opacity" />
+                    <Moon className={cn("h-10 w-10 transition-transform duration-700", displayMode === 'dark' ? "-rotate-12" : "group-hover:-rotate-12")} /> 
+                    <span>Noche</span>
                   </button>
                 </div>
               </div>
 
               {/* ATMÓSFERAS */}
-              <div className="space-y-4 pb-4">
-                <div className="flex items-center gap-2">
-                  <div className="h-1 w-4 bg-primary rounded-full" />
-                  <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Visiones del Himnario</p>
+              <div className="space-y-5 pb-8">
+                <div className="flex items-center gap-3">
+                  <div className="h-2 w-2 bg-primary rounded-full animate-ping" />
+                  <p className="text-[10px] font-black uppercase tracking-[0.4em] text-slate-400">Visiones del Himnario</p>
                 </div>
-                <div className="grid grid-cols-1 gap-3">
+                <div className="grid grid-cols-1 gap-4">
                   {atmospheres.map((atm) => {
                     const isSelected = colorTheme === atm.color && design === atm.design;
                     return (
@@ -149,28 +152,41 @@ export function AppearanceDialog() {
                         key={atm.id}
                         onClick={() => setAtmosphere(atm.color, atm.design)}
                         className={cn(
-                          "flex items-center gap-4 w-full p-4 border-2 transition-all duration-500 active:scale-[0.98] text-left group relative overflow-hidden",
+                          "group relative flex items-center gap-5 w-full p-5 transition-all duration-500 overflow-hidden active:scale-[0.98]",
                           isSelected 
-                            ? "border-primary bg-primary/5 shadow-md" 
-                            : "border-transparent bg-muted/30 hover:bg-muted/50"
+                            ? "rounded-[2rem] border-2 border-primary bg-white dark:bg-slate-900 shadow-2xl shadow-primary/20 scale-[1.02] z-10" 
+                            : "rounded-[1.5rem] border-2 border-transparent bg-slate-50/50 dark:bg-white/5 hover:bg-slate-100 dark:hover:bg-white/10 hover:rounded-[2rem]"
                         )}
-                        style={{ borderRadius: 'var(--ui-radius)' }}
                       >
-                        <div className={cn(
-                          "p-2.5 transition-all duration-500",
-                          isSelected ? "bg-primary text-white scale-110" : "bg-primary/10 text-primary group-hover:scale-105"
-                        )} style={{ borderRadius: 'calc(var(--ui-radius) * 0.8)' }}>
-                          <atm.icon className="h-5 w-5" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className={cn("text-xs font-bold tracking-tight truncate", isSelected ? "text-primary" : "text-foreground")}>{atm.name}</p>
-                          <p className="text-[9px] text-muted-foreground font-medium leading-tight truncate">{atm.desc}</p>
-                        </div>
+                        {/* Background glow when selected */}
                         {isSelected && (
-                          <div className="h-6 w-6 bg-primary text-white rounded-full flex items-center justify-center shrink-0">
-                            <Check className="h-3 w-3" />
-                          </div>
+                          <div className={cn("absolute inset-y-0 left-0 w-1/2 opacity-10 bg-gradient-to-r pointer-events-none", 
+                            atm.color === 'blue' ? 'from-blue-500' :
+                            atm.color === 'purple' ? 'from-purple-500' :
+                            atm.color === 'amber' ? 'from-amber-500' :
+                            atm.color === 'green' ? 'from-emerald-500' : 'from-rose-500',
+                            "to-transparent"
+                          )} />
                         )}
+                        
+                        <div className={cn(
+                          "relative z-10 p-4 transition-all duration-700 rounded-2xl shadow-inner shrink-0",
+                          isSelected ? "bg-primary text-white rotate-0" : "bg-white dark:bg-slate-800 text-slate-400 group-hover:rotate-12 group-hover:bg-primary/10 group-hover:text-primary"
+                        )}>
+                          <atm.icon className="h-7 w-7" />
+                        </div>
+                        
+                        <div className="relative z-10 flex-1 text-left min-w-0 py-1">
+                          <p className={cn("text-lg font-black tracking-tighter truncate transition-colors", isSelected ? "text-primary" : "text-foreground")}>{atm.name}</p>
+                          <p className="text-[10px] text-slate-500 font-bold tracking-[0.2em] uppercase mt-1 truncate">{atm.desc}</p>
+                        </div>
+                        
+                        <div className={cn(
+                           "relative z-10 flex items-center justify-center w-8 h-8 rounded-full border-2 transition-all duration-500 shrink-0",
+                           isSelected ? "bg-primary border-primary text-white scale-100" : "border-slate-200 dark:border-slate-700 scale-0 opacity-0 bg-transparent text-transparent group-hover:scale-50 group-hover:opacity-50"
+                        )}>
+                          <Check className="h-4 w-4" />
+                        </div>
                       </button>
                     );
                   })}

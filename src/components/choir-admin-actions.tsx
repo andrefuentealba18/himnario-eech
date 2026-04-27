@@ -62,8 +62,8 @@ export function ChoirAdminActions({ choir, onDelete, onUpdate }: ChoirAdminActio
   function onPasswordSubmit(values: z.infer<typeof passwordSchema>) {
     if (values.password === '4002') {
       toast({ 
-        variant: 'success',
-        title: 'Acceso concedido' 
+        title: '🔓 Desbloqueado',
+        className: 'fixed right-4 top-4 bg-emerald-500 text-white rounded-full flex items-center justify-center px-4 py-2 text-xs font-black border-none shadow-2xl z-[100] !m-0'
       });
       setIsAuthenticated(true);
     } else {

@@ -74,19 +74,20 @@ export function SpecialOccasionListClient({ specialOccasions, activeCategory, on
           return (
             <Card 
               key={cat}
-              className="cursor-pointer border-slate-200/50 bg-white/40 backdrop-blur-sm hover:bg-white/80 transition-all duration-500 active:scale-95 group app-card"
+              className="cursor-pointer border-slate-200/50 bg-white/40 backdrop-blur-sm hover:bg-white/80 transition-all duration-500 active:scale-95 group app-card rounded-[2rem] overflow-hidden"
               onClick={() => onSelectCategory(cat)}
             >
-              <CardContent className="p-6 flex flex-col items-center text-center gap-4">
+              <CardContent className="p-6 flex flex-col items-center text-center gap-4 relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 to-transparent pointer-events-none" />
                 <div className={cn(
-                  "w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 group-hover:scale-110 shadow-inner",
+                  "relative w-24 h-24 rounded-full flex items-center justify-center transition-all duration-700 group-hover:scale-110 shadow-xl ring-4 ring-white dark:ring-slate-800",
                   config.color
                 )}>
-                  <config.icon className={cn("h-8 w-8", config.iconColor)} />
+                  <config.icon className={cn("h-10 w-10 drop-shadow-sm", config.iconColor)} />
                 </div>
-                <div className="space-y-1">
-                  <h3 className="font-black text-[11px] text-slate-800 uppercase tracking-widest leading-tight">{cat}</h3>
-                  <Badge variant="secondary" className="text-[9px] font-bold px-2 py-0 h-5 bg-primary/5 text-primary border-primary/10">
+                <div className="space-y-1.5 relative z-10">
+                  <h3 className="font-black text-[12px] text-slate-800 uppercase tracking-widest leading-tight">{cat}</h3>
+                  <Badge variant="secondary" className="text-[9px] font-bold px-2.5 py-0.5 rounded-full bg-primary/10 text-primary border-none shadow-sm">
                     {countsByCategory[cat] || 0} cantos
                   </Badge>
                 </div>

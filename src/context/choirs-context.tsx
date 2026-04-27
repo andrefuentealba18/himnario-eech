@@ -37,6 +37,7 @@ interface ChoirsContextType {
   getChoirById: (id: string) => Choir | undefined;
   restoreChoirs: (choirsToRestore: Omit<Choir, 'id'>[]) => void;
   isLoaded: boolean;
+  isSyncing: boolean;
 }
 
 const ChoirsContext = createContext<ChoirsContextType | undefined>(undefined);
@@ -51,10 +52,17 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
 
   const { data: allData, isLoading } = useCollection<Choir>(choirsCollection);
 
-  const isLoaded = !!firestore && !isLoading;
+  const isSyncing = isLoading;
+  const isLoaded = !!firestore && (!isLoading || (allData && allData.length > 0) || initialChoirs.length > 0);
 
   const choirs = useMemo(() => {
-    if (!allData) return [];
+    if (!allData || allData.length === 0) {
+      return initialChoirs.map(c => ({
+        ...c,
+        id: slugify(c.title),
+        status: 'approved' as const
+      })) as Choir[];
+    }
     return allData
       .filter(c => c.status === 'approved' || !c.status)
       .sort((a, b) => a.title.localeCompare(b.title));
@@ -72,7 +80,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
   }, [allData]);
 
   useEffect(() => {
-    if (isLoaded && allData?.length === 0) {
+    if (!!firestore && !isLoading && allData?.length === 0) {
       const migrationFlag = 'choirs_migrated_v1';
       if (localStorage.getItem(migrationFlag)) return;
 
@@ -90,7 +98,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
         })
         .catch((error) => console.error("Error migrating choirs:", error));
     }
-  }, [isLoaded, allData, firestore]);
+  }, [isLoading, allData, firestore]);
   
   const addChoir = useCallback(async (newChoirData: Omit<Choir, 'id'>) => {
     if (!firestore) return { success: false };
@@ -205,7 +213,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     batch.commit().catch(error => console.error("Error restoring choirs:", error));
   }, [firestore, allData]);
 
-  const value = { choirs, pendingChoirs, addChoir, addChoirs, approveChoir, deleteChoir, updateChoir, getChoirById, restoreChoirs, isLoaded };
+  const value = { choirs, pendingChoirs, addChoir, addChoirs, approveChoir, deleteChoir, updateChoir, getChoirById, restoreChoirs, isLoaded, isSyncing };
 
   return <ChoirsContext.Provider value={value}>{children}</ChoirsContext.Provider>;
 }

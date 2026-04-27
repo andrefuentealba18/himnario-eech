@@ -1,7 +1,7 @@
 "use client";
 
 import type { Praise } from '@/lib/praises';
-import { useState, useMemo, useDeferredValue } from 'react';
+import { useState, useMemo, useDeferredValue, useEffect } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Search, List, Star } from 'lucide-react';
@@ -108,8 +108,13 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
     </div>
   );
 }
-
 function SimplePraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: string })[] }) {
+  const [visibleCount, setVisibleCount] = useState(50);
+
+  useEffect(() => {
+    setVisibleCount(50);
+  }, [praises]);
+
   if (praises.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-10">
@@ -118,10 +123,12 @@ function SimplePraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: str
     );
   }
 
+  const visiblePraises = praises.slice(0, visibleCount);
+
   return (
     <ScrollArea className="h-[calc(100vh-16rem)] pr-4">
-        <div className="flex flex-col">
-        {praises.map((praise) => (
+        <div className="flex flex-col pb-8">
+        {visiblePraises.map((praise) => (
             <Link
                 href={`/praises/${praise.id}`}
                 key={praise.id}
@@ -141,6 +148,16 @@ function SimplePraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: str
                 </div>
             </Link>
         ))}
+        {visibleCount < praises.length && (
+          <div className="py-6 flex justify-center">
+            <button 
+              onClick={() => setVisibleCount(v => v + 50)} 
+              className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-white/5 dark:hover:bg-white/10 text-slate-600 dark:text-slate-300 rounded-full text-[10px] font-black uppercase tracking-widest transition-all active:scale-95 border-none shadow-sm"
+            >
+              Cargar Más ({praises.length - visibleCount})
+            </button>
+          </div>
+        )}
         </div>
     </ScrollArea>
   );

@@ -25,7 +25,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Settings, Edit, Trash2 } from 'lucide-react';
+import { Settings, Edit, Trash2, ShieldCheck } from 'lucide-react';
 import { EditYouthChoirDialog } from './edit-youth-choir-dialog';
 import {
   AlertDialog,
@@ -61,7 +61,10 @@ export function YouthChoirAdminActions({ youthChoir, onDelete, onUpdate }: Youth
 
   function onPasswordSubmit(values: z.infer<typeof passwordSchema>) {
     if (values.password === '4002') {
-      toast({ title: 'Acceso concedido' });
+      toast({ 
+        title: '🔓 Desbloqueado',
+        className: 'fixed right-4 top-4 bg-emerald-500 text-white rounded-full flex items-center justify-center px-4 py-2 text-xs font-black border-none shadow-2xl z-[100] !m-0'
+      });
       setIsAuthenticated(true);
     } else {
       toast({
@@ -100,36 +103,57 @@ export function YouthChoirAdminActions({ youthChoir, onDelete, onUpdate }: Youth
           <span className="sr-only">Configuración</span>
         </Button>
       </DialogTrigger>
-      <DialogContent onCloseAutoFocus={(e) => e.preventDefault()}>
+      <DialogContent className={isAuthenticated ? "sm:max-w-lg rounded-[2.5rem]" : "w-[95vw] max-w-[360px] rounded-[3rem] p-0 border border-white/20 dark:border-slate-800 shadow-[0_0_60px_rgba(0,0,0,0.15)] bg-white/80 dark:bg-slate-950/80 backdrop-blur-3xl overflow-hidden"} onCloseAutoFocus={(e) => e.preventDefault()}>
         {!isAuthenticated ? (
-          <>
-            <DialogHeader>
-              <DialogTitle>Acceso de Administrador</DialogTitle>
-              <DialogDescription>
-                Ingresa la contraseña para editar o eliminar la alabanza.
-              </DialogDescription>
+          <div className="p-8 sm:p-10 relative z-10">
+            <div className="absolute inset-0 pointer-events-none">
+              <div className="absolute -top-32 -right-32 w-64 h-64 bg-primary/20 rounded-full blur-[80px]" />
+              <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-cyan-400/20 rounded-full blur-[80px]" />
+            </div>
+            
+            <DialogHeader className="text-center space-y-6 relative">
+              <div className="relative mx-auto w-fit">
+                <div className="absolute inset-0 bg-primary/40 blur-[40px] rounded-full scale-150 animate-pulse duration-1000" />
+                <div className="relative p-5 bg-gradient-to-tr from-primary via-blue-500 to-cyan-400 rounded-[1.5rem] rotate-3 shadow-[0_10px_40px_-5px_rgba(0,0,0,0.4)] transition-transform hover:rotate-6">
+                  <ShieldCheck className="h-10 w-10 text-white -rotate-3" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <DialogTitle className="text-2xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-slate-900 to-slate-500 dark:from-white dark:to-slate-400">
+                  Acceso Seguro
+                </DialogTitle>
+                <DialogDescription className="text-[10px] font-bold tracking-[0.3em] text-slate-500 dark:text-slate-400 uppercase">
+                  Clave Maestra
+                </DialogDescription>
+              </div>
             </DialogHeader>
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onPasswordSubmit)} className="space-y-4 py-4">
+              <form onSubmit={form.handleSubmit(onPasswordSubmit)} className="space-y-8 py-8 relative">
                 <FormField
                   control={form.control}
                   name="password"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Contraseña</FormLabel>
+                      <FormLabel className="sr-only">Contraseña</FormLabel>
                       <FormControl>
-                        <Input type="password" placeholder="••••••••" {...field} />
+                        <Input 
+                          type="password" 
+                          placeholder="••••" 
+                          {...field} 
+                          className="text-center tracking-[1em] font-black h-14 text-xl rounded-2xl border-0 bg-black/5 dark:bg-white/5 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/20 backdrop-blur-md shadow-inner transition-all hover:bg-black/10 dark:hover:bg-white/10" 
+                          autoFocus 
+                        />
                       </FormControl>
-                      <FormMessage />
+                      <FormMessage className="text-center font-bold text-xs" />
                     </FormItem>
                   )}
                 />
-                <DialogFooter>
-                  <Button type="submit">Acceder</Button>
-                </DialogFooter>
+                <Button type="submit" className="w-full rounded-[2rem] h-16 font-black text-lg uppercase tracking-widest bg-gradient-to-r from-primary to-blue-600 focus:ring-4 focus:ring-primary/50 text-white hover:scale-[1.02] active:scale-95 transition-all shadow-[0_15px_30px_-5px_rgba(0,0,0,0.3)]">
+                  Desbloquear
+                </Button>
               </form>
             </Form>
-          </>
+          </div>
         ) : (
           <>
             <DialogHeader>
