@@ -162,7 +162,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
       </header>
 
       <main className="flex-1 py-10 px-4 flex flex-col items-center justify-start overflow-y-auto">
-        <div className="w-full max-w-3xl glass-morphism rounded-[2.5rem] p-8 sm:p-16 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-4 relative overflow-hidden group">
+        <div className="w-full max-w-3xl glass-morphism rounded-[2.5rem] p-8 sm:p-16 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-400 mt-4 relative overflow-hidden group">
           <div className="absolute top-0 left-0 w-full h-1.5 flex">
             <div className="h-full flex-1 bg-blue-600/40" />
             <div className="h-full flex-1 bg-white/40" />

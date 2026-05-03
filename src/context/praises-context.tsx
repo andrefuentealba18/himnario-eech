@@ -191,8 +191,8 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   }, [firestore]);
 
   const getPraiseById = useCallback((id: string): Praise | undefined => {
-    return allData?.find(p => p.id === id);
-  }, [allData]);
+    return praises.find(p => p.id === id);
+  }, [praises]);
 
   const restorePraises = useCallback((praisesToRestore: Omit<Praise, 'id'>[]) => {
     if (!firestore) return;

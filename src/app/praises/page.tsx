@@ -31,18 +31,11 @@ export default function PraisesIndexPage() {
   useEffect(() => {
     setIsReady(true);
     
-    if (typeof window !== 'undefined') {
-      const introShown = sessionStorage.getItem('praises_intro_shown');
-      if (introShown) {
-        setShowIntro(false);
-      } else {
-        const timer = setTimeout(() => {
-          setShowIntro(false);
-          sessionStorage.setItem('praises_intro_shown', 'true');
-        }, 2500);
-        return () => clearTimeout(timer);
-      }
-    }
+    // Always show intro for 3 seconds
+    const timer = setTimeout(() => {
+      setShowIntro(false);
+    }, 3000);
+    return () => clearTimeout(timer);
   }, []);
 
   const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';

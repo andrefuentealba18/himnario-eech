@@ -4,7 +4,7 @@ import type { Praise } from '@/lib/praises';
 import { useState, useMemo, useDeferredValue, useEffect } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
-import { Search, List, Star } from 'lucide-react';
+import { Search, List, Star, FileText } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -15,7 +15,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { normalizeSearchTerm } from '@/lib/utils';
+import { normalizeSearchTerm, formatForOpenLP } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface PraiseListClientProps {
   praises: Praise[];
@@ -110,6 +111,7 @@ export function PraiseListClient({ praises }: PraiseListClientProps) {
 }
 function SimplePraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: string })[] }) {
   const [visibleCount, setVisibleCount] = useState(50);
+  const { toast } = useToast();
 
   useEffect(() => {
     setVisibleCount(50);
@@ -144,6 +146,19 @@ function SimplePraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: str
                     <div className="flex items-center gap-1 flex-shrink-0 scale-90">
                         {praise.speed && <Badge variant="outline" className="capitalize text-[8px] font-bold">{praise.speed}</Badge>}
                         {praise.tone && <Badge variant="outline" className="text-[9px] font-bold border-primary/20 text-primary">{praise.tone}</Badge>}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const formatted = formatForOpenLP(praise.lyrics);
+                            navigator.clipboard.writeText(formatted);
+                            toast({ title: "OpenLP Copiado", description: `"${praise.title}" copiado para OpenLP.` });
+                          }}
+                          className="ml-1 p-1.5 rounded-full hover:bg-primary/10 text-slate-400 hover:text-primary transition-colors"
+                          title="Copiar para OpenLP"
+                        >
+                          <FileText className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
             </Link>
@@ -164,6 +179,7 @@ function SimplePraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: str
 }
 
 function GroupedPraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: string })[] }) {
+  const { toast } = useToast();
   const groupedPraises = useMemo(() => {
     const groups: Record<string, typeof praises> = {};
     praises.forEach(praise => {
@@ -199,9 +215,22 @@ function GroupedPraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: st
                                 <Link
                                     href={`/praises/${praise.id}`}
                                     key={praise.id}
-                                    className="flex items-center gap-4 p-2 -mx-2 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
+                                    className="flex justify-between items-center gap-4 p-2 -mx-2 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
                                 >
                                     <span className="text-[13px] font-bold text-slate-700 dark:text-slate-200 truncate">{praise.title}</span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        const formatted = formatForOpenLP(praise.lyrics);
+                                        navigator.clipboard.writeText(formatted);
+                                        toast({ title: "OpenLP Copiado", description: `"${praise.title}" copiado para OpenLP.` });
+                                      }}
+                                      className="p-1.5 rounded-full hover:bg-primary/10 text-slate-400 hover:text-primary transition-colors"
+                                      title="Copiar para OpenLP"
+                                    >
+                                      <FileText className="w-4 h-4" />
+                                    </button>
                                 </Link>
                             ))}
                         </div>

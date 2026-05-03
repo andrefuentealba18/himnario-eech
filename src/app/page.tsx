@@ -80,46 +80,49 @@ export default function HomePage() {
 
   if (showSplash) {
     return (
-      <div className="fixed inset-0 z-[200] bg-white dark:bg-[#030712] flex flex-col items-center justify-center overflow-hidden transition-opacity duration-1000">
+      <div className="fixed inset-0 z-[200] bg-white dark:bg-[#020617] flex flex-col items-center justify-center overflow-hidden transition-all duration-1000 ease-in-out">
         
-        {/* Animated Background Orbs */}
-        <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
-          <div className="absolute w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] bg-primary/10 dark:bg-primary/20 rounded-full blur-[100px] animate-pulse-slow mix-blend-screen" />
-          <div className="absolute w-[60vw] h-[60vw] max-w-[600px] max-h-[600px] bg-amber-400/10 dark:bg-amber-400/20 rounded-full blur-[80px] animate-aura-giant delay-1000 mix-blend-screen" style={{ animationDirection: 'reverse' }} />
-          <div className="absolute w-[100vw] h-[100vw] max-w-[1000px] max-h-[1000px] bg-blue-500/10 dark:bg-blue-500/20 rounded-full blur-[120px] animate-aura-slow" />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 dark:via-[#030712]/40 to-white dark:to-[#030712]" />
+        {/* Deep Ambient Background */}
+        <div className="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden">
+          <div className="absolute w-[120vw] h-[120vw] bg-primary/5 dark:bg-primary/10 rounded-full blur-[140px] animate-aura-giant" />
+          <div className="absolute w-[100vw] h-[100vw] bg-blue-500/5 dark:bg-blue-500/10 rounded-full blur-[120px] animate-aura-giant delay-2000" style={{ animationDirection: 'reverse' }} />
+          <div className="absolute w-[80vw] h-[80vw] bg-amber-400/5 dark:bg-amber-400/10 rounded-full blur-[100px] animate-pulse-slow mix-blend-screen" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/20 dark:via-[#020617]/20 to-white dark:to-[#020617]" />
+          <div className="absolute inset-0 design-grid opacity-[0.15]" />
         </div>
 
-        <div className="relative z-10 flex flex-col items-center gap-10 text-center px-6 w-full max-w-xl">
+        <div className="relative z-10 flex flex-col items-center gap-12 text-center px-6 w-full max-w-xl">
           
-          {/* Logo */}
-          <div className="relative animate-in zoom-in-50 fade-in duration-500 ease-out fill-mode-both">
-            {/* Solo dejamos el anillo giratorio para que no salgan "tantos circulos" */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] border-[3px] border-dashed border-primary/30 rounded-full animate-spin-slow" />
+          {/* Multi-layered Hero Logo */}
+          <div className="relative animate-in zoom-in-50 fade-in duration-1000 ease-out fill-mode-both">
+            {/* Energy Rings */}
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[160%] h-[160%] border-[1px] border-primary/10 rounded-full animate-spin-slow" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[145%] h-[145%] border-[2px] border-dashed border-primary/20 rounded-full animate-spin-slow" style={{ animationDirection: 'reverse', animationDuration: '20s' }} />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[130%] h-[130%] border-[1px] border-amber-400/20 rounded-full animate-pulse-slow" />
 
-            <div className="relative p-2 bg-gradient-to-br from-blue-600 via-primary to-amber-400 rounded-full shadow-[0_0_80px_rgba(37,99,235,0.4)] backdrop-blur-xl animate-float">
-              <div className="bg-white dark:bg-slate-900 rounded-full p-2 overflow-hidden w-40 h-40 flex items-center justify-center shadow-[inset_0_4px_20px_rgba(0,0,0,0.2)] relative">
+            <div className="relative p-2.5 bg-gradient-to-tr from-blue-600 via-primary to-amber-400 rounded-full shadow-[0_0_100px_rgba(37,99,235,0.4)] backdrop-blur-2xl animate-float">
+              <div className="bg-white dark:bg-slate-900 rounded-full p-2.5 overflow-hidden w-44 h-44 flex items-center justify-center shadow-[inset_0_4px_30px_rgba(0,0,0,0.2)] relative">
                 <Image 
                   src={insigniaUrl} 
                   alt="EECH Logo" 
-                  width={160}
-                  height={160}
-                  className="rounded-full object-cover w-full h-full transform hover:scale-110 transition-transform duration-1000"
+                  width={176}
+                  height={176}
+                  className="rounded-full object-cover w-full h-full transform transition-transform duration-[3000ms] scale-100 group-hover:scale-110"
                   priority
                 />
               </div>
             </div>
           </div>
 
-          <div className="space-y-6 relative w-full pt-4">
-            {/* Staggered Text Reveal */}
+          <div className="space-y-8 relative w-full">
+            {/* Premium Typography Reveal */}
             <div className="flex flex-col items-center justify-center">
-              <div className="flex overflow-hidden pb-4">
+              <div className="flex overflow-hidden pb-6">
                 {"BIENVENIDO".split("").map((letter, i) => (
                   <span 
                     key={i} 
-                    className="text-5xl sm:text-7xl font-black font-headline text-slate-900 dark:text-white drop-shadow-[0_10px_20px_rgba(37,99,235,0.3)] opacity-0 animate-letter-reveal"
-                    style={{ animationDelay: `${0.3 + i * 0.05}s` }}
+                    className="text-6xl sm:text-8xl font-black font-headline text-slate-950 dark:text-white drop-shadow-[0_20px_30px_rgba(37,99,235,0.4)] opacity-0 animate-letter-reveal"
+                    style={{ animationDelay: `${0.5 + i * 0.08}s` }}
                   >
                     {letter}
                   </span>
@@ -127,33 +130,39 @@ export default function HomePage() {
               </div>
             </div>
             
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 delay-[800ms] fill-mode-both">
-              <div className="flex flex-col items-center gap-6">
+            <div className="animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-[1200ms] fill-mode-both">
+              <div className="flex flex-col items-center gap-8">
                 
-                {/* Ultra cool modern multicolored loading bar */}
-                <div className="relative w-64 sm:w-80 h-3 overflow-hidden rounded-full bg-slate-200 dark:bg-slate-800 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)] border border-white/20">
-                  <div className="absolute top-0 left-0 h-full w-full animate-slide-progress origin-left">
-                    <div className="absolute inset-0 bg-gradient-to-r from-blue-600 via-amber-400 to-red-600 animate-rainbow-slide" />
-                    <div className="absolute inset-0 opacity-50 mix-blend-overlay">
-                      <div className="h-full w-24 bg-white blur-[8px] animate-loading-beam-fast" />
-                    </div>
+                {/* Modern Loading Section */}
+                <div className="relative w-72 sm:w-96 h-2 overflow-hidden rounded-full bg-slate-200/50 dark:bg-slate-800/50 backdrop-blur-sm border border-white/10 shadow-inner">
+                  <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-r from-blue-600 via-amber-400 to-red-600 animate-rainbow-slide" />
+                  <div className="absolute inset-0 overflow-hidden">
+                    <div className="h-full w-40 bg-white/40 blur-[15px] animate-loading-beam" />
                   </div>
                 </div>
                 
-                <div className="flex items-center gap-4 opacity-80">
-                  <div className="h-[2px] w-12 bg-gradient-to-r from-transparent to-primary" />
-                  <span className="text-[12px] font-black tracking-[0.5em] text-slate-800 dark:text-slate-100 uppercase px-4 py-1 rounded-full border-[2px] border-primary/30 bg-primary/10 backdrop-blur-md shadow-[0_0_15px_rgba(37,99,235,0.2)]">Himnario Digital</span>
-                  <div className="h-[2px] w-12 bg-gradient-to-l from-transparent to-primary" />
+                <div className="flex items-center gap-6">
+                  <div className="h-[1px] w-16 bg-gradient-to-r from-transparent to-primary/40" />
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-[14px] font-black tracking-[0.6em] text-primary dark:text-primary-foreground uppercase drop-shadow-sm">Himnario Digital</span>
+                    <span className="text-[8px] font-bold tracking-[0.4em] text-slate-500 uppercase opacity-60">Version 2026.1</span>
+                  </div>
+                  <div className="h-[1px] w-16 bg-gradient-to-l from-transparent to-primary/40" />
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Footer info */}
-        <div className="absolute bottom-12 w-full text-center px-6 animate-in fade-in duration-500 delay-[1000ms] fill-mode-both">
-          <div className="flex flex-col items-center gap-2 opacity-80">
-            <span className="text-[10px] font-black text-slate-500 dark:text-slate-400 uppercase tracking-[0.8em] ml-[0.8em] drop-shadow-md">
+        {/* Global Branding Footer */}
+        <div className="absolute bottom-12 w-full text-center px-10 animate-in fade-in duration-1000 delay-[2000ms] fill-mode-both">
+          <div className="flex flex-col items-center gap-3">
+            <div className="flex items-center gap-4 opacity-40">
+              <div className="h-[1px] w-8 bg-slate-400" />
+              <Sparkles className="h-4 w-4 text-amber-500 animate-pulse" />
+              <div className="h-[1px] w-8 bg-slate-400" />
+            </div>
+            <span className="text-[11px] font-black text-slate-600 dark:text-slate-400 uppercase tracking-[1em] ml-[1em] drop-shadow-sm">
               Ejército Evangélico de Chile
             </span>
           </div>
@@ -271,6 +280,20 @@ export default function HomePage() {
             <div className="flex flex-col items-center gap-4">
               <div className="flex items-center justify-center gap-6">
                 <InstallPWAButton />
+                <div className="w-px h-4 bg-slate-300 dark:bg-white/10" />
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-slate-400 hover:text-primary transition-colors font-bold uppercase tracking-widest text-[10px]"
+                  onClick={() => {
+                    localStorage.clear();
+                    sessionStorage.clear();
+                    window.location.reload();
+                  }}
+                >
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin-slow" />
+                  Sincronizar
+                </Button>
                 <div className="w-px h-4 bg-slate-300 dark:bg-white/10" />
                 <SettingsDialog />
               </div>

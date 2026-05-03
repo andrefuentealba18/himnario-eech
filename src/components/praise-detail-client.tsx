@@ -3,7 +3,7 @@
 import type { Praise } from '@/lib/praises';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star, Music } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star, Music, FileText } from 'lucide-react';
 import { usePraises } from '@/context/praises-context';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useRecents } from '@/hooks/use-recents';
@@ -15,7 +15,7 @@ import { useFontSize } from '@/hooks/use-font-size';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { cn, formatForOpenLP } from '@/lib/utils';
 
 const slugify = (text: string): string =>
   text.toString().toLowerCase()
@@ -112,6 +112,13 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     window.open(shareUrl, '_blank');
   }, [praise]);
   
+  const handleOpenLPCopy = useCallback(() => {
+    if (!praise) return;
+    const formatted = formatForOpenLP(praise.lyrics);
+    navigator.clipboard.writeText(formatted);
+    toast({ title: "Formato OpenLP Copiado", description: "La alabanza ha sido copiada al portapapeles." });
+  }, [praise, toast]);
+  
   if (!isPraisesLoaded || !praise) {
     return <PraiseDetailSkeleton />;
   }
@@ -163,7 +170,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
         </header>
 
       <main className="flex-1 py-10 px-4 flex flex-col items-center justify-start overflow-y-auto">
-        <div className="w-full max-w-3xl glass-morphism rounded-[2.5rem] p-8 sm:p-16 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-1000 mt-4 relative overflow-hidden group">
+        <div className="w-full max-w-3xl glass-morphism rounded-[2.5rem] p-8 sm:p-16 shadow-2xl animate-in fade-in slide-in-from-bottom-8 duration-500 mt-4 relative overflow-hidden group">
             <div className="absolute top-0 left-0 w-full h-1.5 flex">
               <div className="h-full flex-1 bg-blue-600/40" />
               <div className="h-full flex-1 bg-white/40" />
@@ -212,6 +219,9 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
             <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
             <div className="flex gap-2">
               <PraiseAdminActions praise={praise} onUpdate={handleUpdate} onDelete={handleDelete} />
+              <Button variant="outline" size="icon" onClick={handleOpenLPCopy} className="rounded-full h-12 w-12 text-blue-600 hover:text-blue-700 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all" title="Copiar para OpenLP">
+                <FileText className="h-5 w-5" />
+              </Button>
               <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-12 w-12 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
                 <Share2 className="h-5 w-5" />
               </Button>

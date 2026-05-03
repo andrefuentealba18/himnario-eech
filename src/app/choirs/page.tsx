@@ -32,16 +32,11 @@ export default function ChoirsIndexPage() {
     setIsReady(true);
     
     if (typeof window !== 'undefined') {
-      const introShown = sessionStorage.getItem('choirs_intro_shown');
-      if (introShown) {
+      // Always show intro for 3 seconds
+      const timer = setTimeout(() => {
         setShowIntro(false);
-      } else {
-        const timer = setTimeout(() => {
-          setShowIntro(false);
-          sessionStorage.setItem('choirs_intro_shown', 'true');
-        }, 2500);
-        return () => clearTimeout(timer);
-      }
+      }, 3000);
+      return () => clearTimeout(timer);
     }
   }, []);
 
