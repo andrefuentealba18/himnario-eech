@@ -56,16 +56,30 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   const isLoaded = (!isLoading || (allData && allData.length > 0) || initialPraises.length > 0);
 
   const praises = useMemo(() => {
-    if (!allData || allData.length === 0) {
-      return initialPraises.map(p => ({
-        ...p,
-        id: slugify(p.title),
-        status: 'approved' as const
-      })) as Praise[];
+    // Merge initial local data with Firestore data
+    const fbPraisesMap = new Map(allData?.map(p => [p.id, p]) || []);
+    
+    // First, map all initial praises, overlaying any Firestore updates
+    const mergedPraises = initialPraises.map(initial => {
+      const id = slugify(initial.title);
+      const fbData = fbPraisesMap.get(id);
+      if (fbData) {
+        return { ...initial, ...fbData };
+      }
+      return { ...initial, id, status: 'approved' as const };
+    }) as Praise[];
+
+    // Then, add any NEW praises from Firestore that are not in initialPraises
+    const initialIds = new Set(mergedPraises.map(p => p.id));
+    if (allData) {
+      allData.forEach(fbPraise => {
+        if (!initialIds.has(fbPraise.id) && (fbPraise.status === 'approved' || !fbPraise.status)) {
+          mergedPraises.push(fbPraise);
+        }
+      });
     }
-    return allData
-      .filter(p => p.status === 'approved' || !p.status)
-      .sort((a, b) => a.title.localeCompare(b.title));
+
+    return mergedPraises.sort((a, b) => a.title.localeCompare(b.title));
   }, [allData]);
   
   const pendingPraises = useMemo(() => {

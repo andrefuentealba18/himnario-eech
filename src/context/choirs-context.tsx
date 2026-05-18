@@ -56,16 +56,30 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
   const isLoaded = (!isLoading || (allData && allData.length > 0) || initialChoirs.length > 0);
 
   const choirs = useMemo(() => {
-    if (!allData || allData.length === 0) {
-      return initialChoirs.map(c => ({
-        ...c,
-        id: slugify(c.title),
-        status: 'approved' as const
-      })) as Choir[];
+    // Merge initial local data with Firestore data
+    const fbChoirsMap = new Map(allData?.map(c => [c.id, c]) || []);
+    
+    // First, map all initial choirs, overlaying any Firestore updates
+    const mergedChoirs = initialChoirs.map(initial => {
+      const id = slugify(initial.title);
+      const fbData = fbChoirsMap.get(id);
+      if (fbData) {
+        return { ...initial, ...fbData };
+      }
+      return { ...initial, id, status: 'approved' as const };
+    }) as Choir[];
+
+    // Then, add any NEW choirs from Firestore that are not in initialChoirs
+    const initialIds = new Set(mergedChoirs.map(c => c.id));
+    if (allData) {
+      allData.forEach(fbChoir => {
+        if (!initialIds.has(fbChoir.id) && (fbChoir.status === 'approved' || !fbChoir.status)) {
+          mergedChoirs.push(fbChoir);
+        }
+      });
     }
-    return allData
-      .filter(c => c.status === 'approved' || !c.status)
-      .sort((a, b) => a.title.localeCompare(b.title));
+
+    return mergedChoirs.sort((a, b) => a.title.localeCompare(b.title));
   }, [allData]);
   
   const pendingChoirs = useMemo(() => {

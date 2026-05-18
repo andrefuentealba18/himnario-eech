@@ -56,16 +56,30 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
   const isLoaded = (!isLoading || (allData && allData.length > 0) || initialYouthChoirs.length > 0);
 
   const youthChoirs = useMemo(() => {
-    if (!allData || allData.length === 0) {
-      return initialYouthChoirs.map(yc => ({
-        ...yc,
-        id: slugify(`${yc.group}-${yc.title}`),
-        status: 'approved' as const
-      })) as YouthChoir[];
+    // Merge initial local data with Firestore data
+    const fbYouthChoirsMap = new Map(allData?.map(yc => [yc.id, yc]) || []);
+    
+    // First, map all initial youth choirs, overlaying any Firestore updates
+    const mergedYouthChoirs = initialYouthChoirs.map(initial => {
+      const id = slugify(`${initial.group}-${initial.title}`);
+      const fbData = fbYouthChoirsMap.get(id);
+      if (fbData) {
+        return { ...initial, ...fbData };
+      }
+      return { ...initial, id, status: 'approved' as const };
+    }) as YouthChoir[];
+
+    // Then, add any NEW youth choirs from Firestore that are not in initialYouthChoirs
+    const initialIds = new Set(mergedYouthChoirs.map(yc => yc.id));
+    if (allData) {
+      allData.forEach(fbYouthChoir => {
+        if (!initialIds.has(fbYouthChoir.id) && (fbYouthChoir.status === 'approved' || !fbYouthChoir.status)) {
+          mergedYouthChoirs.push(fbYouthChoir);
+        }
+      });
     }
-    return allData
-      .filter(yc => yc.status === 'approved' || !yc.status)
-      .sort((a, b) => a.title.localeCompare(b.title));
+
+    return mergedYouthChoirs.sort((a, b) => a.title.localeCompare(b.title));
   }, [allData]);
   
   const pendingYouthChoirs = useMemo(() => {
