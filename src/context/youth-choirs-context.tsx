@@ -53,7 +53,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
   const { data: allData, isLoading } = useCollection<YouthChoir>(youthChoirsCollection);
 
   const isSyncing = isLoading;
-  const isLoaded = !!firestore && (!isLoading || (allData && allData.length > 0) || initialYouthChoirs.length > 0);
+  const isLoaded = (!isLoading || (allData && allData.length > 0) || initialYouthChoirs.length > 0);
 
   const youthChoirs = useMemo(() => {
     if (!allData || allData.length === 0) {
@@ -81,22 +81,30 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!!firestore && !isLoading && allData?.length === 0) {
-      const migrationFlag = 'youth_choirs_migrated_v1';
+      const migrationFlag = 'youth_choirs_migrated_v2';
       if (localStorage.getItem(migrationFlag)) return;
 
       console.log('Migrating initial youth choirs...');
-      const batch = writeBatch(firestore!);
-      initialYouthChoirs.forEach((yc) => {
-        const id = slugify(`${yc.group}-${yc.title}`);
-        const docRef = doc(firestore!, 'youth-choirs', id);
-        batch.set(docRef, removeUndefined({ ...yc, status: 'approved', createdAt: serverTimestamp() }));
-      });
-
-      batch.commit()
-        .then(() => {
+      const migrateInBatches = async () => {
+        try {
+          const chunkSize = 400;
+          for (let i = 0; i < initialYouthChoirs.length; i += chunkSize) {
+            const chunk = initialYouthChoirs.slice(i, i + chunkSize);
+            const batch = writeBatch(firestore!);
+            chunk.forEach((yc) => {
+              const id = slugify(`${yc.group}-${yc.title}`);
+              const docRef = doc(firestore!, 'youth-choirs', id);
+              batch.set(docRef, removeUndefined({ ...yc, status: 'approved', createdAt: serverTimestamp() }));
+            });
+            await batch.commit();
+          }
           localStorage.setItem(migrationFlag, 'true');
-        })
-        .catch((error) => console.error("Error migrating youth choirs:", error));
+        } catch (error) {
+          console.error("Error migrating youth choirs:", error);
+        }
+      };
+
+      migrateInBatches();
     }
   }, [isLoading, allData, firestore]);
   

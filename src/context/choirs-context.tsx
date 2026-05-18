@@ -53,7 +53,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
   const { data: allData, isLoading } = useCollection<Choir>(choirsCollection);
 
   const isSyncing = isLoading;
-  const isLoaded = !!firestore && (!isLoading || (allData && allData.length > 0) || initialChoirs.length > 0);
+  const isLoaded = (!isLoading || (allData && allData.length > 0) || initialChoirs.length > 0);
 
   const choirs = useMemo(() => {
     if (!allData || allData.length === 0) {
@@ -81,22 +81,30 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!!firestore && !isLoading && allData?.length === 0) {
-      const migrationFlag = 'choirs_migrated_v1';
+      const migrationFlag = 'choirs_migrated_v2';
       if (localStorage.getItem(migrationFlag)) return;
 
       console.log('Migrating initial choirs...');
-      const batch = writeBatch(firestore!);
-      initialChoirs.forEach((choir) => {
-        const id = slugify(choir.title);
-        const docRef = doc(firestore!, 'choirs', id);
-        batch.set(docRef, removeUndefined({ ...choir, status: 'approved', createdAt: serverTimestamp() }));
-      });
-
-      batch.commit()
-        .then(() => {
+      const migrateInBatches = async () => {
+        try {
+          const chunkSize = 400;
+          for (let i = 0; i < initialChoirs.length; i += chunkSize) {
+            const chunk = initialChoirs.slice(i, i + chunkSize);
+            const batch = writeBatch(firestore!);
+            chunk.forEach((choir) => {
+              const id = slugify(choir.title);
+              const docRef = doc(firestore!, 'choirs', id);
+              batch.set(docRef, removeUndefined({ ...choir, status: 'approved', createdAt: serverTimestamp() }));
+            });
+            await batch.commit();
+          }
           localStorage.setItem(migrationFlag, 'true');
-        })
-        .catch((error) => console.error("Error migrating choirs:", error));
+        } catch (error) {
+          console.error("Error migrating choirs:", error);
+        }
+      };
+
+      migrateInBatches();
     }
   }, [isLoading, allData, firestore]);
   

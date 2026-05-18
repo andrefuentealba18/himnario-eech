@@ -4,7 +4,7 @@ import type { YouthChoir } from '@/lib/youth-choirs';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star, Library } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star, Library, FileText } from 'lucide-react';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useRecents } from '@/hooks/use-recents';
@@ -16,7 +16,7 @@ import { useFontSize } from '@/hooks/use-font-size';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
-import { cn } from '@/lib/utils';
+import { cn, formatForOpenLP } from '@/lib/utils';
 
 const slugify = (text: string): string =>
   text.toString().toLowerCase()
@@ -83,7 +83,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
     }
   }, [youthChoir, addRecent]);
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useCallback(async () => {
     if (!youthChoir) return;
     deleteYouthChoir(youthChoir.id);
     router.push('/youth-choirs');
@@ -94,10 +94,6 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
     const result = await updateYouthChoir(youthChoir.id, updatedData);
     if(result.success) {
       toast({ title: "Alabanza Actualizada", description: `La alabanza "${updatedData.title}" se ha guardado correctamente.` });
-      const newId = slugify(updatedData.title);
-      if (newId !== youthChoir.id) {
-        router.replace(`/youth-choirs/${newId}`);
-      }
     } else {
        toast({ variant: 'destructive', title: 'Error al actualizar', description: 'No se pudo guardar el cambio.' });
     }
@@ -116,6 +112,13 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
     const shareUrl = `whatsapp://send?text=${encodeURIComponent(text)}`;
     window.open(shareUrl, '_blank');
   }, [youthChoir]);
+
+  const handleOpenLPCopy = useCallback(() => {
+    if (!youthChoir) return;
+    const formatted = formatForOpenLP(youthChoir.lyrics);
+    navigator.clipboard.writeText(formatted);
+    toast({ title: "OpenLP Copiado", description: `"${youthChoir.title}" copiado para OpenLP.` });
+  }, [youthChoir, toast]);
 
   if (!isYouthChoirsLoaded || !youthChoir) {
     return <YouthChoirDetailSkeleton />;
@@ -225,6 +228,9 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
             <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
             <div className="flex gap-2">
               <YouthChoirAdminActions youthChoir={youthChoir} onDelete={handleDelete} onUpdate={handleUpdate} />
+              <Button variant="outline" size="icon" onClick={handleOpenLPCopy} className="rounded-full h-12 w-12 text-slate-500 hover:text-primary bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all" title="Copiar para OpenLP">
+                <FileText className="h-5 w-5" />
+              </Button>
               <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-12 w-12 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
                 <Share2 className="h-5 w-5" />
               </Button>

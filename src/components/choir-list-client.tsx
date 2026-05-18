@@ -4,7 +4,7 @@ import type { Choir } from '@/lib/choirs';
 import { useState, useMemo, useDeferredValue } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
-import { Search, List, Star } from 'lucide-react';
+import { Search, List, Star, FileText } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -15,7 +15,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { normalizeSearchTerm } from '@/lib/utils';
+import { normalizeSearchTerm, formatForOpenLP } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface ChoirListClientProps {
   choirs: Choir[];
@@ -110,6 +111,7 @@ export function ChoirListClient({ choirs }: ChoirListClientProps) {
 }
 
 function SimpleChoirRoll({ choirs }: { choirs: (Choir & { _searchIndex?: string })[] }) {
+  const { toast } = useToast();
   if (choirs.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-10">
@@ -137,6 +139,19 @@ function SimpleChoirRoll({ choirs }: { choirs: (Choir & { _searchIndex?: string 
                     <div className="flex items-center gap-1 flex-shrink-0 scale-90">
                         {choir.speed && <Badge variant="outline" className="capitalize text-[8px] font-bold">{choir.speed === 'Rapido' ? 'Aviv.' : 'Medit.'}</Badge>}
                         {choir.tone && <Badge variant="outline" className="text-[9px] font-bold border-primary/20 text-primary">{choir.tone}</Badge>}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const formatted = formatForOpenLP(choir.lyrics);
+                            navigator.clipboard.writeText(formatted);
+                            toast({ title: "OpenLP Copiado", description: `"${choir.title}" copiado para OpenLP.` });
+                          }}
+                          className="ml-1 p-1.5 rounded-full hover:bg-primary/10 text-slate-400 hover:text-primary transition-colors"
+                          title="Copiar para OpenLP"
+                        >
+                          <FileText className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
             </Link>
@@ -147,6 +162,7 @@ function SimpleChoirRoll({ choirs }: { choirs: (Choir & { _searchIndex?: string 
 }
 
 function GroupedChoirRoll({ choirs }: { choirs: (Choir & { _searchIndex?: string })[] }) {
+  const { toast } = useToast();
   const groupedChoirs = useMemo(() => {
     const groups: Record<string, typeof choirs> = {};
     choirs.forEach(choir => {
@@ -185,6 +201,19 @@ function GroupedChoirRoll({ choirs }: { choirs: (Choir & { _searchIndex?: string
                                     className="flex items-center gap-4 p-2 -mx-2 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
                                 >
                                     <span className="text-[13px] font-bold text-slate-700 dark:text-slate-200 truncate">{choir.title}</span>
+                                    <button
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        const formatted = formatForOpenLP(choir.lyrics);
+                                        navigator.clipboard.writeText(formatted);
+                                        toast({ title: "OpenLP Copiado", description: `"${choir.title}" copiado para OpenLP.` });
+                                      }}
+                                      className="p-1.5 rounded-full hover:bg-primary/10 text-slate-400 hover:text-primary transition-colors"
+                                      title="Copiar para OpenLP"
+                                    >
+                                      <FileText className="w-4 h-4" />
+                                    </button>
                                 </Link>
                             ))}
                         </div>

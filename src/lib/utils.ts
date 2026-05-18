@@ -20,20 +20,34 @@ export function formatForOpenLP(lyrics: string): string {
   const paragraphs = lyrics.split(/\n\s*\n/);
   
   let verseCount = 1;
+  let chorusCount = 1;
+  
   paragraphs.forEach((p) => {
       const lines = p.trim().split('\n');
       if (lines.length === 0 || (lines.length === 1 && lines[0].trim() === '')) return;
       
-      const isChorus = lines[0].trim().toUpperCase().startsWith('CORO');
+      const firstLine = lines[0].trim();
+      const isChorus = firstLine.toUpperCase().startsWith('CORO');
+      
       if (isChorus) {
-          lines.shift(); // remove the word CORO
+          if (firstLine.toUpperCase() === 'CORO' || firstLine.toUpperCase() === 'CORO:') {
+              lines.shift();
+          } else {
+              lines[0] = lines[0].replace(/^(CORO|Coro|coro)[\s:-]*/, '');
+          }
       }
       
-      if (lines.length === 0) return; // if it was just the word CORO
+      if (lines.length === 0 || (lines.length === 1 && lines[0].trim() === '')) return;
       
-      openLpText += `---[Verso:${verseCount}]---\n`;
+      if (isChorus) {
+          openLpText += `---[Coro:${chorusCount}]---\n`;
+          chorusCount++;
+      } else {
+          openLpText += `---[Verso:${verseCount}]---\n`;
+          verseCount++;
+      }
+      
       openLpText += lines.join('\n') + '\n';
-      verseCount++;
   });
   
   return openLpText.trim();

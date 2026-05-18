@@ -9,12 +9,12 @@ import { useFontSize } from '@/hooks/use-font-size';
 import { useRecents } from '@/hooks/use-recents';
 import { Button } from '@/components/ui/button';
 import { HymnAdminActions } from '@/components/hymn-admin-actions';
-import { Star, ChevronLeft, ZoomIn, ZoomOut, Share2, Sparkles, Home } from 'lucide-react';
+import { Star, ChevronLeft, ZoomIn, ZoomOut, Share2, Sparkles, Home, FileText } from 'lucide-react';
 import { useCallback, useEffect } from 'react';
 import { EditToneDialog } from './edit-tone-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
+import { cn, formatForOpenLP } from '@/lib/utils';
 
 interface HymnDetailClientProps {
   hymnId: number;
@@ -70,7 +70,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
     }
   }, [hymn, addRecent]);
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useCallback(async () => {
     if (!hymn) return;
     deleteHymn(hymn.number);
     router.push('/hymns');
@@ -99,6 +99,13 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
     const shareUrl = `whatsapp://send?text=${encodeURIComponent(text)}`;
     window.open(shareUrl, '_blank');
   }, [hymn]);
+
+  const handleOpenLPCopy = useCallback(() => {
+    if (!hymn) return;
+    const formatted = formatForOpenLP(hymn.lyrics);
+    navigator.clipboard.writeText(formatted);
+    toast({ title: "OpenLP Copiado", description: `"${hymn.title}" copiado para OpenLP.` });
+  }, [hymn, toast]);
 
   if (!isHymnsLoaded) {
     return <HymnDetailSkeleton />;
@@ -211,6 +218,9 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
             <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
             <div className="flex gap-2">
               <HymnAdminActions hymn={hymn} onDelete={handleDelete} onUpdate={handleUpdate} />
+              <Button variant="outline" size="icon" onClick={handleOpenLPCopy} className="rounded-full h-12 w-12 text-slate-500 hover:text-primary bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all" title="Copiar para OpenLP">
+                <FileText className="h-5 w-5" />
+              </Button>
               <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-12 w-12 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
                 <Share2 className="h-5 w-5" />
               </Button>

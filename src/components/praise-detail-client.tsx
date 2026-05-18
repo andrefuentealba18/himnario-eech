@@ -78,7 +78,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     }
   }, [praise, addRecent]);
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = useCallback(async () => {
     if (!praise) return;
     deletePraise(praise.id);
     router.push('/praises');
@@ -89,10 +89,6 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     const result = await updatePraise(praise.id, updatedData);
     if(result.success) {
       toast({ title: "Alabanza Actualizada", description: `La alabanza "${updatedData.title}" se ha guardado correctamente.` });
-       const newId = slugify(updatedData.title);
-       if (newId !== praise.id) {
-          router.replace(`/praises/${newId}`);
-       }
     } else {
       toast({ variant: 'destructive', title: 'Error al actualizar', description: 'No se pudo guardar el cambio.' });
     }

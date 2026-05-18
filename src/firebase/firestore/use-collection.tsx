@@ -44,9 +44,13 @@ export function useCollection<T = any>(
   const [error, setError] = useState<FirestoreError | Error | null>(null);
 
   useEffect(() => {
-    // We are in a loading state until services are ready and user auth state is resolved.
-    if (!areServicesAvailable || isUserLoading) {
+    if (isUserLoading) {
       setIsLoading(true);
+      return;
+    }
+    if (!areServicesAvailable) {
+      setIsLoading(false);
+      setData(null);
       return;
     }
 

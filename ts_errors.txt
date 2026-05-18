@@ -1,0 +1,32 @@
+src/components/choir-detail-client.tsx(220,48): error TS2322: Type '() => void' is not assignable to type '() => Promise<void>'.
+  Type 'void' is not assignable to type 'Promise<void>'.
+src/components/global-search.tsx(72,63): error TS2339: Property 'number' does not exist on type '{ id: number; type: "hymn"; number: number; title: string; lyrics: string; tone?: string | undefined; createdAt?: any; } | { type: "praise"; id: string; title: string; lyrics: string; tone?: string | undefined; speed?: string | undefined; status?: "approved" | ... 1 more ... | undefined; createdAt?: any; } | { ...; ...'.
+  Property 'number' does not exist on type '{ type: "praise"; id: string; title: string; lyrics: string; tone?: string | undefined; speed?: string | undefined; status?: "approved" | "pending" | undefined; createdAt?: any; }'.
+src/components/global-search.tsx(72,118): error TS2339: Property 'groupLabel' does not exist on type '{ id: number; type: "hymn"; number: number; title: string; lyrics: string; tone?: string | undefined; createdAt?: any; } | { type: "praise"; id: string; title: string; lyrics: string; tone?: string | undefined; speed?: string | undefined; status?: "approved" | ... 1 more ... | undefined; createdAt?: any; } | { ...; ...'.
+  Property 'groupLabel' does not exist on type '{ id: number; type: "hymn"; number: number; title: string; lyrics: string; tone?: string | undefined; createdAt?: any; }'.
+src/components/hymn-detail-client.tsx(220,45): error TS2322: Type '() => void' is not assignable to type '() => Promise<void>'.
+  Type 'void' is not assignable to type 'Promise<void>'.
+src/components/praise-detail-client.tsx(221,75): error TS2322: Type '() => void' is not assignable to type '() => Promise<void>'.
+  Type 'void' is not assignable to type 'Promise<void>'.
+src/components/repertoire-builder-client.tsx(120,29): error TS2322: Type '`${any}.${number}.id`' is not assignable to type '"name" | "firstHymns" | "generalPraises" | "preWordPraises" | "sickPraises" | "intermediatePraises" | "finalPraises" | `firstHymns.${number}` | `firstHymns.${number}.id` | `generalPraises.${number}` | `generalPraises.${number}.id` | `preWordPraises.${number}` | ... 6 more ... | `finalPraises.${number}.id`'.
+src/components/repertoire-builder-client.tsx(126,45): error TS2322: Type 'string | { id: string; } | { id: string; }[] | undefined' is not assignable to type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/components/song-requests-list.tsx(65,36): error TS2345: Argument of type '{ title: string; lyrics: string; tone: string | undefined; }' is not assignable to parameter of type 'Omit<YouthChoir, "id">'.
+  Property 'group' is missing in type '{ title: string; lyrics: string; tone: string | undefined; }' but required in type 'Omit<YouthChoir, "id">'.
+src/components/ui/calendar.tsx(57,9): error TS2353: Object literal may only specify known properties, and 'IconLeft' does not exist in type 'Partial<CustomComponents>'.
+src/components/ui/calendar.tsx(57,22): error TS7031: Binding element 'className' implicitly has an 'any' type.
+src/components/ui/calendar.tsx(60,23): error TS7031: Binding element 'className' implicitly has an 'any' type.
+src/components/youth-choir-detail-client.tsx(234,63): error TS2322: Type '() => void' is not assignable to type '() => Promise<void>'.
+  Type 'void' is not assignable to type 'Promise<void>'.
+src/context/special-occasions-context.tsx(117,39): error TS2322: Type '{ specialOccasions: WithId<SpecialOccasion>[]; pendingSpecialOccasions: WithId<SpecialOccasion>[]; addSpecialOccasion: (data: Omit<SpecialOccasion, "id">) => Promise<...>; ... 5 more ...; isSyncing: boolean; }' is not assignable to type 'SpecialOccasionsContextType'.
+  Types of property 'isLoaded' are incompatible.
+    Type 'boolean | null' is not assignable to type 'boolean'.
+      Type 'null' is not assignable to type 'boolean'.
+src/firebase/client-provider.tsx(17,6): error TS2322: Type '{ children: ReactNode; firebaseApp: FirebaseApp; auth: Auth; firestore: Firestore; } | { children: ReactNode; firebaseApp: null; auth: null; firestore: null; }' is not assignable to type 'IntrinsicAttributes & FirebaseProviderProps'.
+  Type '{ children: ReactNode; firebaseApp: null; auth: null; firestore: null; }' is not assignable to type 'FirebaseProviderProps'.
+    Types of property 'firebaseApp' are incompatible.
+      Type 'null' is not assignable to type 'FirebaseApp'.
+src/firebase/index.ts(22,21): error TS2554: Expected 1 arguments, but got 0.
+src/firebase/provider.tsx(97,37): error TS2345: Argument of type 'DependencyList | undefined' is not assignable to parameter of type 'DependencyList'.
+  Type 'undefined' is not assignable to type 'readonly unknown[]'.
+src/hooks/use-toast.ts(30,32): error TS2551: Property 'SAFE_INTEGER' does not exist on type 'NumberConstructor'. Did you mean 'isSafeInteger'?

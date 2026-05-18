@@ -53,7 +53,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   const { data: allData, isLoading } = useCollection<Praise>(praisesCollection);
 
   const isSyncing = isLoading;
-  const isLoaded = !!firestore && (!isLoading || (allData && allData.length > 0) || initialPraises.length > 0);
+  const isLoaded = (!isLoading || (allData && allData.length > 0) || initialPraises.length > 0);
 
   const praises = useMemo(() => {
     if (!allData || allData.length === 0) {
@@ -81,22 +81,30 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!!firestore && !isLoading && allData?.length === 0) {
-      const migrationFlag = 'praises_migrated_v1';
+      const migrationFlag = 'praises_migrated_v2';
       if (localStorage.getItem(migrationFlag)) return;
 
       console.log('Migrating initial praises...');
-      const batch = writeBatch(firestore!);
-      initialPraises.forEach((praise) => {
-        const id = slugify(praise.title);
-        const docRef = doc(firestore!, 'praises', id);
-        batch.set(docRef, removeUndefined({ ...praise, status: 'approved', createdAt: serverTimestamp() }));
-      });
-
-      batch.commit()
-        .then(() => {
+      const migrateInBatches = async () => {
+        try {
+          const chunkSize = 400;
+          for (let i = 0; i < initialPraises.length; i += chunkSize) {
+            const chunk = initialPraises.slice(i, i + chunkSize);
+            const batch = writeBatch(firestore!);
+            chunk.forEach((praise) => {
+              const id = slugify(praise.title);
+              const docRef = doc(firestore!, 'praises', id);
+              batch.set(docRef, removeUndefined({ ...praise, status: 'approved', createdAt: serverTimestamp() }));
+            });
+            await batch.commit();
+          }
           localStorage.setItem(migrationFlag, 'true');
-        })
-        .catch((error) => console.error("Error migrating praises:", error));
+        } catch (error) {
+          console.error("Error migrating praises:", error);
+        }
+      };
+
+      migrateInBatches();
     }
   }, [isLoading, allData, firestore]);
   

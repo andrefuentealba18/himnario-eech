@@ -6,10 +6,11 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFavorites } from '@/hooks/use-favorites';
-import { Search, Star, List } from 'lucide-react';
+import { Search, Star, List, FileText } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { normalizeSearchTerm } from '@/lib/utils';
+import { normalizeSearchTerm, formatForOpenLP } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface HymnListClientProps {
   hymns: Hymn[];
@@ -98,6 +99,7 @@ export function HymnListClient({ hymns }: HymnListClientProps) {
 }
 
 function HymnRoll({ hymns }: { hymns: (Hymn & { _searchIndex?: string })[] }) {
+  const { toast } = useToast();
   if (hymns.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-20">
@@ -124,6 +126,19 @@ function HymnRoll({ hymns }: { hymns: (Hymn & { _searchIndex?: string })[] }) {
                       )}
                     </div>
                     {hymn.tone && <Badge variant="outline" className="flex-shrink-0 text-[9px] h-5 px-1.5 font-bold border-primary/20 text-primary bg-primary/5">{hymn.tone}</Badge>}
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        const formatted = formatForOpenLP(hymn.lyrics);
+                        navigator.clipboard.writeText(formatted);
+                        toast({ title: "OpenLP Copiado", description: `"${hymn.title}" copiado para OpenLP.` });
+                      }}
+                      className="ml-1 p-1.5 rounded-full hover:bg-primary/10 text-slate-400 hover:text-primary transition-colors"
+                      title="Copiar para OpenLP"
+                    >
+                      <FileText className="w-4 h-4" />
+                    </button>
                 </div>
             </Link>
         ))}

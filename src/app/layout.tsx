@@ -7,7 +7,6 @@ import { FirebaseClientProvider } from '@/firebase';
 export const metadata: Metadata = {
   title: 'Himnario EECH Móvil',
   description: 'Tu cancionero digital del Ejercito Evangélico de Chile',
-  manifest: '/manifest.json',
   icons: {
     icon: 'https://i.postimg.cc/FsY3twc6/images.png',
     apple: 'https://i.postimg.cc/FsY3twc6/images.png',

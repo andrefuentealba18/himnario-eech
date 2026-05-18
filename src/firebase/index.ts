@@ -7,28 +7,37 @@ import { initializeFirestore, persistentLocalCache, persistentSingleTabManager, 
 
 // Define a singleton object to hold the initialized services
 const services = (() => {
-  let app: FirebaseApp;
-  if (!getApps().length) {
-    app = initializeApp(firebaseConfig);
-  } else {
-    app = getApp();
+  try {
+    let app: FirebaseApp;
+    if (!getApps().length) {
+      app = initializeApp(firebaseConfig);
+    } else {
+      app = getApp();
+    }
+
+    // Configuración de persistencia avanzada para uso OFFLINE total
+    // Utilizamos persistentLocalCache para asegurar que los datos se guarden en IndexedDB
+    const firestoreInstance = initializeFirestore(app, {
+      localCache: persistentLocalCache({
+        tabManager: persistentSingleTabManager({})
+      })
+    });
+
+    const authInstance = getAuth(app);
+
+    return {
+      firebaseApp: app,
+      auth: authInstance,
+      firestore: firestoreInstance,
+    };
+  } catch (error) {
+    console.error("Failed to initialize Firebase:", error);
+    return {
+      firebaseApp: null,
+      auth: null,
+      firestore: null,
+    };
   }
-
-  // Configuración de persistencia avanzada para uso OFFLINE total
-  // Utilizamos persistentLocalCache para asegurar que los datos se guarden en IndexedDB
-  const firestoreInstance = initializeFirestore(app, {
-    localCache: persistentLocalCache({
-      tabManager: persistentSingleTabManager()
-    })
-  });
-
-  const authInstance = getAuth(app);
-
-  return {
-    firebaseApp: app,
-    auth: authInstance,
-    firestore: firestoreInstance,
-  };
 })();
 
 // This function now simply returns the singleton.

@@ -117,13 +117,13 @@ function MultiSongSelectField({ control, name, label, songs }: { control: Contro
                     <div key={field.id} className="flex items-center gap-2">
                         <FormField
                             control={control}
-                            name={`${name}.${index}.id`}
+                            name={`${name}.${index}.id` as any}
                             render={({ field }) => (
                                 <FormItem className="flex-1">
                                     <FormControl>
                                         <SearchableSelect
                                             songs={songs}
-                                            value={field.value}
+                                            value={field.value as string}
                                             onChange={field.onChange}
                                             placeholder={`Seleccionar canto ${index + 1}...`}
                                         />

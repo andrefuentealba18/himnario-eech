@@ -62,7 +62,7 @@ export function SongRequestsList() {
     } else if (request.category === 'choir') {
       result = await addChoir({ ...songData, speed: request.speed });
     } else { // youth-choir
-      result = await addYouthChoir(songData);
+      result = await addYouthChoir({ ...songData, group: "Coro Juventud" });
     }
 
     if (result.success) {

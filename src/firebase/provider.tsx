@@ -18,9 +18,9 @@ export const FirebaseContext = createContext<FirebaseContextState | undefined>(u
 
 interface FirebaseProviderProps {
   children: ReactNode;
-  firebaseApp: FirebaseApp;
-  firestore: Firestore;
-  auth: Auth;
+  firebaseApp: FirebaseApp | null;
+  firestore: Firestore | null;
+  auth: Auth | null;
 }
 
 export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
@@ -33,19 +33,24 @@ export const FirebaseProvider: React.FC<FirebaseProviderProps> = ({
   
   useEffect(() => {
     if (auth) {
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (user) {
-          setUser(user);
-          setIsUserLoading(false);
-        } else {
-          // If no user, sign in anonymously. The onAuthStateChanged will be called again with the new user.
-          signInAnonymously(auth).catch((error) => {
-            console.error("Error en el inicio de sesión anónimo", error);
+      try {
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          if (user) {
+            setUser(user);
             setIsUserLoading(false);
-          });
-        }
-      });
-      return () => unsubscribe();
+          } else {
+            // If no user, sign in anonymously. The onAuthStateChanged will be called again with the new user.
+            signInAnonymously(auth).catch((error) => {
+              console.error("Error en el inicio de sesión anónimo", error);
+              setIsUserLoading(false);
+            });
+          }
+        });
+        return () => unsubscribe();
+      } catch (e) {
+        console.error("Error initializing auth state listener:", e);
+        setIsUserLoading(false);
+      }
     } else {
       setIsUserLoading(false);
     }
@@ -89,7 +94,7 @@ export const useFirebaseApp = (): FirebaseApp | null => {
 type MemoFirebase <T> = T & {__memo?: boolean};
 
 export function useMemoFirebase<T>(factory: () => T, deps: DependencyList | undefined): T {
-  const memoized = useMemo(factory, deps);
+  const memoized = useMemo(factory, deps || []);
   if (typeof memoized === 'object' && memoized !== null) {
     Object.defineProperty(memoized, '__memo', { value: true, configurable: true });
   }

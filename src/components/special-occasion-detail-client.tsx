@@ -4,7 +4,7 @@
 import type { SpecialOccasion } from '@/lib/special-occasions';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star, Sparkles } from 'lucide-react';
+import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star, Sparkles, FileText } from 'lucide-react';
 import { useSpecialOccasions } from '@/context/special-occasions-context';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useRecents } from '@/hooks/use-recents';
@@ -14,7 +14,7 @@ import { useFontSize } from '@/hooks/use-font-size';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
-import { cn } from '@/lib/utils';
+import { cn, formatForOpenLP } from '@/lib/utils';
 
 const fontSizes = [
   'text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl',
@@ -65,6 +65,13 @@ export function SpecialOccasionDetailClient({ specialId }: { specialId: string }
     const shareUrl = `whatsapp://send?text=${encodeURIComponent(text)}`;
     window.open(shareUrl, '_blank');
   }, [song]);
+
+  const handleOpenLPCopy = useCallback(() => {
+    if (!song) return;
+    const formatted = formatForOpenLP(song.lyrics);
+    navigator.clipboard.writeText(formatted);
+    toast({ title: "OpenLP Copiado", description: `"${song.title}" copiado para OpenLP.` });
+  }, [song, toast]);
 
   if (!isDataLoaded || !song) {
     return <DetailSkeleton />;
@@ -158,9 +165,14 @@ export function SpecialOccasionDetailClient({ specialId }: { specialId: string }
             <ZoomOut className="h-5 w-5" />
           </Button>
           <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
-          <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-12 w-12 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
-            <Share2 className="h-5 w-5" />
-          </Button>
+          <div className="flex gap-2">
+            <Button variant="outline" size="icon" onClick={handleOpenLPCopy} className="rounded-full h-12 w-12 text-slate-500 hover:text-primary bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all" title="Copiar para OpenLP">
+              <FileText className="h-5 w-5" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={handleShare} className="rounded-full h-12 w-12 text-green-600 hover:text-green-700 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
+              <Share2 className="h-5 w-5" />
+            </Button>
+          </div>
           <div className="w-px h-8 bg-slate-200 dark:bg-white/10" />
           <Button variant="outline" size="icon" onClick={increaseFontSize} className="rounded-full h-12 w-12 bg-white/50 dark:bg-white/5 border-none shadow-inner active:scale-90 transition-all">
             <ZoomIn className="h-5 w-5" />

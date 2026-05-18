@@ -50,7 +50,7 @@ export function SpecialOccasionsProvider({ children }: { children: ReactNode }) 
   const { data: allData, isLoading } = useCollection<SpecialOccasion>(collectionRef);
 
   const isSyncing = isLoading;
-  const isLoaded = !!firestore && (!isLoading || (allData && allData.length > 0));
+  const isLoaded = Boolean(!isLoading || (allData && allData.length > 0));
 
   const specialOccasions = useMemo(() => {
     if (!allData) return [];

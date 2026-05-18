@@ -60,7 +60,7 @@ export function GlobalSearch() {
   // Pre-calcular el índice de búsqueda para cada canción una sola vez al cargar los datos
   const allSongs: Song[] = useMemo(() => {
     if (!isLoaded) return [];
-    const base = [
+    const base: Song[] = [
       ...hymns.map(h => ({ ...h, id: h.number, type: 'hymn' as const })),
       ...praises.map(p => ({ ...p, type: 'praise' as const })),
       ...choirs.map(c => ({ ...c, type: 'choir' as const })),

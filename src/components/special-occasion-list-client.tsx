@@ -4,13 +4,14 @@ import type { SpecialOccasion, SpecialCategory } from '@/lib/special-occasions';
 import { useState, useMemo, useDeferredValue } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
-import { Search, Star, List, Mic, Cross, Gift, Droplets, ChevronRight } from 'lucide-react';
+import { Search, Star, List, Mic, Cross, Gift, Droplets, ChevronRight, FileText } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useFavorites } from '@/hooks/use-favorites';
-import { normalizeSearchTerm } from '@/lib/utils';
+import { normalizeSearchTerm, formatForOpenLP } from '@/lib/utils';
 import { Card, CardContent } from '@/components/ui/card';
+import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 interface SpecialOccasionListClientProps {
@@ -31,6 +32,7 @@ export function SpecialOccasionListClient({ specialOccasions, activeCategory, on
   const deferredSearchTerm = useDeferredValue(searchTerm);
   const [activeTab, setActiveTab] = useState('all');
   const { isFavorite } = useFavorites();
+  const { toast } = useToast();
 
   const categories: SpecialCategory[] = ["Predicación", "Fúnebre", "Cumpleaños", "Bautismos"];
 
@@ -141,6 +143,19 @@ export function SpecialOccasionListClient({ specialOccasions, activeCategory, on
                 </div>
                 <div className="flex gap-2 items-center">
                   {song.tone && <Badge variant="outline" className="text-[9px] h-5 px-1.5 font-bold border-primary/20 text-primary">{song.tone}</Badge>}
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      const formatted = formatForOpenLP(song.lyrics);
+                      navigator.clipboard.writeText(formatted);
+                      toast({ title: "OpenLP Copiado", description: `"${song.title}" copiado para OpenLP.` });
+                    }}
+                    className="p-1.5 rounded-full hover:bg-primary/10 text-slate-400 hover:text-primary transition-colors"
+                    title="Copiar para OpenLP"
+                  >
+                    <FileText className="w-4 h-4" />
+                  </button>
                   <ChevronRight className="h-4 w-4 text-slate-300" />
                 </div>
               </Link>

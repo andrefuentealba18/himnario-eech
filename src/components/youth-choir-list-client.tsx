@@ -5,7 +5,7 @@ import type { YouthChoir } from '@/lib/youth-choirs';
 import { useState, useMemo, useDeferredValue } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
-import { Search, List, Star, ChevronRight } from 'lucide-react';
+import { Search, List, Star, ChevronRight, FileText } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -16,7 +16,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { normalizeSearchTerm } from '@/lib/utils';
+import { normalizeSearchTerm, formatForOpenLP } from '@/lib/utils';
+import { useToast } from '@/hooks/use-toast';
 
 interface YouthChoirListClientProps {
   youthChoirs: YouthChoir[];
@@ -111,6 +112,7 @@ export function YouthChoirListClient({ youthChoirs }: YouthChoirListClientProps)
 }
 
 function SimpleYouthChoirRoll({ youthChoirs }: { youthChoirs: (YouthChoir & { _searchIndex?: string })[] }) {
+  const { toast } = useToast();
   if (youthChoirs.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-10">
@@ -138,6 +140,19 @@ function SimpleYouthChoirRoll({ youthChoirs }: { youthChoirs: (YouthChoir & { _s
                     <div className="flex items-center gap-1 flex-shrink-0 scale-90">
                         {praise.speed && <Badge variant="outline" className="capitalize text-[8px] font-bold">{praise.speed}</Badge>}
                         {praise.tone && <Badge variant="outline" className="text-[9px] font-bold border-primary/20 text-primary">{praise.tone}</Badge>}
+                        <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            const formatted = formatForOpenLP(praise.lyrics);
+                            navigator.clipboard.writeText(formatted);
+                            toast({ title: "OpenLP Copiado", description: `"${praise.title}" copiado para OpenLP.` });
+                          }}
+                          className="ml-1 p-1.5 rounded-full hover:bg-primary/10 text-slate-400 hover:text-primary transition-colors"
+                          title="Copiar para OpenLP"
+                        >
+                          <FileText className="w-4 h-4" />
+                        </button>
                     </div>
                 </div>
             </Link>
@@ -148,6 +163,7 @@ function SimpleYouthChoirRoll({ youthChoirs }: { youthChoirs: (YouthChoir & { _s
 }
 
 function GroupedYouthChoirRoll({ youthChoirs }: { youthChoirs: (YouthChoir & { _searchIndex?: string })[] }) {
+  const { toast } = useToast();
   const grouped = useMemo(() => {
     const groups: Record<string, typeof youthChoirs> = {};
     youthChoirs.forEach(yc => {
@@ -186,7 +202,22 @@ function GroupedYouthChoirRoll({ youthChoirs }: { youthChoirs: (YouthChoir & { _
                                     className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors border-b last:border-none"
                                 >
                                     <span className="text-[13px] font-bold text-slate-700 dark:text-slate-200 truncate">{yc.title}</span>
-                                    <ChevronRight className="h-4 w-4 text-slate-300" />
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            const formatted = formatForOpenLP(yc.lyrics);
+                                            navigator.clipboard.writeText(formatted);
+                                            toast({ title: "OpenLP Copiado", description: `"${yc.title}" copiado para OpenLP.` });
+                                          }}
+                                          className="p-1.5 rounded-full hover:bg-primary/10 text-slate-400 hover:text-primary transition-colors"
+                                          title="Copiar para OpenLP"
+                                        >
+                                          <FileText className="w-4 h-4" />
+                                        </button>
+                                        <ChevronRight className="h-4 w-4 text-slate-300" />
+                                    </div>
                                 </Link>
                             ))}
                         </div>

@@ -45,7 +45,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
   
   const isSyncing = isLoadingFromHook;
   // isLoaded now means "we have data to show", which is true if we have initial data or firestore data
-  const isLoaded = !!firestore && (!isLoadingFromHook || (rawHymns && rawHymns.length > 0) || initialHymnsData.length > 0);
+  const isLoaded = (!isLoadingFromHook || (rawHymns && rawHymns.length > 0) || initialHymnsData.length > 0);
 
   const hymns = useMemo(() => {
     if (!rawHymns || rawHymns.length === 0) {
@@ -59,7 +59,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
         if (!firestore || isLoadingFromHook) return;
         
         if (rawHymns?.length === 0) {
-            const migrationFlag = 'hymns_migrated_v3_final';
+            const migrationFlag = 'hymns_migrated_v4';
             if (localStorage.getItem(migrationFlag)) {
                 return;
             }
@@ -67,20 +67,23 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
             console.log('Iniciando carga inicial de himnos...');
             
             try {
-                const batch = writeBatch(firestore);
-                initialHymnsData.forEach((hymn) => {
-                    const docRef = doc(firestore, 'hymns', hymn.number.toString());
-                    const dataToSave = {
-                        number: hymn.number,
-                        title: hymn.title,
-                        lyrics: hymn.lyrics,
-                        tone: hymn.tone || 'Indefinida',
-                        createdAt: serverTimestamp()
-                    };
-                    batch.set(docRef, removeUndefined(dataToSave));
-                });
-
-                batch.commit().catch(e => console.error("Error al confirmar lote de himnos:", e));
+                const chunkSize = 400;
+                for (let i = 0; i < initialHymnsData.length; i += chunkSize) {
+                    const chunk = initialHymnsData.slice(i, i + chunkSize);
+                    const batch = writeBatch(firestore);
+                    chunk.forEach((hymn) => {
+                        const docRef = doc(firestore, 'hymns', hymn.number.toString());
+                        const dataToSave = {
+                            number: hymn.number,
+                            title: hymn.title,
+                            lyrics: hymn.lyrics,
+                            tone: hymn.tone || 'Indefinida',
+                            createdAt: serverTimestamp()
+                        };
+                        batch.set(docRef, removeUndefined(dataToSave));
+                    });
+                    await batch.commit();
+                }
                 localStorage.setItem(migrationFlag, 'true');
             } catch (error) {
                 console.error("Error al migrar himnos iniciales:", error);
