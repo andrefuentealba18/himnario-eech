@@ -29,6 +29,7 @@ import { YouthChoirAdminList } from '@/components/youth-choir-admin-list';
 import { MissingHymns } from '@/components/missing-hymns';
 import { BackupManager } from '@/components/backup-manager';
 import { SongTransferManager } from '@/components/song-transfer-manager';
+import { SpecialOccasionAdminList } from '@/components/special-occasion-admin-list';
 import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
 import { SongReviewList } from '@/components/song-review-list';
 import { Badge } from '@/components/ui/badge';
@@ -175,7 +176,7 @@ export function AdminPanel() {
                 <div className="h-px w-8 bg-amber-500/40" />
               </div>
               
-              <h1 className="text-xl sm:text-2xl md:text-4xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.05em] sm:tracking-[0.1em] leading-tight px-4">
+              <h1 className="text-lg sm:text-xl md:text-2xl font-black font-headline text-slate-900 animate-title-reveal-big uppercase tracking-[0.05em] sm:tracking-[0.1em] leading-tight px-4">
                 BIENVENIDO AL PANEL DE CONTROL DEL ADMINISTRADOR
               </h1>
               
@@ -277,23 +278,7 @@ export function AdminPanel() {
               {tab === 'praises' && <PraiseAdminList />}
               {tab === 'choirs' && <ChoirAdminList />}
               {tab === 'youth-choirs' && <YouthChoirAdminList />}
-              {tab === 'special' && (
-                <Card className="app-card overflow-hidden">
-                  <div className="h-1 w-full bg-amber-500" />
-                  <CardHeader>
-                    <CardTitle className="text-lg">Ocasiones Especiales</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground leading-relaxed">
-                      Gestiona los cantos de Bautismos, Matrimonios y otras ceremonias. 
-                      Puedes agregar cantos manualmente o importarlos desde las otras secciones usando el buscador integrado en la sección pública.
-                    </p>
-                    <Button asChild className="mt-6 rounded-xl bg-amber-600 hover:bg-amber-700 shadow-lg shadow-amber-100">
-                      <Link href="/special-occasions">Ir a Especiales</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
-              )}
+              {tab === 'special' && <SpecialOccasionAdminList />}
               {tab === 'more-settings' && (
                 <div className="space-y-8 pb-10">
                   <DuplicateSongsManager />

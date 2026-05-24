@@ -1,10 +1,10 @@
 
 {
-  "projectId": "studio-2357028373-46846",
-  "appId": "1:622069481217:web:ec29c3033f426a8f91e500",
-  "apiKey": "AIzaSyB3HCqxHqzZim4GRvwBS4oui8X2P5g1sZE",
-  "authDomain": "studio-2357028373-46846.firebaseapp.com",
-  "measurementId": "",
-  "messagingSenderId": "622069481217",
-  "firestoreDatabaseId": "(default)"
+  "projectId": "himnario-eech-4a298",
+  "appId": "1:707970393985:web:966b98c40724b151c2ea80",
+  "apiKey": "AIzaSyCLaan2nNqsERWQgE1qIIfcRwqTrLIwBuc",
+  "authDomain": "himnario-eech-4a298.firebaseapp.com",
+  "measurementId": "G-2J0J7DY8CN",
+  "messagingSenderId": "707970393985",
+  "storageBucket": "himnario-eech-4a298.firebasestorage.app"
 }

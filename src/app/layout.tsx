@@ -5,11 +5,48 @@ import { AppProvider } from '@/context/app-provider';
 import { FirebaseClientProvider } from '@/firebase';
 
 export const metadata: Metadata = {
-  title: 'Himnario EECH Móvil',
-  description: 'Tu cancionero digital del Ejercito Evangélico de Chile',
+  title: {
+    default: 'Himnario EECH Móvil',
+    template: '%s | Himnario EECH'
+  },
+  description: 'Tu cancionero digital del Ejército Evangélico de Chile. Encuentra himnos, alabanzas, coros de la juventud y más.',
+  keywords: [
+    'himnario eech',
+    'ejercito evangelico de chile',
+    'himnos eech',
+    'alabanzas eech',
+    'coros eech',
+    'himnario eech online',
+    'cancionero eech',
+    'coros ciclistas',
+    'coro dorcas'
+  ],
+  metadataBase: new URL('https://himnarioeech.vercel.app'),
+  alternates: {
+    canonical: '/',
+  },
+  verification: {
+    google: 'vsQGEtn6hor4k7rtT45pp8FFzt1u3po9_JXG4kVQTsc',
+  },
   icons: {
     icon: 'https://i.postimg.cc/FsY3twc6/images.png',
     apple: 'https://i.postimg.cc/FsY3twc6/images.png',
+  },
+  openGraph: {
+    title: 'Himnario EECH Móvil',
+    description: 'Tu cancionero digital del Ejército Evangélico de Chile. Himnos, alabanzas y coros en tu dispositivo.',
+    url: 'https://himnarioeech.vercel.app',
+    siteName: 'Himnario EECH',
+    locale: 'es_CL',
+    type: 'website',
+    images: [
+      {
+        url: 'https://i.postimg.cc/FsY3twc6/images.png',
+        width: 512,
+        height: 512,
+        alt: 'Himnario EECH',
+      }
+    ],
   },
   appleWebApp: {
     capable: true,
