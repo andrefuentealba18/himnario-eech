@@ -172,11 +172,11 @@ export default function HomePage() {
                 {/* Modern Minimalist Loading Dots (Office-style) */}
                 <div className="flex flex-col items-center w-full">
                   <div className="relative w-64 h-4 overflow-hidden">
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-office-dot-1 absolute top-1/2 -translate-y-1/2" />
-                    <div className="w-1.5 h-1.5 rounded-full bg-slate-900 dark:bg-white animate-office-dot-2 absolute top-1/2 -translate-y-1/2" />
-                    <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-office-dot-3 absolute top-1/2 -translate-y-1/2" />
-                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-office-dot-4 absolute top-1/2 -translate-y-1/2" />
-                    <div className="w-1.5 h-1.5 rounded-full bg-red-600 animate-office-dot-5 absolute top-1/2 -translate-y-1/2" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-500 animate-office-dot-1 absolute top-1/2 -translate-y-1/2" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-500 animate-office-dot-2 absolute top-1/2 -translate-y-1/2" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-500 animate-office-dot-3 absolute top-1/2 -translate-y-1/2" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-500 animate-office-dot-4 absolute top-1/2 -translate-y-1/2" />
+                    <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-500 animate-office-dot-5 absolute top-1/2 -translate-y-1/2" />
                   </div>
                   <span className="text-[8px] text-slate-400 dark:text-slate-500 font-bold uppercase tracking-[0.3em] pt-3 opacity-60">
                     Cargando
