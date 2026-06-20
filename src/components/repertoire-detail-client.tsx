@@ -169,7 +169,7 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
                         <CardHeader><CardTitle>6. Alabanzas Finales</CardTitle></CardHeader>
                         <CardContent>{renderSongs(repertoire.finalPraises)}</CardContent>
                     </Card>
-                </</>
+                </>
             )}
         </div>
       </div>
