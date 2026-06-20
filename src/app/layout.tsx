@@ -90,7 +90,15 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className="font-body antialiased">
+      <body className="font-body antialiased min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-[#020617] dark:via-[#0a0f1c] dark:to-[#0f172a] selection:bg-primary/20 selection:text-primary transition-colors duration-500">
+        <div className="fixed inset-0 -z-50 overflow-hidden pointer-events-none">
+          {/* Luz superior azul institucional */}
+          <div className="absolute top-[-20%] left-[-10%] w-[80vw] h-[80vw] bg-blue-600/10 dark:bg-blue-600/15 rounded-full animate-aura-slow blur-[120px]" />
+          {/* Luz inferior dorada/ámbar majestuosa */}
+          <div className="absolute bottom-[-20%] right-[-10%] w-[70vw] h-[70vw] bg-amber-500/10 dark:bg-amber-500/15 rounded-full animate-aura-slow blur-[100px]" style={{ animationDelay: '2s' }} />
+          {/* Patrón de diseño sutil */}
+          <div className="absolute inset-0 design-grid opacity-[0.04] dark:opacity-[0.06] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_40%,transparent_100%)]" />
+        </div>
         <FirebaseClientProvider>
           <AppProvider>
             <div className="relative flex min-h-screen w-full flex-col">

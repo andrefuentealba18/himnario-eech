@@ -13,8 +13,8 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
-import { ChevronLeft, Trash2, BookOpen, Mic, Music, Users } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { ChevronLeft, Trash2, BookOpen, Mic, Music, Users, Edit } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
@@ -72,7 +72,7 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
   }
 
   return (
-     <main className="flex flex-col items-center bg-background min-h-screen">
+     <main className="flex flex-col items-center bg-transparent min-h-screen">
       <div className="w-full max-w-4xl mx-auto">
         <header className="sticky top-0 z-10 bg-background/80 backdrop-blur-sm p-2 border-b flex items-center justify-between h-14">
           <Button variant="ghost" size="icon" asChild>
@@ -90,9 +90,21 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="bg-amber-100 hover:bg-amber-200 text-amber-900 border-amber-300 font-bold" size="sm" asChild>
+            <Button variant="outline" size="icon" className="h-9 w-9 bg-blue-100 hover:bg-blue-200 text-blue-900 border-blue-300" asChild>
+              <Link href={`/repertoire/${repertoireId}/edit`}>
+                 <Edit className="h-4 w-4" />
+                 <span className="sr-only">Editar</span>
+              </Link>
+            </Button>
+            <Button variant="outline" className="bg-amber-100 hover:bg-amber-200 text-amber-900 border-amber-300 font-bold hidden sm:flex" size="sm" asChild>
               <Link href={`/repertoire/${repertoireId}/print`}>
-                 🖨️ <span className="hidden sm:inline ml-2">Exportar PDF</span>
+                 🖨️ <span className="ml-2">Exportar PDF</span>
+              </Link>
+            </Button>
+            {/* Mobile print icon */}
+            <Button variant="outline" className="bg-amber-100 hover:bg-amber-200 text-amber-900 border-amber-300 sm:hidden" size="icon" asChild>
+              <Link href={`/repertoire/${repertoireId}/print`}>
+                 🖨️
               </Link>
             </Button>
             <AlertDialog>
@@ -103,7 +115,7 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
+                     <AlertDialogTitle>¿Estás seguro?</AlertDialogTitle>
                     <AlertDialogDescription>
                       Esta acción no se puede deshacer. Se eliminará permanentemente el repertorio de "{repertoire.name}".
                     </AlertDialogDescription>
@@ -120,32 +132,45 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
         </header>
 
         <div className="p-4 space-y-6">
-            <Card>
-                <CardHeader><CardTitle>1. Primeros Cantos</CardTitle></CardHeader>
-                <CardContent>{renderSongs(repertoire.firstHymns)}</CardContent>
-            </Card>
+            {repertoire.blocks && repertoire.blocks.length > 0 ? (
+                // New Dynamic Blocks rendering
+                repertoire.blocks.map((block) => (
+                    <Card key={block.id}>
+                        <CardHeader><CardTitle>{block.title}</CardTitle></CardHeader>
+                        <CardContent>{renderSongs(block.songs)}</CardContent>
+                    </Card>
+                ))
+            ) : (
+                // Legacy Hardcoded Blocks rendering
+                <>
+                    <Card>
+                        <CardHeader><CardTitle>1. Primeros Cantos</CardTitle></CardHeader>
+                        <CardContent>{renderSongs(repertoire.firstHymns)}</CardContent>
+                    </Card>
 
-             <Card>
-                <CardHeader><CardTitle>2. Alabanzas Generales</CardTitle></CardHeader>
-                <CardContent>{renderSongs(repertoire.generalPraises)}</CardContent>
-            </Card>
+                     <Card>
+                        <CardHeader><CardTitle>2. Alabanzas Generales</CardTitle></CardHeader>
+                        <CardContent>{renderSongs(repertoire.generalPraises)}</CardContent>
+                    </Card>
 
-            <Card>
-                <CardHeader><CardTitle>3. Alabanzas antes de la Palabra</CardTitle></CardHeader>
-                <CardContent>{renderSongs(repertoire.preWordPraises)}</CardContent>
-            </Card>
-             <Card>
-                <CardHeader><CardTitle>4. Alabanzas por los Enfermos</CardTitle></CardHeader>
-                <CardContent>{renderSongs(repertoire.sickPraises)}</CardContent>
-            </Card>
-             <Card>
-                <CardHeader><CardTitle>5. Alabanzas Intermedias</CardTitle></CardHeader>
-                <CardContent>{renderSongs(repertoire.intermediatePraises)}</CardContent>
-            </Card>
-             <Card>
-                <CardHeader><CardTitle>6. Alabanzas Finales</CardTitle></CardHeader>
-                <CardContent>{renderSongs(repertoire.finalPraises)}</CardContent>
-            </Card>
+                    <Card>
+                        <CardHeader><CardTitle>3. Alabanzas antes de la Palabra</CardTitle></CardHeader>
+                        <CardContent>{renderSongs(repertoire.preWordPraises)}</CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader><CardTitle>4. Alabanzas por los Enfermos</CardTitle></CardHeader>
+                        <CardContent>{renderSongs(repertoire.sickPraises)}</CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader><CardTitle>5. Alabanzas Intermedias</CardTitle></CardHeader>
+                        <CardContent>{renderSongs(repertoire.intermediatePraises)}</CardContent>
+                    </Card>
+                     <Card>
+                        <CardHeader><CardTitle>6. Alabanzas Finales</CardTitle></CardHeader>
+                        <CardContent>{renderSongs(repertoire.finalPraises)}</CardContent>
+                    </Card>
+                </</>
+            )}
         </div>
       </div>
     </main>

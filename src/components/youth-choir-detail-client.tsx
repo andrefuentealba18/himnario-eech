@@ -41,7 +41,7 @@ const groupLogos: Record<string, string> = {
 
 function YouthChoirDetailSkeleton() {
     return (
-        <div className="flex flex-col min-h-screen bg-background">
+        <div className="flex flex-col min-h-screen bg-transparent">
             <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-24 pb-6 px-4 border-b">
                 <Skeleton className="h-10 w-10 rounded-full" />
                 <div className="flex-1 px-4 text-center">
@@ -127,7 +127,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
   const isFav = isFavoritesLoaded && isFavorite(youthChoir.id, 'youth-choir');
 
   return (
-    <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-transparent relative overflow-hidden">
       <div className="fixed inset-0 -z-10 pointer-events-none">
         <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-amber-50/10 via-background to-blue-50/10" />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,rgba(251,191,36,0.06)_0%,transparent_70%)] animate-aura-slow" />

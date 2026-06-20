@@ -35,7 +35,7 @@ const fontSizes = [
 
 function ChoirDetailSkeleton() {
     return (
-        <div className="flex flex-col min-h-screen bg-background">
+        <div className="flex flex-col min-h-screen bg-transparent">
             <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-24 pb-6 px-4 border-b">
                 <Skeleton className="h-10 w-10 rounded-full" />
                 <div className="flex-1 px-4 text-center">
@@ -121,7 +121,7 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
   const isFav = isFavoritesLoaded && isFavorite(choir.id, 'choir');
 
   return (
-    <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-transparent relative overflow-hidden">
       <div className="fixed inset-0 -z-10 pointer-events-none">
         <div className="absolute top-0 right-0 w-[140%] h-[140%] bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.1)_0%,transparent_60%)] animate-aura-slow" />
         <div className="absolute bottom-0 left-0 w-[140%] h-[140%] bg-[radial-gradient(circle_at_bottom_left,rgba(220,38,38,0.08)_0%,transparent_60%)] animate-aura-slow" style={{ animationDuration: '25s', animationDirection: 'reverse' }} />

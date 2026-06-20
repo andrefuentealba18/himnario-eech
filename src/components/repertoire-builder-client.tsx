@@ -18,23 +18,25 @@ import { Separator } from "./ui/separator";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
 import { cn, normalizeSearchTerm } from "@/lib/utils";
-import type { SongReference } from "@/lib/repertoires";
+import type { SongReference, Repertoire } from "@/lib/repertoires";
 
 const songIdSchema = z.object({ id: z.string().min(1, "Debes seleccionar un canto.") });
 
+const blockSchema = z.object({
+  id: z.string(),
+  title: z.string().min(1, "El nombre del bloque es requerido."),
+  songs: z.array(songIdSchema).optional()
+});
+
 const repertoireSchema = z.object({
   name: z.string().min(1, "El nombre de quien dirige es requerido."),
-  firstHymns: z.array(songIdSchema).optional(),
-  generalPraises: z.array(songIdSchema).optional(),
-  preWordPraises: z.array(songIdSchema).optional(),
-  sickPraises: z.array(songIdSchema).optional(),
-  intermediatePraises: z.array(songIdSchema).optional(),
-  finalPraises: z.array(songIdSchema).optional(),
+  blocks: z.array(blockSchema).optional(),
 });
 
 type RepertoireFormData = z.infer<typeof repertoireSchema>;
 
 const songItem = { id: "" };
+const generateId = () => Math.random().toString(36).substring(2, 9);
 
 function SearchableSelect({ songs, value, onChange, placeholder }: { songs: any[], value: string, onChange: (value: string) => void, placeholder: string }) {
     const [open, setOpen] = useState(false);
@@ -64,7 +66,7 @@ function SearchableSelect({ songs, value, onChange, placeholder }: { songs: any[
                     variant="outline"
                     role="combobox"
                     aria-expanded={open}
-                    className="w-full justify-between font-normal"
+                    className="w-full justify-between font-normal bg-background"
                 >
                     <span className="truncate">{selectedSongTitle}</span>
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
@@ -110,8 +112,8 @@ function MultiSongSelectField({ control, name, label, songs }: { control: Contro
     });
 
     return (
-        <div>
-            <FormLabel className="text-base font-semibold">{label}</FormLabel>
+        <div className="mt-4">
+            <FormLabel className="text-sm text-muted-foreground">{label}</FormLabel>
             <div className="space-y-2 mt-2">
                 {fields.map((field, index) => (
                     <div key={field.id} className="flex items-center gap-2">
@@ -146,12 +148,17 @@ function MultiSongSelectField({ control, name, label, songs }: { control: Contro
     )
 }
 
-export function RepertoireBuilderClient() {
+interface RepertoireBuilderClientProps {
+  initialData?: Repertoire;
+  repertoireId?: string;
+}
+
+export function RepertoireBuilderClient({ initialData, repertoireId }: RepertoireBuilderClientProps) {
   const { hymns, isLoaded: hymnsLoaded } = useHymns();
   const { praises, isLoaded: praisesLoaded } = usePraises();
   const { choirs, isLoaded: choirsLoaded } = useChoirs();
   const { youthChoirs, isLoaded: youthChoirsLoaded } = useYouthChoirs();
-  const { addRepertoire } = useRepertoires();
+  const { addRepertoire, updateRepertoire } = useRepertoires();
 
   const allSongs = useMemo(() => {
     const combined = [
@@ -165,17 +172,55 @@ export function RepertoireBuilderClient() {
 
   const isLoaded = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded;
 
+  // Transform initial data if it exists
+  const defaultBlocks = useMemo(() => {
+    if (initialData?.blocks && initialData.blocks.length > 0) {
+      return initialData.blocks.map(b => ({
+        id: b.id,
+        title: b.title,
+        songs: b.songs.map(s => ({ id: `${s.type}:${s.id}` }))
+      }));
+    }
+    
+    // Legacy mapping just in case they edit an old repertoire
+    if (initialData && !initialData.blocks) {
+      const blocks: any[] = [];
+      const addBlockIfSongs = (title: string, songs?: SongReference[]) => {
+        if (songs && songs.length > 0) {
+          blocks.push({
+            id: generateId(),
+            title,
+            songs: songs.map(s => ({ id: `${s.type}:${s.id}` }))
+          });
+        }
+      };
+      
+      addBlockIfSongs("Primeros Cantos", initialData.firstHymns);
+      addBlockIfSongs("Alabanzas Generales", initialData.generalPraises);
+      addBlockIfSongs("Alabanzas antes de la Palabra", initialData.preWordPraises);
+      addBlockIfSongs("Alabanzas por los Enfermos", initialData.sickPraises);
+      addBlockIfSongs("Alabanzas Intermedias", initialData.intermediatePraises);
+      addBlockIfSongs("Alabanzas Finales", initialData.finalPraises);
+      
+      if (blocks.length > 0) return blocks;
+    }
+    
+    return [
+      { id: generateId(), title: "Bloque 1", songs: [songItem] }
+    ];
+  }, [initialData]);
+
   const form = useForm<RepertoireFormData>({
     resolver: zodResolver(repertoireSchema),
     defaultValues: {
-      name: "",
-      firstHymns: [songItem],
-      generalPraises: [songItem],
-      preWordPraises: [songItem],
-      sickPraises: [songItem],
-      intermediatePraises: [songItem],
-      finalPraises: [songItem],
+      name: initialData?.name || "",
+      blocks: defaultBlocks,
     },
+  });
+
+  const { fields: blockFields, append: appendBlock, remove: removeBlock } = useFieldArray({
+    control: form.control,
+    name: "blocks",
   });
 
   const onSubmit = (data: RepertoireFormData) => {
@@ -191,22 +236,26 @@ export function RepertoireBuilderClient() {
         }
         return { id: song.id, title: song.title, type: song.type };
     }
-    
-    const filterAndMap = (arr: {id: string}[] | undefined) => {
-        return arr?.map(item => findSong(item.id)).filter(Boolean) as SongReference[] || [];
-    }
+
+    const blocksToSave = data.blocks?.map(block => {
+      const mappedSongs = block.songs?.map(item => findSong(item.id)).filter(Boolean) as SongReference[] || [];
+      return {
+        id: block.id,
+        title: block.title,
+        songs: mappedSongs
+      };
+    }) || [];
 
     const repertoirePayload = {
       name: data.name,
-      firstHymns: filterAndMap(data.firstHymns),
-      generalPraises: filterAndMap(data.generalPraises),
-      preWordPraises: filterAndMap(data.preWordPraises),
-      sickPraises: filterAndMap(data.sickPraises),
-      intermediatePraises: filterAndMap(data.intermediatePraises),
-      finalPraises: filterAndMap(data.finalPraises),
+      blocks: blocksToSave,
     };
 
-    addRepertoire(repertoirePayload);
+    if (initialData && repertoireId) {
+      updateRepertoire(repertoireId, repertoirePayload);
+    } else {
+      addRepertoire(repertoirePayload);
+    }
   };
 
   if (!isLoaded) {
@@ -214,10 +263,12 @@ export function RepertoireBuilderClient() {
   }
 
   return (
-    <Card>
+    <Card className="bg-background/50 border-border">
       <CardHeader>
-        <CardTitle>Arma tu Repertorio</CardTitle>
-        <CardDescription>Completa el formulario para registrar el orden del servicio.</CardDescription>
+        <CardTitle>{initialData ? "Editar Repertorio" : "Arma tu Repertorio"}</CardTitle>
+        <CardDescription>
+            {initialData ? "Modifica los bloques y cantos del servicio." : "Completa el formulario para registrar el orden del servicio añadiendo bloques."}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -229,23 +280,67 @@ export function RepertoireBuilderClient() {
                 <FormItem>
                   <FormLabel className="text-base font-semibold">Tu Nombre</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nombre de quien dirige" {...field} />
+                    <Input placeholder="Nombre de quien dirige" {...field} className="bg-background" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <MultiSongSelectField control={form.control} name="firstHymns" label="1. Primeros Cantos" songs={allSongs} />
-            <MultiSongSelectField control={form.control} name="generalPraises" label="2. Alabanzas Generales" songs={allSongs} />
-            <MultiSongSelectField control={form.control} name="preWordPraises" label="3. Alabanzas antes de la Palabra" songs={allSongs} />
-            <MultiSongSelectField control={form.control} name="sickPraises" label="4. Alabanzas por los Enfermos" songs={allSongs} />
-            <MultiSongSelectField control={form.control} name="intermediatePraises" label="5. Alabanzas Intermedias" songs={allSongs} />
-            <MultiSongSelectField control={form.control} name="finalPraises" label="6. Alabanzas Finales" songs={allSongs} />
+            <div className="space-y-6">
+              {blockFields.map((block, index) => (
+                <div key={block.id} className="p-4 border rounded-lg bg-card relative shadow-sm">
+                  <div className="flex justify-between items-start gap-4 mb-2">
+                    <FormField
+                      control={form.control}
+                      name={`blocks.${index}.title`}
+                      render={({ field }) => (
+                        <FormItem className="flex-1">
+                          <FormLabel className="text-base font-semibold">Nombre del Bloque</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Ej. Alabanzas de Adoración" {...field} className="bg-background font-medium" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button 
+                      type="button" 
+                      variant="ghost" 
+                      size="icon" 
+                      className="mt-8 text-destructive hover:bg-destructive/10"
+                      onClick={() => removeBlock(index)}
+                      title="Eliminar bloque"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <MultiSongSelectField 
+                    control={form.control} 
+                    name={`blocks.${index}.songs`} 
+                    label="Cantos de este bloque" 
+                    songs={allSongs} 
+                  />
+                </div>
+              ))}
+            </div>
+
+            <Button 
+              type="button" 
+              variant="secondary" 
+              className="w-full border-dashed border-2"
+              onClick={() => appendBlock({ id: generateId(), title: `Bloque ${blockFields.length + 1}`, songs: [songItem] })}
+            >
+              <Plus className="mr-2 h-4 w-4" />
+              Agregar Nuevo Bloque
+            </Button>
 
             <Separator />
             
-            <Button type="submit" size="lg" className="w-full">Guardar Repertorio</Button>
+            <Button type="submit" size="lg" className="w-full">
+                {initialData ? "Guardar Cambios" : "Guardar Repertorio"}
+            </Button>
           </form>
         </Form>
       </CardContent>

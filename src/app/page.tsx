@@ -208,12 +208,7 @@ export default function HomePage() {
   if (!isReady) return null;
 
   return (
-    <div className="relative min-h-screen w-full bg-slate-50 dark:bg-slate-950 text-foreground overflow-x-hidden font-body flex flex-col animate-in fade-in duration-1000">
-      
-      <div className="fixed inset-0 -z-20 overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 w-[150vw] h-[150vw] bg-gradient-to-tr from-primary/10 via-primary/5 to-purple-400/10 rounded-full animate-aura-slow blur-[100px] pointer-events-none" />
-        <div className="absolute inset-0 design-grid opacity-40 [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-      </div>
+    <div className="relative min-h-screen w-full bg-transparent text-foreground overflow-x-hidden font-body flex flex-col animate-in fade-in duration-1000">
 
       <div className="relative z-10 flex flex-col flex-1">
         

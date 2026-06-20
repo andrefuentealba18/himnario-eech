@@ -4,13 +4,14 @@
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { Repertoire } from '@/lib/repertoires';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, doc, addDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 
 interface RepertoiresContextType {
   repertoires: Repertoire[];
   addRepertoire: (newRepertoireData: Omit<Repertoire, 'id' | 'createdAt'>) => Promise<{ success: boolean; id?: string }>;
+  updateRepertoire: (id: string, updatedData: Omit<Repertoire, 'id' | 'createdAt'>) => Promise<{ success: boolean }>;
   deleteRepertoire: (repertoireId: string) => Promise<void>;
   getRepertoireById: (id: string) => Repertoire | undefined;
   isLoaded: boolean;
@@ -67,6 +68,29 @@ export function RepertoiresProvider({ children }: { children: ReactNode }) {
     return { success: true };
   }, [firestore, repertoiresCollectionRef, toast, router]);
 
+  const updateRepertoire = useCallback(async (id: string, updatedData: Omit<Repertoire, 'id' | 'createdAt'>): Promise<{ success: boolean }> => {
+    if (!firestore) return { success: false };
+    const docRef = doc(firestore, 'repertoires', id);
+    
+    // We update without modifying the createdAt
+    updateDoc(docRef, updatedData as any)
+      .catch((e) => {
+        console.error("Error updating repertoire: ", e);
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+          path: docRef.path,
+          operation: 'update',
+          requestResourceData: updatedData
+        }));
+      });
+
+    toast({
+        title: 'Repertorio Actualizado',
+        description: `El repertorio de "${updatedData.name}" ha sido actualizado.`,
+    });
+    router.push(`/repertoire/${id}`);
+    return { success: true };
+  }, [firestore, toast, router]);
+
   const deleteRepertoire = useCallback(async (repertoireId: string) => {
     if (!firestore) return;
     const docRef = doc(firestore, 'repertoires', repertoireId);
@@ -88,7 +112,7 @@ export function RepertoiresProvider({ children }: { children: ReactNode }) {
     return repertoires.find(r => r.id === id);
   }, [repertoires]);
 
-  const value = { repertoires, addRepertoire, deleteRepertoire, getRepertoireById, isLoaded };
+  const value = { repertoires, addRepertoire, updateRepertoire, deleteRepertoire, getRepertoireById, isLoaded };
 
   return <RepertoiresContext.Provider value={value}>{children}</RepertoiresContext.Provider>;
 }

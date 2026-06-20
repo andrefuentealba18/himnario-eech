@@ -22,7 +22,7 @@ const fontSizes = [
 
 function DetailSkeleton() {
   return (
-    <div className="flex flex-col min-h-screen bg-background">
+    <div className="flex flex-col min-h-screen bg-transparent">
       <header className="sticky top-0 z-20 bg-background/80 backdrop-blur-sm pt-24 pb-6 px-4 border-b">
         <Skeleton className="h-10 w-10 rounded-full" />
         <div className="flex-1 px-4 text-center">
@@ -80,7 +80,7 @@ export function SpecialOccasionDetailClient({ specialId }: { specialId: string }
   const isFav = isFavsLoaded && isFavorite(song.id, 'special-occasion');
 
   return (
-    <div className="flex flex-col min-h-screen bg-background relative overflow-hidden">
+    <div className="flex flex-col min-h-screen bg-transparent relative overflow-hidden">
       <div className="fixed inset-0 -z-10 pointer-events-none opacity-20">
         <div className="absolute top-0 right-0 w-[100vw] h-[100vw] bg-blue-500/5 rounded-full blur-[120px] animate-aura" />
         <div className="absolute bottom-0 left-0 w-[80vw] h-[80vw] bg-red-500/5 rounded-full blur-[100px] animate-aura" style={{ animationDirection: 'reverse' }} />
