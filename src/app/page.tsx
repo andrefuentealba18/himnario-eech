@@ -288,7 +288,21 @@ export default function HomePage() {
               ))}
             </div>
 
-            <div className="animate-in fade-in zoom-in-95 duration-700 delay-[650ms] fill-mode-both">
+            <div className="animate-in fade-in zoom-in-95 duration-700 delay-[650ms] fill-mode-both space-y-4">
+              <Link href="/repertoire" className="group block">
+                <Card className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 backdrop-blur-xl hover:bg-emerald-500/20 transition-all duration-500 hover:-translate-y-1 active:scale-95 overflow-hidden relative app-card card-glow">
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <CardContent className="flex items-center justify-center p-4 px-6 relative z-10 h-16 gap-4">
+                    <div className="p-2.5 bg-white dark:bg-slate-900 shadow-lg rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-all duration-500">
+                      <Book className="h-5 w-5" />
+                    </div>
+                    <h3 className="font-black text-[10px] uppercase tracking-[0.2em] text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 transition-colors">
+                      Repertorios
+                    </h3>
+                  </CardContent>
+                </Card>
+              </Link>
+
               <Link href="/special-occasions" className="group block">
                 <Card className="bg-gradient-to-r from-amber-500/10 to-amber-600/5 backdrop-blur-xl hover:bg-amber-500/20 transition-all duration-500 hover:-translate-y-1 active:scale-95 overflow-hidden relative app-card card-glow">
                   <div className="absolute inset-0 bg-gradient-to-r from-amber-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
