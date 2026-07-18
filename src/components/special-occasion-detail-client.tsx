@@ -86,10 +86,10 @@ export function SpecialOccasionDetailClient({ specialId }: { specialId: string }
         <div className="absolute bottom-0 left-0 w-[80vw] h-[80vw] bg-red-500/5 rounded-full blur-[100px] animate-aura" style={{ animationDirection: 'reverse' }} />
       </div>
 
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-xl pt-16 pb-6 px-4 border-b">
-        <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-full">
-          <Link href="/special-occasions">
-            <ChevronLeft className="h-7 w-7" />
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-xl pt-8 pb-3 px-4 border-b">
+        <Button variant="ghost" size="icon" asChild className="h-9 w-9 rounded-full hover:bg-primary/10">
+          <Link href="/">
+            <ChevronLeft className="h-5 w-5" />
             <span className="sr-only">Volver</span>
           </Link>
         </Button>

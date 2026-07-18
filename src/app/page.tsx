@@ -229,7 +229,7 @@ export default function HomePage() {
           <AppearanceDialog />
         </div>
 
-        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-6 pt-2 pb-6 space-y-8">
+        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-4 pt-2 pb-6 space-y-5">
           
           <header className="w-full text-center space-y-6 animate-in fade-in slide-in-from-top-4 duration-1000">
             <div className="relative inline-flex items-center justify-center group">
@@ -268,13 +268,13 @@ export default function HomePage() {
           </div>
 
           <div className="w-full max-w-md space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3">
               {navigationItems.map((item) => (
                 <div key={item.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: item.delay }}>
                   <Link href={item.href} className="group block h-full">
                     <Card className="h-full bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl hover:bg-white/90 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-2 active:scale-95 overflow-hidden relative group rounded-3xl border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl">
                       <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-10 group-hover:opacity-40 transition-opacity duration-500`} />
-                      <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[130px] relative z-10">
+                      <CardContent className="flex flex-col items-center justify-center p-4 text-center h-full min-h-[110px] relative z-10">
                         <div className={`p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm group-hover:shadow-lg rounded-2xl group-hover:scale-110 transition-all duration-500 ring-1 ring-black/5 dark:ring-white/10 mb-3`}>
                           <item.icon className={`h-6 w-6 ${item.iconColor}`} />
                         </div>
@@ -288,7 +288,7 @@ export default function HomePage() {
               ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-4 animate-in fade-in zoom-in-95 duration-700 delay-[650ms] fill-mode-both">
+            <div className="grid grid-cols-2 gap-3 animate-in fade-in zoom-in-95 duration-700 delay-[650ms] fill-mode-both">
               <Link href="/repertoire" className="group block h-full">
                 <Card className="h-full bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl hover:bg-white/90 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-2 active:scale-95 overflow-hidden relative group rounded-3xl border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl">
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 opacity-10 group-hover:opacity-40 transition-opacity duration-500" />

@@ -129,10 +129,10 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
           <div className="absolute inset-0 design-grid opacity-[0.04]" />
         </div>
 
-        <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-xl pt-16 pb-6 px-4 border-b">
-            <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-full hover:bg-primary/10">
-            <Link href={backHref}>
-                <ChevronLeft className="h-7 w-7 text-slate-600" />
+        <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-xl pt-8 pb-3 px-4 border-b">
+            <Button variant="ghost" size="icon" asChild className="h-9 w-9 rounded-full hover:bg-primary/10">
+              <Link href={backHref}>
+                <ChevronLeft className="h-5 w-5 text-slate-600" />
                 <span className="sr-only">Volver</span>
             </Link>
             </Button>
