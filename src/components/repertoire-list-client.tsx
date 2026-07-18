@@ -1,7 +1,6 @@
 "use client";
 
 import { useRepertoires } from "@/context/repertoires-context";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";

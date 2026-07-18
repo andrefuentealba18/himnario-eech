@@ -13,7 +13,6 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Button } from "./ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { ChevronLeft, Trash2, BookOpen, Mic, Music, Users, Edit, Printer } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
