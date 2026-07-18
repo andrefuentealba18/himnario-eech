@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { Printer, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { PlaceHolderImages } from "@/lib/placeholder-images";
 
 interface RepertoirePrintClientProps {
   repertoireId: string;
@@ -87,22 +88,46 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
     if (!songs || songs.length === 0) return null;
 
     return (
-      <div className="mb-10 w-full col-span-full">
-        <h2 className="text-2xl font-black mb-6 pb-2 border-b-2 border-slate-900 text-slate-900 break-after-avoid w-full">{title}</h2>
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-8">
+      <div className="mb-4">
+        <h2 className="text-lg sm:text-xl font-black mb-3 pb-1 border-b-2 border-slate-300 text-slate-800 uppercase tracking-wider text-center break-after-avoid">{title}</h2>
+        <div className="flex flex-col gap-4">
           {songs.map((song, idx) => {
-            const lyrics = getLyricsForSong(song);
+            const lyricsText = getLyricsForSong(song);
             const tone = getToneForSong(song);
+            
+            const paragraphs = lyricsText ? lyricsText.split(/\n\s*\n/) : [];
+
             return (
-              <div key={idx} className="print-no-break mb-8 pb-4 break-inside-avoid">
-                <div className="flex flex-col items-start gap-1 mb-3">
-                  <h3 className="text-lg font-bold text-slate-900 leading-tight">
+              <div key={idx} className="print-no-break pb-2 break-inside-avoid flex flex-col items-center">
+                <div className="flex flex-col items-center gap-1 mb-2 text-center">
+                  <h3 className="text-base font-bold text-slate-900 leading-tight">
                      {song.number ? `${song.number}. ` : ''}{song.title}
                   </h3>
-                  {tone && <span className="text-xs font-black bg-slate-200 px-2 py-0.5 rounded-full text-slate-700">Tono: {tone}</span>}
+                  {tone && <span className="text-[10px] font-black bg-slate-200 px-2 py-0.5 rounded-full text-slate-700">Tono: {tone}</span>}
                 </div>
-                <div className="text-[13px] sm:text-sm whitespace-pre-wrap font-serif text-slate-800 leading-tight font-medium">
-                  {lyrics || <span className="italic text-slate-400">Letra no encontrada.</span>}
+                <div className="text-[12px] font-serif text-slate-800 leading-tight font-medium text-center w-full">
+                  {paragraphs.length > 0 ? paragraphs.map((paragraph, pIndex) => {
+                    const lines = paragraph.trim().split('\n');
+                    const isChorus = lines[0].trim().toUpperCase().startsWith('CORO');
+                    
+                    return (
+                      <div key={pIndex} className={`mb-3 w-full ${isChorus ? 'border-2 border-blue-200 rounded-xl p-3 bg-blue-50 relative mt-4' : ''}`}>
+                         {isChorus && (
+                            <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-blue-100 px-3 py-0.5 rounded-full text-[8px] font-black text-blue-700 uppercase tracking-widest border border-blue-200">
+                               Coro
+                            </div>
+                         )}
+                         {lines.map((line, lIndex) => {
+                           if (isChorus && lIndex === 0) return null;
+                           return (
+                             <p key={lIndex} className={`whitespace-pre-wrap ${isChorus ? 'font-bold italic text-slate-700' : ''}`}>
+                               {line}
+                             </p>
+                           );
+                         })}
+                      </div>
+                    );
+                  }) : <span className="italic text-slate-400">Letra no encontrada.</span>}
                 </div>
               </div>
             );
@@ -112,8 +137,23 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
     );
   };
 
+  const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
+
   return (
-     <main className="min-h-screen bg-white">
+     <main className="min-h-screen bg-white relative">
+      <style dangerouslySetInnerHTML={{__html: `
+        @media print {
+          @page { 
+            size: auto;
+            margin: 12mm 10mm 15mm 10mm; 
+          }
+          body { 
+            -webkit-print-color-adjust: exact;
+            background: white !important;
+          }
+        }
+      `}} />
+      
       {/* HEADER NO IMPRIMIBLE */}
       <div className="print:hidden sticky top-0 bg-slate-100 p-4 flex items-center justify-between border-b border-slate-200 shadow-sm z-50">
         <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-200" asChild>
@@ -127,25 +167,53 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
         </Button>
       </div>
 
-      {/* CONTENIDO A IMPRIMIR */}
-      <div className="max-w-7xl mx-auto p-4 sm:p-8 print:p-0 bg-white print:bg-transparent">
-        <div className="text-center mb-10 pb-6 border-b-[6px] border-slate-900">
-           <h1 className="text-3xl sm:text-5xl font-black font-headline text-slate-900 uppercase mb-2">
-             {repertoire.name}
-           </h1>
-           <p className="text-base sm:text-lg text-slate-700 font-bold uppercase tracking-widest mt-4">
-              {repertoire.createdAt ? format(repertoire.createdAt.toDate(), "EEEE, d 'de' MMMM, yyyy", { locale: es }) : ''}
-           </p>
-           <p className="text-[10px] text-slate-500 font-black mt-2 uppercase tracking-[0.3em]">Himnario Digital EECH</p>
+      {/* CONTENIDO A IMPRIMIR (Simula una hoja A4 en pantalla, se adapta al papel al imprimir) */}
+      <div className="max-w-[794px] print:max-w-none print:w-full mx-auto p-8 sm:p-12 print:p-10 print:pt-14 print:pb-24 bg-white shadow-2xl print:shadow-none my-8 print:my-0 relative min-h-[1123px] print:min-h-0">
+        
+        {/* INSIGNIA EECH ABSOLUTA IZQUIERDA */}
+        <div className="absolute top-4 sm:top-6 left-4 sm:left-10 flex">
+           <img src={insigniaUrl} alt="EECH" className="w-16 h-16 rounded-full object-cover" />
         </div>
 
-        <div className="flex flex-col w-full">
-            {renderSection("1. Primeros Cantos", repertoire.firstHymns)}
-            {renderSection("2. Alabanzas Generales", repertoire.generalPraises)}
-            {renderSection("3. Alabanzas antes de la Palabra", repertoire.preWordPraises)}
-            {renderSection("4. Alabanzas por los Enfermos", repertoire.sickPraises)}
-            {renderSection("5. Alabanzas Intermedias", repertoire.intermediatePraises)}
-            {renderSection("6. Alabanzas Finales", repertoire.finalPraises)}
+        {/* FECHA ABSOLUTA DERECHA */}
+        <div className="absolute top-6 sm:top-8 right-4 sm:right-10 block text-right">
+           <p className="text-xs text-slate-700 font-bold uppercase tracking-widest">
+              {repertoire.createdAt ? format(repertoire.createdAt.toDate(), "dd / MM / yyyy", { locale: es }) : ''}
+           </p>
+        </div>
+
+        {/* TITULO CENTRAL */}
+        <div className="text-center mb-8 pb-4 border-b-[4px] border-slate-900 px-8 sm:px-24 flex flex-col items-center">
+           <div className="flex items-baseline justify-center gap-4 mb-1 flex-wrap">
+             <span className="text-sm sm:text-base font-black uppercase tracking-widest text-slate-700">Repertorio:</span>
+             <h1 className="text-4xl font-cursive text-slate-900 capitalize translate-y-1">
+               {repertoire.name.toLowerCase()}
+             </h1>
+           </div>
+        </div>
+
+        {/* FOOTER AL FINAL DEL DOCUMENTO */}
+        <div className="absolute print:fixed bottom-0 pb-2 left-0 w-full text-center z-50">
+           <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.4em]">Himnario Digital EECH</p>
+        </div>
+
+        <div className="columns-1 sm:columns-2 print:columns-2 gap-12 sm:gap-12 print:gap-12 w-full">
+            {repertoire.blocks && repertoire.blocks.length > 0 ? (
+                repertoire.blocks.map((block) => (
+                    <div key={block.id}>
+                        {renderSection(block.title, block.songs)}
+                    </div>
+                ))
+            ) : (
+                <>
+                    {renderSection("1. Primeros Cantos", repertoire.firstHymns)}
+                    {renderSection("2. Alabanzas Generales", repertoire.generalPraises)}
+                    {renderSection("3. Alabanzas antes de la Palabra", repertoire.preWordPraises)}
+                    {renderSection("4. Alabanzas por los Enfermos", repertoire.sickPraises)}
+                    {renderSection("5. Alabanzas Intermedias", repertoire.intermediatePraises)}
+                    {renderSection("6. Alabanzas Finales", repertoire.finalPraises)}
+                </>
+            )}
         </div>
       </div>
     </main>

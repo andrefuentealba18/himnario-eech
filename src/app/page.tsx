@@ -254,8 +254,8 @@ export default function HomePage() {
                 <span className="text-[9px] font-black tracking-[0.3em] uppercase">Oficial</span>
                 <div className="h-px w-6 bg-current" />
               </div>
-              <h1 className="text-4xl font-bold font-headline tracking-tighter text-slate-950 dark:text-white leading-tight text-glow">
-                Himnario <span className="text-primary">EECH</span>
+              <h1 className="text-6xl sm:text-7xl font-cursive text-slate-900 dark:text-white leading-tight drop-shadow-lg pb-2 flex items-center justify-center gap-4">
+                Himnario <span className="text-primary font-cursive text-4xl sm:text-5xl ml-2 sm:ml-4">EECH</span>
               </h1>
               <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold tracking-[0.4em] uppercase pt-1 opacity-70">
                 Ejército Evangélico de Chile
@@ -272,13 +272,13 @@ export default function HomePage() {
               {navigationItems.map((item) => (
                 <div key={item.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: item.delay }}>
                   <Link href={item.href} className="group block h-full">
-                    <Card className="h-full bg-white/40 dark:bg-white/[0.03] backdrop-blur-xl hover:bg-white/80 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-1 active:scale-95 overflow-hidden relative group app-card card-glow">
-                      <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-0 group-hover:opacity-100 transition-opacity duration-500`} />
-                      <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[120px] relative z-10">
-                        <div className={`p-3 bg-white dark:bg-slate-900 shadow-lg group-hover:scale-110 transition-all duration-500 mb-3`} style={{ borderRadius: 'var(--ui-radius)' }}>
-                          <item.icon className={`h-5 w-5 ${item.iconColor}`} />
+                    <Card className="h-full bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl hover:bg-white/90 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-2 active:scale-95 overflow-hidden relative group rounded-3xl border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl">
+                      <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-10 group-hover:opacity-40 transition-opacity duration-500`} />
+                      <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[130px] relative z-10">
+                        <div className={`p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm group-hover:shadow-lg rounded-2xl group-hover:scale-110 transition-all duration-500 ring-1 ring-black/5 dark:ring-white/10 mb-3`}>
+                          <item.icon className={`h-6 w-6 ${item.iconColor}`} />
                         </div>
-                        <h3 className="font-black text-[9px] uppercase tracking-[0.2em] font-body text-slate-800 dark:text-slate-200 group-hover:text-primary transition-colors leading-tight">
+                        <h3 className="font-bold text-[10px] uppercase tracking-widest font-body text-slate-700 dark:text-slate-200 group-hover:text-primary transition-colors leading-tight">
                           {item.title}
                         </h3>
                       </CardContent>
@@ -288,30 +288,30 @@ export default function HomePage() {
               ))}
             </div>
 
-            <div className="animate-in fade-in zoom-in-95 duration-700 delay-[650ms] fill-mode-both space-y-4">
-              <Link href="/repertoire" className="group block">
-                <Card className="bg-gradient-to-r from-emerald-500/10 to-emerald-600/5 backdrop-blur-xl hover:bg-emerald-500/20 transition-all duration-500 hover:-translate-y-1 active:scale-95 overflow-hidden relative app-card card-glow">
-                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <CardContent className="flex items-center justify-center p-4 px-6 relative z-10 h-16 gap-4">
-                    <div className="p-2.5 bg-white dark:bg-slate-900 shadow-lg rounded-xl text-emerald-600 dark:text-emerald-400 group-hover:scale-110 transition-all duration-500">
-                      <Book className="h-5 w-5" />
+            <div className="grid grid-cols-2 gap-4 animate-in fade-in zoom-in-95 duration-700 delay-[650ms] fill-mode-both">
+              <Link href="/repertoire" className="group block h-full">
+                <Card className="h-full bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl hover:bg-white/90 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-2 active:scale-95 overflow-hidden relative group rounded-3xl border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 opacity-10 group-hover:opacity-40 transition-opacity duration-500" />
+                  <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[130px] relative z-10">
+                    <div className="p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm group-hover:shadow-lg rounded-2xl group-hover:scale-110 transition-all duration-500 ring-1 ring-black/5 dark:ring-white/10 mb-3">
+                      <Book className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
                     </div>
-                    <h3 className="font-black text-[10px] uppercase tracking-[0.2em] text-slate-800 dark:text-slate-200 group-hover:text-emerald-600 transition-colors">
+                    <h3 className="font-bold text-[10px] uppercase tracking-widest font-body text-slate-700 dark:text-slate-200 group-hover:text-emerald-600 transition-colors leading-tight">
                       Repertorios
                     </h3>
                   </CardContent>
                 </Card>
               </Link>
 
-              <Link href="/special-occasions" className="group block">
-                <Card className="bg-gradient-to-r from-amber-500/10 to-amber-600/5 backdrop-blur-xl hover:bg-amber-500/20 transition-all duration-500 hover:-translate-y-1 active:scale-95 overflow-hidden relative app-card card-glow">
-                  <div className="absolute inset-0 bg-gradient-to-r from-amber-400/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                  <CardContent className="flex items-center justify-center p-4 px-6 relative z-10 h-16 gap-4">
-                    <div className="p-2.5 bg-white dark:bg-slate-900 shadow-lg rounded-xl text-amber-600 dark:text-amber-400 group-hover:scale-110 transition-all duration-500">
-                      <Sparkles className="h-5 w-5" />
+              <Link href="/special-occasions" className="group block h-full">
+                <Card className="h-full bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl hover:bg-white/90 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-2 active:scale-95 overflow-hidden relative group rounded-3xl border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-amber-600/5 opacity-10 group-hover:opacity-40 transition-opacity duration-500" />
+                  <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[130px] relative z-10">
+                    <div className="p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm group-hover:shadow-lg rounded-2xl group-hover:scale-110 transition-all duration-500 ring-1 ring-black/5 dark:ring-white/10 mb-3">
+                      <Sparkles className="h-6 w-6 text-amber-600 dark:text-amber-400" />
                     </div>
-                    <h3 className="font-black text-[10px] uppercase tracking-[0.2em] text-slate-800 dark:text-slate-200 group-hover:text-amber-600 transition-colors">
-                      Ocasiones Especiales
+                    <h3 className="font-bold text-[10px] uppercase tracking-widest font-body text-slate-700 dark:text-slate-200 group-hover:text-amber-600 transition-colors leading-tight">
+                      Especiales
                     </h3>
                   </CardContent>
                 </Card>

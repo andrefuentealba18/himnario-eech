@@ -63,7 +63,7 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
   const { toast } = useToast();
 
   const from = searchParams.get('from');
-  const backHref = from === 'admin' ? '/admin?tab=more-settings' : '/choirs';
+  const backHref = from === 'admin' ? '/admin?tab=more-settings' : (from?.startsWith('/') ? from : '/choirs');
 
   const choir = getChoirById(choirId);
 

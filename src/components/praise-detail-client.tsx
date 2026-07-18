@@ -64,7 +64,7 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
   const { toast } = useToast();
 
   const from = searchParams.get('from');
-  const backHref = from === 'admin' ? '/admin?tab=more-settings' : '/praises';
+  const backHref = from === 'admin' ? '/admin?tab=more-settings' : (from?.startsWith('/') ? from : '/praises');
 
   const praise = getPraiseById(praiseId);
 

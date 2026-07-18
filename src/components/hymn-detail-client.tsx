@@ -51,6 +51,8 @@ function HymnDetailSkeleton() {
 export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const from = searchParams.get('from');
+  const backHref = from === 'admin' ? '/admin?tab=more-settings' : (from?.startsWith('/') ? from : '/hymns');
   const { getHymnById, deleteHymn, updateHymn, isLoaded: isHymnsLoaded } = useHymns();
   const { fontSizeIndex, increaseFontSize, decreaseFontSize, isLoaded: isFontLoaded } = useFontSize(fontSizes.length, 1);
   const { isFavorite, toggleFavorite, isLoaded: isFavoritesLoaded } = useFavorites();
@@ -122,7 +124,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
           <p className="text-muted-foreground">El himno Nº {hymnId} no se encuentra en nuestra base de datos o aún se está sincronizando.</p>
         </div>
         <Button asChild className="rounded-full px-8">
-          <Link href="/hymns"><Home className="mr-2 h-4 w-4" /> Volver al Índice</Link>
+          <Link href={backHref}><Home className="mr-2 h-4 w-4" /> Volver</Link>
         </Button>
       </div>
     );
@@ -140,7 +142,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
 
       <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-xl pt-16 pb-6 px-4 border-b transition-all duration-500">
         <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-full hover:bg-primary/10">
-          <Link href="/hymns">
+          <Link href={backHref}>
             <ChevronLeft className="h-7 w-7 text-slate-600" />
             <span className="sr-only">Volver</span>
           </Link>

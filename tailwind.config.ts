@@ -12,6 +12,7 @@ export default {
       fontFamily: {
         body: ['Lato', 'sans-serif'],
         headline: ['Playfair Display', 'serif'],
+        cursive: ['Great Vibes', 'cursive'],
         code: ['monospace'],
       },
       colors: {

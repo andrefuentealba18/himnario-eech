@@ -86,18 +86,22 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className="font-body antialiased min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-[#020617] dark:via-[#0a0f1c] dark:to-[#0f172a] selection:bg-primary/20 selection:text-primary transition-colors duration-500">
-        <div className="fixed inset-0 -z-50 overflow-hidden pointer-events-none">
-          {/* Luz superior azul institucional */}
-          <div className="absolute top-[-20%] left-[-10%] w-[80vw] h-[80vw] bg-blue-600/10 dark:bg-blue-600/15 rounded-full animate-aura-slow blur-[120px]" />
-          {/* Luz inferior dorada/ámbar majestuosa */}
-          <div className="absolute bottom-[-20%] right-[-10%] w-[70vw] h-[70vw] bg-amber-500/10 dark:bg-amber-500/15 rounded-full animate-aura-slow blur-[100px]" style={{ animationDelay: '2s' }} />
-          {/* Patrón de diseño sutil */}
-          <div className="absolute inset-0 design-grid opacity-[0.04] dark:opacity-[0.06] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_40%,transparent_100%)]" />
+      <body className="font-body antialiased min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50/30 dark:from-[#020617] dark:via-[#0a0f1c] dark:to-[#0f172a] selection:bg-primary/20 selection:text-primary transition-colors duration-500 print:bg-white print:bg-none">
+        <div className="fixed inset-0 -z-50 overflow-hidden pointer-events-none bg-slate-50 dark:bg-[#020617] print:hidden">
+          {/* Mesh gradient orbs - animated */}
+          <div className="absolute top-[-10%] left-[-10%] w-[60vw] h-[60vw] bg-blue-500/20 dark:bg-blue-600/20 rounded-full animate-aura-giant blur-[100px]" />
+          <div className="absolute top-[20%] right-[-20%] w-[50vw] h-[50vw] bg-purple-500/15 dark:bg-purple-600/20 rounded-full animate-aura-giant blur-[100px]" style={{ animationDelay: '5s' }} />
+          <div className="absolute bottom-[-10%] left-[10%] w-[60vw] h-[60vw] bg-amber-400/15 dark:bg-amber-500/15 rounded-full animate-aura-giant blur-[120px]" style={{ animationDelay: '10s' }} />
+          
+          {/* Subtle noise/texture overlay */}
+          <div className="absolute inset-0 opacity-[0.15] dark:opacity-[0.05]" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
+          
+          {/* Patrón de diseño sutil por encima del ruido */}
+          <div className="absolute inset-0 design-grid opacity-[0.03] dark:opacity-[0.04] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_30%,transparent_100%)]" />
         </div>
         <FirebaseClientProvider>
           <AppProvider>

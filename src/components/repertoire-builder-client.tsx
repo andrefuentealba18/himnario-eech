@@ -83,9 +83,9 @@ function SearchableSelect({ songs, value, onChange, placeholder }: { songs: any[
                 </div>
                 <ScrollArea className="h-60">
                     <div className="p-1">
-                        {filteredSongs.length > 0 ? filteredSongs.map(song => (
+                        {filteredSongs.length > 0 ? filteredSongs.map((song, index) => (
                             <div 
-                                key={getSongValue(song)} 
+                                key={`${getSongValue(song)}-${index}`} 
                                 onClick={() => {
                                     const songValue = getSongValue(song);
                                     onChange(songValue === value ? "" : songValue);
@@ -113,7 +113,7 @@ function MultiSongSelectField({ control, name, label, songs }: { control: Contro
 
     return (
         <div className="mt-4">
-            <FormLabel className="text-sm text-muted-foreground">{label}</FormLabel>
+            <FormLabel className="text-xs font-black text-slate-400 uppercase tracking-widest">{label}</FormLabel>
             <div className="space-y-2 mt-2">
                 {fields.map((field, index) => (
                     <div key={field.id} className="flex items-center gap-2">
@@ -134,14 +134,14 @@ function MultiSongSelectField({ control, name, label, songs }: { control: Contro
                                 </FormItem>
                             )}
                         />
-                        <Button type="button" variant="destructive" size="icon" onClick={() => remove(index)}>
+                        <Button type="button" variant="destructive" size="icon" className="rounded-full shadow-sm shadow-red-500/20 bg-red-50 hover:bg-red-600 text-red-600 hover:text-white transition-colors h-9 w-9 shrink-0" onClick={() => remove(index)}>
                             <Trash2 className="h-4 w-4" />
                         </Button>
                     </div>
                 ))}
             </div>
-            <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => append(songItem)}>
-                <Plus className="mr-2 h-4 w-4" />
+            <Button type="button" className="mt-3 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 font-bold border-none shadow-sm px-4 h-8 text-xs" onClick={() => append(songItem)}>
+                <Plus className="mr-1 h-3 w-3" />
                 Agregar Canto
             </Button>
         </div>
@@ -167,7 +167,13 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
       ...choirs.map(c => ({ ...c, type: 'choir' as const, _searchIndex: normalizeSearchTerm(`${c.title} ${c.lyrics} ${c.tone || ''}`) })),
       ...youthChoirs.map(yc => ({ ...yc, type: 'youth-choir' as const, _searchIndex: normalizeSearchTerm(`${yc.title} ${yc.lyrics} ${yc.tone || ''} ${yc.group}`) }))
     ];
-    return combined.sort((a, b) => a.title.localeCompare(b.title, 'es', { sensitivity: 'base' }));
+    
+    const uniqueSongsMap = new Map();
+    combined.forEach(song => {
+      uniqueSongsMap.set(`${song.type}:${song.id}`, song);
+    });
+    
+    return Array.from(uniqueSongsMap.values()).sort((a, b) => a.title.localeCompare(b.title, 'es', { sensitivity: 'base' }));
   }, [hymns, praises, choirs, youthChoirs]);
 
   const isLoaded = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded;
@@ -263,42 +269,42 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
   }
 
   return (
-    <Card className="bg-background/50 border-border">
-      <CardHeader>
-        <CardTitle>{initialData ? "Editar Repertorio" : "Arma tu Repertorio"}</CardTitle>
-        <CardDescription>
+    <div className="bg-white/60 backdrop-blur-xl border border-white rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden mt-4">
+      <div className="bg-gradient-to-r from-slate-100 to-white px-6 py-4 border-b border-slate-100">
+        <h2 className="text-2xl sm:text-3xl font-cursive text-slate-900 capitalize leading-none pt-1">{initialData ? "Editar Repertorio" : "Arma tu Repertorio"}</h2>
+        <p className="text-xs font-medium text-slate-500 mt-1">
             {initialData ? "Modifica los bloques y cantos del servicio." : "Completa el formulario para registrar el orden del servicio añadiendo bloques."}
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
+        </p>
+      </div>
+      <div className="p-4 sm:p-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <FormField
               control={form.control}
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-base font-semibold">Tu Nombre</FormLabel>
+                  <FormLabel className="text-sm font-black text-slate-800">Tu Nombre</FormLabel>
                   <FormControl>
-                    <Input placeholder="Nombre de quien dirige" {...field} className="bg-background" />
+                    <Input placeholder="Nombre de quien dirige" {...field} className="bg-white/80 border-slate-200 rounded-lg focus-visible:ring-blue-500 shadow-sm h-10 px-3" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="space-y-6">
+            <div className="space-y-4">
               {blockFields.map((block, index) => (
-                <div key={block.id} className="p-4 border rounded-lg bg-card relative shadow-sm">
-                  <div className="flex justify-between items-start gap-4 mb-2">
+                <div key={block.id} className="p-4 border border-slate-200/60 rounded-xl bg-white/50 relative shadow-sm hover:shadow-md hover:bg-white/80 transition-all duration-300 group">
+                  <div className="flex justify-between items-start gap-3 mb-2">
                     <FormField
                       control={form.control}
                       name={`blocks.${index}.title`}
                       render={({ field }) => (
                         <FormItem className="flex-1">
-                          <FormLabel className="text-base font-semibold">Nombre del Bloque</FormLabel>
+                          <FormLabel className="text-sm font-black text-slate-800">Nombre del Bloque</FormLabel>
                           <FormControl>
-                            <Input placeholder="Ej. Alabanzas de Adoración" {...field} className="bg-background font-medium" />
+                            <Input placeholder="Ej. Alabanzas de Adoración" {...field} className="bg-white border-slate-200 rounded-lg focus-visible:ring-blue-500 shadow-sm h-10 font-medium" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -308,7 +314,7 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
                       type="button" 
                       variant="ghost" 
                       size="icon" 
-                      className="mt-8 text-destructive hover:bg-destructive/10"
+                      className="mt-7 rounded-full shadow-sm bg-red-50 hover:bg-red-600 text-red-500 hover:text-white transition-colors h-9 w-9 shrink-0"
                       onClick={() => removeBlock(index)}
                       title="Eliminar bloque"
                     >
@@ -328,22 +334,19 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
 
             <Button 
               type="button" 
-              variant="secondary" 
-              className="w-full border-dashed border-2"
+              className="w-full border-dashed border-2 border-slate-300 bg-slate-50/50 hover:bg-slate-100 text-slate-600 hover:text-slate-800 rounded-xl h-12 font-bold transition-colors shadow-sm"
               onClick={() => appendBlock({ id: generateId(), title: `Bloque ${blockFields.length + 1}`, songs: [songItem] })}
             >
               <Plus className="mr-2 h-4 w-4" />
               Agregar Nuevo Bloque
             </Button>
-
-            <Separator />
             
-            <Button type="submit" size="lg" className="w-full">
+            <Button type="submit" className="w-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold shadow-xl shadow-blue-500/30 h-12 text-base border-none mt-6">
                 {initialData ? "Guardar Cambios" : "Guardar Repertorio"}
             </Button>
           </form>
         </Form>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

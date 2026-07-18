@@ -68,7 +68,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
   const { toast } = useToast();
   
   const from = searchParams.get('from');
-  const backHref = from === 'admin' ? '/admin?tab=more-settings' : '/youth-choirs';
+  const backHref = from === 'admin' ? '/admin?tab=more-settings' : (from?.startsWith('/') ? from : '/youth-choirs');
 
   const youthChoir = getYouthChoirById(youthChoirId);
   const groupLogo = youthChoir ? groupLogos[youthChoir.group] : null;
