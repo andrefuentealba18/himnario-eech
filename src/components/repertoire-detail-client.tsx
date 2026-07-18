@@ -1,5 +1,4 @@
 "use client";
-
 import { useRepertoires } from "@/context/repertoires-context";
 import {
   AlertDialog,
@@ -19,36 +18,29 @@ import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import type { SongReference } from "@/lib/repertoires";
-
 interface RepertoireDetailClientProps {
   repertoireId: string;
 }
-
 export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientProps) {
   const { getRepertoireById, deleteRepertoire, isLoaded } = useRepertoires();
   const router = useRouter();
   const repertoire = getRepertoireById(repertoireId);
-
   const handleDelete = () => {
     deleteRepertoire(repertoireId);
     router.push("/repertoire");
   };
-
   if (!isLoaded) {
     return <p>Cargando repertorio...</p>;
   }
-
   if (!repertoire) {
     return <p>Repertorio no encontrado.</p>;
   }
-
   const songTypeToIcon: Record<SongReference['type'], React.ReactNode> = {
       'hymn': <BookOpen className="h-5 w-5 text-primary" />,
       'praise': <Music className="h-5 w-5 text-primary" />,
       'choir': <Mic className="h-5 w-5 text-primary" />,
       'youth-choir': <Users className="h-5 w-5 text-primary" />,
   }
-
   const songTypeToHref: Record<SongReference['type'], string> = {
       'hymn': '/hymns/',
       'praise': '/praises/',
@@ -71,7 +63,6 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
         </div>
     )
   }
-
   return (
      <main className="flex flex-col items-center bg-transparent min-h-screen pb-24">
       <div className="w-full max-w-4xl mx-auto px-4 sm:px-6">
@@ -131,7 +122,6 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
               </AlertDialog>
           </div>
         </header>
-
         <div className="space-y-4">
             {repertoire.blocks && repertoire.blocks.length > 0 ? (
                 // New Dynamic Blocks rendering

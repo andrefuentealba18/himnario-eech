@@ -1,5 +1,4 @@
 "use client";
-
 import { useForm, useFieldArray, Control } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -17,38 +16,29 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import { ScrollArea } from "./ui/scroll-area";
 import { cn, normalizeSearchTerm } from "@/lib/utils";
 import type { SongReference, Repertoire } from "@/lib/repertoires";
-
 const songIdSchema = z.object({ id: z.string().min(1, "Debes seleccionar un canto.") });
-
 const blockSchema = z.object({
   id: z.string(),
   title: z.string().min(1, "El nombre del bloque es requerido."),
   songs: z.array(songIdSchema).optional()
 });
-
 const repertoireSchema = z.object({
   name: z.string().min(1, "El nombre de quien dirige es requerido."),
   blocks: z.array(blockSchema).optional(),
 });
-
 type RepertoireFormData = z.infer<typeof repertoireSchema>;
-
 const songItem = { id: "" };
 const generateId = () => Math.random().toString(36).substring(2, 9);
-
 function SearchableSelect({ songs, value, onChange, placeholder }: { songs: any[], value: string, onChange: (value: string) => void, placeholder: string }) {
     const [open, setOpen] = useState(false);
     const [search, setSearch] = useState('');
-
     const getSongValue = (song: any) => `${song.type}:${song.id}`;
-
     const selectedSongTitle = useMemo(() => {
         if (!value) return placeholder;
         const song = songs.find(s => getSongValue(s) === value);
         if (!song) return placeholder;
         return song.type === 'hymn' ? `${song.number}. ${song.title}` : song.title;
     }, [value, songs, placeholder]);
-
     const filteredSongs = useMemo(() => {
         const normalized = normalizeSearchTerm(search);
         if (!normalized) return songs;
@@ -56,7 +46,6 @@ function SearchableSelect({ songs, value, onChange, placeholder }: { songs: any[
             song._searchIndex.includes(normalized)
         );
     }, [search, songs]);
-
     return (
         <Popover open={open} onOpenChange={setOpen}>
             <PopoverTrigger asChild>
@@ -102,13 +91,11 @@ function SearchableSelect({ songs, value, onChange, placeholder }: { songs: any[
         </Popover>
     );
 }
-
 function MultiSongSelectField({ control, name, label, songs }: { control: Control<RepertoireFormData>, name: any, label: string, songs: any[] }) {
     const { fields, append, remove } = useFieldArray({
         control,
         name,
     });
-
     return (
         <div className="mt-4">
             <FormLabel className="text-xs font-black text-slate-400 uppercase tracking-widest">{label}</FormLabel>
@@ -145,19 +132,16 @@ function MultiSongSelectField({ control, name, label, songs }: { control: Contro
         </div>
     )
 }
-
 interface RepertoireBuilderClientProps {
   initialData?: Repertoire;
   repertoireId?: string;
 }
-
 export function RepertoireBuilderClient({ initialData, repertoireId }: RepertoireBuilderClientProps) {
   const { hymns, isLoaded: hymnsLoaded } = useHymns();
   const { praises, isLoaded: praisesLoaded } = usePraises();
   const { choirs, isLoaded: choirsLoaded } = useChoirs();
   const { youthChoirs, isLoaded: youthChoirsLoaded } = useYouthChoirs();
   const { addRepertoire, updateRepertoire } = useRepertoires();
-
   const allSongs = useMemo(() => {
     const combined = [
       ...hymns.map(h => ({ ...h, type: 'hymn' as const, _searchIndex: normalizeSearchTerm(`${h.title} ${h.number} ${h.lyrics} ${h.tone || ''}`) })),
@@ -173,9 +157,7 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
     
     return Array.from(uniqueSongsMap.values()).sort((a, b) => a.title.localeCompare(b.title, 'es', { sensitivity: 'base' }));
   }, [hymns, praises, choirs, youthChoirs]);
-
   const isLoaded = hymnsLoaded && praisesLoaded && choirsLoaded && youthChoirsLoaded;
-
   // Transform initial data if it exists
   const defaultBlocks = useMemo(() => {
     if (initialData?.blocks && initialData.blocks.length > 0) {
@@ -213,7 +195,6 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
       { id: generateId(), title: "Bloque 1", songs: [songItem] }
     ];
   }, [initialData]);
-
   const form = useForm<RepertoireFormData>({
     resolver: zodResolver(repertoireSchema),
     defaultValues: {
@@ -221,12 +202,10 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
       blocks: defaultBlocks,
     },
   });
-
   const { fields: blockFields, append: appendBlock, remove: removeBlock } = useFieldArray({
     control: form.control,
     name: "blocks",
   });
-
   const onSubmit = (data: RepertoireFormData) => {
     const findSong = (idWithType: string): SongReference | undefined => {
         if (!idWithType) return undefined;
@@ -234,13 +213,11 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
         const song = allSongs.find(s => s.id === id && s.type === type);
         
         if (!song) return undefined;
-
         if (song.type === 'hymn') {
             return { id: song.id, number: song.number, title: song.title, type: 'hymn' };
         }
         return { id: song.id, title: song.title, type: song.type };
     }
-
     const blocksToSave = data.blocks?.map(block => {
       const mappedSongs = block.songs?.map(item => findSong(item.id)).filter(Boolean) as SongReference[] || [];
       return {
@@ -249,23 +226,19 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
         songs: mappedSongs
       };
     }) || [];
-
     const repertoirePayload = {
       name: data.name,
       blocks: blocksToSave,
     };
-
     if (initialData && repertoireId) {
       updateRepertoire(repertoireId, repertoirePayload);
     } else {
       addRepertoire(repertoirePayload);
     }
   };
-
   if (!isLoaded) {
     return <p>Cargando datos de cantos...</p>;
   }
-
   return (
     <div className="bg-white/60 backdrop-blur-xl border border-white rounded-2xl shadow-xl shadow-slate-200/50 overflow-hidden mt-4">
       <div className="bg-gradient-to-r from-slate-100 to-white px-6 py-4 border-b border-slate-100">
@@ -290,7 +263,6 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
                 </FormItem>
               )}
             />
-
             <div className="space-y-4">
               {blockFields.map((block, index) => (
                 <div key={block.id} className="p-4 border border-slate-200/60 rounded-xl bg-white/50 relative shadow-sm hover:shadow-md hover:bg-white/80 transition-all duration-300 group">
@@ -329,7 +301,6 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
                 </div>
               ))}
             </div>
-
             <Button 
               type="button" 
               className="w-full border-dashed border-2 border-slate-300 bg-slate-50/50 hover:bg-slate-100 text-slate-600 hover:text-slate-800 rounded-xl h-12 font-bold transition-colors shadow-sm"

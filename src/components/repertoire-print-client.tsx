@@ -1,5 +1,4 @@
 "use client";
-
 import { useRepertoires } from "@/context/repertoires-context";
 import { useHymns } from "@/context/hymns-context";
 import { usePraises } from "@/context/praises-context";
@@ -13,11 +12,9 @@ import { Printer, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
-
 interface RepertoirePrintClientProps {
   repertoireId: string;
 }
-
 export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientProps) {
   const { getRepertoireById, isLoaded: rLoaded } = useRepertoires();
   const { hymns, isLoaded: hLoaded } = useHymns();
@@ -26,7 +23,6 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
   const { youthChoirs, isLoaded: ycLoaded } = useYouthChoirs();
   
   const [allLoaded, setAllLoaded] = useState(false);
-
   useEffect(() => {
     if (rLoaded && hLoaded && pLoaded && cLoaded && ycLoaded) {
       setAllLoaded(true);
@@ -36,7 +32,6 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
       return () => clearTimeout(timer);
     }
   }, [rLoaded, hLoaded, pLoaded, cLoaded, ycLoaded]);
-
   if (!allLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -47,13 +42,10 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
       </div>
     );
   }
-
   const repertoire = getRepertoireById(repertoireId);
-
   if (!repertoire) {
     return <p className="p-8 text-center text-slate-800">Repertorio no encontrado.</p>;
   }
-
   const getLyricsForSong = (ref: SongReference) => {
     switch (ref.type) {
       case 'hymn': 
@@ -83,10 +75,8 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
         return null;
     }
   };
-
   const renderSection = (title: string, songs?: SongReference[]) => {
     if (!songs || songs.length === 0) return null;
-
     return (
       <div className="mb-4">
         <h2 className="text-lg sm:text-xl font-black mb-3 pb-1 border-b-2 border-slate-300 text-slate-800 uppercase tracking-wider text-center break-after-avoid">{title}</h2>
@@ -96,7 +86,6 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
             const tone = getToneForSong(song);
             
             const paragraphs = lyricsText ? lyricsText.split(/\n\s*\n/) : [];
-
             return (
               <div key={idx} className="print-no-break pb-2 break-inside-avoid flex flex-col items-center">
                 <div className="flex flex-col items-center gap-1 mb-2 text-center">
@@ -136,9 +125,7 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
       </div>
     );
   };
-
   const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
-
   return (
      <main className="min-h-screen bg-white relative">
       <style dangerouslySetInnerHTML={{__html: `
@@ -166,7 +153,6 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
           <Printer className="mr-2 h-4 w-4" /> Exportar a PDF
         </Button>
       </div>
-
       {/* CONTENIDO A IMPRIMIR (Simula una hoja A4 en pantalla, se adapta al papel al imprimir) */}
       <div className="max-w-[794px] print:max-w-none print:w-full mx-auto p-8 sm:p-12 print:p-10 print:pt-14 print:pb-24 bg-white shadow-2xl print:shadow-none my-8 print:my-0 relative min-h-[1123px] print:min-h-0">
         
@@ -174,14 +160,12 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
         <div className="absolute top-4 sm:top-6 left-4 sm:left-10 flex">
            <img src={insigniaUrl} alt="EECH" className="w-16 h-16 rounded-full object-cover" />
         </div>
-
         {/* FECHA ABSOLUTA DERECHA */}
         <div className="absolute top-6 sm:top-8 right-4 sm:right-10 block text-right">
            <p className="text-xs text-slate-700 font-bold uppercase tracking-widest">
               {repertoire.createdAt ? format(repertoire.createdAt.toDate(), "dd / MM / yyyy", { locale: es }) : ''}
            </p>
         </div>
-
         {/* TITULO CENTRAL */}
         <div className="text-center mb-8 pb-4 border-b-[4px] border-slate-900 px-8 sm:px-24 flex flex-col items-center">
            <div className="flex items-baseline justify-center gap-4 mb-1 flex-wrap">
@@ -191,12 +175,10 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
              </h1>
            </div>
         </div>
-
         {/* FOOTER AL FINAL DEL DOCUMENTO */}
         <div className="absolute print:fixed bottom-0 pb-2 left-0 w-full text-center z-50">
            <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.4em]">Himnario Digital EECH</p>
         </div>
-
         <div className="columns-1 sm:columns-2 print:columns-2 gap-12 sm:gap-12 print:gap-12 w-full">
             {repertoire.blocks && repertoire.blocks.length > 0 ? (
                 repertoire.blocks.map((block) => (

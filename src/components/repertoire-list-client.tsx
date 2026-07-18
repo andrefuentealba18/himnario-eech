@@ -1,5 +1,4 @@
 "use client";
-
 import { useRepertoires } from "@/context/repertoires-context";
 import Link from "next/link";
 import { format } from "date-fns";
@@ -17,14 +16,11 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Trash2, Music } from "lucide-react";
-
 export function RepertoireListClient() {
   const { repertoires, deleteRepertoire, isLoaded } = useRepertoires();
-
   if (!isLoaded) {
     return <p className="text-center text-slate-500 mt-12 animate-pulse">Cargando repertorios...</p>;
   }
-
   if (repertoires.length === 0) {
     return (
       <div className="text-center py-20 bg-white/50 backdrop-blur-md rounded-3xl border border-slate-200/60 shadow-sm mt-8">
@@ -33,7 +29,6 @@ export function RepertoireListClient() {
       </div>
     );
   }
-
   return (
     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
       {repertoires.map((repertoire) => (
@@ -86,4 +81,3 @@ export function RepertoireListClient() {
     </div>
   );
 }
-    
