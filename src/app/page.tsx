@@ -148,7 +148,7 @@ export default function HomePage() {
                   {"BIENVENIDO".split("").map((letter, i) => (
                     <span 
                       key={i} 
-                      className="text-5xl sm:text-6xl font-black font-headline text-slate-950 dark:text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.05)] dark:drop-shadow-[0_8px_16px_rgba(255,255,255,0.03)] opacity-0 animate-letter-reveal"
+                      className="text-4xl sm:text-5xl font-black font-headline text-slate-950 dark:text-white drop-shadow-[0_8px_16px_rgba(0,0,0,0.05)] dark:drop-shadow-[0_8px_16px_rgba(255,255,255,0.03)] opacity-0 animate-letter-reveal"
                       style={{ 
                         animationDelay: `${0.4 + i * 0.08}s` 
                       }}
@@ -254,8 +254,8 @@ export default function HomePage() {
                 <span className="text-[9px] font-black tracking-[0.3em] uppercase">Oficial</span>
                 <div className="h-px w-6 bg-current" />
               </div>
-              <h1 className="text-6xl sm:text-7xl font-cursive text-slate-900 dark:text-white leading-tight drop-shadow-lg pb-2 flex items-center justify-center gap-4">
-                Himnario <span className="text-primary font-cursive text-4xl sm:text-5xl ml-2 sm:ml-4">EECH</span>
+              <h1 className="text-5xl sm:text-6xl font-cursive text-slate-900 dark:text-white leading-tight drop-shadow-lg pb-2 flex items-center justify-center gap-4">
+                Himnario <span className="text-primary font-cursive text-3xl sm:text-4xl ml-2 sm:ml-4">EECH</span>
               </h1>
               <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold tracking-[0.4em] uppercase pt-1 opacity-70">
                 Ejército Evangélico de Chile
