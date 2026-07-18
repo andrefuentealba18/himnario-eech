@@ -21,7 +21,7 @@ const isNewSong = (createdAt: any) => {
   const date = createdAt.toDate ? createdAt.toDate() : new Date(createdAt);
   const now = new Date();
   const diffInDays = (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24);
-  return diffInDays < 7;
+  return diffInDays <= 1;
 };
 
 export function HymnListClient({ hymns }: HymnListClientProps) {
