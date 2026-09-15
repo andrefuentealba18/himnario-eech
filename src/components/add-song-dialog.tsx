@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { notifyAdmin } from '@/lib/utils';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -87,6 +88,9 @@ export function AddSongDialog() {
     };
 
     addDoc(requestsCollection, dataToSave)
+      .then(() => {
+        notifyAdmin(categoryMap[values.category] || values.category, values.title);
+      })
       .catch((error) => {
         console.error("Error submitting song request: ", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({

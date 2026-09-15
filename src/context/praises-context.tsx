@@ -5,7 +5,8 @@ import { createContext, useContext, useCallback, ReactNode, useMemo, useEffect }
 import type { Praise } from '@/lib/praises';
 import { initialPraises } from '@/lib/praises-initial';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, doc, writeBatch, setDoc, deleteDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { notifyAdmin } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 const slugify = (text: string): string =>
@@ -134,6 +135,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     };
 
     setDoc(docRef, removeUndefined(dataToSave))
+      .then(() => notifyAdmin('Alabanza', newPraiseData.title))
       .catch((error) => {
         console.error("Error adding praise:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -167,6 +169,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     
     if (addedCount > 0) {
       batch.commit()
+        .then(() => notifyAdmin('Alabanzas (Lote)', `${addedCount} alabanzas enviadas`))
         .catch((error) => {
           console.error("Error bulk adding praises:", error);
         });

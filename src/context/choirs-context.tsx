@@ -5,7 +5,8 @@ import { createContext, useContext, useCallback, ReactNode, useMemo, useEffect }
 import type { Choir } from '@/lib/choirs';
 import { initialChoirs } from '@/lib/choirs-initial';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
-import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
+import { collection, doc, writeBatch, setDoc, deleteDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
+import { notifyAdmin } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 
 const slugify = (text: string): string =>
@@ -134,6 +135,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     };
     
     setDoc(docRef, removeUndefined(dataToSave))
+      .then(() => notifyAdmin('Coro', newChoirData.title))
       .catch((error) => {
         console.error("Error adding choir:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -167,6 +169,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     
     if (addedCount > 0) {
       batch.commit()
+        .then(() => notifyAdmin('Coros (Lote)', `${addedCount} coros enviados`))
         .catch((error) => {
           console.error("Error bulk adding choirs:", error);
         });
