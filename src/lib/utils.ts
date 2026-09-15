@@ -55,17 +55,10 @@ export function formatForOpenLP(lyrics: string): string {
 
 export function notifyAdmin(type: string, title: string) {
   try {
-    fetch("https://formsubmit.co/ajax/p.andresfuentealbabello@gmail.com", {
-      method: "POST",
-      headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-      },
-      body: JSON.stringify({
-          name: "Himnario EECH Bot",
-          message: `Un usuario ha enviado una nueva sugerencia para revisión en la aplicación.\n\nTipo: ${type}\nTítulo: ${title}\n\nIngresa al Panel de Control (Configuración > Admin) de la aplicación para revisar y aprobar esta sugerencia.`,
-          _subject: "NUEVA REVISIÓN PENDIENTE - Himnario EECH"
-      })
+    fetch('/api/notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ type, title })
     }).catch(e => console.error("Error al notificar (red)", e));
   } catch (e) {
     console.error("No se pudo notificar al admin", e);
