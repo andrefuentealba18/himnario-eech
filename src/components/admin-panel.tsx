@@ -8,7 +8,7 @@ import { useSearchParams, useRouter, usePathname } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { 
-  ChevronLeft, 
+  ChevronLeft, ChevronRight, 
   ShieldCheck, 
   Sparkles, 
   Book, 
@@ -250,18 +250,15 @@ export function AdminPanel() {
                 <button
                   key={item.id}
                   onClick={() => handleTabChange(item.id)}
-                  className="group relative flex items-center gap-4 p-5 rounded-[2rem] bg-white dark:bg-white/5 border-2 border-slate-100 dark:border-white/10 hover:border-primary/30 hover:bg-slate-50 transition-all duration-500 shadow-sm hover:shadow-xl active:scale-95 text-left overflow-hidden"
+                  className="flex items-center gap-4 p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition-colors shadow-sm text-left"
                 >
-                  <div className={cn(
-                    "absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500",
-                    item.color
-                  )} />
-                  <div className="relative z-10 p-4 rounded-[1.5rem] bg-white dark:bg-slate-900 shadow-lg group-hover:scale-110 transition-transform duration-500">
+                  
+                  <div className="p-3 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
                     <item.icon className={cn("h-6 w-6", item.iconColor)} />
                   </div>
                   <div className="relative z-10 flex-1">
                     <div className="flex items-center justify-between">
-                      <h3 className="font-black text-xs uppercase tracking-widest text-slate-800 dark:text-slate-200">{item.label}</h3>
+                      <h3 className="font-bold text-sm text-slate-800 dark:text-slate-200">{item.label}</h3>
                       {item.count !== undefined && item.count > 0 && (
                         <Badge className="bg-red-600 text-white font-black animate-pulse h-6 min-w-6 flex items-center justify-center">
                           {item.count}
@@ -270,9 +267,7 @@ export function AdminPanel() {
                     </div>
                     <p className="text-[10px] text-muted-foreground font-medium mt-0.5">{item.desc}</p>
                   </div>
-                  <div className="relative z-10 opacity-0 group-hover:opacity-100 translate-x-4 group-hover:translate-x-0 transition-all duration-500">
-                    <ArrowRight className="h-5 w-5 text-primary" />
-                  </div>
+                  <div><ChevronRight className="h-4 w-4 text-slate-400" /></div>
                 </button>
               ))}
             </div>

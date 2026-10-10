@@ -75,31 +75,17 @@ export function SettingsDialog() {
           Configuración
         </Button>
       </DialogTrigger>
-      <DialogContent className="w-[95vw] max-w-[380px] rounded-[3rem] p-0 border border-white/40 dark:border-white/10 shadow-[0_0_80px_-20px_rgba(59,130,246,0.3)] bg-white/70 dark:bg-slate-950/60 backdrop-blur-3xl overflow-hidden animate-in fade-in zoom-in-95 duration-500" onCloseAutoFocus={(e) => e.preventDefault()}>
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-32 -right-32 w-64 h-64 bg-blue-500/30 dark:bg-blue-600/20 rounded-full blur-[80px] animate-pulse-slow" />
-          <div className="absolute -bottom-32 -left-32 w-64 h-64 bg-amber-400/20 dark:bg-amber-500/20 rounded-full blur-[80px] animate-pulse-slow" style={{ animationDelay: '2s' }} />
-          <div className="absolute inset-0 bg-gradient-to-b from-white/50 to-white/10 dark:from-white/5 dark:to-transparent" />
-          <div className="absolute inset-0 design-grid opacity-[0.05]" />
-        </div>
-
-        <div className="p-8 sm:p-10 relative z-10">
+      <DialogContent className="w-[90vw] max-w-[320px] rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-xl bg-white dark:bg-slate-950 animate-in fade-in zoom-in-95 duration-300" onCloseAutoFocus={(e) => e.preventDefault()}>
+        <div className="relative z-10">
           <DialogHeader className="space-y-6 text-center">
-            <div className="relative mx-auto group">
-              <div className="absolute inset-0 bg-primary/40 blur-[40px] rounded-full scale-[1.8] animate-pulse-ring" />
-              <div className="relative p-5 bg-gradient-to-tr from-blue-600 via-primary to-cyan-400 rounded-[1.8rem] shadow-[0_0_40px_rgba(59,130,246,0.5)] transition-transform hover:scale-110 duration-500 ring-2 ring-white/50 dark:ring-white/20">
-                <ShieldCheck className="h-12 w-12 text-white animate-float" />
-              </div>
-              <div className="absolute -top-3 -right-3">
-                <Sparkles className="h-6 w-6 text-amber-400 animate-spin-slow drop-shadow-md" />
-              </div>
+            <div className="mx-auto w-12 h-12 bg-slate-100 dark:bg-slate-900 rounded-full flex items-center justify-center mb-4">
+              <ShieldCheck className="h-6 w-6 text-slate-700 dark:text-slate-300" />
             </div>
-            
             <div className="space-y-2">
-              <DialogTitle className="text-3xl font-black uppercase tracking-tight bg-clip-text text-transparent bg-gradient-to-br from-slate-900 via-slate-700 to-slate-900 dark:from-white dark:via-blue-100 dark:to-slate-300 drop-shadow-sm">
+              <DialogTitle className="text-xl font-bold text-slate-900 dark:text-white">
                 Panel de Control
               </DialogTitle>
-              <DialogDescription className="text-[10px] font-bold tracking-[0.4em] text-primary/80 dark:text-blue-400 uppercase">
+              <DialogDescription className="text-xs text-slate-500 dark:text-slate-400">
                 Ingresa la clave maestra
               </DialogDescription>
             </div>
@@ -116,12 +102,11 @@ export function SettingsDialog() {
                       <FormLabel className="sr-only">Contraseña</FormLabel>
                       <FormControl>
                         <div className="relative group">
-                          <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-2xl blur opacity-20 group-hover:opacity-40 transition duration-500" />
                           <Input 
                             type="password" 
                             placeholder="••••" 
                             {...field} 
-                            className="relative text-center tracking-[1.5em] font-black h-16 text-3xl rounded-2xl border border-white/50 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 focus:bg-white dark:focus:bg-slate-900 focus:ring-4 focus:ring-primary/20 backdrop-blur-xl shadow-inner transition-all text-slate-800 dark:text-white"
+                            className="text-center tracking-[1em] font-bold h-12 text-2xl rounded-xl border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 focus:ring-2 focus:ring-primary/20 transition-all text-slate-800 dark:text-white"
                             autoFocus
                           />
                         </div>
@@ -130,8 +115,8 @@ export function SettingsDialog() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full rounded-[2rem] h-16 font-black text-sm uppercase tracking-widest bg-gradient-to-r from-blue-600 via-primary to-cyan-500 focus:ring-4 focus:ring-primary/50 text-white hover:scale-[1.02] active:scale-95 transition-all shadow-[0_10px_40px_-10px_rgba(59,130,246,0.8)] border border-white/20 relative overflow-hidden group">
-                  <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
+                <Button type="submit" className="w-full rounded-xl h-12 font-bold text-sm bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors">
+                  
                   <span className="relative z-10 flex items-center justify-center">
                     Desbloquear Acceso
                   </span>
