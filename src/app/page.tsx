@@ -335,7 +335,7 @@ export default function HomePage() {
           
           <footer className="w-full text-center space-y-6 animate-in fade-in duration-1000 delay-[750ms] mt-2">
             <div className="flex flex-col items-center gap-4">
-              <div className="flex items-center justify-center gap-6">
+              <div className="flex flex-col items-center justify-center gap-3">
                 <InstallPWAButton />
                 <Button 
                   variant="ghost" 
