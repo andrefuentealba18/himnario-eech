@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useChurch } from '@/context/church-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,8 +12,15 @@ export function ChurchSelector() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [newChurchName, setNewChurchName] = useState('');
+  const [showDelay, setShowDelay] = useState(false);
 
-  if (isLoading || currentChurch) return null; // Only show if fully loaded and NO church is selected
+  useEffect(() => {
+    const timer = setTimeout(() => setShowDelay(true), 3600);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (isLoading || currentChurch) return null;
+  if (!showDelay) return null; // Wait for the splash screen to finish // Only show if fully loaded and NO church is selected
 
   const filteredChurches = availableChurches.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
