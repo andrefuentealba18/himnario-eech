@@ -42,11 +42,20 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
           const newId = 'eech-las-torres';
           await setDoc(doc(firestore, 'churches', newId), {
             name: 'EECH Las Torres',
-            district: 'Distrito 1',
+            district: 'Distrito de Concepción',
             createdAt: serverTimestamp()
           });
-          eechLasTorres = { id: newId, name: 'EECH Las Torres', district: 'Distrito 1' };
+          eechLasTorres = { id: newId, name: 'EECH Las Torres', district: 'Distrito de Concepción' };
           churches.push(eechLasTorres);
+        }
+        
+        
+        // One-time migration for Las Torres and Santa Elena
+        for (const c of churches) {
+          if ((c.name.toLowerCase().includes('las torres') || c.name.toLowerCase().includes('santa elena')) && c.district !== 'Distrito de Concepción') {
+            await setDoc(doc(firestore, 'churches', c.id), { district: 'Distrito de Concepción' }, { merge: true });
+            c.district = 'Distrito de Concepción';
+          }
         }
         
         setAvailableChurches(churches);
