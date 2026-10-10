@@ -12,6 +12,7 @@ export function ChurchSelector() {
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [newChurchName, setNewChurchName] = useState('');
+  const [newChurchDistrict, setNewChurchDistrict] = useState('');
   const [showDelay, setShowDelay] = useState(false);
 
   useEffect(() => {
@@ -24,9 +25,18 @@ export function ChurchSelector() {
 
   const filteredChurches = availableChurches.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
+  const groupedChurches = filteredChurches.reduce((acc, church) => {
+    const dist = church.district || 'Sin Distrito';
+    if (!acc[dist]) acc[dist] = [];
+    acc[dist].push(church);
+    return acc;
+  }, {} as Record<string, typeof availableChurches>);
+
+  const sortedDistricts = Object.keys(groupedChurches).sort();
+
   const handleCreate = async () => {
     if (!newChurchName.trim()) return;
-    const created = await createChurch(newChurchName.trim());
+    const created = await createChurch(newChurchName.trim(), newChurchDistrict.trim() || 'Sin Distrito');
     if (created) {
       setCurrentChurch(created);
     }
@@ -61,16 +71,23 @@ export function ChurchSelector() {
               </div>
               
               <div className="max-h-[40vh] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
-                {filteredChurches.map(church => (
-                  <Button 
-                    key={church.id} 
-                    variant="outline" 
-                    className="w-full justify-start h-14 rounded-xl border-slate-200 dark:border-slate-800 hover:bg-primary/5 hover:border-primary/30 hover:text-primary transition-all font-bold text-left whitespace-normal h-auto py-3"
-                    onClick={() => setCurrentChurch(church)}
-                  >
-                    <MapPin className="mr-3 h-5 w-5 text-slate-400 shrink-0" />
-                    <span>{church.name}</span>
-                  </Button>
+                {sortedDistricts.map(district => (
+                  <div key={district} className="space-y-2 mb-4">
+                    <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-2">
+                      {district}
+                    </h3>
+                    {groupedChurches[district].map(church => (
+                      <Button 
+                        key={church.id} 
+                        variant="outline" 
+                        className="w-full justify-start h-14 rounded-xl border-slate-200 dark:border-slate-800 hover:bg-primary/5 hover:border-primary/30 hover:text-primary transition-all font-bold text-left whitespace-normal h-auto py-3"
+                        onClick={() => setCurrentChurch(church)}
+                      >
+                        <MapPin className="mr-3 h-5 w-5 text-slate-400 shrink-0" />
+                        <span>{church.name}</span>
+                      </Button>
+                    ))}
+                  </div>
                 ))}
                 
                 {filteredChurches.length === 0 && (
@@ -81,7 +98,17 @@ export function ChurchSelector() {
               </div>
             </div>
           ) : (
-            <div className="space-y-4 py-4">
+            <div className="space-y-4 py-2">
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Distrito al que pertenece</label>
+                <Input 
+                  placeholder="Ej: Distrito 1" 
+                  value={newChurchDistrict}
+                  onChange={(e) => setNewChurchDistrict(e.target.value)}
+                  className="bg-black/5 dark:bg-white/5 border-none h-14 rounded-xl font-bold text-lg"
+                  autoFocus
+                />
+              </div>
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Nombre de la nueva iglesia</label>
                 <Input 
@@ -89,7 +116,6 @@ export function ChurchSelector() {
                   value={newChurchName}
                   onChange={(e) => setNewChurchName(e.target.value)}
                   className="bg-black/5 dark:bg-white/5 border-none h-14 rounded-xl font-bold text-lg"
-                  autoFocus
                 />
               </div>
             </div>
@@ -112,14 +138,14 @@ export function ChurchSelector() {
                 variant="default" 
                 className="w-full rounded-xl h-12 bg-primary text-white font-bold shadow-lg shadow-primary/30"
                 onClick={handleCreate}
-                disabled={!newChurchName.trim()}
+                disabled={!newChurchName.trim() || !newChurchDistrict.trim()}
               >
                 Crear y Entrar
               </Button>
               <Button 
                 variant="ghost" 
                 className="w-full rounded-xl h-12 font-bold"
-                onClick={() => { setIsCreating(false); setNewChurchName(''); }}
+                onClick={() => { setIsCreating(false); setNewChurchName(''); setNewChurchDistrict(''); }}
               >
                 Volver a la lista
               </Button>

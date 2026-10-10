@@ -7,6 +7,7 @@ import { useFirestore } from '@/firebase';
 export interface Church {
   id: string;
   name: string;
+  district?: string;
   createdAt?: any;
 }
 
@@ -14,7 +15,7 @@ interface ChurchContextType {
   currentChurch: Church | null;
   setCurrentChurch: (church: Church) => void;
   availableChurches: Church[];
-  createChurch: (name: string) => Promise<Church | null>;
+  createChurch: (name: string, district?: string) => Promise<Church | null>;
   clearChurch: () => void;
   isLoading: boolean;
 }
@@ -41,9 +42,10 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
           const newId = 'eech-las-torres';
           await setDoc(doc(firestore, 'churches', newId), {
             name: 'EECH Las Torres',
+            district: 'Distrito 1',
             createdAt: serverTimestamp()
           });
-          eechLasTorres = { id: newId, name: 'EECH Las Torres' };
+          eechLasTorres = { id: newId, name: 'EECH Las Torres', district: 'Distrito 1' };
           churches.push(eechLasTorres);
         }
         
@@ -79,13 +81,14 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
     window.location.reload();
   };
 
-  const createChurch = async (name: string) => {
+  const createChurch = async (name: string, district: string = 'Sin Distrito') => {
     if (!firestore) return null;
     const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString().slice(-4);
-    const newChurch = { id, name };
+    const newChurch = { id, name, district };
     try {
       await setDoc(doc(firestore, 'churches', id), {
         name,
+        district,
         createdAt: serverTimestamp()
       });
       setAvailableChurches(prev => [...prev, newChurch]);
