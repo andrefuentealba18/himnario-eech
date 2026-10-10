@@ -344,20 +344,22 @@ export default function HomePage() {
           
           <footer className="w-full text-center space-y-6 animate-in fade-in duration-1000 delay-[750ms] mt-2">
             <div className="flex flex-col items-center gap-4">
-              <div className="flex flex-col items-center justify-center gap-3">
-                <InstallPWAButton />
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-slate-400 hover:text-primary transition-colors font-bold uppercase tracking-widest text-[10px]"
-                  onClick={() => {
-                    localStorage.removeItem('selected_church_id');
-                    window.location.reload();
-                  }}
-                >
-                  <MapPin className="mr-2 h-4 w-4" />
-                  Cambiar Iglesia
-                </Button>
+              <div className="flex flex-col items-center justify-center gap-4">
+                <div className="flex items-center justify-center gap-4">
+                  <InstallPWAButton />
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-slate-400 hover:text-primary transition-colors font-bold uppercase tracking-widest text-[10px]"
+                    onClick={() => {
+                      localStorage.removeItem('selected_church_id');
+                      window.location.reload();
+                    }}
+                  >
+                    <MapPin className="mr-2 h-4 w-4" />
+                    Cambiar Iglesia
+                  </Button>
+                </div>
                 <SettingsDialog />
               </div>
               
