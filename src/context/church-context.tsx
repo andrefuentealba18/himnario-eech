@@ -15,6 +15,7 @@ interface ChurchContextType {
   setCurrentChurch: (church: Church) => void;
   availableChurches: Church[];
   createChurch: (name: string) => Promise<Church | null>;
+  clearChurch: () => void;
   isLoading: boolean;
 }
 
@@ -66,6 +67,11 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
     loadChurches();
   }, [firestore]);
 
+  const clearChurch = () => {
+    localStorage.removeItem('selected_church_id');
+    setCurrentChurchState(null);
+  };
+
   const setCurrentChurch = (church: Church) => {
     localStorage.setItem('selected_church_id', church.id);
     setCurrentChurchState(church);
@@ -91,7 +97,7 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ChurchContext.Provider value={{ currentChurch, setCurrentChurch, availableChurches, createChurch, isLoading }}>
+    <ChurchContext.Provider value={{ currentChurch, setCurrentChurch, availableChurches, createChurch, clearChurch, isLoading }}>
       {children}
     </ChurchContext.Provider>
   );

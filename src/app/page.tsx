@@ -62,7 +62,7 @@ export default function HomePage() {
   const { isLoaded: youthChoirsLoaded } = useYouthChoirs();
   const { isLoaded: specialOccasionsLoaded } = useSpecialOccasions();
   const { isLoaded: appearanceLoaded } = useAppearance();
-  const { currentChurch } = useChurch();
+  const { currentChurch, clearChurch } = useChurch();
   
   const [showSplash, setShowSplash] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
@@ -351,10 +351,7 @@ export default function HomePage() {
                     variant="ghost" 
                     size="sm" 
                     className="text-slate-400 hover:text-primary transition-colors font-bold uppercase tracking-widest text-[10px]"
-                    onClick={() => {
-                      localStorage.removeItem('selected_church_id');
-                      window.location.reload();
-                    }}
+                    onClick={() => clearChurch()}
                   >
                     <MapPin className="mr-2 h-4 w-4" />
                     Cambiar Iglesia
