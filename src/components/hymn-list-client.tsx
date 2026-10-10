@@ -117,10 +117,10 @@ function HymnRoll({ hymns }: { hymns: (Hymn & { _searchIndex?: string })[] }) {
                 key={hymn.number}
                 className="flex items-center gap-3 p-3 border-b transition-colors hover:bg-muted/50 rounded-lg group"
             >
-                <span className="font-black text-primary w-7 text-center text-xs opacity-60 group-hover:opacity-100">{hymn.number}</span>
+                <span className="font-black text-primary w-6 text-center text-[10px] opacity-60 group-hover:opacity-100">{hymn.number}</span>
                 <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
                     <div className="flex items-center gap-2 overflow-hidden">
-                      <span className="font-bold text-[13px] text-slate-700 dark:text-slate-200 truncate group-hover:text-primary transition-colors">{hymn.title}</span>
+                      <span className="font-bold text-xs leading-tight text-slate-700 dark:text-slate-200 line-clamp-2 group-hover:text-primary transition-colors">{hymn.title}</span>
                       {isNewSong(hymn.createdAt) && (
                         <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[8px] py-0 px-1.5 h-4 flex-shrink-0">NEW</Badge>
                       )}

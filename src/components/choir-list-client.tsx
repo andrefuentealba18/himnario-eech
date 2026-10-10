@@ -131,7 +131,7 @@ function SimpleChoirRoll({ choirs }: { choirs: (Choir & { _searchIndex?: string 
             >
                 <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
                     <div className="flex items-center gap-2 overflow-hidden">
-                      <span className="font-bold text-[13px] text-slate-700 dark:text-slate-200 truncate">{choir.title}</span>
+                      <span className="font-bold text-xs leading-tight text-slate-700 dark:text-slate-200 line-clamp-2">{choir.title}</span>
                       {isNewSong(choir.createdAt) && (
                         <Badge className="bg-green-600 hover:bg-green-600 text-white border-none text-[8px] py-0 px-1 h-4 flex-shrink-0">NEW</Badge>
                       )}

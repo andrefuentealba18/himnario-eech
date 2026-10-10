@@ -133,7 +133,7 @@ export function SpecialOccasionListClient({ specialOccasions, activeCategory, on
                 <div className="flex-1 overflow-hidden">
                   <div className="flex items-center gap-2">
                     {song.hymnNumber && <span className="font-black text-primary text-[10px] bg-primary/5 px-1.5 rounded">Nº {song.hymnNumber}</span>}
-                    <span className="font-bold text-[13px] text-slate-700 dark:text-slate-200 truncate block group-hover:text-primary transition-colors">
+                    <span className="font-bold text-xs leading-tight text-slate-700 dark:text-slate-200 line-clamp-2 block group-hover:text-primary transition-colors">
                       {song.title}
                     </span>
                   </div>
