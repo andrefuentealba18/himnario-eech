@@ -5,6 +5,8 @@ import { createContext, useContext, useEffect, useCallback, ReactNode, useMemo }
 import type { Hymn } from '@/lib/hymns';
 import { hymns as initialHymnsData } from '@/lib/hymns-initial';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { logGlobalActivity } from '@/lib/activity-logger';
+import { useChurch } from '@/context/church-context';
 import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
@@ -35,11 +37,12 @@ const HymnsContext = createContext<HymnsContextType | undefined>(undefined);
 
 export function HymnsProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
+  const { currentChurch } = useChurch();
   const { toast } = useToast();
 
   const hymnsCollectionRef = useMemoFirebase(() => 
-    firestore ? collection(firestore, 'hymns') : null
-  , [firestore]);
+    firestore ? firestore && currentChurch ? collection(firestore, 'churches', currentChurch.id, 'hymns') : null : null
+  , [firestore, currentChurch]);
 
   const { data: rawHymns, isLoading: isLoadingFromHook } = useCollection<Hymn>(hymnsCollectionRef);
   
@@ -56,10 +59,10 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const migrateData = async () => {
-        if (!firestore || isLoadingFromHook) return;
+        if (!firestore || isLoadingFromHook || !currentChurch) return;
         
         if (rawHymns?.length === 0) {
-            const migrationFlag = 'hymns_migrated_v4';
+            const migrationFlag = `hymns_migrated_v4_${currentChurch.id}`;
             if (localStorage.getItem(migrationFlag)) {
                 return;
             }
@@ -72,7 +75,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
                     const chunk = initialHymnsData.slice(i, i + chunkSize);
                     const batch = writeBatch(firestore);
                     chunk.forEach((hymn) => {
-                        const docRef = doc(firestore, 'hymns', hymn.number.toString());
+                        const docRef = doc(firestore, 'churches', currentChurch.id, 'hymns', hymn.number.toString());
                         const dataToSave = {
                             number: hymn.number,
                             title: hymn.title,
@@ -94,9 +97,9 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
   }, [isLoadingFromHook, rawHymns, firestore]);
 
   const addHymn = useCallback((newHymnData: Omit<Hymn, 'id'>) => {
-    if (!firestore) return;
+    if (!firestore || !currentChurch) return;
 
-    const docRef = doc(firestore, 'hymns', newHymnData.number.toString());
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'hymns', newHymnData.number.toString());
     const dataToSave = {
       ...newHymnData,
       createdAt: serverTimestamp()
@@ -116,11 +119,11 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
   }, [firestore, toast]);
 
   const addHymns = useCallback((newHymnsData: Omit<Hymn, 'id'>[]) => {
-    if (!firestore) return;
+    if (!firestore || !currentChurch) return;
     
     const batch = writeBatch(firestore);
     newHymnsData.forEach(hymn => {
-        const docRef = doc(firestore, 'hymns', hymn.number.toString());
+        const docRef = doc(firestore, 'churches', currentChurch.id, 'hymns', hymn.number.toString());
         const dataToSave = {
             ...hymn,
             createdAt: serverTimestamp()
@@ -139,7 +142,7 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
   const updateHymn = useCallback(async (hymnNumber: number, newHymnData: Omit<Hymn, 'id' | 'number'>): Promise<{ success: boolean; error?: string }> => {
     if (!firestore) return { success: false, error: 'no_firestore' };
     
-    const docRef = doc(firestore, 'hymns', hymnNumber.toString());
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'hymns', hymnNumber.toString());
     const updateData = { ...newHymnData, number: hymnNumber };
     
     setDoc(docRef, removeUndefined(updateData), { merge: true })
@@ -153,11 +156,11 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
       });
 
     return { success: true };
-  }, [firestore]);
+  }, [firestore, currentChurch]);
 
   const deleteHymn = useCallback((hymnNumber: number) => {
-    if (!firestore) return;
-    const docRef = doc(firestore, 'hymns', hymnNumber.toString());
+    if (!firestore || !currentChurch) return;
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'hymns', hymnNumber.toString());
     deleteDoc(docRef)
       .catch((error) => {
         console.error("Error al eliminar himno:", error);
@@ -174,14 +177,14 @@ export function HymnsProvider({ children }: { children: ReactNode }) {
   }, [hymns]);
 
   const restoreHymns = useCallback((hymnsToRestore: Omit<Hymn, 'id'>[]) => {
-    if (!firestore) return;
+    if (!firestore || !currentChurch) return;
     const batch = writeBatch(firestore);
     hymnsToRestore.forEach(hymn => {
-      const docRef = doc(firestore, 'hymns', hymn.number.toString());
+      const docRef = doc(firestore, 'churches', currentChurch.id, 'hymns', hymn.number.toString());
       batch.set(docRef, removeUndefined({ ...hymn, createdAt: serverTimestamp() }));
     });
     batch.commit().catch(e => console.error("Error al restaurar:", e));
-  }, [firestore]);
+  }, [firestore, currentChurch]);
 
   const value = { hymns, addHymn, addHymns, updateHymn, deleteHymn, getHymnById, restoreHymns, isLoaded, isSyncing };
 

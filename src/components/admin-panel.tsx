@@ -31,6 +31,8 @@ import { BackupManager } from '@/components/backup-manager';
 import { SongTransferManager } from '@/components/song-transfer-manager';
 import { SpecialOccasionAdminList } from '@/components/special-occasion-admin-list';
 import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
+import { ActivityLogList } from '@/components/activity-log-list';
+import { Activity } from 'lucide-react';
 import { SongReviewList } from '@/components/song-review-list';
 import { Badge } from '@/components/ui/badge';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
@@ -79,6 +81,14 @@ export function AdminPanel() {
   const insigniaUrl = (PlaceHolderImages || []).find(img => img.id === 'eech-insignia')?.imageUrl || 'https://i.postimg.cc/bNZNNhmG/606348111-1237680331839203-2151282478766843505-n.jpg';
 
   const adminMenuItems = [
+    { 
+      id: 'activity', 
+      label: 'Actividad', 
+      desc: 'Historial de cambios', 
+      icon: Activity, 
+      color: 'from-emerald-500/20 to-emerald-600/5', 
+      iconColor: 'text-emerald-600' 
+    },
     { 
       id: 'review', 
       label: 'Revisión', 
@@ -279,6 +289,7 @@ export function AdminPanel() {
               {tab === 'choirs' && <ChoirAdminList />}
               {tab === 'youth-choirs' && <YouthChoirAdminList />}
               {tab === 'special' && <SpecialOccasionAdminList />}
+              {tab === 'activity' && <ActivityLogList />}
               {tab === 'more-settings' && (
                 <div className="space-y-8 pb-10">
                   <DuplicateSongsManager />

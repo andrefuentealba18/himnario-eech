@@ -4,6 +4,7 @@
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { SpecialOccasion, SpecialCategory } from '@/lib/special-occasions';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useChurch } from '@/context/church-context';
 import { collection, doc, setDoc, deleteDoc, writeBatch, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useToast } from '@/hooks/use-toast';
 
@@ -41,11 +42,12 @@ const SpecialOccasionsContext = createContext<SpecialOccasionsContextType | unde
 
 export function SpecialOccasionsProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
+  const { currentChurch } = useChurch();
   const { toast } = useToast();
 
   const collectionRef = useMemoFirebase(() => 
-    firestore ? collection(firestore, 'special-occasions') : null
-  , [firestore]);
+    firestore ? firestore && currentChurch ? collection(firestore, 'churches', currentChurch.id, 'special-occasions') : null : null
+  , [firestore, currentChurch]);
 
   const { data: allData, isLoading } = useCollection<SpecialOccasion>(collectionRef);
 
@@ -67,9 +69,9 @@ export function SpecialOccasionsProvider({ children }: { children: ReactNode }) 
   }, [allData]);
 
   const addSpecialOccasion = useCallback(async (data: Omit<SpecialOccasion, 'id'>) => {
-    if (!firestore) return { success: false };
+    if (!firestore || !currentChurch) return { success: false };
     const id = `${slugify(data.category)}-${slugify(data.title)}-${Date.now().toString().slice(-4)}`;
-    const docRef = doc(firestore, 'special-occasions', id);
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'special-occasions', id);
     
     // Si no viene status, por defecto es pending. Si viene (desde admin), lo respetamos.
     const dataToSave = { 
@@ -87,23 +89,23 @@ export function SpecialOccasionsProvider({ children }: { children: ReactNode }) 
   }, [firestore, toast]);
 
   const deleteSpecialOccasion = useCallback((id: string) => {
-    if (!firestore) return;
-    const docRef = doc(firestore, 'special-occasions', id);
+    if (!firestore || !currentChurch) return;
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'special-occasions', id);
     deleteDoc(docRef).catch(err => errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'delete' })));
     toast({ title: 'Eliminado' });
   }, [firestore, toast]);
 
   const updateSpecialOccasion = useCallback(async (id: string, data: Omit<SpecialOccasion, 'id'>) => {
-    if (!firestore) return { success: false };
-    const docRef = doc(firestore, 'special-occasions', id);
+    if (!firestore || !currentChurch) return { success: false };
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'special-occasions', id);
     setDoc(docRef, removeUndefined(data), { merge: true })
       .catch(err => errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'update', requestResourceData: data })));
     return { success: true };
-  }, [firestore]);
+  }, [firestore, currentChurch]);
 
   const approveSpecialOccasion = useCallback((id: string) => {
-    if (!firestore) return;
-    const docRef = doc(firestore, 'special-occasions', id);
+    if (!firestore || !currentChurch) return;
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'special-occasions', id);
     updateDoc(docRef, { status: 'approved' })
       .catch(err => errorEmitter.emit('permission-error', new FirestorePermissionError({ path: docRef.path, operation: 'update' })));
     toast({ title: 'Aprobado' });

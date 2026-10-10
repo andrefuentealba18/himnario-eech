@@ -4,6 +4,7 @@
 import { createContext, useContext, useCallback, ReactNode, useMemo } from 'react';
 import type { Repertoire } from '@/lib/repertoires';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useChurch } from '@/context/church-context';
 import { collection, doc, addDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
@@ -21,12 +22,13 @@ const RepertoiresContext = createContext<RepertoiresContextType | undefined>(und
 
 export function RepertoiresProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
+  const { currentChurch } = useChurch();
   const router = useRouter();
   const { toast } = useToast();
   
   const repertoiresCollectionRef = useMemoFirebase(() => 
-    firestore ? collection(firestore, 'repertoires') : null
-  , [firestore]);
+    firestore ? firestore && currentChurch ? collection(firestore, 'churches', currentChurch.id, 'repertoires') : null : null
+  , [firestore, currentChurch]);
   
   const { data: rawRepertoires, isLoading: isLoadingFromHook } = useCollection<Repertoire>(repertoiresCollectionRef);
 
@@ -69,8 +71,8 @@ export function RepertoiresProvider({ children }: { children: ReactNode }) {
   }, [firestore, repertoiresCollectionRef, toast, router]);
 
   const updateRepertoire = useCallback(async (id: string, updatedData: Omit<Repertoire, 'id' | 'createdAt'>): Promise<{ success: boolean }> => {
-    if (!firestore) return { success: false };
-    const docRef = doc(firestore, 'repertoires', id);
+    if (!firestore || !currentChurch) return { success: false };
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'repertoires', id);
     
     // We update without modifying the createdAt
     updateDoc(docRef, updatedData as any)
@@ -92,8 +94,8 @@ export function RepertoiresProvider({ children }: { children: ReactNode }) {
   }, [firestore, toast, router]);
 
   const deleteRepertoire = useCallback(async (repertoireId: string) => {
-    if (!firestore) return;
-    const docRef = doc(firestore, 'repertoires', repertoireId);
+    if (!firestore || !currentChurch) return;
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'repertoires', repertoireId);
     deleteDoc(docRef)
       .catch((e) => {
         console.error("Error deleting repertoire: ", e);

@@ -6,8 +6,10 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useChurch } from '@/context/church-context';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import { notifyAdmin } from '@/lib/utils';
+import { logGlobalActivity } from '@/lib/activity-logger';
 
 import { Button } from '@/components/ui/button';
 import {
@@ -57,6 +59,7 @@ export function AddSongDialog() {
   const firestore = useFirestore();
   const { toast } = useToast();
 
+  const { currentChurch } = useChurch();
   const form = useForm<z.infer<typeof songRequestSchema>>({
     resolver: zodResolver(songRequestSchema),
     defaultValues: {
@@ -68,7 +71,7 @@ export function AddSongDialog() {
   });
 
   function onSubmit(values: z.infer<typeof songRequestSchema>) {
-    if (!firestore) {
+    if (!firestore || !currentChurch) {
       toast({
         variant: "destructive",
         title: 'Error de Conexión',
@@ -77,7 +80,7 @@ export function AddSongDialog() {
       return;
     }
 
-    const requestsCollection = collection(firestore, 'songRequests');
+    const requestsCollection = collection(firestore, 'churches', currentChurch.id, 'songRequests');
     const dataToSave = {
       category: categoryMap[values.category],
       submitterName: values.submitterName,
@@ -90,6 +93,14 @@ export function AddSongDialog() {
     addDoc(requestsCollection, dataToSave)
       .then(() => {
         notifyAdmin(categoryMap[values.category] || values.category, values.title);
+        logGlobalActivity(firestore, { 
+          action: 'CREATE', 
+          type: categoryMap[values.category] || values.category, 
+          title: values.title, 
+          churchId: currentChurch.id, 
+          churchName: currentChurch.name, 
+          userName: values.submitterName 
+        });
       })
       .catch((error) => {
         console.error("Error submitting song request: ", error);

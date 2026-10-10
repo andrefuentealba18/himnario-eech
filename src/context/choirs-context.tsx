@@ -5,6 +5,7 @@ import { createContext, useContext, useCallback, ReactNode, useMemo, useEffect }
 import type { Choir } from '@/lib/choirs';
 import { initialChoirs } from '@/lib/choirs-initial';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { useChurch } from '@/context/church-context';
 import { collection, doc, writeBatch, setDoc, deleteDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { notifyAdmin } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -45,11 +46,12 @@ const ChoirsContext = createContext<ChoirsContextType | undefined>(undefined);
 
 export function ChoirsProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
+  const { currentChurch } = useChurch();
   const { toast } = useToast();
 
   const choirsCollection = useMemoFirebase(() => 
-    firestore ? collection(firestore, 'choirs') : null
-  , [firestore]);
+    firestore ? firestore && currentChurch ? collection(firestore, 'churches', currentChurch.id, 'choirs') : null : null
+  , [firestore, currentChurch]);
 
   const { data: allData, isLoading } = useCollection<Choir>(choirsCollection);
 
@@ -124,10 +126,10 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
   }, [isLoading, allData, firestore]);
   
   const addChoir = useCallback(async (newChoirData: Omit<Choir, 'id'>) => {
-    if (!firestore) return { success: false };
+    if (!firestore || !currentChurch) return { success: false };
     
     const id = `${slugify(newChoirData.title)}-${Date.now().toString().slice(-4)}`;
-    const docRef = doc(firestore, 'choirs', id);
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'choirs', id);
     const dataToSave = { 
         ...newChoirData,
         status: 'pending' as const,
@@ -150,14 +152,14 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
   }, [firestore, toast]);
 
   const addChoirs = useCallback((newChoirsData: Omit<Choir, 'id'>[]) => {
-    if (!firestore) return;
+    if (!firestore || !currentChurch) return;
     
     const batch = writeBatch(firestore);
     let addedCount = 0;
 
     for (const choirData of newChoirsData) {
       const id = `${slugify(choirData.title)}-${Date.now().toString().slice(-4)}-${addedCount}`;
-      const docRef = doc(firestore, 'choirs', id);
+      const docRef = doc(firestore, 'churches', currentChurch.id, 'choirs', id);
       const dataToSave = { 
           ...choirData,
           status: 'pending' as const,
@@ -178,8 +180,8 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
   }, [firestore, toast]);
 
   const approveChoir = useCallback((choirId: string) => {
-    if (!firestore) return;
-    const docRef = doc(firestore, 'choirs', choirId);
+    if (!firestore || !currentChurch) return;
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'choirs', choirId);
     updateDoc(docRef, { status: 'approved' })
       .catch((error) => {
         console.error("Error approving choir:", error);
@@ -189,8 +191,8 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
   }, [firestore, toast]);
 
   const deleteChoir = useCallback((choirId: string) => {
-    if (!firestore) return;
-    const docRef = doc(firestore, 'choirs', choirId);
+    if (!firestore || !currentChurch) return;
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'choirs', choirId);
     deleteDoc(docRef)
       .catch((error) => {
         console.error("Error deleting choir:", error);
@@ -202,7 +204,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
   const updateChoir = useCallback(async (choirId: string, newChoirData: Omit<Choir, 'id'>): Promise<{ success: boolean; error?: string }> => {
     if (!firestore) return { success: false, error: 'firestore_unavailable' };
     
-    const docRef = doc(firestore, 'choirs', choirId);
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'choirs', choirId);
     setDoc(docRef, removeUndefined(newChoirData), { merge: true })
       .catch((error) => {
         console.error("Error updating choir:", error);
@@ -213,24 +215,24 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
         }));
       });
     return { success: true };
-  }, [firestore]);
+  }, [firestore, currentChurch]);
 
   const getChoirById = useCallback((id: string): Choir | undefined => {
     return allData?.find(p => p.id === id);
   }, [allData]);
 
   const restoreChoirs = useCallback((choirsToRestore: Omit<Choir, 'id'>[]) => {
-    if (!firestore) return;
+    if (!firestore || !currentChurch) return;
     const batch = writeBatch(firestore);
   
     allData?.forEach(choir => {
-      const docRef = doc(firestore, 'choirs', choir.id);
+      const docRef = doc(firestore, 'churches', currentChurch.id, 'choirs', choir.id);
       batch.delete(docRef);
     });
     
     choirsToRestore.forEach(choirData => {
       const id = slugify(choirData.title);
-      const docRef = doc(firestore, 'choirs', id);
+      const docRef = doc(firestore, 'churches', currentChurch.id, 'choirs', id);
       const dataWithStatus = { ... choirData, status: 'approved' as const };
       batch.set(docRef, removeUndefined(dataWithStatus));
     });

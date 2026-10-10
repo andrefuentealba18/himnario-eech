@@ -5,6 +5,8 @@ import { createContext, useContext, useCallback, ReactNode, useMemo, useEffect }
 import type { Praise } from '@/lib/praises';
 import { initialPraises } from '@/lib/praises-initial';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
+import { logGlobalActivity } from '@/lib/activity-logger';
+import { useChurch } from '@/context/church-context';
 import { collection, doc, writeBatch, setDoc, deleteDoc, updateDoc, serverTimestamp } from 'firebase/firestore';
 import { notifyAdmin } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
@@ -45,11 +47,12 @@ const PraisesContext = createContext<PraisesContextType | undefined>(undefined);
 
 export function PraisesProvider({ children }: { children: ReactNode }) {
   const firestore = useFirestore();
+  const { currentChurch } = useChurch();
   const { toast } = useToast();
   
   const praisesCollection = useMemoFirebase(() => 
-    firestore ? collection(firestore, 'praises') : null
-  , [firestore]);
+    firestore ? firestore && currentChurch ? collection(firestore, 'churches', currentChurch.id, 'praises') : null : null
+  , [firestore, currentChurch]);
 
   const { data: allData, isLoading } = useCollection<Praise>(praisesCollection);
 
@@ -124,10 +127,10 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   }, [isLoading, allData, firestore]);
   
   const addPraise = useCallback(async (newPraiseData: Omit<Praise, 'id'>) => {
-    if (!firestore) return { success: false };
+    if (!firestore || !currentChurch) return { success: false };
     
     const id = `${slugify(newPraiseData.title)}-${Date.now().toString().slice(-4)}`;
-    const docRef = doc(firestore, 'praises', id);
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'praises', id);
     const dataToSave = { 
         ...newPraiseData,
         status: 'pending' as const,
@@ -135,7 +138,10 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     };
 
     setDoc(docRef, removeUndefined(dataToSave))
-      .then(() => notifyAdmin('Alabanza', newPraiseData.title))
+      .then(() => {
+        notifyAdmin('Alabanza', newPraiseData.title);
+        logGlobalActivity(firestore, { action: 'CREATE', type: 'Alabanza', title: newPraiseData.title, churchId: currentChurch.id, churchName: currentChurch.name, userName: 'Usuario' });
+      })
       .catch((error) => {
         console.error("Error adding praise:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -150,14 +156,14 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   }, [firestore, toast]);
 
   const addPraises = useCallback((newPraisesData: Omit<Praise, 'id'>[]) => {
-    if (!firestore) return;
+    if (!firestore || !currentChurch) return;
     
     const batch = writeBatch(firestore);
     let addedCount = 0;
 
     for (const praiseData of newPraisesData) {
       const id = `${slugify(praiseData.title)}-${Date.now().toString().slice(-4)}-${addedCount}`;
-      const docRef = doc(firestore, 'praises', id);
+      const docRef = doc(firestore, 'churches', currentChurch.id, 'praises', id);
       const dataToSave = { 
           ...praiseData,
           status: 'pending' as const,
@@ -169,7 +175,10 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     
     if (addedCount > 0) {
       batch.commit()
-        .then(() => notifyAdmin('Alabanzas (Lote)', `${addedCount} alabanzas enviadas`))
+        .then(() => {
+        notifyAdmin('Alabanzas (Lote)', `${addedCount} alabanzas enviadas`);
+        logGlobalActivity(firestore, { action: 'CREATE', type: 'Alabanzas (Lote)', title: `${addedCount} alabanzas enviadas`, churchId: currentChurch.id, churchName: currentChurch.name, userName: 'Usuario' });
+      })
         .catch((error) => {
           console.error("Error bulk adding praises:", error);
         });
@@ -178,8 +187,8 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   }, [firestore, toast]);
 
   const approvePraise = useCallback((praiseId: string) => {
-    if (!firestore) return;
-    const docRef = doc(firestore, 'praises', praiseId);
+    if (!firestore || !currentChurch) return;
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'praises', praiseId);
     updateDoc(docRef, { status: 'approved' })
       .catch((error) => {
         console.error("Error approving praise:", error);
@@ -189,8 +198,8 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   }, [firestore, toast]);
 
   const deletePraise = useCallback((praiseId: string) => {
-    if (!firestore) return;
-    const docRef = doc(firestore, 'praises', praiseId);
+    if (!firestore || !currentChurch) return;
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'praises', praiseId);
     deleteDoc(docRef)
       .catch((error) => {
         console.error("Error deleting praise:", error);
@@ -202,7 +211,7 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   const updatePraise = useCallback(async (praiseId: string, newPraiseData: Omit<Praise, 'id'>): Promise<{ success: boolean; error?: string }> => {
     if (!firestore) return { success: false, error: 'firestore_unavailable' };
     
-    const docRef = doc(firestore, 'praises', praiseId);
+    const docRef = doc(firestore, 'churches', currentChurch.id, 'praises', praiseId);
     setDoc(docRef, removeUndefined(newPraiseData), { merge: true })
       .catch((error) => {
         console.error("Error updating praise:", error);
@@ -213,24 +222,24 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         }));
       });
     return { success: true };
-  }, [firestore]);
+  }, [firestore, currentChurch]);
 
   const getPraiseById = useCallback((id: string): Praise | undefined => {
     return praises.find(p => p.id === id);
   }, [praises]);
 
   const restorePraises = useCallback((praisesToRestore: Omit<Praise, 'id'>[]) => {
-    if (!firestore) return;
+    if (!firestore || !currentChurch) return;
     const batch = writeBatch(firestore);
 
     allData?.forEach(praise => {
-      const docRef = doc(firestore, 'praises', praise.id);
+      const docRef = doc(firestore, 'churches', currentChurch.id, 'praises', praise.id);
       batch.delete(docRef);
     });
     
     praisesToRestore.forEach(praiseData => {
       const id = slugify(praiseData.title);
-      const docRef = doc(firestore, 'praises', id);
+      const docRef = doc(firestore, 'churches', currentChurch.id, 'praises', id);
       const dataWithStatus = { ...praiseData, status: 'approved' as const };
       batch.set(docRef, removeUndefined(dataWithStatus));
     });
