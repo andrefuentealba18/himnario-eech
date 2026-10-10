@@ -27,6 +27,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Settings, ShieldCheck, Sparkles } from 'lucide-react';
+import { useChurch } from '@/context/church-context';
+import { MapPin } from 'lucide-react';
 
 const passwordSchema = z.object({
   password: z.string().min(1, 'La contraseña es requerida.'),
@@ -36,6 +38,7 @@ export function SettingsDialog() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
+  const { currentChurch } = useChurch();
 
   const form = useForm<z.infer<typeof passwordSchema>>({
     resolver: zodResolver(passwordSchema),
@@ -135,6 +138,25 @@ export function SettingsDialog() {
                 </Button>
               </form>
             </Form>
+
+          <div className="mt-8 pt-6 border-t border-slate-200/50 dark:border-white/10 flex flex-col items-center">
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Iglesia Actual</p>
+            <div className="flex items-center gap-2 bg-black/5 dark:bg-white/5 px-4 py-2 rounded-xl mb-4">
+              <MapPin className="h-4 w-4 text-primary" />
+              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">{currentChurch?.name}</span>
+            </div>
+            <Button 
+              variant="outline" 
+              className="w-full rounded-xl border-slate-200 dark:border-slate-800 font-bold uppercase tracking-wider text-xs"
+              onClick={() => {
+                localStorage.removeItem('selected_church_id');
+                window.location.reload();
+              }}
+            >
+              Cambiar de Iglesia
+            </Button>
+          </div>
+
           </div>
 
           <div className="text-center">

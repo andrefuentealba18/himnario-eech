@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Music, Book, Mic, Library, WifiOff, Sparkles, Loader2, ChevronRight, ShieldCheck } from 'lucide-react';
+import { Music, Book, Mic, Library, WifiOff, Sparkles, Loader2, ChevronRight, ShieldCheck, MapPin } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { InstallPWAButton } from '@/components/install-pwa-button';
 import { AppearanceDialog } from '@/components/appearance-dialog';
@@ -16,6 +16,7 @@ import { useChoirs } from '@/context/choirs-context';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
 import { useSpecialOccasions } from '@/context/special-occasions-context';
 import { useAppearance } from '@/hooks/use-appearance';
+import { useChurch } from '@/context/church-context';
 import { useEffect, useState } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -61,6 +62,7 @@ export default function HomePage() {
   const { isLoaded: youthChoirsLoaded } = useYouthChoirs();
   const { isLoaded: specialOccasionsLoaded } = useSpecialOccasions();
   const { isLoaded: appearanceLoaded } = useAppearance();
+  const { currentChurch } = useChurch();
   
   const [showSplash, setShowSplash] = useState(true);
   const [isExiting, setIsExiting] = useState(false);

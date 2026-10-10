@@ -32,6 +32,8 @@ import { SongTransferManager } from '@/components/song-transfer-manager';
 import { SpecialOccasionAdminList } from '@/components/special-occasion-admin-list';
 import { DuplicateSongsManager } from '@/components/duplicate-songs-manager';
 import { ActivityLogList } from '@/components/activity-log-list';
+import { EditChurchNameDialog } from '@/components/edit-church-name-dialog';
+import { useChurch } from '@/context/church-context';
 import { Activity } from 'lucide-react';
 import { SongReviewList } from '@/components/song-review-list';
 import { Badge } from '@/components/ui/badge';
@@ -53,6 +55,7 @@ export function AdminPanel() {
   const { pendingChoirs } = useChoirs();
   const { pendingYouthChoirs } = useYouthChoirs();
   const { pendingSpecialOccasions } = useSpecialOccasions();
+  const { currentChurch } = useChurch();
 
   const [showIntro, setShowIntro] = useState(false);
   const [isReady, setIsReady] = useState(false);
