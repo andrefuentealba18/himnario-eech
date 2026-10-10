@@ -27,7 +27,7 @@ const fontSizes = [
 function HymnDetailSkeleton() {
   return (
     <div className="flex flex-col min-h-screen bg-transparent">
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-32 pb-6 px-4 border-b">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-sm pt-16 pb-4 px-4 border-b">
         <Skeleton className="h-10 w-10 rounded-full" />
         <div className="flex-1 px-4 text-center">
             <Skeleton className="h-6 w-3/4 mx-auto mb-2" />
@@ -140,7 +140,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
         <div className="absolute inset-0 design-grid opacity-[0.03]" />
       </div>
 
-      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/60 backdrop-blur-xl pt-8 pb-3 px-4 border-b transition-all duration-500">
+      <header className="sticky top-0 z-20 flex items-center justify-between bg-background/80 backdrop-blur-xl pt-16 pb-4 px-4 border-b transition-all duration-500">
         <Button variant="ghost" size="icon" asChild className="h-9 w-9 rounded-full hover:bg-primary/10">
           <Link href={backHref}>
             <ChevronLeft className="h-5 w-5 text-slate-600" />
