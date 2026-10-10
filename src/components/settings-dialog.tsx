@@ -140,19 +140,7 @@ export function SettingsDialog() {
             </Form>
 
           
-            <Button 
-              variant="outline" 
-              className="w-full rounded-xl border-slate-200 dark:border-slate-800 font-bold uppercase tracking-wider text-xs"
-              onClick={() => {
-                localStorage.removeItem('selected_church_id');
-                window.location.reload();
-              }}
-            >
-              Cambiar de Iglesia
-            </Button>
-          </div>
-
-          </div>
+            </div>
 
           <div className="text-center">
             <p className="text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.4em] flex items-center justify-center gap-2">
