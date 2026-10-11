@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star, Library, FileText } from 'lucide-react';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
+import { useChurch } from '@/context/church-context';
 import { useFavorites } from '@/hooks/use-favorites';
 import { useRecents } from '@/hooks/use-recents';
 import { useRouter, useSearchParams } from 'next/navigation';
@@ -61,6 +62,13 @@ function YouthChoirDetailSkeleton() {
 export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { currentChurch } = useChurch();
+  const isLasTorres = Boolean(
+    currentChurch && (
+      currentChurch.id === 'eech-las-torres' || 
+      (currentChurch.name && currentChurch.name.toLowerCase().includes('las torres'))
+    )
+  );
   const { getYouthChoirById, deleteYouthChoir, updateYouthChoir, isLoaded: isYouthChoirsLoaded } = useYouthChoirs();
   const { isFavorite, toggleFavorite, isLoaded: isFavoritesLoaded } = useFavorites();
   const { addRecent } = useRecents();
@@ -71,7 +79,7 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
   const backHref = from === 'admin' ? '/admin?tab=more-settings' : (from?.startsWith('/') ? from : '/youth-choirs');
 
   const youthChoir = getYouthChoirById(youthChoirId);
-  const groupLogo = youthChoir ? groupLogos[youthChoir.group] : null;
+  const groupLogo = isLasTorres && youthChoir ? groupLogos[youthChoir.group] : null;
 
   useEffect(() => {
     if (youthChoir) {

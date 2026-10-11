@@ -55,17 +55,25 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
 
   const { data: allData, isLoading } = useCollection<YouthChoir>(youthChoirsCollection);
 
+  const isLasTorres = Boolean(
+    currentChurch && (
+      currentChurch.id === 'eech-las-torres' || 
+      (currentChurch.name && currentChurch.name.toLowerCase().includes('las torres'))
+    )
+  );
+
   const isSyncing = isLoading;
-  const isLoaded = (!isLoading || (allData && allData.length > 0) || initialYouthChoirs.length > 0);
+  const isLoaded = !isLoading;
 
   const youthChoirs = useMemo(() => {
-    if (currentChurch && currentChurch.id !== 'eech-las-torres') {
-      // For any other church, only return what is actually in Firestore. No defaults!
-      const firestoreChoirs = allData ? allData.filter(yc => yc.status === 'approved' || !yc.status) : [];
+    // Other churches ONLY have their own songs stored in Firestore (starts empty: 0 praises!)
+    if (!isLasTorres) {
+      if (!allData || allData.length === 0) return [];
+      const firestoreChoirs = allData.filter(yc => yc.status === 'approved' || !yc.status);
       return firestoreChoirs.sort((a, b) => a.title.localeCompare(b.title));
     }
 
-    // EECH Las Torres gets the hardcoded initial data merged with Firestore
+    // ONLY EECH Las Torres gets the hardcoded initial data merged with Firestore
     const fbYouthChoirsMap = new Map(allData?.map(yc => [yc.id, yc]) || []);
     
     const mergedYouthChoirs = initialYouthChoirs.map(initial => {
@@ -87,7 +95,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     }
 
     return mergedYouthChoirs.sort((a, b) => a.title.localeCompare(b.title));
-  }, [allData, currentChurch]);
+  }, [allData, isLasTorres]);
   
   const pendingYouthChoirs = useMemo(() => {
     if (!allData) return [];
@@ -101,11 +109,13 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
   }, [allData]);
 
   useEffect(() => {
+    // NEVER migrate initial praises into other churches
+    if (!isLasTorres || !currentChurch) return;
     if (!!firestore && !isLoading && allData?.length === 0) {
-      const migrationFlag = 'youth_choirs_migrated_v2';
+      const migrationFlag = `youth_choirs_migrated_v3_${currentChurch.id}`;
       if (localStorage.getItem(migrationFlag)) return;
 
-      console.log('Migrating initial youth choirs...');
+      console.log('Migrating initial youth choirs for Las Torres...');
       const migrateInBatches = async () => {
         try {
           const chunkSize = 400;
@@ -114,7 +124,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
             const batch = writeBatch(firestore!);
             chunk.forEach((yc) => {
               const id = slugify(`${yc.group}-${yc.title}`);
-              const docRef = doc(firestore!, 'youth-choirs', id);
+              const docRef = doc(firestore!, 'churches', currentChurch.id, 'youth-choirs', id);
               batch.set(docRef, removeUndefined({ ...yc, status: 'approved', createdAt: serverTimestamp() }));
             });
             await batch.commit();
@@ -127,7 +137,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
 
       migrateInBatches();
     }
-  }, [isLoading, allData, firestore]);
+  }, [isLoading, allData, firestore, isLasTorres, currentChurch]);
   
   const addYouthChoir = useCallback(async (newYouthChoirData: Omit<YouthChoir, 'id'>) => {
     if (!firestore || !currentChurch) return { success: false };
@@ -246,8 +256,8 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
   }, [firestore, currentChurch]);
 
   const getYouthChoirById = useCallback((id: string): YouthChoir | undefined => {
-    return allData?.find(p => p.id === id);
-  }, [allData]);
+    return youthChoirs.find(p => p.id === id);
+  }, [youthChoirs]);
 
   const restoreYouthChoirs = useCallback((youthChoirsToRestore: Omit<YouthChoir, 'id'>[]) => {
     if (!firestore || !currentChurch) return;

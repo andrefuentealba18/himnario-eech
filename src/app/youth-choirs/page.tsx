@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { AddSingleYouthChoirDialog } from '@/components/add-single-youth-choir-dialog';
 import { AddYouthChoirsDialog } from '@/components/add-youth-choirs-dialog';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
+import { useChurch } from '@/context/church-context';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,15 +24,22 @@ import type { GroupType } from '@/lib/youth-choirs';
 import { cn } from '@/lib/utils';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 
-const groups: { name: GroupType; icon?: any; imageUrl?: string; color: string; iconColor?: string; imgClass?: string }[] = [
-  { name: "Coro Juventud", imageUrl: "https://i.postimg.cc/bvk974Xp/IMG_2532.jpg", color: "bg-transparent" },
-  { name: "Grupo Ciclista", imageUrl: "https://i.postimg.cc/QtWZZ88d/Imagen1.png", color: "bg-transparent", imgClass: "object-contain scale-[0.85]" },
-  { name: "Departamento Infantil", imageUrl: "https://i.postimg.cc/mDkyNsXL/Asunto.png", color: "bg-transparent" },
-  { name: "Clase Dorcas", imageUrl: "https://www.photo-pick.com/online/api/v1/albums/628d3a58-df5a-4b3d-9e29-98902f716a85.jpg", color: "bg-transparent" },
-  { name: "Departamento Juvenil", imageUrl: "https://www.photo-pick.com/online/api/v1/albums/3f593f63-fae9-461e-a3b0-45f7c8a62c32.jpg", color: "bg-transparent" },
+const groupsConfig: { name: GroupType; icon: any; color: string; iconColor: string; lasTorresImageUrl?: string; imgClass?: string }[] = [
+  { name: "Coro Juventud", icon: Users, color: "bg-blue-500/10 dark:bg-blue-500/20", iconColor: "text-blue-600 dark:text-blue-400", lasTorresImageUrl: "https://i.postimg.cc/bvk974Xp/IMG_2532.jpg" },
+  { name: "Grupo Ciclista", icon: Sparkles, color: "bg-amber-500/10 dark:bg-amber-500/20", iconColor: "text-amber-600 dark:text-amber-400", lasTorresImageUrl: "https://i.postimg.cc/QtWZZ88d/Imagen1.png", imgClass: "object-contain scale-[0.85]" },
+  { name: "Departamento Infantil", icon: Baby, color: "bg-emerald-500/10 dark:bg-emerald-500/20", iconColor: "text-emerald-600 dark:text-emerald-400", lasTorresImageUrl: "https://i.postimg.cc/mDkyNsXL/Asunto.png" },
+  { name: "Clase Dorcas", icon: UserCircle, color: "bg-rose-500/10 dark:bg-rose-500/20", iconColor: "text-rose-600 dark:text-rose-400", lasTorresImageUrl: "https://www.photo-pick.com/online/api/v1/albums/628d3a58-df5a-4b3d-9e29-98902f716a85.jpg" },
+  { name: "Departamento Juvenil", icon: Library, color: "bg-purple-500/10 dark:bg-purple-500/20", iconColor: "text-purple-600 dark:text-purple-400", lasTorresImageUrl: "https://www.photo-pick.com/online/api/v1/albums/3f593f63-fae9-461e-a3b0-45f7c8a62c32.jpg" },
 ];
 
 export default function YouthChoirsIndexPage() {
+  const { currentChurch } = useChurch();
+  const isLasTorres = Boolean(
+    currentChurch && (
+      currentChurch.id === 'eech-las-torres' || 
+      (currentChurch.name && currentChurch.name.toLowerCase().includes('las torres'))
+    )
+  );
   const { youthChoirs, addYouthChoirs, isLoaded, addYouthChoir } = useYouthChoirs();
   const [selectedGroup, setSelectedGroup] = useState<GroupType | null>(null);
   const [isSingleYouthChoirDialogOpen, setSingleYouthChoirDialogOpen] = useState(false);
@@ -207,41 +215,44 @@ export default function YouthChoirsIndexPage() {
                 </div>
                 
                 <div className="grid grid-cols-2 gap-4 max-w-lg mx-auto">
-                  {groups.map((group, index) => (
-                    <Card 
-                      key={group.name} 
-                      className="cursor-pointer border-slate-200/50 bg-white/40 backdrop-blur-sm hover:bg-white/80 transition-all duration-500 active:scale-95 shadow-sm hover:shadow-xl group overflow-hidden border-2 app-card"
-                      onClick={() => setSelectedGroup(group.name)}
-                      style={{ animationDelay: `${index * 0.05}s` }}
-                    >
-                      <CardContent className="p-6 flex flex-col items-center text-center gap-4">
-                        <div className={cn(
-                          "transition-all duration-700 group-hover:scale-110 flex items-center justify-center overflow-hidden relative",
-                          group.imageUrl ? "w-24 h-24 shadow-xl rounded-full bg-white ring-4 ring-white dark:ring-slate-800" : `w-16 h-16 p-4 rounded-full shadow-inner ${group.color}`
-                        )}>
-                          {group.imageUrl ? (
-                            <Image 
-                              src={group.imageUrl} 
-                              alt={group.name} 
-                              width={96} 
-                              height={96} 
-                              className={cn("w-full h-full", group.imgClass || "object-cover scale-[1.12]")}
-                              priority
-                              data-ai-hint="group logo"
-                            />
-                          ) : (
-                            <group.icon className={`h-8 w-8 ${group.iconColor}`} />
-                          )}
-                        </div>
-                        <div className="space-y-1.5">
-                          <h3 className="font-black text-[10px] text-slate-800 leading-tight uppercase tracking-widest">{group.name}</h3>
-                          <Badge variant="secondary" className="text-[9px] font-bold px-2 py-0 h-5 bg-primary/5 text-primary border-primary/10">
-                            {countsByGroup[group.name] || 0} cantos
-                          </Badge>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
+                  {groupsConfig.map((group, index) => {
+                    const showImage = isLasTorres && Boolean(group.lasTorresImageUrl);
+                    return (
+                      <Card 
+                        key={group.name} 
+                        className="cursor-pointer border-slate-200/50 bg-white/40 backdrop-blur-sm hover:bg-white/80 transition-all duration-500 active:scale-95 shadow-sm hover:shadow-xl group overflow-hidden border-2 app-card"
+                        onClick={() => setSelectedGroup(group.name)}
+                        style={{ animationDelay: `${index * 0.05}s` }}
+                      >
+                        <CardContent className="p-6 flex flex-col items-center text-center gap-4">
+                          <div className={cn(
+                            "transition-all duration-700 group-hover:scale-110 flex items-center justify-center overflow-hidden relative",
+                            showImage ? "w-24 h-24 shadow-xl rounded-full bg-white ring-4 ring-white dark:ring-slate-800" : `w-16 h-16 p-4 rounded-full shadow-inner ${group.color}`
+                          )}>
+                            {showImage ? (
+                              <Image 
+                                src={group.lasTorresImageUrl!} 
+                                alt={group.name} 
+                                width={96} 
+                                height={96} 
+                                className={cn("w-full h-full", group.imgClass || "object-cover scale-[1.12]")}
+                                priority
+                                data-ai-hint="group logo"
+                              />
+                            ) : (
+                              <group.icon className={`h-8 w-8 ${group.iconColor}`} />
+                            )}
+                          </div>
+                          <div className="space-y-1.5">
+                            <h3 className="font-black text-[10px] text-slate-800 dark:text-slate-200 leading-tight uppercase tracking-widest">{group.name}</h3>
+                            <Badge variant="secondary" className="text-[9px] font-bold px-2 py-0 h-5 bg-primary/5 text-primary border-primary/10">
+                              {countsByGroup[group.name] || 0} cantos
+                            </Badge>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  })}
                 </div>
               </div>
             ) : (
