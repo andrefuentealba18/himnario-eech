@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { musicalKeys } from '@/lib/musical-keys';
 import type { Choir } from '@/lib/choirs';
+import { useChurch } from '@/context/church-context';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -49,6 +50,8 @@ interface AddSingleChoirDialogProps {
 }
 
 export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSingleChoirDialogProps) {
+  const { currentChurch } = useChurch();
+  const isLasTorres = !currentChurch || currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
   const form = useForm<FormData>({
     resolver: zodResolver(choirSchema),
     defaultValues: {
@@ -76,7 +79,9 @@ export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSi
         <DialogHeader>
           <DialogTitle>Agregar Nuevo Coro</DialogTitle>
           <DialogDescription>
-            Completa los detalles para agregar un nuevo coro. Será enviado para revisión.
+            {isLasTorres 
+              ? 'Completa los detalles para agregar un nuevo coro. Será enviado para revisión.'
+              : 'Completa los detalles para agregar un nuevo coro a tu iglesia.'}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -151,7 +156,7 @@ export function AddSingleChoirDialog({ open, onOpenChange, onChoirAdded }: AddSi
               )}
             />
             <DialogFooter>
-              <Button type="submit">Enviar a Revisión</Button>
+              <Button type="submit">{isLasTorres ? 'Enviar a Revisión' : 'Agregar Coro'}</Button>
             </DialogFooter>
           </form>
         </Form>

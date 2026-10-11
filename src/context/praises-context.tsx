@@ -129,17 +129,22 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
   const addPraise = useCallback(async (newPraiseData: Omit<Praise, 'id'>) => {
     if (!firestore || !currentChurch) return { success: false };
     
+    const isLasTorres = currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
+    const status = isLasTorres ? ('pending' as const) : ('approved' as const);
+
     const id = `${slugify(newPraiseData.title)}-${Date.now().toString().slice(-4)}`;
     const docRef = doc(firestore, 'churches', currentChurch.id, 'praises', id);
     const dataToSave = { 
         ...newPraiseData,
-        status: 'pending' as const,
+        status,
         createdAt: serverTimestamp() 
     };
 
     setDoc(docRef, removeUndefined(dataToSave))
       .then(() => {
-        notifyAdmin('Alabanza', newPraiseData.title);
+        if (isLasTorres) {
+          notifyAdmin('Alabanza', newPraiseData.title);
+        }
         logGlobalActivity(firestore, { action: 'CREATE', type: 'Alabanza', title: newPraiseData.title, churchId: currentChurch.id, churchName: currentChurch.name, userName: 'Usuario' });
       })
       .catch((error) => {
@@ -151,13 +156,21 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
         }));
       });
 
-    toast({ title: 'Enviada a Revisión', description: `"${newPraiseData.title}" ha sido enviada.` });
+    toast({ 
+      title: isLasTorres ? 'Enviada a Revisión' : 'Alabanza agregada', 
+      description: isLasTorres 
+        ? `"${newPraiseData.title}" ha sido enviada para revisión.`
+        : `"${newPraiseData.title}" agregada a ${currentChurch.name}.` 
+    });
     return { success: true };
-  }, [firestore, toast]);
+  }, [firestore, currentChurch, toast]);
 
   const addPraises = useCallback((newPraisesData: Omit<Praise, 'id'>[]) => {
     if (!firestore || !currentChurch) return;
     
+    const isLasTorres = currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
+    const status = isLasTorres ? ('pending' as const) : ('approved' as const);
+
     const batch = writeBatch(firestore);
     let addedCount = 0;
 
@@ -166,9 +179,9 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
       const docRef = doc(firestore, 'churches', currentChurch.id, 'praises', id);
       const dataToSave = { 
           ...praiseData,
-          status: 'pending' as const,
+          status,
           createdAt: serverTimestamp() 
-    };
+      };
       batch.set(docRef, removeUndefined(dataToSave));
       addedCount++;
     }
@@ -176,15 +189,22 @@ export function PraisesProvider({ children }: { children: ReactNode }) {
     if (addedCount > 0) {
       batch.commit()
         .then(() => {
-        notifyAdmin('Alabanzas (Lote)', `${addedCount} alabanzas enviadas`);
-        logGlobalActivity(firestore, { action: 'CREATE', type: 'Alabanzas (Lote)', title: `${addedCount} alabanzas enviadas`, churchId: currentChurch.id, churchName: currentChurch.name, userName: 'Usuario' });
-      })
+          if (isLasTorres) {
+            notifyAdmin('Alabanzas (Lote)', `${addedCount} alabanzas enviadas`);
+          }
+          logGlobalActivity(firestore, { action: 'CREATE', type: 'Alabanzas (Lote)', title: `${addedCount} alabanzas agregadas`, churchId: currentChurch.id, churchName: currentChurch.name, userName: 'Usuario' });
+        })
         .catch((error) => {
           console.error("Error bulk adding praises:", error);
         });
-      toast({ title: 'Lote Enviado', description: `Se enviaron ${addedCount} alabanzas a revisión.` });
+      toast({ 
+        title: isLasTorres ? 'Lote Enviado' : 'Alabanzas agregadas', 
+        description: isLasTorres 
+          ? `Se enviaron ${addedCount} alabanzas a revisión.`
+          : `Se agregaron ${addedCount} alabanzas a ${currentChurch.name}.` 
+      });
     }
-  }, [firestore, toast]);
+  }, [firestore, currentChurch, toast]);
 
   const approvePraise = useCallback((praiseId: string) => {
     if (!firestore || !currentChurch) return;

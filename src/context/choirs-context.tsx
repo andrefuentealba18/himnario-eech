@@ -128,16 +128,23 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
   const addChoir = useCallback(async (newChoirData: Omit<Choir, 'id'>) => {
     if (!firestore || !currentChurch) return { success: false };
     
+    const isLasTorres = currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
+    const status = isLasTorres ? ('pending' as const) : ('approved' as const);
+
     const id = `${slugify(newChoirData.title)}-${Date.now().toString().slice(-4)}`;
     const docRef = doc(firestore, 'churches', currentChurch.id, 'choirs', id);
     const dataToSave = { 
         ...newChoirData,
-        status: 'pending' as const,
+        status,
         createdAt: serverTimestamp() 
     };
     
     setDoc(docRef, removeUndefined(dataToSave))
-      .then(() => notifyAdmin('Coro', newChoirData.title))
+      .then(() => {
+        if (isLasTorres) {
+          notifyAdmin('Coro', newChoirData.title);
+        }
+      })
       .catch((error) => {
         console.error("Error adding choir:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -147,13 +154,21 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
         }));
       });
 
-    toast({ title: 'Enviado a Revisión', description: `El coro "${newChoirData.title}" ha sido enviado.` });
+    toast({ 
+      title: isLasTorres ? 'Enviado a Revisión' : 'Coro agregado', 
+      description: isLasTorres 
+        ? `El coro "${newChoirData.title}" ha sido enviado para revisión.`
+        : `"${newChoirData.title}" agregado a ${currentChurch.name}.` 
+    });
     return { success: true };
-  }, [firestore, toast]);
+  }, [firestore, currentChurch, toast]);
 
   const addChoirs = useCallback((newChoirsData: Omit<Choir, 'id'>[]) => {
     if (!firestore || !currentChurch) return;
     
+    const isLasTorres = currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
+    const status = isLasTorres ? ('pending' as const) : ('approved' as const);
+
     const batch = writeBatch(firestore);
     let addedCount = 0;
 
@@ -162,7 +177,7 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
       const docRef = doc(firestore, 'churches', currentChurch.id, 'choirs', id);
       const dataToSave = { 
           ...choirData,
-          status: 'pending' as const,
+          status,
           createdAt: serverTimestamp() 
       };
       batch.set(docRef, removeUndefined(dataToSave));
@@ -171,13 +186,22 @@ export function ChoirsProvider({ children }: { children: ReactNode }) {
     
     if (addedCount > 0) {
       batch.commit()
-        .then(() => notifyAdmin('Coros (Lote)', `${addedCount} coros enviados`))
+        .then(() => {
+          if (isLasTorres) {
+            notifyAdmin('Coros (Lote)', `${addedCount} coros enviados`);
+          }
+        })
         .catch((error) => {
           console.error("Error bulk adding choirs:", error);
         });
-      toast({ title: 'Enviados a Revisión', description: `Se han enviado ${addedCount} coros para revisión.` });
+      toast({ 
+        title: isLasTorres ? 'Enviados a Revisión' : 'Coros agregados', 
+        description: isLasTorres 
+          ? `Se han enviado ${addedCount} coros para revisión.`
+          : `Se agregaron ${addedCount} coros a ${currentChurch.name}.` 
+      });
     }
-  }, [firestore, toast]);
+  }, [firestore, currentChurch, toast]);
 
   const approveChoir = useCallback((choirId: string) => {
     if (!firestore || !currentChurch) return;

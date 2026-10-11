@@ -5,7 +5,7 @@ import { useChurch } from '@/context/church-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { MapPin, Plus, Search } from 'lucide-react';
+import { MapPin, Plus, Search, Info } from 'lucide-react';
 
 export function ChurchSelector() {
   const { currentChurch, availableChurches, setCurrentChurch, createChurch, isLoading } = useChurch();
@@ -13,6 +13,8 @@ export function ChurchSelector() {
   const [isCreating, setIsCreating] = useState(false);
   const [newChurchName, setNewChurchName] = useState('');
   const [newChurchDistrict, setNewChurchDistrict] = useState('');
+  const [creatorName, setCreatorName] = useState('');
+  const [creatorEmail, setCreatorEmail] = useState('');
   const [showDelay, setShowDelay] = useState(false);
 
   useEffect(() => {
@@ -36,7 +38,7 @@ export function ChurchSelector() {
 
   const handleCreate = async () => {
     if (!newChurchName.trim()) return;
-    const created = await createChurch(newChurchName.trim(), newChurchDistrict.trim() || 'Sin Distrito');
+    const created = await createChurch(newChurchName.trim(), newChurchDistrict.trim() || 'Sin Distrito', creatorName.trim(), creatorEmail.trim());
     if (created) {
       setCurrentChurch(created);
     }
@@ -60,6 +62,17 @@ export function ChurchSelector() {
         <CardContent className="space-y-6">
           {!isCreating ? (
             <div className="space-y-4">
+              
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 rounded-xl flex gap-3 text-left">
+                <Info className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wider">Nueva Función</p>
+                  <p className="text-[11px] text-blue-600 dark:text-blue-400 leading-relaxed">
+                    Ahora cada iglesia tiene su himnario privado y separado. Busca tu iglesia en la lista para entrar, o presiona <strong>"Crear nueva iglesia"</strong> si aún no existe. (Luego podrás cambiar de iglesia usando el botón al final de la página de inicio).
+                  </p>
+                </div>
+              </div>
+              
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input 
@@ -105,17 +118,37 @@ export function ChurchSelector() {
                   placeholder="Ej: Distrito 1" 
                   value={newChurchDistrict}
                   onChange={(e) => setNewChurchDistrict(e.target.value)}
-                  className="bg-black/5 dark:bg-white/5 border-none h-14 rounded-xl font-bold text-lg"
+                  className="bg-black/5 dark:bg-white/5 border-none h-12 rounded-xl font-bold text-sm"
                   autoFocus
                 />
               </div>
+              
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Nombre de la nueva iglesia</label>
                 <Input 
                   placeholder="Ej: EECH Mi Ciudad" 
                   value={newChurchName}
                   onChange={(e) => setNewChurchName(e.target.value)}
-                  className="bg-black/5 dark:bg-white/5 border-none h-14 rounded-xl font-bold text-lg"
+                  className="bg-black/5 dark:bg-white/5 border-none h-12 rounded-xl font-bold"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Tu Nombre (Administrador)</label>
+                <Input 
+                  placeholder="Ej: Juan Pérez" 
+                  value={creatorName}
+                  onChange={(e) => setCreatorName(e.target.value)}
+                  className="bg-black/5 dark:bg-white/5 border-none h-12 rounded-xl font-bold"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Correo Electrónico</label>
+                <Input 
+                  type="email"
+                  placeholder="correo@ejemplo.com" 
+                  value={creatorEmail}
+                  onChange={(e) => setCreatorEmail(e.target.value)}
+                  className="bg-black/5 dark:bg-white/5 border-none h-12 rounded-xl font-bold"
                 />
               </div>
             </div>
@@ -138,14 +171,14 @@ export function ChurchSelector() {
                 variant="default" 
                 className="w-full rounded-xl h-12 bg-primary text-white font-bold shadow-lg shadow-primary/30"
                 onClick={handleCreate}
-                disabled={!newChurchName.trim() || !newChurchDistrict.trim()}
+                disabled={!newChurchName.trim() || !newChurchDistrict.trim() || !creatorName.trim() || !creatorEmail.trim()}
               >
                 Crear y Entrar
               </Button>
               <Button 
                 variant="ghost" 
                 className="w-full rounded-xl h-12 font-bold"
-                onClick={() => { setIsCreating(false); setNewChurchName(''); setNewChurchDistrict(''); }}
+                onClick={() => { setIsCreating(false); setNewChurchName(''); setNewChurchDistrict(''); setCreatorName(''); setCreatorEmail(''); }}
               >
                 Volver a la lista
               </Button>

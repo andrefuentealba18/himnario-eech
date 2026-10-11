@@ -73,10 +73,12 @@ export function SpecialOccasionsProvider({ children }: { children: ReactNode }) 
     const id = `${slugify(data.category)}-${slugify(data.title)}-${Date.now().toString().slice(-4)}`;
     const docRef = doc(firestore, 'churches', currentChurch.id, 'special-occasions', id);
     
-    // Si no viene status, por defecto es pending. Si viene (desde admin), lo respetamos.
+    const isLasTorres = currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
+    const defaultStatus = isLasTorres ? ('pending' as const) : ('approved' as const);
+
     const dataToSave = { 
       ...data, 
-      status: data.status || 'pending' as const, 
+      status: data.status || defaultStatus, 
       createdAt: serverTimestamp() 
     };
     
@@ -86,7 +88,7 @@ export function SpecialOccasionsProvider({ children }: { children: ReactNode }) 
     const msg = dataToSave.status === 'approved' ? 'Canto agregado correctamente' : 'Enviado a Revisión';
     toast({ title: msg });
     return { success: true };
-  }, [firestore, toast]);
+  }, [firestore, currentChurch, toast]);
 
   const deleteSpecialOccasion = useCallback((id: string) => {
     if (!firestore || !currentChurch) return;

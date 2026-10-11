@@ -11,6 +11,7 @@ import { useHymns } from '@/context/hymns-context';
 import { usePraises } from '@/context/praises-context';
 import { useChoirs } from '@/context/choirs-context';
 import { useYouthChoirs } from '@/context/youth-choirs-context';
+import { useChurch } from '@/context/church-context';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -76,6 +77,8 @@ type SelectableSong = {
 
 export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasionDialogProps) {
   const [open, setOpen] = useState(false);
+  const { currentChurch } = useChurch();
+  const isLasTorres = !currentChurch || currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [searchSong, setSearchSong] = useState('');
@@ -85,6 +88,12 @@ export function AddSpecialOccasionDialog({ initialCategory }: AddSpecialOccasion
   
   const { addSpecialOccasion } = useSpecialOccasions();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (open && !isLasTorres) {
+      setIsAuthenticated(true);
+    }
+  }, [open, isLasTorres]);
 
   const { hymns } = useHymns();
   const { praises } = usePraises();

@@ -8,6 +8,8 @@ export interface Church {
   id: string;
   name: string;
   district?: string;
+  creatorName?: string;
+  creatorEmail?: string;
   createdAt?: any;
 }
 
@@ -15,7 +17,7 @@ interface ChurchContextType {
   currentChurch: Church | null;
   setCurrentChurch: (church: Church) => void;
   availableChurches: Church[];
-  createChurch: (name: string, district?: string) => Promise<Church | null>;
+  createChurch: (name: string, district?: string, creatorName?: string, creatorEmail?: string) => Promise<Church | null>;
   clearChurch: () => void;
   isLoading: boolean;
 }
@@ -90,14 +92,16 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
     window.location.reload();
   };
 
-  const createChurch = async (name: string, district: string = 'Sin Distrito') => {
+  const createChurch = async (name: string, district: string = 'Sin Distrito', creatorName: string = '', creatorEmail: string = '') => {
     if (!firestore) return null;
     const id = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') + '-' + Date.now().toString().slice(-4);
-    const newChurch = { id, name, district };
+    const newChurch = { id, name, district, creatorName, creatorEmail };
     try {
       await setDoc(doc(firestore, 'churches', id), {
         name,
         district,
+        creatorName,
+        creatorEmail,
         createdAt: serverTimestamp()
       });
       setAvailableChurches(prev => [...prev, newChurch]);

@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { musicalKeys } from '@/lib/musical-keys';
 import type { Praise } from '@/lib/praises';
+import { useChurch } from '@/context/church-context';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -49,6 +50,8 @@ interface AddSinglePraiseDialogProps {
 }
 
 export function AddSinglePraiseDialog({ open, onOpenChange, onPraiseAdded }: AddSinglePraiseDialogProps) {
+  const { currentChurch } = useChurch();
+  const isLasTorres = !currentChurch || currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
   const form = useForm<FormData>({
     resolver: zodResolver(praiseSchema),
     defaultValues: {
@@ -76,7 +79,9 @@ export function AddSinglePraiseDialog({ open, onOpenChange, onPraiseAdded }: Add
         <DialogHeader>
           <DialogTitle>Agregar Nueva Alabanza</DialogTitle>
           <DialogDescription>
-            Completa los detalles para agregar una nueva alabanza. Será enviada a revisión.
+            {isLasTorres 
+              ? 'Completa los detalles para agregar una nueva alabanza. Será enviada a revisión.'
+              : 'Completa los detalles para agregar una nueva alabanza a tu iglesia.'}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -151,7 +156,7 @@ export function AddSinglePraiseDialog({ open, onOpenChange, onPraiseAdded }: Add
               )}
             />
             <DialogFooter>
-              <Button type="submit">Enviar a Revisión</Button>
+              <Button type="submit">{isLasTorres ? 'Enviar a Revisión' : 'Agregar Alabanza'}</Button>
             </DialogFooter>
           </form>
         </Form>

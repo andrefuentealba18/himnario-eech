@@ -16,6 +16,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useChurch } from '@/context/church-context';
 
 function parseSongs(text: string): Omit<Choir, 'id'>[] {
     const songs: Omit<Choir, 'id'>[] = [];
@@ -58,6 +59,8 @@ interface AddChoirsDialogProps {
 }
 
 export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirsDialogProps) {
+  const { currentChurch } = useChurch();
+  const isLasTorres = !currentChurch || currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
   const [text, setText] = useState('');
   const [isParsing, setIsParsing] = useState(false);
   const { toast } = useToast();
@@ -106,7 +109,9 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
         <DialogHeader>
           <DialogTitle>Agregar Varios Coros</DialogTitle>
           <DialogDescription>
-            Pega el texto de varios coros. La primera línea de cada coro será usada como su título. Separa cada coro con dos líneas (deja una línea en blanco entre ellos). Los coros serán enviados para revisión.
+            {isLasTorres
+              ? 'Pega el texto de varios coros. La primera línea de cada coro será usada como su título. Separa cada coro con dos líneas (deja una línea en blanco entre ellos). Los coros serán enviados para revisión.'
+              : 'Pega el texto de varios coros. La primera línea de cada coro será usada como su título. Separa cada coro con dos líneas (deja una línea en blanco entre ellos). Serán agregados directamente a tu iglesia.'}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
@@ -115,7 +120,7 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
                 <Textarea 
                   id="choir-bulk-text"
                   placeholder="La primera línea es el título...&#10;Letra del coro...&#10;...&#10;&#10;El siguiente coro empieza aquí...&#10;Su primera línea es el título..." 
-                  className="h-64 min-h-[10rem]"
+                  className="h-64 min-h-[10rem]" 
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                   disabled={isParsing}
@@ -124,7 +129,7 @@ export function AddChoirsDialog({ open, onOpenChange, onChoirsAdded }: AddChoirs
             <DialogFooter>
               <Button type="submit" disabled={isParsing}>
                 {isParsing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isParsing ? 'Procesando...' : 'Enviar a Revisión'}
+                {isParsing ? 'Procesando...' : (isLasTorres ? 'Enviar a Revisión' : 'Agregar Coros')}
               </Button>
             </DialogFooter>
         </form>

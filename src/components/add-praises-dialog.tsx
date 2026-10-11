@@ -16,6 +16,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useChurch } from '@/context/church-context';
 
 function parsePraises(text: string): Omit<Praise, 'id'>[] {
     const praises: Omit<Praise, 'id'>[] = [];
@@ -86,6 +87,8 @@ interface AddPraisesDialogProps {
 }
 
 export function AddPraisesDialog({ open, onOpenChange, onPraisesAdded }: AddPraisesDialogProps) {
+  const { currentChurch } = useChurch();
+  const isLasTorres = !currentChurch || currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
   const [text, setText] = useState('');
   const [isParsing, setIsParsing] = useState(false);
   const { toast } = useToast();
@@ -134,7 +137,9 @@ export function AddPraisesDialog({ open, onOpenChange, onPraisesAdded }: AddPrai
         <DialogHeader>
           <DialogTitle>Agregar Varias Alabanzas</DialogTitle>
           <DialogDescription>
-            Pega el texto de varias alabanzas. Cada alabanza debe comenzar con su título escrito completamente en MAYÚSCULAS. Las alabanzas serán enviadas para revisión por un administrador.
+            {isLasTorres 
+              ? 'Pega el texto de varias alabanzas. Cada alabanza debe comenzar con su título escrito completamente en MAYÚSCULAS. Las alabanzas serán enviadas para revisión por un administrador.'
+              : 'Pega el texto de varias alabanzas. Cada alabanza debe comenzar con su título escrito completamente en MAYÚSCULAS. Serán agregadas directamente a tu iglesia.'}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4 py-4">
@@ -152,7 +157,7 @@ export function AddPraisesDialog({ open, onOpenChange, onPraisesAdded }: AddPrai
             <DialogFooter>
               <Button type="submit" disabled={isParsing}>
                 {isParsing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isParsing ? 'Procesando...' : 'Enviar a Revisión'}
+                {isParsing ? 'Procesando...' : (isLasTorres ? 'Enviar a Revisión' : 'Agregar Alabanzas')}
               </Button>
             </DialogFooter>
         </form>

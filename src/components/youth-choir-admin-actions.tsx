@@ -26,6 +26,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Settings, Edit, Trash2, ShieldCheck } from 'lucide-react';
+import { useChurch } from '@/context/church-context';
 import { EditYouthChoirDialog } from './edit-youth-choir-dialog';
 import {
   AlertDialog,
@@ -51,6 +52,8 @@ const passwordSchema = z.object({
 
 export function YouthChoirAdminActions({ youthChoir, onDelete, onUpdate }: YouthChoirAdminActionsProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { currentChurch } = useChurch();
+  const isLasTorres = !currentChurch || currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
   
@@ -78,13 +81,17 @@ export function YouthChoirAdminActions({ youthChoir, onDelete, onUpdate }: Youth
 
   const handleOpenChange = (open: boolean) => {
     setDialogOpen(open);
-    if (!open) {
+    if (open) {
+      if (!isLasTorres) {
+        setIsAuthenticated(true);
+      }
+    } else {
       setTimeout(() => {
         setIsAuthenticated(false);
         form.reset();
       }, 300);
     }
-  }
+  };
 
   const handleUpdate = async (data: Omit<YouthChoir, 'id'>) => {
     const result = await onUpdate(data);

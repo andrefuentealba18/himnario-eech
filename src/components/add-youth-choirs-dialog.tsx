@@ -17,6 +17,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { useChurch } from '@/context/church-context';
 import {
   Select,
   SelectContent,
@@ -94,6 +95,8 @@ interface AddYouthChoirsDialogProps {
 }
 
 export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded, initialGroup }: AddYouthChoirsDialogProps) {
+  const { currentChurch } = useChurch();
+  const isLasTorres = !currentChurch || currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
   const [text, setText] = useState('');
   const [isParsing, setIsParsing] = useState(false);
   const [group, setGroup] = useState<GroupType>("Coro Juventud");
@@ -174,7 +177,7 @@ export function AddYouthChoirsDialog({ open, onOpenChange, onYouthChoirsAdded, i
             <DialogFooter>
               <Button type="submit" disabled={isParsing}>
                 {isParsing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {isParsing ? 'Procesando...' : 'Enviar a Revisión'}
+                {isParsing ? 'Procesando...' : (isLasTorres ? 'Enviar a Revisión' : 'Agregar Alabanzas')}
               </Button>
             </DialogFooter>
         </form>

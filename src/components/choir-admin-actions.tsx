@@ -26,6 +26,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Settings, Edit, Trash2, ShieldCheck, Sparkles } from 'lucide-react';
+import { useChurch } from '@/context/church-context';
 import { EditChoirDialog } from './edit-choir-dialog';
 import {
   AlertDialog,
@@ -51,6 +52,8 @@ const passwordSchema = z.object({
 
 export function ChoirAdminActions({ choir, onDelete, onUpdate }: ChoirAdminActionsProps) {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const { currentChurch } = useChurch();
+  const isLasTorres = !currentChurch || currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
   
@@ -78,13 +81,17 @@ export function ChoirAdminActions({ choir, onDelete, onUpdate }: ChoirAdminActio
 
   const handleOpenChange = (open: boolean) => {
     setDialogOpen(open);
-    if (!open) {
+    if (open) {
+      if (!isLasTorres) {
+        setIsAuthenticated(true);
+      }
+    } else {
       setTimeout(() => {
         setIsAuthenticated(false);
         form.reset();
       }, 300);
     }
-  }
+  };
 
   const handleUpdate = async (data: Omit<Choir, 'id'>) => {
     const result = await onUpdate(data);

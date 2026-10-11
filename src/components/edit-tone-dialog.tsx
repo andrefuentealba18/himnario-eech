@@ -27,6 +27,7 @@ import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ShieldCheck, Sparkles } from 'lucide-react';
+import { useChurch } from '@/context/church-context';
 
 const toneSchema = z.object({
   tone: z.string().min(1, 'Debes escribir o seleccionar una tonalidad.'),
@@ -47,10 +48,12 @@ interface EditToneDialogProps {
 export function EditToneDialog({ children, song, onToneUpdated }: EditToneDialogProps) {
   const [open, setOpen] = useState(false);
   const { toast } = useToast();
+  const { currentChurch } = useChurch();
   const [searchTerm, setSearchTerm] = useState('');
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const requiresAuth = !!song.tone;
+  const isLasTorres = !currentChurch || currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
+  const requiresAuth = isLasTorres && !!song.tone;
 
   const toneForm = useForm<ToneFormData>({
     resolver: zodResolver(toneSchema),

@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { musicalKeys } from '@/lib/musical-keys';
 import type { YouthChoir, GroupType } from '@/lib/youth-choirs';
+import { useChurch } from '@/context/church-context';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -54,6 +55,8 @@ interface AddSingleYouthChoirDialogProps {
 }
 
 export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdded, initialGroup }: AddSingleYouthChoirDialogProps) {
+  const { currentChurch } = useChurch();
+  const isLasTorres = !currentChurch || currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
   const form = useForm<FormData>({
     resolver: zodResolver(youthChoirSchema),
     defaultValues: {
@@ -88,7 +91,9 @@ export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdde
         <DialogHeader>
           <DialogTitle>Agregar Nueva Alabanza</DialogTitle>
           <DialogDescription>
-            Completa los detalles para agregar una nueva alabanza de agrupación. Será enviada para revisión.
+            {isLasTorres 
+              ? 'Completa los detalles para agregar una nueva alabanza de agrupación. Será enviada para revisión.'
+              : 'Completa los detalles para agregar una nueva alabanza de agrupación a tu iglesia.'}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -189,7 +194,7 @@ export function AddSingleYouthChoirDialog({ open, onOpenChange, onYouthChoirAdde
               )}
             />
             <DialogFooter>
-              <Button type="submit">Enviar a Revisión</Button>
+              <Button type="submit">{isLasTorres ? 'Enviar a Revisión' : 'Agregar Alabanza'}</Button>
             </DialogFooter>
           </form>
         </Form>

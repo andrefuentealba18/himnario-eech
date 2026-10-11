@@ -132,16 +132,23 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
   const addYouthChoir = useCallback(async (newYouthChoirData: Omit<YouthChoir, 'id'>) => {
     if (!firestore || !currentChurch) return { success: false };
     
+    const isLasTorres = currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
+    const status = isLasTorres ? ('pending' as const) : ('approved' as const);
+
     const id = `${slugify(newYouthChoirData.group)}-${slugify(newYouthChoirData.title)}-${Date.now().toString().slice(-4)}`;
     const docRef = doc(firestore, 'churches', currentChurch.id, 'youth-choirs', id);
     const dataToSave = { 
         ...newYouthChoirData,
-        status: 'pending' as const,
+        status,
         createdAt: serverTimestamp() 
     };
 
     setDoc(docRef, removeUndefined(dataToSave))
-      .then(() => notifyAdmin('Agrupación', newYouthChoirData.title))
+      .then(() => {
+        if (isLasTorres) {
+          notifyAdmin('Agrupación', newYouthChoirData.title);
+        }
+      })
       .catch((error) => {
         console.error("Error adding youth choir:", error);
         errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -151,13 +158,21 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
         }));
       });
 
-    toast({ title: 'Enviado a Revisión', description: `La alabanza de ${newYouthChoirData.group} ha sido enviada.` });
+    toast({ 
+      title: isLasTorres ? 'Enviado a Revisión' : 'Alabanza agregada', 
+      description: isLasTorres 
+        ? `La alabanza de ${newYouthChoirData.group} ha sido enviada para revisión.`
+        : `"${newYouthChoirData.title}" agregada a ${newYouthChoirData.group}.` 
+    });
     return { success: true };
-  }, [firestore, toast]);
+  }, [firestore, currentChurch, toast]);
 
   const addYouthChoirs = useCallback((newYouthChoirsData: Omit<YouthChoir, 'id'>[]) => {
     if (!firestore || !currentChurch) return;
     
+    const isLasTorres = currentChurch.id === 'eech-las-torres' || currentChurch.name.toLowerCase().includes('las torres');
+    const status = isLasTorres ? ('pending' as const) : ('approved' as const);
+
     const batch = writeBatch(firestore);
     let addedCount = 0;
 
@@ -166,7 +181,7 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
       const docRef = doc(firestore, 'churches', currentChurch.id, 'youth-choirs', id);
       const dataToSave = { 
           ...youthChoirData,
-          status: 'pending' as const,
+          status,
           createdAt: serverTimestamp() 
       };
       batch.set(docRef, removeUndefined(dataToSave));
@@ -175,13 +190,22 @@ export function YouthChoirsProvider({ children }: { children: ReactNode }) {
     
     if (addedCount > 0) {
       batch.commit()
-        .then(() => notifyAdmin('Agrupaciones (Lote)', `${addedCount} alabanzas enviadas`))
+        .then(() => {
+          if (isLasTorres) {
+            notifyAdmin('Agrupaciones (Lote)', `${addedCount} alabanzas enviadas`);
+          }
+        })
         .catch((error) => {
           console.error("Error bulk adding youth choirs:", error);
         });
-      toast({ title: 'Enviadas a Revisión', description: `Se han enviado ${addedCount} alabanzas para revisión.` });
+      toast({ 
+        title: isLasTorres ? 'Enviadas a Revisión' : 'Alabanzas agregadas', 
+        description: isLasTorres 
+          ? `Se han enviado ${addedCount} alabanzas para revisión.`
+          : `Se agregaron ${addedCount} alabanzas a ${currentChurch.name}.` 
+      });
     }
-  }, [firestore, toast]);
+  }, [firestore, currentChurch, toast]);
 
   const approveYouthChoir = useCallback((youthChoirId: string) => {
     if (!firestore || !currentChurch) return;
