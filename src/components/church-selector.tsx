@@ -1,20 +1,24 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useChurch } from '@/context/church-context';
+import { useChurch, Church } from '@/context/church-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { MapPin, Plus, Search, Info } from 'lucide-react';
+import { MapPin, Plus, Search, Info, AlertCircle } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export function ChurchSelector() {
   const { currentChurch, availableChurches, setCurrentChurch, createChurch, isLoading } = useChurch();
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreating, setIsCreating] = useState(false);
   const [newChurchName, setNewChurchName] = useState('');
   const [newChurchDistrict, setNewChurchDistrict] = useState('');
   const [creatorName, setCreatorName] = useState('');
   const [creatorEmail, setCreatorEmail] = useState('');
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [existingFoundChurch, setExistingFoundChurch] = useState<Church | null>(null);
   const [showDelay, setShowDelay] = useState(false);
 
   useEffect(() => {
@@ -38,9 +42,27 @@ export function ChurchSelector() {
 
   const handleCreate = async () => {
     if (!newChurchName.trim()) return;
-    const created = await createChurch(newChurchName.trim(), newChurchDistrict.trim() || 'Sin Distrito', creatorName.trim(), creatorEmail.trim());
-    if (created) {
-      setCurrentChurch(created);
+    setErrorMessage(null);
+    setExistingFoundChurch(null);
+    const res = await createChurch(newChurchName.trim(), newChurchDistrict.trim() || 'Sin Distrito', creatorName.trim(), creatorEmail.trim());
+    if (res.success && res.church) {
+      setCurrentChurch(res.church);
+    } else if (res.error === 'ALREADY_EXISTS') {
+      setErrorMessage(res.message || 'Ya está creada la iglesia.');
+      if (res.church) {
+        setExistingFoundChurch(res.church);
+      }
+      toast({
+        variant: "destructive",
+        title: "Ya está creada la iglesia",
+        description: res.message || "Esta congregación ya está registrada. Puedes buscarla en la lista."
+      });
+    } else {
+      toast({
+        variant: "destructive",
+        title: "Error al registrar",
+        description: res.message || "No se pudo registrar la iglesia."
+      });
     }
   };
 
@@ -112,12 +134,35 @@ export function ChurchSelector() {
             </div>
           ) : (
             <div className="space-y-4 py-2">
+              {errorMessage && (
+                <div className="p-4 rounded-2xl bg-amber-500/10 dark:bg-amber-500/20 border-2 border-amber-500/30 text-left space-y-2 animate-in fade-in zoom-in-95 duration-200">
+                  <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 font-black text-xs uppercase tracking-wider">
+                    <AlertCircle className="h-4 w-4 shrink-0" />
+                    <span>Ya está creada la iglesia</span>
+                  </div>
+                  <p className="text-xs text-slate-700 dark:text-slate-300 font-medium">
+                    {errorMessage}
+                  </p>
+                  {existingFoundChurch && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      className="w-full mt-2 font-bold text-xs bg-white dark:bg-slate-900 border-amber-500/30 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300"
+                      onClick={() => setCurrentChurch(existingFoundChurch)}
+                    >
+                      Entrar a {existingFoundChurch.name}
+                    </Button>
+                  )}
+                </div>
+              )}
+
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-slate-500">Distrito al que pertenece</label>
                 <Input 
                   placeholder="Ej: Distrito 1" 
                   value={newChurchDistrict}
-                  onChange={(e) => setNewChurchDistrict(e.target.value)}
+                  onChange={(e) => { setNewChurchDistrict(e.target.value); setErrorMessage(null); }}
                   className="bg-black/5 dark:bg-white/5 border-none h-12 rounded-xl font-bold text-sm"
                   autoFocus
                 />
@@ -128,7 +173,7 @@ export function ChurchSelector() {
                 <Input 
                   placeholder="Ej: EECH Mi Ciudad" 
                   value={newChurchName}
-                  onChange={(e) => setNewChurchName(e.target.value)}
+                  onChange={(e) => { setNewChurchName(e.target.value); setErrorMessage(null); }}
                   className="bg-black/5 dark:bg-white/5 border-none h-12 rounded-xl font-bold"
                 />
               </div>
@@ -160,7 +205,7 @@ export function ChurchSelector() {
             <Button 
               variant="default" 
               className="w-full rounded-xl h-12 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-bold shadow-lg"
-              onClick={() => setIsCreating(true)}
+              onClick={() => { setIsCreating(true); setErrorMessage(null); }}
             >
               <Plus className="mr-2 h-5 w-5" />
               Crear nueva iglesia
@@ -178,7 +223,15 @@ export function ChurchSelector() {
               <Button 
                 variant="ghost" 
                 className="w-full rounded-xl h-12 font-bold"
-                onClick={() => { setIsCreating(false); setNewChurchName(''); setNewChurchDistrict(''); setCreatorName(''); setCreatorEmail(''); }}
+                onClick={() => { 
+                  setIsCreating(false); 
+                  setErrorMessage(null);
+                  setExistingFoundChurch(null);
+                  setNewChurchName(''); 
+                  setNewChurchDistrict(''); 
+                  setCreatorName(''); 
+                  setCreatorEmail(''); 
+                }}
               >
                 Volver a la lista
               </Button>
