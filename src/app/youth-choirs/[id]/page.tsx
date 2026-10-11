@@ -1,32 +1,28 @@
-"use client";
-
-import { useParams } from 'next/navigation';
-import { YouthChoirDetailClient } from '@/components/youth-choir-detail-client';
 import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
+import { YouthChoirDetailClient } from '@/components/youth-choir-detail-client';
+import { initialYouthChoirs } from '@/lib/youth-choirs-initial';
 
-function YouthChoirPageFallback() {
-  return (
-    <div className="flex flex-col min-h-screen bg-background">
-      <header className="h-20 border-b flex items-center px-4">
-        <Skeleton className="h-10 w-10 rounded-full" />
-      </header>
-      <main className="p-8">
-        <Skeleton className="h-8 w-3/4 mb-4" />
-        <Skeleton className="h-64 w-full rounded-2xl" />
-      </main>
-    </div>
-  );
+const slugify = (text: string): string =>
+  text.toString().toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+
+export const dynamicParams = true;
+
+export function generateStaticParams() {
+  return initialYouthChoirs.map((item) => ({
+    id: slugify(`${item.group}-${item.title}`),
+  }));
 }
 
-export default function YouthChoirPage() {
-  const params = useParams();
-  const id = params?.id as string;
-
-  if (!id) return <YouthChoirPageFallback />;
+export default async function YouthChoirPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
 
   return (
-    <Suspense fallback={<YouthChoirPageFallback />}>
+    <Suspense>
       <YouthChoirDetailClient youthChoirId={id} />
     </Suspense>
   );

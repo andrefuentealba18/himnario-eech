@@ -114,8 +114,9 @@ function HymnRoll({ hymns }: { hymns: (Hymn & { _searchIndex?: string })[] }) {
         {hymns.map((hymn) => (
             <Link
                 href={`/hymns/${hymn.number}`}
+                prefetch={true}
                 key={hymn.number}
-                className="flex items-center gap-3 p-3 border-b transition-colors hover:bg-muted/50 rounded-lg group"
+                className="flex items-center gap-3 p-3 border-b transition-all hover:bg-muted/50 active:scale-[0.98] rounded-lg group"
             >
                 <span className="font-black text-primary w-6 text-center text-[10px] opacity-60 group-hover:opacity-100">{hymn.number}</span>
                 <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">

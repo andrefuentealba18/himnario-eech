@@ -1,6 +1,7 @@
 "use client";
 
 import type { Choir } from '@/lib/choirs';
+import { initialChoirs } from '@/lib/choirs-initial';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star, Mic, FileText } from 'lucide-react';
@@ -65,7 +66,8 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
   const from = searchParams.get('from');
   const backHref = from === 'admin' ? '/admin?tab=more-settings' : (from?.startsWith('/') ? from : '/choirs');
 
-  const choir = getChoirById(choirId);
+  const fallbackChoir = initialChoirs.find(c => slugify(c.title) === choirId || (c as any).id === choirId);
+  const choir = getChoirById(choirId) || (fallbackChoir ? { ...fallbackChoir, id: slugify(fallbackChoir.title), status: 'approved' as const } : undefined);
 
   useEffect(() => {
     if (choir) {
@@ -114,8 +116,22 @@ export function ChoirDetailClient({ choirId }: ChoirDetailClientProps) {
     toast({ title: "OpenLP Copiado", description: `"${choir.title}" copiado para OpenLP.` });
   }, [choir, toast]);
 
-  if (!isChoirsLoaded || !choir) {
+  if (!choir && !isChoirsLoaded) {
     return <ChoirDetailSkeleton />;
+  }
+
+  if (!choir) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold font-headline">Coro no encontrado</h2>
+          <p className="text-muted-foreground">El coro solicitado no se encuentra disponible.</p>
+        </div>
+        <Button asChild className="rounded-full px-8">
+          <Link href={backHref}>Volver</Link>
+        </Button>
+      </div>
+    );
   }
 
   const isFav = isFavoritesLoaded && isFavorite(choir.id, 'choir');

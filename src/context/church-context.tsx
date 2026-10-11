@@ -39,15 +39,15 @@ export function canonicalDistrict(district: string): string {
     .replace(/[^a-z0-9\s]/g, '')
     .trim();
 
-  if (norm.includes('concepcion') || norm.includes('conecpcio') || norm.includes('concep')) return 'Distrito de Concepción';
+  if (norm.includes('concepcion') || norm.includes('conecpcio') || norm.includes('concep') || norm.includes('concecion') || norm.includes('consepcion')) return 'Distrito de Concepción';
   if (norm.includes('tome')) return 'Distrito Tomé';
   if (norm.includes('angol')) return 'Distrito Angol';
   if (norm.includes('puren')) return 'Distrito Purén';
   if (norm.includes('contulmo')) return 'Distrito Contulmo';
   if (norm.includes('cabrero')) return 'Distrito Cabrero';
   if (norm.includes('nacimiento')) return 'Distrito Nacimiento';
-  if (norm.includes('santiago centro')) return 'Distrito Santiago Centro';
-  if (norm.includes('santiago oriente')) return 'Distrito Santiago Oriente';
+  if (norm.includes('santiago oriente') || norm.includes('stgo oriente') || norm.includes('oriente')) return 'Distrito Santiago Oriente';
+  if (norm.includes('santiago centro') || norm.includes('stgo centro') || norm.includes('centro')) return 'Distrito Santiago Centro';
   if (norm.includes('linares')) return 'Distrito Linares';
   if (norm.includes('canete')) return 'Distrito Cañete';
   if (norm.includes('carbon') || norm.includes('lota')) return 'Distrito El Carbón';

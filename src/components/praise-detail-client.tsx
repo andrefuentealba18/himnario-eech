@@ -1,6 +1,7 @@
 "use client";
 
 import type { Praise } from '@/lib/praises';
+import { initialPraises } from '@/lib/praises-initial';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ZoomIn, ZoomOut, Share2, Star, Music, FileText } from 'lucide-react';
@@ -66,7 +67,8 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
   const from = searchParams.get('from');
   const backHref = from === 'admin' ? '/admin?tab=more-settings' : (from?.startsWith('/') ? from : '/praises');
 
-  const praise = getPraiseById(praiseId);
+  const fallbackPraise = initialPraises.find(p => slugify(p.title) === praiseId || (p as any).id === praiseId);
+  const praise = getPraiseById(praiseId) || (fallbackPraise ? { ...fallbackPraise, id: slugify(fallbackPraise.title), status: 'approved' as const } : undefined);
 
   useEffect(() => {
     if (praise) {
@@ -115,8 +117,22 @@ export function PraiseDetailClient({ praiseId }: PraiseDetailClientProps) {
     toast({ title: "Formato OpenLP Copiado", description: "La alabanza ha sido copiada al portapapeles." });
   }, [praise, toast]);
   
-  if (!isPraisesLoaded || !praise) {
+  if (!praise && !isPraisesLoaded) {
     return <PraiseDetailSkeleton />;
+  }
+
+  if (!praise) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold font-headline">Alabanza no encontrada</h2>
+          <p className="text-muted-foreground">La alabanza solicitada no se encuentra disponible.</p>
+        </div>
+        <Button asChild className="rounded-full px-8">
+          <Link href={backHref}>Volver</Link>
+        </Button>
+      </div>
+    );
   }
 
   const isFav = isFavoritesLoaded && isFavorite(praise.id, 'praise');

@@ -133,8 +133,9 @@ function SimplePraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: str
         {visiblePraises.map((praise) => (
             <Link
                 href={`/praises/${praise.id}`}
+                prefetch={true}
                 key={praise.id}
-                className="flex items-center gap-3 p-3 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
+                className="flex items-center gap-3 p-3 border-b last:border-b-0 transition-all hover:bg-muted/50 active:scale-[0.98] rounded-lg"
             >
                 <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
                     <div className="flex items-center gap-2 overflow-hidden">
@@ -214,8 +215,9 @@ function GroupedPraiseRoll({ praises }: { praises: (Praise & { _searchIndex?: st
                             {praiseList.map((praise) => (
                                 <Link
                                     href={`/praises/${praise.id}`}
+                                    prefetch={true}
                                     key={praise.id}
-                                    className="flex justify-between items-center gap-4 p-2 -mx-2 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
+                                    className="flex justify-between items-center gap-4 p-2 -mx-2 border-b last:border-b-0 transition-all hover:bg-muted/50 active:scale-[0.98] rounded-lg"
                                 >
                                     <span className="text-[13px] font-bold text-slate-700 dark:text-slate-200 truncate">{praise.title}</span>
                                     <button

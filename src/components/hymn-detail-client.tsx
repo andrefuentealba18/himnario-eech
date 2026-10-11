@@ -1,6 +1,7 @@
 "use client";
 
 import type { Hymn } from '@/lib/hymns';
+import { hymns as initialHymnsData } from '@/lib/hymns-initial';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useHymns } from '@/context/hymns-context';
@@ -59,7 +60,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
   const { addRecent } = useRecents();
   const { toast } = useToast();
   
-  const hymn = getHymnById(hymnId);
+  const hymn = getHymnById(hymnId) || initialHymnsData.find(h => h.number === hymnId);
 
   useEffect(() => {
     if (hymn) {
@@ -109,7 +110,7 @@ export function HymnDetailClient({ hymnId }: HymnDetailClientProps) {
     toast({ title: "OpenLP Copiado", description: `"${hymn.title}" copiado para OpenLP.` });
   }, [hymn, toast]);
 
-  if (!isHymnsLoaded) {
+  if (!hymn && !isHymnsLoaded) {
     return <HymnDetailSkeleton />;
   }
 

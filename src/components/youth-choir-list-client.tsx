@@ -127,8 +127,9 @@ function SimpleYouthChoirRoll({ youthChoirs }: { youthChoirs: (YouthChoir & { _s
         {youthChoirs.map((praise) => (
             <Link
                 href={`/youth-choirs/${praise.id}`}
+                prefetch={true}
                 key={praise.id}
-                className="flex items-center gap-3 p-3 border-b last:border-b-0 transition-colors hover:bg-muted/50 rounded-lg"
+                className="flex items-center gap-3 p-3 border-b last:border-b-0 transition-all hover:bg-muted/50 active:scale-[0.98] rounded-lg"
             >
                 <div className="flex-1 flex justify-between items-center gap-2 overflow-hidden">
                     <div className="flex items-center gap-2 overflow-hidden">
@@ -198,8 +199,9 @@ function GroupedYouthChoirRoll({ youthChoirs }: { youthChoirs: (YouthChoir & { _
                             {songs.map((yc) => (
                                 <Link
                                     href={`/youth-choirs/${yc.id}`}
+                                    prefetch={true}
                                     key={yc.id}
-                                    className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-colors border-b last:border-none"
+                                    className="flex items-center justify-between p-3 rounded-lg hover:bg-muted/50 transition-all active:scale-[0.98] border-b last:border-none"
                                 >
                                     <span className="text-[13px] font-bold text-slate-700 dark:text-slate-200 truncate">{yc.title}</span>
                                     <div className="flex items-center gap-2">

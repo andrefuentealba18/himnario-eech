@@ -1,6 +1,7 @@
 "use client";
 
 import type { YouthChoir } from '@/lib/youth-choirs';
+import { initialYouthChoirs } from '@/lib/youth-choirs-initial';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
@@ -78,7 +79,8 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
   const from = searchParams.get('from');
   const backHref = from === 'admin' ? '/admin?tab=more-settings' : (from?.startsWith('/') ? from : '/youth-choirs');
 
-  const youthChoir = getYouthChoirById(youthChoirId);
+  const fallbackYC = initialYouthChoirs.find(yc => slugify(`${yc.group}-${yc.title}`) === youthChoirId || (yc as any).id === youthChoirId);
+  const youthChoir = getYouthChoirById(youthChoirId) || (isLasTorres && fallbackYC ? { ...fallbackYC, id: slugify(`${fallbackYC.group}-${fallbackYC.title}`), status: 'approved' as const } : undefined);
   const groupLogo = isLasTorres && youthChoir ? groupLogos[youthChoir.group] : null;
 
   useEffect(() => {
@@ -128,8 +130,22 @@ export function YouthChoirDetailClient({ youthChoirId }: YouthChoirDetailClientP
     toast({ title: "OpenLP Copiado", description: `"${youthChoir.title}" copiado para OpenLP.` });
   }, [youthChoir, toast]);
 
-  if (!isYouthChoirsLoaded || !youthChoir) {
+  if (!youthChoir && !isYouthChoirsLoaded) {
     return <YouthChoirDetailSkeleton />;
+  }
+
+  if (!youthChoir) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen p-6 text-center space-y-6">
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold font-headline">Alabanza no encontrada</h2>
+          <p className="text-muted-foreground">La alabanza solicitada no se encuentra disponible.</p>
+        </div>
+        <Button asChild className="rounded-full px-8">
+          <Link href={backHref}>Volver</Link>
+        </Button>
+      </div>
+    );
   }
 
   const isFav = isFavoritesLoaded && isFavorite(youthChoir.id, 'youth-choir');
