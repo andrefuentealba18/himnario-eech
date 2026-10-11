@@ -30,6 +30,37 @@ export function normalizeChurchText(str: string): string {
     .trim();
 }
 
+export function canonicalDistrict(district: string): string {
+  if (!district) return 'Sin Distrito';
+  const norm = (district || '')
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s]/g, '')
+    .trim();
+
+  if (norm.includes('concepcion') || norm.includes('conecpcio') || norm.includes('concep')) return 'Distrito de Concepción';
+  if (norm.includes('tome')) return 'Distrito Tomé';
+  if (norm.includes('angol')) return 'Distrito Angol';
+  if (norm.includes('puren')) return 'Distrito Purén';
+  if (norm.includes('contulmo')) return 'Distrito Contulmo';
+  if (norm.includes('cabrero')) return 'Distrito Cabrero';
+  if (norm.includes('nacimiento')) return 'Distrito Nacimiento';
+  if (norm.includes('santiago centro')) return 'Distrito Santiago Centro';
+  if (norm.includes('santiago oriente')) return 'Distrito Santiago Oriente';
+  if (norm.includes('linares')) return 'Distrito Linares';
+  if (norm.includes('canete')) return 'Distrito Cañete';
+  if (norm.includes('carbon') || norm.includes('lota')) return 'Distrito El Carbón';
+  if (norm.includes('talcahuano') || norm.includes('penuelas')) return 'Distrito Talcahuano';
+  if (norm.includes('renaico')) return 'Distrito Renaico';
+  if (norm.includes('temuco')) return 'Distrito Temuco';
+  if (norm.includes('costa bio bio') || norm.includes('bio bio')) return 'Distrito Costa Bío Bío';
+
+  const clean = district.replace(/^distrito\s+(de\s+)?/i, '').trim();
+  const capitalized = clean.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ');
+  return `Distrito ${capitalized}`;
+}
+
 interface ChurchContextType {
   currentChurch: Church | null;
   setCurrentChurch: (church: Church) => void;
@@ -74,11 +105,9 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
           }).catch(console.error);
         }
         
-        // 3. Ensure Las Torres and Santa Elena are in Distrito de Concepción
+        // 3. Standardize all districts to canonical names (Concepción, Tomé, etc.)
         for (const c of validChurches) {
-          if ((c.name.toLowerCase().includes('las torres') || c.name.toLowerCase().includes('santa elena')) && c.district !== 'Distrito de Concepción') {
-            c.district = 'Distrito de Concepción';
-          }
+          c.district = canonicalDistrict(c.district || '');
         }
 
         // 4. Group and deduplicate churches with same name in same district
@@ -166,7 +195,7 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
     if (!firestore) return { success: false, error: 'FAILED', message: 'No hay conexión con la base de datos' };
     
     const cleanName = name.trim();
-    const cleanDistrict = district.trim() || 'Sin Distrito';
+    const cleanDistrict = canonicalDistrict(district.trim() || 'Sin Distrito');
     const normName = normalizeChurchText(cleanName);
     const normDistrict = normalizeChurchText(cleanDistrict);
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useChurch, Church } from '@/context/church-context';
+import { useChurch, Church, canonicalDistrict } from '@/context/church-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -37,7 +37,7 @@ export function ChurchSelector() {
 
   const groupedChurches = filteredChurches.reduce((acc, church) => {
     const rawDist = church.district || 'Sin Distrito';
-    const dist = formatText(rawDist);
+    const dist = canonicalDistrict(rawDist);
     if (!acc[dist]) acc[dist] = [];
     acc[dist].push(church);
     return acc;
