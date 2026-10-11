@@ -55,39 +55,28 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
         const snapshot = await getDocs(churchesCol);
         const rawChurches = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Church));
         
-        // 1. Delete test/spam churches like "Janno"
-        const validChurches: Church[] = [];
-        for (const c of rawChurches) {
+        // 1. Filter out spam/test churches
+        const validChurches: Church[] = rawChurches.filter(c => {
           const isJanno = (c.name && c.name.toLowerCase().includes('janno')) || 
                           (c.creatorName && c.creatorName.toLowerCase().includes('janno'));
-          if (isJanno) {
-            try {
-              await deleteDoc(doc(firestore, 'churches', c.id));
-            } catch (err) {
-              console.error("Error deleting test church:", err);
-            }
-          } else {
-            validChurches.push(c);
-          }
-        }
+          return !isJanno;
+        });
 
         // 2. Ensure default EECH Las Torres exists
-        let eechLasTorres = validChurches.find(c => c.name.toLowerCase().includes('las torres'));
+        let eechLasTorres = validChurches.find(c => c.id === 'eech-las-torres' || c.name.toLowerCase().includes('las torres'));
         if (!eechLasTorres) {
-          const newId = 'eech-las-torres';
-          await setDoc(doc(firestore, 'churches', newId), {
+          eechLasTorres = { id: 'eech-las-torres', name: 'EECH Las Torres', district: 'Distrito de Concepción' };
+          validChurches.push(eechLasTorres);
+          setDoc(doc(firestore, 'churches', 'eech-las-torres'), {
             name: 'EECH Las Torres',
             district: 'Distrito de Concepción',
             createdAt: serverTimestamp()
-          });
-          eechLasTorres = { id: newId, name: 'EECH Las Torres', district: 'Distrito de Concepción' };
-          validChurches.push(eechLasTorres);
+          }).catch(console.error);
         }
         
-        // 3. One-time migration for Las Torres and Santa Elena to Distrito de Concepción
+        // 3. Ensure Las Torres and Santa Elena are in Distrito de Concepción
         for (const c of validChurches) {
           if ((c.name.toLowerCase().includes('las torres') || c.name.toLowerCase().includes('santa elena')) && c.district !== 'Distrito de Concepción') {
-            await setDoc(doc(firestore, 'churches', c.id), { district: 'Distrito de Concepción' }, { merge: true });
             c.district = 'Distrito de Concepción';
           }
         }
@@ -102,45 +91,46 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
         }
 
         const uniqueChurches: Church[] = [];
-        const savedChurchId = localStorage.getItem('selected_church_id');
+        const savedChurchId = typeof window !== 'undefined' ? localStorage.getItem('selected_church_id') : null;
 
         for (const [, group] of groups.entries()) {
-          if (group.length === 1) {
-            uniqueChurches.push(group[0]);
-          } else {
-            // Find the best primary church (Las Torres > currently selected > first)
-            let primary = group.find(c => c.id === 'eech-las-torres');
-            if (!primary && savedChurchId) {
-              primary = group.find(c => c.id === savedChurchId);
-            }
-            if (!primary) {
-              primary = group[0];
-            }
-
-            uniqueChurches.push(primary);
-
-            // Delete duplicate documents from Firestore
-            for (const dup of group) {
-              if (dup.id !== primary.id) {
-                try {
-                  await deleteDoc(doc(firestore, 'churches', dup.id));
-                  if (savedChurchId === dup.id) {
-                    localStorage.setItem('selected_church_id', primary.id);
-                  }
-                } catch (delErr) {
-                  console.error("Error deleting duplicate church:", dup.id, delErr);
-                }
-              }
-            }
+          // Find the best canonical church (Las Torres > currently selected > first)
+          let primary = group.find(c => c.id === 'eech-las-torres');
+          if (!primary && savedChurchId) {
+            primary = group.find(c => c.id === savedChurchId);
           }
+          if (!primary) {
+            primary = group[0];
+          }
+          uniqueChurches.push(primary);
         }
+
+        // Sort churches alphabetically by district then by name
+        uniqueChurches.sort((a, b) => {
+          const distA = (a.district || 'Sin Distrito').toLowerCase();
+          const distB = (b.district || 'Sin Distrito').toLowerCase();
+          const cmp = distA.localeCompare(distB);
+          if (cmp !== 0) return cmp;
+          return a.name.localeCompare(b.name);
+        });
 
         setAvailableChurches(uniqueChurches);
 
         // Load saved church
-        const currentSavedId = localStorage.getItem('selected_church_id');
-        if (currentSavedId) {
-          const saved = uniqueChurches.find(c => c.id === currentSavedId);
+        if (savedChurchId) {
+          let saved = uniqueChurches.find(c => c.id === savedChurchId);
+          if (!saved) {
+            // Check if saved ID belongs to a merged duplicate group
+            for (const [, group] of groups.entries()) {
+              if (group.some(c => c.id === savedChurchId)) {
+                saved = group.find(c => uniqueChurches.some(uc => uc.id === c.id));
+                if (saved) {
+                  localStorage.setItem('selected_church_id', saved.id);
+                  break;
+                }
+              }
+            }
+          }
           if (saved) {
             setCurrentChurchState(saved);
           }
@@ -184,7 +174,23 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
     const existing = availableChurches.find(c => {
       const cNormName = normalizeChurchText(c.name);
       const cNormDistrict = normalizeChurchText(c.district || 'Sin Distrito');
-      return cNormName === normName && cNormDistrict === normDistrict;
+      
+      // Exact normalized match
+      if (cNormName === normName && (cNormDistrict === normDistrict || !cleanDistrict || !c.district)) {
+        return true;
+      }
+      
+      // Stripped prefix match (e.g. 'eech tomé' vs 'tomé', 'distrito de concepcion' vs 'concepcion')
+      const cleanCN = cNormName.replace(/^(eech|iglesia)\s+/, '');
+      const cleanNN = normName.replace(/^(eech|iglesia)\s+/, '');
+      const cleanCD = cNormDistrict.replace(/^distrito\s+(de\s+)?/, '');
+      const cleanND = normDistrict.replace(/^distrito\s+(de\s+)?/, '');
+      
+      if (cleanCN === cleanNN && (cleanCD === cleanND || cleanCD.includes(cleanND) || cleanND.includes(cleanCD))) {
+        return true;
+      }
+      
+      return false;
     });
 
     if (existing) {

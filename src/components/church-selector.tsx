@@ -19,20 +19,25 @@ export function ChurchSelector() {
   const [creatorEmail, setCreatorEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [existingFoundChurch, setExistingFoundChurch] = useState<Church | null>(null);
-  const [showDelay, setShowDelay] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setShowDelay(true), 3600);
-    return () => clearTimeout(timer);
-  }, []);
 
   if (isLoading || currentChurch) return null;
-  if (!showDelay) return null; // Wait for the splash screen to finish // Only show if fully loaded and NO church is selected
 
-  const filteredChurches = availableChurches.filter(c => c.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const formatText = (text: string) => {
+    if (!text) return '';
+    if (text === text.toLowerCase()) {
+      return text.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+    }
+    return text;
+  };
+
+  const filteredChurches = availableChurches.filter(c => 
+    c.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (c.district && c.district.toLowerCase().includes(searchTerm.toLowerCase()))
+  );
 
   const groupedChurches = filteredChurches.reduce((acc, church) => {
-    const dist = church.district || 'Sin Distrito';
+    const rawDist = church.district || 'Sin Distrito';
+    const dist = formatText(rawDist);
     if (!acc[dist]) acc[dist] = [];
     acc[dist].push(church);
     return acc;
@@ -67,7 +72,7 @@ export function ChurchSelector() {
   };
 
   return (
-    <div className="fixed inset-0 z-[200] bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-4">
+    <div className="fixed inset-0 z-[190] bg-white/95 dark:bg-slate-950/95 backdrop-blur-xl flex flex-col items-center justify-center p-4">
       <div className="absolute inset-0 bg-gradient-to-br from-blue-100/40 via-transparent to-amber-50/40 dark:from-blue-900/20 dark:to-amber-900/10 pointer-events-none" />
       
       <Card className="w-full max-w-md relative z-10 shadow-2xl border-white/20 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl rounded-3xl overflow-hidden animate-in fade-in zoom-in-95 duration-500">
@@ -98,7 +103,7 @@ export function ChurchSelector() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input 
-                  placeholder="Buscar iglesia..." 
+                  placeholder="Buscar iglesia o distrito..." 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-9 bg-black/5 dark:bg-white/5 border-none h-12 rounded-xl"
@@ -119,7 +124,7 @@ export function ChurchSelector() {
                         onClick={() => setCurrentChurch(church)}
                       >
                         <MapPin className="mr-3 h-5 w-5 text-slate-400 shrink-0" />
-                        <span>{church.name}</span>
+                        <span>{formatText(church.name)}</span>
                       </Button>
                     ))}
                   </div>
@@ -151,7 +156,7 @@ export function ChurchSelector() {
                       className="w-full mt-2 font-bold text-xs bg-white dark:bg-slate-900 border-amber-500/30 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300"
                       onClick={() => setCurrentChurch(existingFoundChurch)}
                     >
-                      Entrar a {existingFoundChurch.name}
+                      Entrar a {formatText(existingFoundChurch.name)}
                     </Button>
                   )}
                 </div>
