@@ -72,8 +72,30 @@ interface ChurchContextType {
 
 const ChurchContext = createContext<ChurchContextType | undefined>(undefined);
 
+export const DEFAULT_CANONICAL_CHURCH: Church = {
+  id: 'eech-las-torres',
+  name: 'EECH Las Torres',
+  district: 'Distrito de Concepción'
+};
+
 export function ChurchProvider({ children }: { children: ReactNode }) {
-  const [currentChurch, setCurrentChurchState] = useState<Church | null>(null);
+  const [currentChurch, setCurrentChurchState] = useState<Church | null>(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        const savedData = localStorage.getItem('selected_church_data');
+        if (savedData) return JSON.parse(savedData);
+        const savedId = localStorage.getItem('selected_church_id');
+        if (savedId) {
+          if (savedId === 'eech-las-torres') return DEFAULT_CANONICAL_CHURCH;
+          return { id: savedId, name: 'Mi Iglesia' };
+        }
+      } catch (e) {
+        console.error("Error reading saved church:", e);
+      }
+      return DEFAULT_CANONICAL_CHURCH;
+    }
+    return DEFAULT_CANONICAL_CHURCH;
+  });
   const [availableChurches, setAvailableChurches] = useState<Church[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const firestore = useFirestore();
@@ -145,7 +167,7 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
 
         setAvailableChurches(uniqueChurches);
 
-        // Load saved church
+        // Load saved church or keep default
         if (savedChurchId) {
           let saved = uniqueChurches.find(c => c.id === savedChurchId);
           if (!saved) {
@@ -155,6 +177,7 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
                 saved = group.find(c => uniqueChurches.some(uc => uc.id === c.id));
                 if (saved) {
                   localStorage.setItem('selected_church_id', saved.id);
+                  localStorage.setItem('selected_church_data', JSON.stringify(saved));
                   break;
                 }
               }
@@ -162,7 +185,14 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
           }
           if (saved) {
             setCurrentChurchState(saved);
+            localStorage.setItem('selected_church_data', JSON.stringify(saved));
           }
+        } else {
+          // Default to EECH Las Torres as mother church
+          const defaultChurch = uniqueChurches.find(c => c.id === 'eech-las-torres') || DEFAULT_CANONICAL_CHURCH;
+          setCurrentChurchState(defaultChurch);
+          localStorage.setItem('selected_church_id', defaultChurch.id);
+          localStorage.setItem('selected_church_data', JSON.stringify(defaultChurch));
         }
       } catch (error) {
         console.error("Error loading churches:", error);
@@ -176,11 +206,13 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
 
   const clearChurch = () => {
     localStorage.removeItem('selected_church_id');
+    localStorage.removeItem('selected_church_data');
     setCurrentChurchState(null);
   };
 
   const setCurrentChurch = (church: Church) => {
     localStorage.setItem('selected_church_id', church.id);
+    localStorage.setItem('selected_church_data', JSON.stringify(church));
     setCurrentChurchState(church);
     // Reload to refresh all contexts cleanly with the new church scope
     window.location.reload();

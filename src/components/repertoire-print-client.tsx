@@ -7,31 +7,47 @@ import { useYouthChoirs } from "@/context/youth-choirs-context";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import type { SongReference } from "@/lib/repertoires";
+import { formatRepertoireDate } from "@/lib/utils";
 import { useEffect, useState } from "react";
 import { Printer, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { PlaceHolderImages } from "@/lib/placeholder-images";
+import type { Repertoire } from "@/lib/repertoires";
+
 interface RepertoirePrintClientProps {
   repertoireId: string;
 }
+
 export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientProps) {
-  const { getRepertoireById, isLoaded: rLoaded } = useRepertoires();
+  const { getRepertoireById, fetchRepertoireDirectly, isLoaded: rLoaded } = useRepertoires();
   const { hymns, isLoaded: hLoaded } = useHymns();
   const { praises, isLoaded: pLoaded } = usePraises();
   const { choirs, isLoaded: cLoaded } = useChoirs();
   const { youthChoirs, isLoaded: ycLoaded } = useYouthChoirs();
   
-  const [allLoaded, setAllLoaded] = useState(false);
+  const [directRepertoire, setDirectRepertoire] = useState<Repertoire | null>(null);
+  const localRepertoire = getRepertoireById(repertoireId);
+  const repertoire = localRepertoire || directRepertoire;
+
   useEffect(() => {
-    if (rLoaded && hLoaded && pLoaded && cLoaded && ycLoaded) {
+    if (!localRepertoire && repertoireId) {
+      fetchRepertoireDirectly(repertoireId).then((r) => {
+        if (r) setDirectRepertoire(r);
+      });
+    }
+  }, [localRepertoire, repertoireId, fetchRepertoireDirectly]);
+
+  useEffect(() => {
+    if (rLoaded && hLoaded && pLoaded && cLoaded && ycLoaded && repertoire) {
       setAllLoaded(true);
       const timer = setTimeout(() => {
         window.print();
       }, 1000);
       return () => clearTimeout(timer);
     }
-  }, [rLoaded, hLoaded, pLoaded, cLoaded, ycLoaded]);
+  }, [rLoaded, hLoaded, pLoaded, cLoaded, ycLoaded, repertoire]);
+
   if (!allLoaded) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
@@ -42,7 +58,7 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
       </div>
     );
   }
-  const repertoire = getRepertoireById(repertoireId);
+
   if (!repertoire) {
     return <p className="p-8 text-center text-slate-800">Repertorio no encontrado.</p>;
   }
@@ -163,7 +179,7 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
         {/* FECHA ABSOLUTA DERECHA */}
         <div className="absolute top-6 sm:top-8 right-4 sm:right-10 block text-right">
            <p className="text-xs text-slate-700 font-bold uppercase tracking-widest">
-              {repertoire.createdAt ? format(repertoire.createdAt.toDate(), "dd / MM / yyyy", { locale: es }) : ''}
+              {formatRepertoireDate(repertoire.createdAt)}
            </p>
         </div>
         {/* TITULO CENTRAL */}

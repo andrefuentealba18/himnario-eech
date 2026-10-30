@@ -1,5 +1,43 @@
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
+import { format } from "date-fns"
+import { es } from "date-fns/locale"
+
+export function formatRepertoireDate(createdAt: any): string {
+  if (!createdAt) return '';
+  try {
+    if (typeof createdAt.toDate === 'function') {
+      return format(createdAt.toDate(), "d 'de' MMMM, yyyy", { locale: es });
+    }
+    if (createdAt.seconds) {
+      return format(new Date(createdAt.seconds * 1000), "d 'de' MMMM, yyyy", { locale: es });
+    }
+    const d = new Date(createdAt);
+    if (!isNaN(d.getTime())) {
+      return format(d, "d 'de' MMMM, yyyy", { locale: es });
+    }
+  } catch (e) {
+    console.error("Error formatting date:", e);
+  }
+  return '';
+}
+
+export function removeUndefined<T = any>(obj: T): T {
+  if (Array.isArray(obj)) {
+    return obj.map(removeUndefined) as unknown as T;
+  }
+  if (obj !== null && typeof obj === 'object') {
+    const newObj: Record<string, any> = {};
+    for (const key of Object.keys(obj as any)) {
+      const val = (obj as any)[key];
+      if (val !== undefined) {
+        newObj[key] = removeUndefined(val);
+      }
+    }
+    return newObj as unknown as T;
+  }
+  return obj;
+}
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))

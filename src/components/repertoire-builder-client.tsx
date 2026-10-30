@@ -206,34 +206,41 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
     control: form.control,
     name: "blocks",
   });
-  const onSubmit = (data: RepertoireFormData) => {
-    const findSong = (idWithType: string): SongReference | undefined => {
-        if (!idWithType) return undefined;
-        const [type, id] = idWithType.split(":");
-        const song = allSongs.find(s => s.id === id && s.type === type);
-        
-        if (!song) return undefined;
-        if (song.type === 'hymn') {
-            return { id: song.id, number: song.number, title: song.title, type: 'hymn' };
-        }
-        return { id: song.id, title: song.title, type: song.type };
-    }
-    const blocksToSave = data.blocks?.map(block => {
-      const mappedSongs = block.songs?.map(item => findSong(item.id)).filter(Boolean) as SongReference[] || [];
-      return {
-        id: block.id,
-        title: block.title,
-        songs: mappedSongs
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const onSubmit = async (data: RepertoireFormData) => {
+    setIsSubmitting(true);
+    try {
+      const findSong = (idWithType: string): SongReference | undefined => {
+          if (!idWithType) return undefined;
+          const [type, id] = idWithType.split(":");
+          const song = allSongs.find(s => s.id === id && s.type === type);
+          
+          if (!song) return undefined;
+          if (song.type === 'hymn') {
+              return { id: song.id, number: song.number, title: song.title, type: 'hymn' };
+          }
+          return { id: song.id, title: song.title, type: song.type };
+      }
+      const blocksToSave = data.blocks?.map(block => {
+        const mappedSongs = block.songs?.map(item => findSong(item.id)).filter(Boolean) as SongReference[] || [];
+        return {
+          id: block.id,
+          title: block.title,
+          songs: mappedSongs
+        };
+      }) || [];
+      const repertoirePayload = {
+        name: data.name,
+        blocks: blocksToSave,
       };
-    }) || [];
-    const repertoirePayload = {
-      name: data.name,
-      blocks: blocksToSave,
-    };
-    if (initialData && repertoireId) {
-      updateRepertoire(repertoireId, repertoirePayload);
-    } else {
-      addRepertoire(repertoirePayload);
+      if (initialData && repertoireId) {
+        await updateRepertoire(repertoireId, repertoirePayload);
+      } else {
+        await addRepertoire(repertoirePayload);
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
   if (!isLoaded) {
@@ -310,8 +317,12 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
               Agregar Nuevo Bloque
             </Button>
             
-            <Button type="submit" className="w-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold shadow-xl shadow-blue-500/30 h-12 text-base border-none mt-6">
-                {initialData ? "Guardar Cambios" : "Guardar Repertorio"}
+            <Button 
+              type="submit" 
+              disabled={isSubmitting} 
+              className="w-full rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-bold shadow-xl shadow-blue-500/30 h-12 text-base border-none mt-6 disabled:opacity-50"
+            >
+                {isSubmitting ? "Publicando en tiempo real..." : initialData ? "Guardar Cambios" : "Guardar Repertorio"}
             </Button>
           </form>
         </Form>
