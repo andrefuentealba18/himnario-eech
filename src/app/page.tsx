@@ -4,7 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Music, Book, Mic, Library, WifiOff, Sparkles, Loader2, ChevronRight, ShieldCheck, MapPin } from 'lucide-react';
+import { Music, Book, BookOpen, Mic, Library, WifiOff, Sparkles, Loader2, ChevronRight, ShieldCheck, MapPin } from 'lucide-react';
 import { SettingsDialog } from '@/components/settings-dialog';
 import { InstallPWAButton } from '@/components/install-pwa-button';
 import { AppearanceDialog } from '@/components/appearance-dialog';
@@ -27,7 +27,7 @@ const navigationItems = [
     icon: Book,
     color: "from-blue-500/20 to-blue-600/5",
     iconColor: "text-blue-600 dark:text-blue-400",
-    delay: "250ms"
+    delay: "100ms"
   },
   {
     title: "Alabanzas",
@@ -35,7 +35,7 @@ const navigationItems = [
     icon: Music,
     color: "from-indigo-500/20 to-indigo-600/5",
     iconColor: "text-indigo-600 dark:text-indigo-400",
-    delay: "350ms"
+    delay: "150ms"
   },
   {
     title: "Coros",
@@ -43,7 +43,7 @@ const navigationItems = [
     icon: Mic,
     color: "from-rose-500/20 to-rose-600/5",
     iconColor: "text-rose-600 dark:text-rose-400",
-    delay: "450ms"
+    delay: "200ms"
   },
   {
     title: "Agrupaciones",
@@ -51,7 +51,23 @@ const navigationItems = [
     icon: Library,
     color: "from-amber-500/20 to-amber-600/5",
     iconColor: "text-amber-600 dark:text-amber-400",
-    delay: "550ms"
+    delay: "250ms"
+  },
+  {
+    title: "Repertorios",
+    href: "/repertoire",
+    icon: BookOpen,
+    color: "from-emerald-500/20 to-emerald-600/5",
+    iconColor: "text-emerald-600 dark:text-emerald-400",
+    delay: "300ms"
+  },
+  {
+    title: "Especiales",
+    href: "/special-occasions",
+    icon: Sparkles,
+    color: "from-purple-500/20 to-purple-600/5",
+    iconColor: "text-purple-600 dark:text-purple-400",
+    delay: "350ms"
   }
 ];
 
@@ -226,16 +242,16 @@ export default function HomePage() {
 
       <div className="relative z-10 flex flex-col flex-1">
         
-        <div className="flex items-center justify-between px-6 pt-16 pb-4">
+        <div className="flex items-center justify-between px-4 pt-11 pb-1 sm:px-6 sm:pt-14 sm:pb-3">
           <div className="flex items-center gap-2">
             {isFullySynced ? (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-md border border-green-500/20 shadow-sm transition-all duration-500 hover:scale-105">
+              <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-md border border-green-500/20 shadow-sm transition-all duration-500 hover:scale-105">
                 <div className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
                 <span className="text-[8px] font-black uppercase tracking-widest text-green-600 dark:text-green-400">Offline</span>
               </div>
             ) : (
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-md border border-amber-500/20 shadow-sm">
-                <WifiOff className="h-2.5 w-2.5 text-amber-500 animate-bounce" />
+              <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/60 dark:bg-white/5 backdrop-blur-md border border-amber-500/20 shadow-sm">
+                <WifiOff className="h-2 w-2 text-amber-500 animate-bounce" />
                 <span className="text-[8px] font-black uppercase tracking-widest text-amber-600 dark:text-amber-400">Sinc...</span>
               </div>
             )}
@@ -243,18 +259,18 @@ export default function HomePage() {
           <AppearanceDialog />
         </div>
 
-        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center p-4 pt-2 pb-6 space-y-5">
+        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center px-4 py-1 space-y-3 sm:space-y-4">
           
-          <header className="w-full text-center space-y-6 animate-in fade-in slide-in-from-top-4 duration-1000">
+          <header className="w-full text-center space-y-2 sm:space-y-3 animate-in fade-in slide-in-from-top-3 duration-700">
             <div className="relative inline-flex items-center justify-center group">
-              <div className="absolute inset-0 bg-primary/20 blur-[40px] rounded-full scale-150 opacity-50" />
-              <div className="relative p-1 bg-gradient-to-tr from-primary/80 to-primary/30 rounded-full shadow-xl animate-float">
-                <div className="bg-white dark:bg-slate-900 rounded-full p-0.5 overflow-hidden flex items-center justify-center w-24 h-24">
+              <div className="absolute inset-0 bg-primary/20 blur-[25px] rounded-full scale-125 opacity-40" />
+              <div className="relative p-0.5 bg-gradient-to-tr from-primary/80 to-primary/30 rounded-full shadow-lg animate-float">
+                <div className="bg-white dark:bg-slate-900 rounded-full p-0.5 overflow-hidden flex items-center justify-center w-14 h-14 sm:w-20 sm:h-20">
                   <Image 
                     src={insigniaUrl} 
                     alt="Insignia EECH" 
-                    width={96} 
-                    height={96} 
+                    width={80} 
+                    height={80} 
                     className="rounded-full object-cover w-full h-full opacity-95"
                     priority
                   />
@@ -262,23 +278,23 @@ export default function HomePage() {
               </div>
             </div>
             
-            <div className="space-y-2">
-              <div className="flex items-center justify-center gap-2 text-primary/40 mb-1">
-                <div className="h-px w-6 bg-current" />
-                <span className="text-[9px] font-black tracking-[0.3em] uppercase">Oficial</span>
-                <div className="h-px w-6 bg-current" />
+            <div className="space-y-1">
+              <div className="flex items-center justify-center gap-1.5 text-primary/40">
+                <div className="h-px w-4 bg-current" />
+                <span className="text-[8px] font-black tracking-[0.25em] uppercase">Oficial</span>
+                <div className="h-px w-4 bg-current" />
               </div>
-              <h1 className="text-5xl sm:text-6xl font-cursive text-slate-900 dark:text-white leading-tight drop-shadow-lg pb-2 flex items-center justify-center gap-4">
-                Himnario <span className="text-primary font-cursive text-3xl sm:text-4xl ml-2 sm:ml-4">EECH</span>
+              <h1 className="text-3xl sm:text-5xl font-cursive text-slate-900 dark:text-white leading-tight drop-shadow-sm flex items-center justify-center gap-2">
+                Himnario <span className="text-primary font-cursive text-2xl sm:text-4xl">EECH</span>
               </h1>
-              <p className="text-[9px] text-slate-500 dark:text-slate-400 font-bold tracking-[0.4em] uppercase pt-1 opacity-70">
+              <p className="text-[8px] sm:text-[9px] text-slate-500 dark:text-slate-400 font-bold tracking-[0.3em] uppercase opacity-70">
                 Ejército Evangélico de Chile
               </p>
               
               {currentChurch && (
-                <div className="flex justify-center items-center gap-1.5 mt-4 px-4 py-1.5 bg-primary/10 dark:bg-primary/20 rounded-full w-max mx-auto border border-primary/20 shadow-sm">
-                  <MapPin className="h-3 w-3 text-primary animate-pulse" />
-                  <span className="text-[10px] font-black tracking-widest uppercase text-primary">
+                <div className="flex justify-center items-center gap-1.5 mt-1 px-3 py-1 bg-primary/10 dark:bg-primary/20 rounded-full w-max mx-auto border border-primary/20 shadow-sm">
+                  <MapPin className="h-2.5 w-2.5 text-primary animate-pulse" />
+                  <span className="text-[9px] sm:text-[10px] font-black tracking-widest uppercase text-primary">
                     {currentChurch.name}
                   </span>
                 </div>
@@ -286,22 +302,22 @@ export default function HomePage() {
             </div>
           </header>
 
-          <div className="w-full flex flex-col items-center animate-in fade-in slide-in-from-bottom-3 duration-[900ms] delay-[150ms] fill-mode-both">
+          <div className="w-full flex flex-col items-center animate-in fade-in duration-500">
             <GlobalSearch />
           </div>
 
-          <div className="w-full max-w-md space-y-4">
-            <div className="grid grid-cols-2 gap-3">
+          <div className="w-full max-w-md">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5">
               {navigationItems.map((item) => (
-                <div key={item.title} className="animate-in fade-in zoom-in-95 duration-700" style={{ animationDelay: item.delay }}>
+                <div key={item.title} className="animate-in fade-in zoom-in-95 duration-500" style={{ animationDelay: item.delay }}>
                   <Link href={item.href} className="group block h-full">
-                    <Card className="h-full bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl hover:bg-white/90 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-2 active:scale-95 overflow-hidden relative group rounded-3xl border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl">
-                      <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-10 group-hover:opacity-40 transition-opacity duration-500`} />
-                      <CardContent className="flex flex-col items-center justify-center p-4 text-center h-full min-h-[110px] relative z-10">
-                        <div className={`p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm group-hover:shadow-lg rounded-2xl group-hover:scale-110 transition-all duration-500 ring-1 ring-black/5 dark:ring-white/10 mb-3`}>
-                          <item.icon className={`h-6 w-6 ${item.iconColor}`} />
+                    <Card className="h-full bg-white/70 dark:bg-white/[0.03] backdrop-blur-xl hover:bg-white/90 dark:hover:bg-white/[0.08] transition-all duration-300 hover:-translate-y-1 active:scale-95 overflow-hidden relative group rounded-2xl border border-white/60 dark:border-white/10 shadow-sm hover:shadow-md">
+                      <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-10 group-hover:opacity-40 transition-opacity duration-300`} />
+                      <CardContent className="flex flex-col items-center justify-center p-2.5 sm:p-3 text-center h-full min-h-[74px] sm:min-h-[84px] relative z-10">
+                        <div className={`p-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm group-hover:shadow-md rounded-xl group-hover:scale-105 transition-all duration-300 ring-1 ring-black/5 dark:ring-white/10 mb-1.5`}>
+                          <item.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${item.iconColor}`} />
                         </div>
-                        <h3 className="font-bold text-[10px] uppercase tracking-widest font-body text-slate-700 dark:text-slate-200 group-hover:text-primary transition-colors leading-tight">
+                        <h3 className="font-bold text-[10px] sm:text-[11px] uppercase tracking-wider font-body text-slate-700 dark:text-slate-200 group-hover:text-primary transition-colors leading-tight">
                           {item.title}
                         </h3>
                       </CardContent>
@@ -310,66 +326,32 @@ export default function HomePage() {
                 </div>
               ))}
             </div>
-
-            <div className="grid grid-cols-2 gap-3 animate-in fade-in zoom-in-95 duration-700 delay-[650ms] fill-mode-both">
-              <Link href="/repertoire" className="group block h-full">
-                <Card className="h-full bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl hover:bg-white/90 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-2 active:scale-95 overflow-hidden relative group rounded-3xl border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-emerald-600/5 opacity-10 group-hover:opacity-40 transition-opacity duration-500" />
-                  <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[130px] relative z-10">
-                    <div className="p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm group-hover:shadow-lg rounded-2xl group-hover:scale-110 transition-all duration-500 ring-1 ring-black/5 dark:ring-white/10 mb-3">
-                      <Book className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-                    </div>
-                    <h3 className="font-bold text-[10px] uppercase tracking-widest font-body text-slate-700 dark:text-slate-200 group-hover:text-emerald-600 transition-colors leading-tight">
-                      Repertorios
-                    </h3>
-                  </CardContent>
-                </Card>
-              </Link>
-
-              <Link href="/special-occasions" className="group block h-full">
-                <Card className="h-full bg-white/70 dark:bg-white/[0.03] backdrop-blur-2xl hover:bg-white/90 dark:hover:bg-white/[0.08] transition-all duration-500 hover:-translate-y-2 active:scale-95 overflow-hidden relative group rounded-3xl border border-white/60 dark:border-white/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-2xl">
-                  <div className="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-amber-600/5 opacity-10 group-hover:opacity-40 transition-opacity duration-500" />
-                  <CardContent className="flex flex-col items-center justify-center p-6 text-center h-full min-h-[130px] relative z-10">
-                    <div className="p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm group-hover:shadow-lg rounded-2xl group-hover:scale-110 transition-all duration-500 ring-1 ring-black/5 dark:ring-white/10 mb-3">
-                      <Sparkles className="h-6 w-6 text-amber-600 dark:text-amber-400" />
-                    </div>
-                    <h3 className="font-bold text-[10px] uppercase tracking-widest font-body text-slate-700 dark:text-slate-200 group-hover:text-amber-600 transition-colors leading-tight">
-                      Especiales
-                    </h3>
-                  </CardContent>
-                </Card>
-              </Link>
-            </div>
           </div>
           
-          <footer className="w-full text-center space-y-6 animate-in fade-in duration-1000 delay-[750ms] mt-2">
-            <div className="flex flex-col items-center gap-4">
-              <div className="flex flex-col items-center justify-center gap-4">
-                <div className="flex items-center justify-center gap-4">
-                  <InstallPWAButton />
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="text-slate-400 hover:text-primary transition-colors font-bold uppercase tracking-widest text-[10px]"
-                    onClick={() => clearChurch()}
-                  >
-                    <MapPin className="mr-2 h-4 w-4" />
-                    Cambiar Iglesia
-                  </Button>
-                </div>
+          <footer className="w-full text-center space-y-3 sm:space-y-4 animate-in fade-in duration-700 pt-1 pb-4">
+            <div className="flex flex-col items-center gap-3">
+              <div className="flex items-center justify-center gap-3">
+                <InstallPWAButton />
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-slate-400 hover:text-primary transition-colors font-bold uppercase tracking-widest text-[9px] h-8 px-2.5"
+                  onClick={() => clearChurch()}
+                >
+                  <MapPin className="mr-1.5 h-3.5 w-3.5" />
+                  Cambiar Iglesia
+                </Button>
                 <SettingsDialog />
               </div>
               
-              <div className="space-y-2 pb-8">
-                <p className="text-xs font-headline italic font-bold text-primary/60">
+              <div className="space-y-1">
+                <p className="text-[10px] sm:text-xs font-headline italic font-bold text-primary/60">
                   "Alabaré a Jehová en mi vida"
                 </p>
-                <div className="space-y-1">
-                  <p className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.3em]">Iglesia Ejército Evangélico de Chile</p>
-                  <p className="text-[7px] font-black text-primary/30 uppercase tracking-[0.1em] border border-primary/5 rounded-full px-4 py-1 inline-block">
-                    PF - TODOS LOS DERECHOS RESERVADOS 2026
-                  </p>
-                </div>
+                <p className="text-[8px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.25em]">Iglesia Ejército Evangélico de Chile</p>
+                <p className="text-[7px] font-black text-primary/30 uppercase tracking-[0.1em] border border-primary/5 rounded-full px-3 py-0.5 inline-block">
+                  PF - TODOS LOS DERECHOS RESERVADOS 2026
+                </p>
               </div>
             </div>
           </footer>
