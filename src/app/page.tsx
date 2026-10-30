@@ -259,18 +259,18 @@ export default function HomePage() {
           <AppearanceDialog />
         </div>
 
-        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center px-4 py-1 space-y-3 sm:space-y-4">
+        <main className="container max-w-lg mx-auto flex-1 flex flex-col items-center px-4 py-2 space-y-4 sm:space-y-5">
           
-          <header className="w-full text-center space-y-2 sm:space-y-3 animate-in fade-in slide-in-from-top-3 duration-700">
+          <header className="w-full text-center space-y-3 sm:space-y-4 animate-in fade-in slide-in-from-top-3 duration-700">
             <div className="relative inline-flex items-center justify-center group">
-              <div className="absolute inset-0 bg-primary/20 blur-[25px] rounded-full scale-125 opacity-40" />
-              <div className="relative p-0.5 bg-gradient-to-tr from-primary/80 to-primary/30 rounded-full shadow-lg animate-float">
-                <div className="bg-white dark:bg-slate-900 rounded-full p-0.5 overflow-hidden flex items-center justify-center w-14 h-14 sm:w-20 sm:h-20">
+              <div className="absolute inset-0 bg-primary/20 blur-[30px] rounded-full scale-125 opacity-40" />
+              <div className="relative p-1 bg-gradient-to-tr from-primary/80 to-primary/30 rounded-full shadow-lg animate-float">
+                <div className="bg-white dark:bg-slate-900 rounded-full p-0.5 overflow-hidden flex items-center justify-center w-18 h-18 sm:w-22 sm:h-22">
                   <Image 
                     src={insigniaUrl} 
                     alt="Insignia EECH" 
-                    width={80} 
-                    height={80} 
+                    width={88} 
+                    height={88} 
                     className="rounded-full object-cover w-full h-full opacity-95"
                     priority
                   />
@@ -278,23 +278,23 @@ export default function HomePage() {
               </div>
             </div>
             
-            <div className="space-y-1">
-              <div className="flex items-center justify-center gap-1.5 text-primary/40">
-                <div className="h-px w-4 bg-current" />
-                <span className="text-[8px] font-black tracking-[0.25em] uppercase">Oficial</span>
-                <div className="h-px w-4 bg-current" />
+            <div className="space-y-1.5">
+              <div className="flex items-center justify-center gap-2 text-primary/40">
+                <div className="h-px w-5 bg-current" />
+                <span className="text-[9px] font-black tracking-[0.25em] uppercase">Oficial</span>
+                <div className="h-px w-5 bg-current" />
               </div>
-              <h1 className="text-3xl sm:text-5xl font-cursive text-slate-900 dark:text-white leading-tight drop-shadow-sm flex items-center justify-center gap-2">
-                Himnario <span className="text-primary font-cursive text-2xl sm:text-4xl">EECH</span>
+              <h1 className="text-4xl sm:text-5xl font-cursive text-slate-900 dark:text-white leading-tight drop-shadow-sm flex items-center justify-center gap-2">
+                Himnario <span className="text-primary font-cursive text-3xl sm:text-4xl">EECH</span>
               </h1>
-              <p className="text-[8px] sm:text-[9px] text-slate-500 dark:text-slate-400 font-bold tracking-[0.3em] uppercase opacity-70">
+              <p className="text-[9px] sm:text-[10px] text-slate-500 dark:text-slate-400 font-bold tracking-[0.3em] uppercase opacity-75">
                 Ejército Evangélico de Chile
               </p>
               
               {currentChurch && (
-                <div className="flex justify-center items-center gap-1.5 mt-1 px-3 py-1 bg-primary/10 dark:bg-primary/20 rounded-full w-max mx-auto border border-primary/20 shadow-sm">
-                  <MapPin className="h-2.5 w-2.5 text-primary animate-pulse" />
-                  <span className="text-[9px] sm:text-[10px] font-black tracking-widest uppercase text-primary">
+                <div className="flex justify-center items-center gap-1.5 mt-2 px-3.5 py-1 bg-primary/10 dark:bg-primary/20 rounded-full w-max mx-auto border border-primary/20 shadow-sm">
+                  <MapPin className="h-3 w-3 text-primary animate-pulse" />
+                  <span className="text-[10px] sm:text-xs font-black tracking-wider uppercase text-primary">
                     {currentChurch.name}
                   </span>
                 </div>
@@ -307,17 +307,17 @@ export default function HomePage() {
           </div>
 
           <div className="w-full max-w-md">
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-2.5">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
               {navigationItems.map((item) => (
                 <div key={item.title} className="animate-in fade-in zoom-in-95 duration-500" style={{ animationDelay: item.delay }}>
                   <Link href={item.href} className="group block h-full">
-                    <Card className="h-full bg-white/70 dark:bg-white/[0.03] backdrop-blur-xl hover:bg-white/90 dark:hover:bg-white/[0.08] transition-all duration-300 hover:-translate-y-1 active:scale-95 overflow-hidden relative group rounded-2xl border border-white/60 dark:border-white/10 shadow-sm hover:shadow-md">
-                      <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-10 group-hover:opacity-40 transition-opacity duration-300`} />
-                      <CardContent className="flex flex-col items-center justify-center p-2.5 sm:p-3 text-center h-full min-h-[74px] sm:min-h-[84px] relative z-10">
-                        <div className={`p-2 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm group-hover:shadow-md rounded-xl group-hover:scale-105 transition-all duration-300 ring-1 ring-black/5 dark:ring-white/10 mb-1.5`}>
-                          <item.icon className={`h-4 w-4 sm:h-5 sm:w-5 ${item.iconColor}`} />
+                    <Card className="h-full bg-white/75 dark:bg-white/[0.04] backdrop-blur-xl hover:bg-white/95 dark:hover:bg-white/[0.08] transition-all duration-300 hover:-translate-y-1 active:scale-95 overflow-hidden relative group rounded-2xl border border-white/70 dark:border-white/10 shadow-sm hover:shadow-md">
+                      <div className={`absolute inset-0 bg-gradient-to-br ${item.color} opacity-15 group-hover:opacity-40 transition-opacity duration-300`} />
+                      <CardContent className="flex flex-col items-center justify-center p-3.5 sm:p-4 text-center h-full min-h-[96px] sm:min-h-[108px] relative z-10">
+                        <div className={`p-2.5 sm:p-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md shadow-sm group-hover:shadow-md rounded-2xl group-hover:scale-110 transition-all duration-300 ring-1 ring-black/5 dark:ring-white/10 mb-2`}>
+                          <item.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${item.iconColor}`} />
                         </div>
-                        <h3 className="font-bold text-[10px] sm:text-[11px] uppercase tracking-wider font-body text-slate-700 dark:text-slate-200 group-hover:text-primary transition-colors leading-tight">
+                        <h3 className="font-bold text-[11px] sm:text-xs uppercase tracking-wider font-body text-slate-800 dark:text-slate-100 group-hover:text-primary transition-colors leading-tight">
                           {item.title}
                         </h3>
                       </CardContent>

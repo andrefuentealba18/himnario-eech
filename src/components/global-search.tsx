@@ -108,7 +108,7 @@ export function GlobalSearch() {
                     <Input
                         type="search"
                         placeholder="Buscar por título o letra..."
-                        className="pl-9 pr-9 w-full text-xs sm:text-sm h-10 sm:h-11 rounded-full shadow-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-slate-200/80 dark:border-white/10"
+                        className="pl-10 pr-10 w-full text-sm h-11 sm:h-12 rounded-full shadow-md bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-slate-200/80 dark:border-white/10"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         disabled={!isLoaded}
