@@ -78,7 +78,7 @@ export default function HomePage() {
   const { isLoaded: youthChoirsLoaded } = useYouthChoirs();
   const { isLoaded: specialOccasionsLoaded } = useSpecialOccasions();
   const { isLoaded: appearanceLoaded } = useAppearance();
-  const { currentChurch, clearChurch } = useChurch();
+  const { currentChurch, openChurchSelector } = useChurch();
   
   const [showSplash, setShowSplash] = useState(true);
   const [isExiting, setIsExiting] = useState(false);
@@ -294,16 +294,16 @@ export default function HomePage() {
               {currentChurch && (
                 <button
                   type="button"
-                  onClick={() => clearChurch()}
-                  className="group flex justify-center items-center gap-1.5 mt-2 px-3.5 py-1 bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 rounded-full w-max mx-auto border border-primary/20 shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                  onClick={() => openChurchSelector()}
+                  className="relative z-20 group flex justify-center items-center gap-1.5 mt-2 px-3.5 py-1.5 bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 rounded-full w-max mx-auto border border-primary/25 shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer touch-manipulation"
                   title="Toca para cambiar de iglesia"
                 >
-                  <MapPin className="h-3 w-3 text-primary animate-pulse group-hover:scale-110 transition-transform" />
+                  <MapPin className="h-3.5 w-3.5 text-primary animate-pulse group-hover:scale-110 transition-transform" />
                   <span className="text-[10px] sm:text-xs font-black tracking-wider uppercase text-primary">
                     {currentChurch.name}
                   </span>
-                  <span className="text-[8px] font-bold text-primary/60 uppercase tracking-widest ml-0.5 group-hover:text-primary">
-                    (Cambiar)
+                  <span className="text-[8px] font-bold text-primary/70 uppercase tracking-widest ml-1 bg-primary/15 px-1.5 py-0.5 rounded-full group-hover:bg-primary/25">
+                    Cambiar
                   </span>
                 </button>
               )}

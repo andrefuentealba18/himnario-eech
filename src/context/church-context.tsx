@@ -68,6 +68,9 @@ interface ChurchContextType {
   createChurch: (name: string, district?: string, creatorName?: string, creatorEmail?: string) => Promise<CreateChurchResult>;
   clearChurch: () => void;
   isLoading: boolean;
+  isSelectorOpen: boolean;
+  openChurchSelector: () => void;
+  closeChurchSelector: () => void;
 }
 
 const ChurchContext = createContext<ChurchContextType | undefined>(undefined);
@@ -96,6 +99,24 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
   });
   const [availableChurches, setAvailableChurches] = useState<Church[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isSelectorOpen, setIsSelectorOpen] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('church_session_confirmed') !== 'true';
+    }
+    return true;
+  });
+
+  const openChurchSelector = () => {
+    setIsSelectorOpen(true);
+  };
+
+  const closeChurchSelector = () => {
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('church_session_confirmed', 'true');
+    }
+    setIsSelectorOpen(false);
+  };
+
   const firestore = useFirestore();
 
   useEffect(() => {
@@ -203,6 +224,7 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
       sessionStorage.removeItem('church_session_confirmed');
     }
     setCurrentChurchState(null);
+    setIsSelectorOpen(true);
   };
 
   const setCurrentChurch = (church: Church) => {
@@ -212,6 +234,7 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
       sessionStorage.setItem('church_session_confirmed', 'true');
     }
     setCurrentChurchState(church);
+    setIsSelectorOpen(false);
     // Reload to refresh all contexts cleanly with the new church scope
     window.location.reload();
   };
@@ -280,7 +303,17 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
   };
 
   return (
-    <ChurchContext.Provider value={{ currentChurch, setCurrentChurch, availableChurches, createChurch, clearChurch, isLoading }}>
+    <ChurchContext.Provider value={{ 
+      currentChurch, 
+      setCurrentChurch, 
+      availableChurches, 
+      createChurch, 
+      clearChurch, 
+      isLoading,
+      isSelectorOpen,
+      openChurchSelector,
+      closeChurchSelector
+    }}>
       {children}
     </ChurchContext.Provider>
   );

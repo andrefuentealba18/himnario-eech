@@ -5,11 +5,19 @@ import { useChurch, Church, canonicalDistrict } from '@/context/church-context';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { MapPin, Plus, Search, Info, AlertCircle } from 'lucide-react';
+import { MapPin, Plus, Search, Info, AlertCircle, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 export function ChurchSelector() {
-  const { currentChurch, availableChurches, setCurrentChurch, createChurch, isLoading } = useChurch();
+  const { 
+    currentChurch, 
+    availableChurches, 
+    setCurrentChurch, 
+    createChurch, 
+    isLoading,
+    isSelectorOpen,
+    closeChurchSelector
+  } = useChurch();
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState('');
   const [isCreating, setIsCreating] = useState(false);
@@ -19,15 +27,9 @@ export function ChurchSelector() {
   const [creatorEmail, setCreatorEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [existingFoundChurch, setExistingFoundChurch] = useState<Church | null>(null);
-  const [isConfirmedForSession, setIsConfirmedForSession] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('church_session_confirmed') === 'true';
-    }
-    return false;
-  });
 
   if (isLoading) return null;
-  if (isConfirmedForSession && currentChurch) return null;
+  if (!isSelectorOpen && currentChurch) return null;
 
   const formatText = (text: string) => {
     if (!text) return '';
@@ -58,10 +60,6 @@ export function ChurchSelector() {
     setExistingFoundChurch(null);
     const res = await createChurch(newChurchName.trim(), newChurchDistrict.trim() || 'Sin Distrito', creatorName.trim(), creatorEmail.trim());
     if (res.success && res.church) {
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('church_session_confirmed', 'true');
-      }
-      setIsConfirmedForSession(true);
       setCurrentChurch(res.church);
     } else if (res.error === 'ALREADY_EXISTS') {
       setErrorMessage(res.message || 'Ya está creada la iglesia.');
@@ -87,6 +85,18 @@ export function ChurchSelector() {
       <div className="absolute inset-0 bg-gradient-to-br from-blue-100/40 via-transparent to-amber-50/40 dark:from-blue-900/20 dark:to-amber-900/10 pointer-events-none" />
       
       <Card className="w-full max-w-md relative z-10 shadow-2xl border-white/20 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl rounded-3xl overflow-hidden animate-in fade-in zoom-in-95 duration-500">
+        {currentChurch && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => closeChurchSelector()}
+            className="absolute top-4 right-4 h-9 w-9 rounded-full text-slate-400 hover:text-slate-800 dark:hover:text-white z-20"
+            title="Cerrar"
+          >
+            <X className="h-5 w-5" />
+          </Button>
+        )}
         <CardHeader className="text-center space-y-3 pt-7 pb-3">
           <div className="mx-auto bg-primary/10 w-14 h-14 rounded-full flex items-center justify-center mb-1">
             <MapPin className="h-7 w-7 text-primary" />
@@ -113,12 +123,7 @@ export function ChurchSelector() {
                   )}
                   <Button 
                     type="button"
-                    onClick={() => {
-                      if (typeof window !== 'undefined') {
-                        sessionStorage.setItem('church_session_confirmed', 'true');
-                      }
-                      setIsConfirmedForSession(true);
-                    }}
+                    onClick={() => closeChurchSelector()}
                     className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold h-10 shadow-md shadow-blue-500/20 mt-1 text-sm"
                   >
                     Continuar en {formatText(currentChurch.name)}
@@ -168,10 +173,6 @@ export function ChurchSelector() {
                         variant="outline" 
                         className="w-full justify-start rounded-xl border-slate-200 dark:border-slate-800 hover:bg-primary/5 hover:border-primary/30 hover:text-primary transition-all font-bold text-left whitespace-normal h-auto py-2.5 px-3 text-sm"
                         onClick={() => {
-                          if (typeof window !== 'undefined') {
-                            sessionStorage.setItem('church_session_confirmed', 'true');
-                          }
-                          setIsConfirmedForSession(true);
                           setCurrentChurch(church);
                         }}
                       >
@@ -207,10 +208,6 @@ export function ChurchSelector() {
                       size="sm"
                       className="w-full mt-2 font-bold text-xs bg-white dark:bg-slate-900 border-amber-500/30 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300"
                       onClick={() => {
-                        if (typeof window !== 'undefined') {
-                          sessionStorage.setItem('church_session_confirmed', 'true');
-                        }
-                        setIsConfirmedForSession(true);
                         setCurrentChurch(existingFoundChurch);
                       }}
                     >
