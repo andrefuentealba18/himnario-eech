@@ -7,6 +7,8 @@ import { usePraises } from "@/context/praises-context";
 import { useChoirs } from "@/context/choirs-context";
 import { useYouthChoirs } from "@/context/youth-choirs-context";
 import { useRepertoires } from "@/context/repertoires-context";
+import { useChurch } from "@/context/church-context";
+import { useRouter } from "next/navigation";
 import { useState, useMemo } from "react";
 import { Button } from "./ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
@@ -137,6 +139,8 @@ interface RepertoireBuilderClientProps {
   repertoireId?: string;
 }
 export function RepertoireBuilderClient({ initialData, repertoireId }: RepertoireBuilderClientProps) {
+  const router = useRouter();
+  const { currentChurch } = useChurch();
   const { hymns, isLoaded: hymnsLoaded } = useHymns();
   const { praises, isLoaded: praisesLoaded } = usePraises();
   const { choirs, isLoaded: choirsLoaded } = useChoirs();
@@ -235,7 +239,20 @@ export function RepertoireBuilderClient({ initialData, repertoireId }: Repertoir
         blocks: blocksToSave,
       };
       if (initialData && repertoireId) {
-        await updateRepertoire(repertoireId, repertoirePayload);
+        const res = await updateRepertoire(repertoireId, {
+          ...repertoirePayload,
+          churchId: (initialData as any).churchId || currentChurch?.id,
+          churchName: (initialData as any).churchName || currentChurch?.name,
+        });
+        if (res.success) {
+          router.refresh();
+          router.push(`/repertoire/${repertoireId}`);
+          setTimeout(() => {
+            if (typeof window !== 'undefined' && window.location.pathname.includes('/edit')) {
+              window.location.href = `/repertoire/${repertoireId}`;
+            }
+          }, 250);
+        }
       } else {
         await addRepertoire(repertoirePayload);
       }

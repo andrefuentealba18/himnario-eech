@@ -86,15 +86,13 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
         if (savedData) return JSON.parse(savedData);
         const savedId = localStorage.getItem('selected_church_id');
         if (savedId) {
-          if (savedId === 'eech-las-torres') return DEFAULT_CANONICAL_CHURCH;
           return { id: savedId, name: 'Mi Iglesia' };
         }
       } catch (e) {
         console.error("Error reading saved church:", e);
       }
-      return DEFAULT_CANONICAL_CHURCH;
     }
-    return DEFAULT_CANONICAL_CHURCH;
+    return null;
   });
   const [availableChurches, setAvailableChurches] = useState<Church[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -167,7 +165,7 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
 
         setAvailableChurches(uniqueChurches);
 
-        // Load saved church or keep default
+        // Load saved church if available
         if (savedChurchId) {
           let saved = uniqueChurches.find(c => c.id === savedChurchId);
           if (!saved) {
@@ -187,12 +185,6 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
             setCurrentChurchState(saved);
             localStorage.setItem('selected_church_data', JSON.stringify(saved));
           }
-        } else {
-          // Default to EECH Las Torres as mother church
-          const defaultChurch = uniqueChurches.find(c => c.id === 'eech-las-torres') || DEFAULT_CANONICAL_CHURCH;
-          setCurrentChurchState(defaultChurch);
-          localStorage.setItem('selected_church_id', defaultChurch.id);
-          localStorage.setItem('selected_church_data', JSON.stringify(defaultChurch));
         }
       } catch (error) {
         console.error("Error loading churches:", error);
@@ -207,12 +199,18 @@ export function ChurchProvider({ children }: { children: ReactNode }) {
   const clearChurch = () => {
     localStorage.removeItem('selected_church_id');
     localStorage.removeItem('selected_church_data');
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem('church_session_confirmed');
+    }
     setCurrentChurchState(null);
   };
 
   const setCurrentChurch = (church: Church) => {
     localStorage.setItem('selected_church_id', church.id);
     localStorage.setItem('selected_church_data', JSON.stringify(church));
+    if (typeof window !== 'undefined') {
+      sessionStorage.setItem('church_session_confirmed', 'true');
+    }
     setCurrentChurchState(church);
     // Reload to refresh all contexts cleanly with the new church scope
     window.location.reload();

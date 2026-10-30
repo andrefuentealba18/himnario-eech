@@ -4,7 +4,7 @@ import { createContext, useContext, useCallback, ReactNode, useMemo } from 'reac
 import type { Repertoire } from '@/lib/repertoires';
 import { useFirestore, useCollection, useMemoFirebase, errorEmitter, FirestorePermissionError } from '@/firebase';
 import { useChurch } from '@/context/church-context';
-import { collection, doc, getDoc, addDoc, updateDoc, deleteDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc, serverTimestamp, collectionGroup, query } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/hooks/use-toast';
 import { removeUndefined } from '@/lib/utils';
@@ -12,7 +12,7 @@ import { removeUndefined } from '@/lib/utils';
 interface RepertoiresContextType {
   repertoires: Repertoire[];
   addRepertoire: (newRepertoireData: Omit<Repertoire, 'id' | 'createdAt'>) => Promise<{ success: boolean; id?: string }>;
-  updateRepertoire: (id: string, updatedData: Omit<Repertoire, 'id' | 'createdAt'>) => Promise<{ success: boolean }>;
+  updateRepertoire: (id: string, updatedData: Omit<Repertoire, 'id' | 'createdAt'> & { churchId?: string; churchName?: string }) => Promise<{ success: boolean }>;
   deleteRepertoire: (repertoireId: string) => Promise<void>;
   getRepertoireById: (id: string) => Repertoire | undefined;
   fetchRepertoireDirectly: (id: string) => Promise<Repertoire | null>;
@@ -97,25 +97,32 @@ export function RepertoiresProvider({ children }: { children: ReactNode }) {
     }
   }, [firestore, repertoiresCollectionRef, currentChurch, toast, router]);
 
-  const updateRepertoire = useCallback(async (id: string, updatedData: Omit<Repertoire, 'id' | 'createdAt'>): Promise<{ success: boolean }> => {
-    if (!firestore || !currentChurch) return { success: false };
-    const docRef = doc(firestore, 'churches', currentChurch.id, 'repertoires', id);
+  const updateRepertoire = useCallback(async (
+    id: string, 
+    updatedData: Omit<Repertoire, 'id' | 'createdAt'> & { churchId?: string; churchName?: string }
+  ): Promise<{ success: boolean; id?: string }> => {
+    if (!firestore) return { success: false };
+    
+    const targetChurchId = updatedData.churchId || currentChurch?.id || 'eech-las-torres';
+    const targetChurchName = updatedData.churchName || currentChurch?.name || 'EECH Las Torres';
+    const docRef = doc(firestore, 'churches', targetChurchId, 'repertoires', id);
     
     try {
       const cleanData = removeUndefined({
         ...updatedData,
-        churchId: currentChurch.id,
-        churchName: currentChurch.name,
+        churchId: targetChurchId,
+        churchName: targetChurchName,
       });
 
-      await updateDoc(docRef, cleanData);
+      await setDoc(docRef, cleanData, { merge: true });
 
       toast({
         title: 'Repertorio Actualizado',
-        description: `El repertorio de "${updatedData.name}" ha sido actualizado en tiempo real.`,
+        description: `El repertorio de "${updatedData.name}" ha sido actualizado exitosamente.`,
       });
+      router.refresh();
       router.push(`/repertoire/${id}`);
-      return { success: true };
+      return { success: true, id };
     } catch (e: any) {
       console.error("Error updating repertoire: ", e);
       errorEmitter.emit('permission-error', new FirestorePermissionError({
@@ -175,6 +182,13 @@ export function RepertoiresProvider({ children }: { children: ReactNode }) {
         if (docSnap.exists()) {
           return { ...(docSnap.data() as any), id: docSnap.id };
         }
+      }
+      // 3. Search collectionGroup 'repertoires' to find it wherever it was saved
+      const q = query(collectionGroup(firestore, 'repertoires'));
+      const groupSnap = await getDocs(q);
+      const foundDoc = groupSnap.docs.find(d => d.id === id);
+      if (foundDoc) {
+        return { ...(foundDoc.data() as any), id: foundDoc.id };
       }
     } catch (e) {
       console.error("Error fetching repertoire directly:", e);

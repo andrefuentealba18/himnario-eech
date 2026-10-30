@@ -163,20 +163,21 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
 
   return (
     <main className="flex flex-col items-center bg-transparent min-h-screen pb-24">
-      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6">
-        <header className="sticky top-4 z-10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md px-4 py-3 rounded-2xl shadow-sm border border-slate-200/60 dark:border-white/10 flex items-center justify-between mb-5 mt-2">
-          <Button variant="ghost" size="icon" className="text-slate-500 hover:text-slate-800 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full h-9 w-9" asChild>
+      {/* Top sticky header with safe notch padding for mobile */}
+      <header className="sticky top-0 z-30 w-full bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl px-4 pt-16 pb-4 sm:pt-6 sm:pb-4 border-b border-slate-200/60 dark:border-white/10 shadow-sm transition-all duration-300">
+        <div className="w-full max-w-4xl mx-auto flex items-center justify-between gap-2">
+          <Button variant="ghost" size="icon" className="text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full h-10 w-10 shrink-0" asChild>
             <Link href="/repertoire">
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-6 w-6" />
               <span className="sr-only">Volver</span>
             </Link>
           </Button>
 
-          <div className="text-center flex-1 px-2">
-            <h1 className="text-2xl sm:text-3xl font-cursive text-slate-900 dark:text-white capitalize leading-none pt-1">
+          <div className="text-center flex-1 px-1 min-w-0">
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white capitalize truncate leading-tight">
               {repertoire.name.toLowerCase()}
             </h1>
-            <div className="flex items-center justify-center gap-2 mt-1">
+            <div className="flex items-center justify-center gap-2 mt-1 flex-wrap">
               <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">
                 {formatRepertoireDate(repertoire.createdAt)}
               </span>
@@ -188,39 +189,40 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 shrink-0">
             <Button 
               variant="outline" 
               size="icon" 
               onClick={handleShare}
-              className="h-9 w-9 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-200 transition-colors shadow-sm"
+              className="h-10 w-10 rounded-full bg-emerald-50 hover:bg-emerald-100 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-400 border-emerald-200 transition-colors shadow-sm"
               title="Compartir por WhatsApp"
             >
               <Share2 className="h-4 w-4" />
             </Button>
 
-            <Button variant="outline" size="icon" className="h-9 w-9 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border-blue-200 transition-colors shadow-sm" asChild>
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 border-blue-200 transition-colors shadow-sm" asChild>
               <Link href={`/repertoire/${repertoireId}/edit`}>
                 <Edit className="h-4 w-4" />
                 <span className="sr-only">Editar</span>
               </Link>
             </Button>
 
-            <Button className="rounded-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-amber-950 font-bold shadow-sm shadow-amber-500/30 hidden sm:flex border-none h-9 px-4 text-xs" asChild>
+            <Button className="rounded-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-amber-950 font-bold shadow-sm shadow-amber-500/30 hidden sm:flex border-none h-10 px-4 text-xs" asChild>
               <Link href={`/repertoire/${repertoireId}/print`}>
-                <Printer className="mr-2 h-3 w-3" /> Exportar PDF
+                <Printer className="mr-2 h-4 w-4" /> Exportar PDF
               </Link>
             </Button>
 
-            <Button className="rounded-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-amber-950 shadow-sm shadow-amber-500/30 sm:hidden border-none h-9 w-9" size="icon" asChild>
+            <Button className="rounded-full bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-500 hover:to-amber-600 text-amber-950 shadow-sm shadow-amber-500/30 sm:hidden border-none h-10 w-10" size="icon" asChild>
               <Link href={`/repertoire/${repertoireId}/print`}>
-                <Printer className="h-3 w-3" />
+                <Printer className="h-4 w-4" />
+                <span className="sr-only">Exportar PDF</span>
               </Link>
             </Button>
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-9 w-9 rounded-full text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40">
+                <Button variant="ghost" size="icon" className="h-10 w-10 rounded-full text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40">
                   <Trash2 className="h-4 w-4" />
                 </Button>
               </AlertDialogTrigger>
@@ -240,7 +242,10 @@ export function RepertoireDetailClient({ repertoireId }: RepertoireDetailClientP
               </AlertDialogContent>
             </AlertDialog>
           </div>
-        </header>
+        </div>
+      </header>
+
+      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-4">
 
         <div className="space-y-4">
           {repertoire.blocks && repertoire.blocks.length > 0 ? (

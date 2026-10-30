@@ -19,8 +19,15 @@ export function ChurchSelector() {
   const [creatorEmail, setCreatorEmail] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [existingFoundChurch, setExistingFoundChurch] = useState<Church | null>(null);
+  const [isConfirmedForSession, setIsConfirmedForSession] = useState<boolean>(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('church_session_confirmed') === 'true';
+    }
+    return false;
+  });
 
-  if (isLoading || currentChurch) return null;
+  if (isLoading) return null;
+  if (isConfirmedForSession && currentChurch) return null;
 
   const formatText = (text: string) => {
     if (!text) return '';
@@ -51,6 +58,10 @@ export function ChurchSelector() {
     setExistingFoundChurch(null);
     const res = await createChurch(newChurchName.trim(), newChurchDistrict.trim() || 'Sin Distrito', creatorName.trim(), creatorEmail.trim());
     if (res.success && res.church) {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('church_session_confirmed', 'true');
+      }
+      setIsConfirmedForSession(true);
       setCurrentChurch(res.church);
     } else if (res.error === 'ALREADY_EXISTS') {
       setErrorMessage(res.message || 'Ya está creada la iglesia.');
@@ -76,29 +87,64 @@ export function ChurchSelector() {
       <div className="absolute inset-0 bg-gradient-to-br from-blue-100/40 via-transparent to-amber-50/40 dark:from-blue-900/20 dark:to-amber-900/10 pointer-events-none" />
       
       <Card className="w-full max-w-md relative z-10 shadow-2xl border-white/20 dark:border-white/10 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl rounded-3xl overflow-hidden animate-in fade-in zoom-in-95 duration-500">
-        <CardHeader className="text-center space-y-4 pt-8">
-          <div className="mx-auto bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mb-2">
-            <MapPin className="h-8 w-8 text-primary" />
+        <CardHeader className="text-center space-y-3 pt-7 pb-3">
+          <div className="mx-auto bg-primary/10 w-14 h-14 rounded-full flex items-center justify-center mb-1">
+            <MapPin className="h-7 w-7 text-primary" />
           </div>
-          <CardTitle className="text-2xl font-black uppercase tracking-tight">Bienvenido</CardTitle>
-          <CardDescription className="text-sm font-medium">
-            Selecciona tu iglesia para acceder a su himnario privado
+          <CardTitle className="text-2xl font-black uppercase tracking-tight">Selecciona tu Iglesia</CardTitle>
+          <CardDescription className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            Cada congregación tiene sus repertorios y alabanzas independientes
           </CardDescription>
         </CardHeader>
         
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-4 px-6">
           {!isCreating ? (
             <div className="space-y-4">
               
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-4 rounded-xl flex gap-3 text-left">
-                <Info className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
-                <div className="space-y-1">
-                  <p className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wider">Nueva Función</p>
-                  <p className="text-[11px] text-blue-600 dark:text-blue-400 leading-relaxed">
-                    Ahora cada iglesia tiene su himnario privado y separado. Busca tu iglesia en la lista para entrar, o presiona <strong>"Crear nueva iglesia"</strong> si aún no existe. (Luego podrás cambiar de iglesia usando el botón al final de la página de inicio).
-                  </p>
+              {currentChurch && (
+                <div className="p-3.5 rounded-2xl bg-gradient-to-r from-blue-500/10 to-indigo-500/10 border border-blue-500/20 text-center space-y-1.5 shadow-sm">
+                  <span className="text-[10px] font-black uppercase tracking-widest text-blue-600 dark:text-blue-400">Tu iglesia actual:</span>
+                  <div className="flex items-center justify-center gap-2 text-foreground font-black text-base">
+                    <MapPin className="h-4 w-4 text-blue-600 dark:text-blue-400 shrink-0" />
+                    <span>{formatText(currentChurch.name)}</span>
+                  </div>
+                  {currentChurch.district && (
+                    <p className="text-[11px] font-medium text-muted-foreground">{currentChurch.district}</p>
+                  )}
+                  <Button 
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== 'undefined') {
+                        sessionStorage.setItem('church_session_confirmed', 'true');
+                      }
+                      setIsConfirmedForSession(true);
+                    }}
+                    className="w-full rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold h-10 shadow-md shadow-blue-500/20 mt-1 text-sm"
+                  >
+                    Continuar en {formatText(currentChurch.name)}
+                  </Button>
                 </div>
-              </div>
+              )}
+
+              {currentChurch && (
+                <div className="flex items-center gap-3 my-1">
+                  <div className="h-[1px] flex-1 bg-border/60" />
+                  <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/80">O cambiar de iglesia</span>
+                  <div className="h-[1px] flex-1 bg-border/60" />
+                </div>
+              )}
+
+              {!currentChurch && (
+                <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 p-3.5 rounded-xl flex gap-3 text-left">
+                  <Info className="h-5 w-5 text-blue-500 shrink-0 mt-0.5" />
+                  <div className="space-y-1">
+                    <p className="text-xs font-bold text-blue-800 dark:text-blue-300 uppercase tracking-wider">Nueva Función</p>
+                    <p className="text-[11px] text-blue-600 dark:text-blue-400 leading-relaxed">
+                      Las iglesias EECH ahora están separadas. Elige tu congregación en la lista para entrar, o presiona <strong>"Crear nueva iglesia"</strong> si aún no está registrada.
+                    </p>
+                  </div>
+                </div>
+              )}
               
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -106,24 +152,30 @@ export function ChurchSelector() {
                   placeholder="Buscar iglesia o distrito..." 
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9 bg-black/5 dark:bg-white/5 border-none h-12 rounded-xl"
+                  className="pl-9 bg-black/5 dark:bg-white/5 border-none h-11 rounded-xl text-sm"
                 />
               </div>
               
-              <div className="max-h-[40vh] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+              <div className="max-h-[35vh] overflow-y-auto space-y-2 pr-2 custom-scrollbar">
                 {sortedDistricts.map(district => (
-                  <div key={district} className="space-y-2 mb-4">
-                    <h3 className="text-xs font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-2">
+                  <div key={district} className="space-y-1.5 mb-3">
+                    <h3 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-widest pl-2">
                       {district}
                     </h3>
                     {groupedChurches[district].map(church => (
                       <Button 
                         key={church.id} 
                         variant="outline" 
-                        className="w-full justify-start h-14 rounded-xl border-slate-200 dark:border-slate-800 hover:bg-primary/5 hover:border-primary/30 hover:text-primary transition-all font-bold text-left whitespace-normal h-auto py-3"
-                        onClick={() => setCurrentChurch(church)}
+                        className="w-full justify-start rounded-xl border-slate-200 dark:border-slate-800 hover:bg-primary/5 hover:border-primary/30 hover:text-primary transition-all font-bold text-left whitespace-normal h-auto py-2.5 px-3 text-sm"
+                        onClick={() => {
+                          if (typeof window !== 'undefined') {
+                            sessionStorage.setItem('church_session_confirmed', 'true');
+                          }
+                          setIsConfirmedForSession(true);
+                          setCurrentChurch(church);
+                        }}
                       >
-                        <MapPin className="mr-3 h-5 w-5 text-slate-400 shrink-0" />
+                        <MapPin className="mr-2.5 h-4 w-4 text-slate-400 shrink-0" />
                         <span>{formatText(church.name)}</span>
                       </Button>
                     ))}
@@ -131,7 +183,7 @@ export function ChurchSelector() {
                 ))}
                 
                 {filteredChurches.length === 0 && (
-                  <div className="text-center py-8 text-slate-500 text-sm font-medium">
+                  <div className="text-center py-6 text-slate-500 text-xs font-medium">
                     No encontramos ninguna iglesia con ese nombre.
                   </div>
                 )}
@@ -154,7 +206,13 @@ export function ChurchSelector() {
                       variant="outline"
                       size="sm"
                       className="w-full mt-2 font-bold text-xs bg-white dark:bg-slate-900 border-amber-500/30 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300"
-                      onClick={() => setCurrentChurch(existingFoundChurch)}
+                      onClick={() => {
+                        if (typeof window !== 'undefined') {
+                          sessionStorage.setItem('church_session_confirmed', 'true');
+                        }
+                        setIsConfirmedForSession(true);
+                        setCurrentChurch(existingFoundChurch);
+                      }}
                     >
                       Entrar a {formatText(existingFoundChurch.name)}
                     </Button>

@@ -158,14 +158,14 @@ export function RepertoirePrintClient({ repertoireId }: RepertoirePrintClientPro
       `}} />
       
       {/* HEADER NO IMPRIMIBLE */}
-      <div className="print:hidden sticky top-0 bg-slate-100 p-4 flex items-center justify-between border-b border-slate-200 shadow-sm z-50">
-        <Button variant="outline" className="border-slate-300 text-slate-700 hover:bg-slate-200" asChild>
+      <div className="print:hidden sticky top-0 bg-slate-100/95 dark:bg-slate-900/95 backdrop-blur-xl pt-16 pb-4 px-4 sm:pt-4 sm:pb-4 flex items-center justify-between border-b border-slate-200 dark:border-white/10 shadow-sm z-50">
+        <Button variant="outline" className="border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-800 font-bold h-10 px-4 rounded-full shadow-sm" asChild>
           <Link href={`/repertoire/${repertoireId}`}>
-            <ChevronLeft className="mr-2 h-4 w-4" /> Volver
+            <ChevronLeft className="mr-1 h-5 w-5" /> Volver
           </Link>
         </Button>
-        <div className="font-bold text-slate-800 hidden sm:block text-sm">Vista Previa de Impresión</div>
-        <Button onClick={() => window.print()} className="bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-600/30">
+        <div className="font-bold text-slate-800 dark:text-white hidden sm:block text-sm">Vista Previa de Impresión</div>
+        <Button onClick={() => window.print()} className="bg-blue-600 hover:bg-blue-700 text-white font-bold shadow-lg shadow-blue-600/30 h-10 px-4 rounded-full">
           <Printer className="mr-2 h-4 w-4" /> Exportar a PDF
         </Button>
       </div>
