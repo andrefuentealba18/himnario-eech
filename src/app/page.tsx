@@ -292,12 +292,20 @@ export default function HomePage() {
               </p>
               
               {currentChurch && (
-                <div className="flex justify-center items-center gap-1.5 mt-2 px-3.5 py-1 bg-primary/10 dark:bg-primary/20 rounded-full w-max mx-auto border border-primary/20 shadow-sm">
-                  <MapPin className="h-3 w-3 text-primary animate-pulse" />
+                <button
+                  type="button"
+                  onClick={() => clearChurch()}
+                  className="group flex justify-center items-center gap-1.5 mt-2 px-3.5 py-1 bg-primary/10 hover:bg-primary/20 dark:bg-primary/20 dark:hover:bg-primary/30 rounded-full w-max mx-auto border border-primary/20 shadow-sm transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
+                  title="Toca para cambiar de iglesia"
+                >
+                  <MapPin className="h-3 w-3 text-primary animate-pulse group-hover:scale-110 transition-transform" />
                   <span className="text-[10px] sm:text-xs font-black tracking-wider uppercase text-primary">
                     {currentChurch.name}
                   </span>
-                </div>
+                  <span className="text-[8px] font-bold text-primary/60 uppercase tracking-widest ml-0.5 group-hover:text-primary">
+                    (Cambiar)
+                  </span>
+                </button>
               )}
             </div>
           </header>
@@ -332,15 +340,6 @@ export default function HomePage() {
             <div className="flex flex-col items-center gap-3">
               <div className="flex items-center justify-center gap-3">
                 <InstallPWAButton />
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-slate-400 hover:text-primary transition-colors font-bold uppercase tracking-widest text-[9px] h-8 px-2.5"
-                  onClick={() => clearChurch()}
-                >
-                  <MapPin className="mr-1.5 h-3.5 w-3.5" />
-                  Cambiar Iglesia
-                </Button>
                 <SettingsDialog />
               </div>
               
